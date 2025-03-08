@@ -117,6 +117,21 @@ if 'SESSIONS' not in globals() or not globals()["SESSIONS"]:
         """Restrict only the provided colors to a row."""
 
 
+    class Wheel(Steps):
+        """Create a color wheel."""
+
+        def __init__(self, iterable):
+            """Initialize."""
+
+            if not hasattr(iterable, '__len__'):
+                iterable = list(iterable)
+
+            if len(iterable) not in (3, 6, 12, 24, 48):
+                raise ValueError('Wheel only supports iterables of length 3, 6, 12, 24, or 48')
+
+            super().__init__(iterable)
+
+
     class ColorTuple(namedtuple('ColorTuple', ['string', 'color'])):
         """Color tuple."""
 
@@ -198,7 +213,7 @@ def get_colors(result):
                 for c in result
             ]
         )
-    elif isinstance(result, (Steps, Ramp)):
+    elif isinstance(result, (Wheel, Steps, Ramp)):
         t = type(result)
         yield t([c.clone() if isinstance(c, Color) else ColorAll(c) for c in result])
     elif isinstance(result, Color):
@@ -465,6 +480,7 @@ def execute(cmd, no_except=True, inline=False, init='', g=None):
         g["Ramp"] = Ramp
         g["Steps"] = Steps
         g["Row"] = Row
+        g["Wheel"] = Wheel
         g['HtmlRow'] = HtmlRow
         g['HtmlSteps'] = HtmlSteps
         g['HtmlGradient'] = HtmlGradient
@@ -571,7 +587,7 @@ def colorize(src, lang, **options):
 def color_command_validator(language, inputs, options, attrs, md):
     """Color validator."""
 
-    valid_inputs = {'exceptions', 'play', 'wheel'}
+    valid_inputs = {'exceptions', 'play'}
 
     for k, v in inputs.items():
         if k == 'session':
@@ -596,9 +612,80 @@ def _color_command_console(colors, gamut=WEBSPACE):
     for item in colors:
         is_grad = isinstance(item, HtmlGradient)
         is_steps = isinstance(item, Steps)
-        if is_grad or is_steps:
+        is_wheel = isinstance(item, Wheel)
+        l = len(item) if is_wheel else 0
+        if is_wheel:
+            if l >= 48:
+                freq = 16
+                offset = 24
+            elif l >= 24:
+                freq = 8
+                offset = 12
+            elif l >= 12:
+                freq = 4
+                offset = 6
+            elif l >= 6:
+                freq = 2
+                offset = 3
+            else:
+                freq = 1
+                offset = 1
+
+            extra_rings_start = ''
+            extra_rings_end = ''
+            primary = item[::freq][2::-1]
+            color_rings = [primary]
+
+            if l >= 6:
+                extra_rings_start = '<div class="secondary"><div class="secondary-inner">'
+                extra_rings_end = '</div></div>'
+                secondary = (item[offset::freq] + [item[offset // 3]])[2::-1]
+                color_rings.append(secondary)
+            if l >= 12:
+                extra_rings_start = '<div class="tertiary">' + extra_rings_start
+                extra_rings_end += '</div>'
+                tertiary = item[::offset // 6][11::-1]
+                color_rings.append(tertiary)
+            if l >= 24:
+                extra_rings_start = '<div class="tertiary2">' + extra_rings_start
+                extra_rings_end += '</div>'
+                color_rings.append(item[::offset // 12][23::-1])
+            if l >= 48:
+                extra_rings_start = '<div class="tertiary3">' + extra_rings_start
+                extra_rings_end += '</div>'
+                color_rings.append(item[47::-1])
+
+            color_stops = ''
+            for i, rcolors in enumerate(color_rings, 1):
+                total = len(rcolors)
+                percent = 100 / total
+                current = percent
+                last = -1
+
+                stops = []
+                for e, color in enumerate(rcolors):
+                    color.fit(gamut)
+                    color_str = color.convert(gamut).to_string()
+                    if current:
+                        stops.append(f'{color_str} {last!s}%')
+                        stops.append(f'{color_str} {current!s}%')
+                        last = current
+                        if e < (total - 1):
+                            current += percent
+                        else:
+                            current = 100
+                    else:
+                        stops.append(color_str)
+                color_stops += "--color-wheel-stops{}: {};".format(i, ','.join(stops))
+
+            color_wheel = """<div class="color-wheel" style="{}"><div class="wheel">
+{}<div class="primary"><div class="primary-inner"></div></div></div></div>{}""" .format(  # noqa: E501
+                color_stops, extra_rings_start, extra_rings_end
+            )
+            el += color_wheel
+        elif is_grad or is_steps:
             current = total = percent = last = 0
-            if isinstance(item, Steps):
+            if is_steps:
                 total = len(item)
                 percent = 100 / total
                 current = percent
@@ -681,7 +768,6 @@ def _color_command_formatter(src="", language="", class_name=None, options=None,
 
     # Support the new way
     gamut = kwargs.get('gamut', WEBSPACE)
-    wheel = options.get('wheel', False)
     play = options.get('play', False) if options is not None else False
     session = options.get('session') if options is not None else None
     session_name = options.get('session_name', '') if options is not None else ""
@@ -700,100 +786,32 @@ def _color_command_formatter(src="", language="", class_name=None, options=None,
         )
 
     try:
-        if wheel:
-            gamut = 'srgb'
-            exceptions = options.get('exceptions', False) if options is not None else False
+        if len(md.preprocessors['fenced_code_block'].extension.stash) == 0:
+            code_id = 0
 
-            _, colors = execute(src.strip(), not exceptions, init=init, g=session)
+        # Check if we should allow exceptions
+        exceptions = options.get('exceptions', False) if options is not None else False
 
-            l = len(colors)
-            if l not in (12, 24, 48):
-                raise SuperFencesException("Color wheel requires either 12, 24, or 48 colors")
+        console, colors = execute(src.strip(), not exceptions, init=init, g=session)
+        el = _color_command_console(colors, gamut=gamut)
 
-            colors = [c[0].color for c in colors]
-
-            if l == 12:
-                freq = 4
-                offset = 6
-            elif l == 24:
-                freq = 8
-                offset = 12
-            else:
-                freq = 16
-                offset = 24
-
-            primary = colors[::freq][::-1]
-            secondary = (colors[offset::freq] + [colors[offset // 3]])[::-1]
-            tertiary = colors[::offset // 6][::-1]
-            color_rings = [primary, secondary, tertiary]
-
-            extra_rings_start = ''
-            extra_rings_end = ''
-            if l > 12:
-                extra_rings_start = '<div class="tertiary2">'
-                extra_rings_end += '</div>'
-                color_rings.append(colors[::offset // 12][::-1])
-            if l > 24:
-                extra_rings_start = '<div class="tertiary3">' + extra_rings_start
-                extra_rings_end += '</div>'
-                color_rings.append(colors[::-1])
-
-            color_stops = ''
-            for i, colors in enumerate(color_rings, 1):
-                total = len(colors)
-                percent = 100 / total
-                current = percent
-                last = -1
-
-                stops = []
-                for e, color in enumerate(colors):
-                    color.fit(gamut)
-                    color_str = color.convert(gamut).to_string()
-                    if current:
-                        stops.append(f'{color_str} {last!s}%')
-                        stops.append(f'{color_str} {current!s}%')
-                        last = current
-                        if e < (total - 1):
-                            current += percent
-                        else:
-                            current = 100
-                    else:
-                        stops.append(color_str)
-                color_stops += "--color-wheel-stops{}: {};".format(i, ','.join(stops))
-
-            color_wheel = """<div class="color-wheel" style="{}"><div class="wheel">
-{}<div class="tertiary"><div class="secondary"><div class="secondary-inner"><div class="primary"><div class="primary-inner"></div></div></div></div></div></div></div>{}""" .format(  # noqa: E501
-                color_stops, extra_rings_start, extra_rings_end
-            )
-            return color_wheel
-
-        else:
-            if len(md.preprocessors['fenced_code_block'].extension.stash) == 0:
-                code_id = 0
-
-            # Check if we should allow exceptions
-            exceptions = options.get('exceptions', False) if options is not None else False
-
-            console, colors = execute(src.strip(), not exceptions, init=init, g=session)
-            el = _color_command_console(colors, gamut=gamut)
-
-            el += md.preprocessors['fenced_code_block'].extension.superfences[0]['formatter'](
-                src=console,
-                class_name="highlight",
-                language='pycon',
-                md=md,
-                options=options,
-                **kwargs
-            )
-            el = f'<div class="color-command">{el}</div>'
-            el = template.format(
-                el_id=code_id,
-                raw_source=_escape(src),
-                results=el,
-                gamut=gamut,
-                session=f"Session: {session_name}" if session_name else ""
-            )
-            code_id += 1
+        el += md.preprocessors['fenced_code_block'].extension.superfences[0]['formatter'](
+            src=console,
+            class_name="highlight",
+            language='pycon',
+            md=md,
+            options=options,
+            **kwargs
+        )
+        el = f'<div class="color-command">{el}</div>'
+        el = template.format(
+            el_id=code_id,
+            raw_source=_escape(src),
+            results=el,
+            gamut=gamut,
+            session=f"Session: {session_name}" if session_name else ""
+        )
+        code_id += 1
     except SuperFencesException:
         raise
     except Exception:
@@ -939,9 +957,9 @@ def render_console(*args, **kwargs):
 
         # Replace swatch bars
         cmd = results.querySelector('.color-command')
-        for el in cmd.querySelectorAll('.swatch-bar'):
+        for el in cmd.querySelectorAll('.swatch-bar, .color-wheel'):
             el.remove()
-        for el in temp.querySelectorAll('.swatch-bar'):
+        for el in temp.querySelectorAll('.swatch-bar, .color-wheel'):
             cmd.insertBefore(el, cmd.lastChild)
         footer.innerHTML = f'Gamut: {gamut}'
 

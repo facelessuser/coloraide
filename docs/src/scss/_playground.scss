@@ -156,6 +156,14 @@
 }
 /* stylelint-enable */
 
+div.playground {
+  display: flow-root;
+
+  pre {
+    text-align: left;
+  }
+}
+
 .playground-code {
   position: relative;
   width: 100%;

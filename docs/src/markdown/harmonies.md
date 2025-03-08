@@ -1,49 +1,53 @@
 # Color Harmonies
 
-In color theory, color harmony refers to the property that certain aesthetically pleasing color combinations have.
-Modern day color theory probably starts with the first color wheel created by Isaac Newton. Based on his observations of
-light with prisms, he formed one the first color wheels. From there, many others built upon this work, sometimes with
-opposing ideas.
+Isaac Newton, based on his observations of light interacting with prisms, constructed the first known color wheel. From
+there, many others built upon this work, sometimes with opposing ideas, but his original work is where color harmony got
+its start.
 
 The original color wheel, while inspired by what was observed by light, was created based on experiments with pigments
-as well. As most know, in paint, red, yellow, and blue are considered primary colors. Newton thought this translated to
-light as well and stated they were also the primary colors of light. While this isn't actually true, his work was very
-important in reshaping how people viewed color.
+as well. In paints, red, yellow, and blue are often taught to be primary colors. This idea originates from Newton's
+work as through his experiments, he came to the conclusions that all colors could be made from red, yellow, and blue,
+and assumed this was true for light as well. While this isn't exactly true, his work was very important in reshaping how
+people viewed color.
 
 Over time, the color wheel was refined. The traditional model, which we will call an RYB color model, defined 12 colors
 that made up the wheel: the primary colors, the secondary colors, and the tertiary colors. The secondary colors are
 created by evenly mixing the primary colors, and the tertiary colors are created by evenly mixing those primary colors
 with the secondary colors.
 
-```py play wheel
-Color('ryb', [1, 0, 0]).harmony('wheel', space='ryb')
+```py play
+Wheel(Color('ryb', [1, 0, 0]).harmony('wheel', space='ryb'))
 ```
 
-The idea of color harmonies originates from the idea that colors, based on their relative position on the wheel, can
-form more pleasing color combinations.
+The concept of color harmonies was formulated on the idea that colors, based on specific, relative position on the
+wheel, can form more pleasing color combinations.
 
 ## Which Color Space is Best for Color Harmonies?
 
-As we know, these days, there are many color spaces out there: subtractive models, additive models, perceptually
-uniform models, high dynamic range models, etc. Many color spaces trying to solve specific issues based on the knowledge
-at the time.
+These days, there are many color spaces and models out there: subtractive models, additive models, perceptually
+uniform models, high dynamic range models, etc. But which space/model is the best for color harmonies?
 
-It should be noted, that the idea of primary colors stems from the idea that there are a set of pure colors from which
-all colors can be made from. If you've spent any time with paint, you will know that not all colors can be made from
-red, yellow, and blue. There are colors like `#!color cyan` and `#!color magenta` that cannot be made with the
-traditional primary colors. The early work that helped create the first color wheels was done with the limited paints
-that was available at the time, and the color harmony concepts were built upon the early RYB color model. Modern
-printers actually use primary colors of `#!color magenta`, `#!color yellow`, and `#!color cyan`.
+The concept of primary colors stems from the idea that there are a set of pure colors from which all colors can be made
+from. The primary colors of electronic screens use red, green, and blue light to display its full gamut of color.
+Interestingly, electronic screens were modeled after the human eye that have three cones, each sensitive to wavelengths
+close to red, green, and blue. From what the three cones in the eye detect, our brain perceive all the various colors.
 
-In modern TVs and monitors, the RYB color model is not used. Paint has subtractive properties, but light has additive
-properties. Electronic screens create all their colors with light based methods that mix red, green, and blue lights. In
-addition, the human eye perceives colors using red, green, and blue light as well. As far as light is concerned, the
-primary colors are red, green, and blue.
+Paints and inks on the other hand can alter the light that comes back to our eye depending on the medium's light
+absorption and scattering properties. These physical properties of the medium can alter what light is reflected back to
+our eyes causing how our eyes perceive the mixing of colors in paint. This mixing behavior in pigments can seem different
+when compared to how pure light mixes.
 
-In reality, we could create a color wheel from any of the various color spaces out there and end up with different
-results. If we were to compose a color wheel based on the common sRGB color space, we could base it off the 3 primary
-colors of light. Starting with red (0˚), we could extract the colors at evenly spaced degrees, 30˚ to be exact. This
-would give us our 12 colors for the sRGB color space.
+The work that helped create the first color wheel was done with the limited paints that were available at the time, and
+influenced by the light scattering and absorption properties of those paints. Because of this, the original color wheel
+is built on the RYB color model which uses red, yellow, and blue as the primary colors. The question though, is would
+our theories on color harmony be different today if early theorists had a better understanding of light and color?
+
+In reality, we can create a color wheel from any of the various color spaces out there and end up with different
+results based on how color is spaced and oriented within those spaces. As an example, we could create one directly from
+the sRGB color space. The sRGB space is an additive color space that was modeled on light behavior, so its primary
+colors are red, green, and blue. We can simply select the most red, green, and blue colors in its gamut, and transform
+them into a polar space such as HSL. Here, these colors are evenly spaced and if we mixed these colors evenly, and those
+colors evenly, we will get 12 colors whose hues are evenly spaced at 30˚.
 
 ```py play
 Steps([Color('hsl', [x, 1, 0.5]) for x in range(0, 360, 30)])
@@ -51,44 +55,35 @@ Steps([Color('hsl', [x, 1, 0.5]) for x in range(0, 360, 30)])
 
 From this we can construct an sRGB color wheel.
 
-```py play wheel
-Color('red').harmony('wheel', space='srgb')
+```py play
+Wheel(Color('red').harmony('wheel', space='srgb'))
 ```
 
-This is different from the RYB color wheel we showed earlier, and more accurate in relation to how light works, but does
-it yield better harmonies for colors?
+These results are different from the RYB color wheel we showed earlier, but are used to display all the colors you see
+on your screen right now. This is how light works when not scattered and absorbed by pigments, but does that mean that
+this color wheel yields better color harmonies?
 
-The sRGB color space is additive, just like light, but pigments are subtractive. We can use CMY to generate a
-subtractive wheel with a far greater range that red, green blue creates by use magenta, yellow, and cyan. But does this
-create better harmonies?
+We can transform the RGB color model into a subtractive color space, something similar to what printers use when
+applying ink to paper. Printers use something closer to an RYB model and use magenta, yellow, and cyan.
 
 ```py play
-Steps(Color('magenta').harmony('wheel', space='cmy'))
+Wheel(Color('magenta').harmony('wheel', space='cmy'))
 ```
 
-```py play wheel
-Color('magenta').harmony('wheel', space='cmy')
-```
-
-If we were to select the perceptually uniform OkLCh color space, and seed it with red's lightness and chroma, we'd get
-the wheel below.
+If we were to select the perceptually uniform OkLCh color space, and seed it with red's lightness and chroma, we'd once
+again get very different results in the color wheel. The results are more similar to when we used sRGB, but the exact
+hues may be different and lightness is kept more uniform when we construct the wheel. But does that mean this model is
+better?
 
 ```py play
-Steps(Color('red').harmony('wheel', space='oklch'))
+Wheel(Color('red').harmony('wheel', space='oklch'))
 ```
 
-```py play wheel
-Color('red').harmony('wheel', space='oklch')
-```
+The truth is that what is better or even harmonious can be largely subjective.
 
-This produces colors with visually more uniform lightness, does that mean these are better?
-
-The truth is, what is better or even harmonious can be largely subjective, and everyone has reasons for selecting
-certain color spaces for a specific task.
-
-Many artists swear by the limited, classical color wheel, others are fine with using the RGB color wheel as it is easy
-to work with in CSS via the HSL color space, and there are still others that are more interested in perceptually uniform
-color spaces that aim for more consistent hues and predictable lightness.
+Many artists swear by the limited, classical RYB color wheel, and others are fine with using the sRGB color wheel as it
+is easy to work with in CSS via the HSL color space, and models closer to how the eye works. Additionally, there may be
+some that prefer a perceptually uniform approach that aims for more consistent hues and predictable lightness.
 
 As far as ColorAide is concerned, we've chosen to use OkLCh as the color space in which we work in. This is based
 mainly on the fact that it keeps hue more consistent than some other options, and it allows us to support a wider gamut
@@ -100,7 +95,9 @@ Steps(Color.steps(['black', 'blue', 'white'], steps=11, space='hsl'))
 Steps(Color.steps(['black', 'blue', 'white'], steps=11, space='lch'))
 ```
 
-While OkLCh is the default, we understand that there are many reasons to use other spaces, so use what you like, we
+While OkLCh is the default, we make no assertions that this is better than using any other color space. If you are from
+the world of paint, you may strongly dislike this default and prefer a classical RYB approach, or maybe you just want to
+use the familiar sRGB approach. We understand that there are many reasons to use other spaces, so use what you like, we
 won't judge :smile:. If you are a color theory purist, you can use the classical RYB model.
 
 ```py play
@@ -115,13 +112,13 @@ harmonies, make sure you are working directly within RYB to ensure you are not o
 ///
 
 /// tip
-`harmony()` can output the results in any color space you need by setting `out_space`.
+Regardless of what color space `harmony()` operates in, it can output the results in any color space you need by setting
+`out_space`.
 
 ```py play
 Steps(Color('red').harmony('complement', out_space='srgb'))
 ```
 ///
-
 
 ## Supported Harmonies
 
@@ -224,17 +221,13 @@ Steps(Color('red').harmony('rectangle'))
 ### Others
 
 If you have a particular configuration that you are after that is not covered with the default harmonies, you can use
-`harmony` to calculate your own via `wheel`. The `wheel` harmony that can generate a color wheel of any size. Simply use
-a color to seed the wheel, specify the space in which to generate the wheel, and optionally, provide the desired number
-of colors in the color wheel via the `count` argument. With this, we can generate a wheel for any color (assuming the
-color space can properly handle the color). We can even generate an extended color wheel if so desired. This can allow
-you to select hues at any interval you need.
-
-```py play wheel
-Color('ryb', [1, 0, 0]).harmony('wheel', space='ryb', count=48)
-```
+`harmony` to calculate your own via `wheel`. The `wheel` harmony that can generate a wheel of evenly spaced colors of
+any size. From this, additional harmonies could be calculated. Simply use a color to seed the wheel, specify the space
+in which to generate the wheel, and optionally, provide the desired number of colors in the color wheel via the `count`
+argument. With this, we can generate a wheel of any size for any color.
 
 ```py play
+Wheel(Color('ryb', [1, 0, 0]).harmony('wheel', space='ryb', count=48))
 Steps(Color('ryb', [1, 0, 0]).harmony('wheel', space='ryb', count=48))
 ```
 
@@ -246,14 +239,14 @@ Non-cylindrical space support was added in 2.7.
 
 If you'd like to change the `#!py3 Color()` class's default harmony color space, it can be done with
 [class override](./color.md#override-default-settings). Simply derive a new `#!py3 Color()` class from the original and
-override the `HARMONY` property with the name of a suitable color space. Color spaces must be either a cylindrical
-space, a Lab-like color space, or what we will call a regular, rectangular space. By "regular" we mean a normal 3
-channel color space _usually_ with a range of [0, 1]. Afterwards, all color harmony calculations will use the specified
-color space unless overridden via the method's `space` parameter.
+override the `HARMONY` property with the name of a suitable color space. Color spaces must be a registered color space
+of either a cylindrical space, a Lab-like color space, or what we will call a regular, rectangular space. By "regular"
+we mean a normal 3 channel color space _usually_ with a range of [0, 1] (think RGB). Afterwards, all color harmony
+calculations will use the specified color space unless overridden via the method's `space` parameter.
 
 ```py play
 class Custom(Color):
-    HARMONY = 'hsl'
+    HARMONY = 'ryb'
 
 Steps(Custom('red').harmony('split'))
 ```

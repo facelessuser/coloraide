@@ -22,9 +22,10 @@ Name | Range
 ////
 
 
-```py play wheel
-Color('ryb', [1, 0, 0]).harmony('wheel', space='ryb')
+```py play
+Wheel(Color('ryb', [1, 0, 0]).harmony('wheel', space='ryb'))
 ```
+
 //// figure-caption
 The RYB color wheel.
 ////
