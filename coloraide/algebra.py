@@ -552,7 +552,7 @@ def ilerp2d(
             # Solve for new guess
             xy = subtract(xy, solve(j, residual), dims=D1)
     except ValueError:  # pragma: no cover
-        # The Jacobian matrix shouldn't fail inversion if we are out of range.
+        # The Jacobian matrix shouldn't fail inversion if we are in range.
         # Out of range may give us values we cannot invert. There are potential
         # ways to handle this to try and get moving again, but currently, we
         # just give up. We do not guarantee out of gamut conversions.
