@@ -653,7 +653,7 @@ def ilerp3d(
             # Build up the Jacobian matrix so we can solve for the next, closer guess
             x, y, z = xyz
             _x = [
-                 -(1 - y) * (1 - z),
+                -(1 - y) * (1 - z),
                 (1 - y) * (1 - z),
                 -y * (1 - z),
                 y * (1 - z),

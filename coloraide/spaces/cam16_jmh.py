@@ -294,7 +294,7 @@ def xyz_d65_to_cam16(xyzd65: Vector, env: Environment, calc_hue_quadrature: bool
     # Eccentricity
     et = 0.25 * (math.cos(h_rad + 2) + 3.8)
 
-    t = 5e4 / 13 * env.nc * env.ncb * alg.zdiv(et * math.hypot(a, b), u + 0.305)
+    t = 5e4 / 13 * env.nc * env.ncb * alg.zdiv(et * math.sqrt(a ** 2 + b ** 2), u + 0.305)
     alpha = alg.spow(t, 0.9) * math.pow(1.64 - math.pow(0.29, env.n), 0.73)
 
     # Achromatic response
