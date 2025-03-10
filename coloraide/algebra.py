@@ -3187,9 +3187,19 @@ def transpose(array: ArrayLike | float) -> float | Array:
     """
 
     s = shape(array)[::-1]  # type: Shape
-    if not s:
-        return array  # type: ignore[return-value]
+    l = len(s)
 
+    # Number
+    if l == 0:
+        return array  # type: ignore[return-value]
+    # Vector
+    if l == 1:
+        return list(array)  # type: ignore[return-value, arg-type]
+    # 2 x 2 matrix
+    if l == 2:
+        return list(list(z) for z in zip(*array))  # type: ignore[misc]
+
+    # N x M matrix
     if s and s[0] == 0:
         s = s[1:] + (0,)
         total = prod(s[:-1])
@@ -3201,7 +3211,7 @@ def transpose(array: ArrayLike | float) -> float | Array:
 
     # Calculate data sizes
     dims = len(s)
-    length = s[-1]
+    length = s[-1]  # type: ignore[misc]
 
     # Initialize indexes so we can properly write our data
     idx = [0] * dims
