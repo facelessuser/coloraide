@@ -547,13 +547,13 @@ def ilerp2d(
             jy = [sum(i) for i in zip(*[[yi * c for c in ci] for ci, yi in zip(vertices_t, _y)])]
 
             # Create the Jacobian matrix, but we need it in column form
-            j = transpose([jx, jy])
+            j = list(zip(jx, jy))
 
             # Solve for new guess
             xy = subtract(xy, solve(j, residual), dims=D1)
     except ValueError:  # pragma: no cover
-        # The Jacobian matrix shouldn't fail inversion if we are in gamut.
-        # Out of gamut may give us one we cannot invert. There are potential
+        # The Jacobian matrix shouldn't fail inversion if we are out of range.
+        # Out of range may give us values we cannot invert. There are potential
         # ways to handle this to try and get moving again, but currently, we
         # just give up. We do not guarantee out of gamut conversions.
         pass
@@ -689,13 +689,13 @@ def ilerp3d(
             jz = [sum(i) for i in zip(*[[zi * c for c in ci] for ci, zi in zip(vertices_t, _z)])]
 
             # Create the Jacobian matrix, but we need it in column form
-            j = transpose([jx, jy, jz])
+            j = list(zip(jx, jy, jz))
 
             # Solve for new guess
             xyz = subtract(xyz, solve(j, residual), dims=D1)
     except ValueError:  # pragma: no cover
-        # The Jacobian matrix shouldn't fail inversion if we are in gamut.
-        # Out of gamut may give us one we cannot invert. There are potential
+        # The Jacobian matrix shouldn't fail inversion if we are in range.
+        # Out of range may give us values we cannot invert. There are potential
         # ways to handle this to try and get moving again, but currently, we
         # just give up. We do not guarantee out of gamut conversions.
         pass
