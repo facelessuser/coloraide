@@ -3197,7 +3197,7 @@ def transpose(array: ArrayLike | float) -> float | Array:
         return list(array)  # type: ignore[return-value, arg-type]
     # 2 x 2 matrix
     if l == 2:
-        return list(list(z) for z in zip(*array))  # type: ignore[misc]
+        return [list(z) for z in zip(*array)]  # type: ignore[misc]
 
     # N x M matrix
     if s and s[0] == 0:
