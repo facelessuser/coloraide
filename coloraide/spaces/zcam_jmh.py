@@ -24,7 +24,11 @@ from .. import cat
 
 DEF_ILLUMINANT_BI = util.xyz_to_absxyz(util.xy_to_xyz(cat.WHITES['2deg']['E']), yw=100.0)
 CAT02 = cat.CAT02.MATRIX
-CAT02_INV = alg.inv(CAT02)
+CAT02_INV = [
+    [1.0961238208355142, -0.27886900021828726, 0.18274517938277304],
+    [0.45436904197535916, 0.4735331543074118, 0.07209780371722913],
+    [-0.009627608738429355, -0.00569803121611342, 1.0153256399545427]
+]
 
 # ZCAM uses a slightly different matrix than Jzazbz
 # It updates how `Iz` is calculated.
