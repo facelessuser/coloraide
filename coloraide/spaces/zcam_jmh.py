@@ -19,7 +19,7 @@ from ..cat import WHITES
 from ..channels import Channel, FLG_ANGLE
 from ..types import Vector, VectorLike
 from .lch import LCh, ACHROMATIC_THRESHOLD
-from .jzazbz import izazbz_to_xyz_d65, xyz_d65_to_izazbz
+from .jzazbz import izazbz_to_xyz, xyz_to_izazbz
 from .. import cat
 
 DEF_ILLUMINANT_BI = util.xyz_to_absxyz(util.xy_to_xyz(cat.WHITES['2deg']['E']), yw=100.0)
@@ -203,7 +203,7 @@ class Environment:
         self.b = 1.15
         self.g = 0.66
 
-        self.izw = xyz_d65_to_izazbz(xyz_w, LMS_P_TO_IZAZBZ, self.rho)[0] - self.epsilon
+        self.izw = xyz_to_izazbz(xyz_w, LMS_P_TO_IZAZBZ, self.rho)[0] - self.epsilon
         self.qzw = (
             2700 * alg.spow(self.izw, (1.6 * self.fs) / (self.fb ** 0.12)) *
             ((self.fs ** 2.2) * (self.fb ** 0.5) * (self.fl ** 0.2))
@@ -213,7 +213,7 @@ class Environment:
         self.d = alg.clamp(f * (1 - 1 / 3.6 * math.exp((-self.la - 42) / 92)), 0, 1) if not self.discounting else 1
 
 
-def zcam_to_xyz_d65(
+def zcam_to_xyz(
     Jz: float | None = None,
     Cz: float | None = None,
     hz: float | None = None,
@@ -301,17 +301,17 @@ def zcam_to_xyz_d65(
     # Convert back to XYZ
     az, bz = cos_h * Czp, sin_h * Czp
     iz += env.epsilon
-    xyz_abs = izazbz_to_xyz_d65([iz, az, bz], IZAZBZ_TO_LMS_P, env.rho)
+    xyz_abs = izazbz_to_xyz([iz, az, bz], IZAZBZ_TO_LMS_P, env.rho)
 
     return util.absxyz_to_xyz(adapt(xyz_abs, env.output_white, env.ref_white, env.d, env.d))
 
 
-def xyz_d65_to_zcam(xyzd65: Vector, env: Environment, calc_hue_quadrature: bool = False) -> Vector:
+def xyz_to_zcam(xyz: Vector, env: Environment, calc_hue_quadrature: bool = False) -> Vector:
     """From XYZ to ZCAM."""
 
     # Steps 4 - 7
-    iz, az, bz = xyz_d65_to_izazbz(
-        adapt(util.xyz_to_absxyz(xyzd65), env.ref_white, env.output_white, env.d, env.d),
+    iz, az, bz = xyz_to_izazbz(
+        adapt(util.xyz_to_absxyz(xyz), env.ref_white, env.output_white, env.d, env.d),
         LMS_P_TO_IZAZBZ,
         env.rho
     )
@@ -364,19 +364,19 @@ def xyz_d65_to_zcam(xyzd65: Vector, env: Environment, calc_hue_quadrature: bool 
     return [Jz, Cz, hz, Qz, Mz, Sz, Vz, Kz, Wz, Hz]
 
 
-def xyz_d65_to_zcam_jmh(xyzd65: Vector, env: Environment) -> Vector:
+def xyz_to_zcam_jmh(xyz: Vector, env: Environment) -> Vector:
     """XYZ to ZCAM JMh."""
 
-    zcam = xyz_d65_to_zcam(xyzd65, env)
+    zcam = xyz_to_zcam(xyz, env)
     Jz, Mz, hz = zcam[0], zcam[4], zcam[2]
     return [Jz, Mz, hz]
 
 
-def zcam_jmh_to_xyz_d65(jmh: Vector, env: Environment) -> Vector:
+def zcam_jmh_to_xyz(jmh: Vector, env: Environment) -> Vector:
     """ZCAM JMh to XYZ."""
 
     Jz, Mz, hz = jmh
-    return zcam_to_xyz_d65(Jz=Jz, Mz=Mz, hz=hz, env=env)
+    return zcam_to_xyz(Jz=Jz, Mz=Mz, hz=hz, env=env)
 
 
 class ZCAMJMh(LCh, Space):
@@ -445,9 +445,9 @@ class ZCAMJMh(LCh, Space):
     def to_base(self, coords: Vector) -> Vector:
         """From ZCAM JMh to XYZ."""
 
-        return zcam_jmh_to_xyz_d65(coords, self.ENV)
+        return zcam_jmh_to_xyz(coords, self.ENV)
 
     def from_base(self, coords: Vector) -> Vector:
         """From XYZ to ZCAM JMh."""
 
-        return xyz_d65_to_zcam_jmh(coords, self.ENV)
+        return xyz_to_zcam_jmh(coords, self.ENV)

@@ -16,7 +16,7 @@ t = []
 
 for r in range(200000):
     xyz = Color('srgb', [r / 100000] * 3).convert('xyz-d65')
-    j.append(cam16_jmh.xyz_d65_to_cam16(xyz.coords(), env)[0])
+    j.append(cam16_jmh.xyz_to_cam(xyz.coords(), env)[0])
     t.append(hct.y_to_lstar(xyz[1]))
 
 print('==== Positive Lightness ====')
@@ -27,7 +27,7 @@ t = []
 
 for r in range(200000):
     xyz = Color('srgb', [-r / 100000] * 3).convert('xyz-d65')
-    j.append(cam16_jmh.xyz_d65_to_cam16(xyz.coords(), env)[0])
+    j.append(cam16_jmh.xyz_to_cam(xyz.coords(), env)[0])
     t.append(hct.y_to_lstar(xyz[1]))
 
 print('==== Negative Lightness ====')

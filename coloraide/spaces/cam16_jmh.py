@@ -20,7 +20,11 @@ from ..types import Vector, VectorLike
 
 # CAT16
 M16 = CAT16.MATRIX
-MI6_INV = alg.inv(M16)
+MI6_INV = [
+    [1.8620678550872327, -1.0112546305316843, 0.14918677544445175],
+    [0.38752654323613717, 0.6214474419314753, -0.008973985167612518],
+    [-0.015841498849333856, -0.03412293802851557, 1.0499644368778496]
+]
 
 M1 = [
     [460.0, 451.0, 288.0],
@@ -63,6 +67,12 @@ def hue_quadrature(h: float) -> float:
 
     t = (hp - hi) / ei
     return Hi + (100 * t) / (t + (hii - hp) / eii)
+
+
+def eccentricity(h: float) -> float:
+    """Calculate eccentricity."""
+
+    return 0.25 * (math.cos(h + 2) + 3.8)
 
 
 def inv_hue_quadrature(H: float) -> float:
@@ -187,7 +197,7 @@ class Environment:
         self.a_w = self.nbb * (2 * rgb_aw[0] + rgb_aw[1] + 0.05 * rgb_aw[2])
 
 
-def cam16_to_xyz_d65(
+def cam_to_xyz(
     J: float | None = None,
     C: float | None = None,
     h: float | None = None,
@@ -253,7 +263,7 @@ def cam16_to_xyz_d65(
     t = alg.spow(alpha * math.pow(1.64 - math.pow(0.29, env.n), -0.73), 10 / 9)
 
     # Eccentricity
-    et = 0.25 * (math.cos(h_rad + 2) + 3.8)
+    et = eccentricity(h_rad)
 
     # Achromatic response
     A = env.a_w * alg.spow(J_root, 2 / env.c / env.z)
@@ -270,13 +280,13 @@ def cam16_to_xyz_d65(
     return util.scale1(alg.matmul_x3(MI6_INV, alg.multiply_x3(rgb_c, env.d_rgb_inv, dims=alg.D1), dims=alg.D2_D1))
 
 
-def xyz_d65_to_cam16(xyzd65: Vector, env: Environment, calc_hue_quadrature: bool = False) -> Vector:
+def xyz_to_cam(xyz: Vector, env: Environment, calc_hue_quadrature: bool = False) -> Vector:
     """From XYZ to CAM16."""
 
     # Cone response
     rgb_a = adapt(
         alg.multiply_x3(
-            alg.matmul_x3(M16, util.scale100(xyzd65), dims=alg.D2_D1),
+            alg.matmul_x3(M16, util.scale100(xyz), dims=alg.D2_D1),
             env.d_rgb,
             dims=alg.D1
         ),
@@ -292,8 +302,9 @@ def xyz_d65_to_cam16(xyzd65: Vector, env: Environment, calc_hue_quadrature: bool
     h_rad = math.atan2(b, a) % math.tau
 
     # Eccentricity
-    et = 0.25 * (math.cos(h_rad + 2) + 3.8)
+    et = eccentricity(h_rad)
 
+    # Calculate `t` so we can calculate `alpha`
     p1 = 5e4 / 13 * env.nc * env.ncb * et
     t = alg.zdiv(p1 * math.sqrt(a ** 2 + b ** 2), u + 0.305)
     alpha = alg.spow(t, 0.9) * math.pow(1.64 - math.pow(0.29, env.n), 0.73)
@@ -326,19 +337,19 @@ def xyz_d65_to_cam16(xyzd65: Vector, env: Environment, calc_hue_quadrature: bool
     return [J, C, h, s, Q, M, H]
 
 
-def xyz_d65_to_cam16_jmh(xyzd65: Vector, env: Environment) -> Vector:
+def xyz_to_cam_jmh(xyz: Vector, env: Environment) -> Vector:
     """XYZ to CAM16 JMh."""
 
-    cam16 = xyz_d65_to_cam16(xyzd65, env)
+    cam16 = xyz_to_cam(xyz, env)
     J, M, h = cam16[0], cam16[5], cam16[2]
     return [J, M, h]
 
 
-def cam16_jmh_to_xyz_d65(jmh: Vector, env: Environment) -> Vector:
+def cam_jmh_to_xyz(jmh: Vector, env: Environment) -> Vector:
     """CAM16 JMh to XYZ."""
 
     J, M, h = jmh
-    return cam16_to_xyz_d65(J=J, M=M, h=h, env=env)
+    return cam_to_xyz(J=J, M=M, h=h, env=env)
 
 
 class CAM16JMh(LChish, Space):
@@ -390,9 +401,9 @@ class CAM16JMh(LChish, Space):
     def to_base(self, coords: Vector) -> Vector:
         """From CAM16 JMh to XYZ."""
 
-        return cam16_jmh_to_xyz_d65(coords, self.ENV)
+        return cam_jmh_to_xyz(coords, self.ENV)
 
     def from_base(self, coords: Vector) -> Vector:
         """From XYZ to CAM16 JMh."""
 
-        return xyz_d65_to_cam16_jmh(coords, self.ENV)
+        return xyz_to_cam_jmh(coords, self.ENV)

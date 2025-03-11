@@ -41,7 +41,7 @@ from .. import algebra as alg
 from ..spaces import Space, LChish
 from ..cat import WHITES
 from ..channels import Channel, FLG_ANGLE
-from .cam16_jmh import Environment, cam16_to_xyz_d65, xyz_d65_to_cam16
+from .cam16_jmh import Environment, cam_to_xyz, xyz_to_cam
 from .lab import EPSILON, KAPPA, KE
 from .lch import ACHROMATIC_THRESHOLD
 from ..types import Vector
@@ -101,7 +101,7 @@ def hct_to_xyz(coords: Vector, env: Environment) -> Vector:
     # Try to find a J such that the returned y matches the returned y of the L*
     for _ in range(maxiter):
         prev = j
-        xyz[:] = cam16_to_xyz_d65(J=j, C=c, h=h, env=env)
+        xyz[:] = cam_to_xyz(J=j, C=c, h=h, env=env)
 
         # If we are within range, return XYZ
         # If we are closer than last time, save the values
@@ -136,7 +136,7 @@ def hct_to_xyz(coords: Vector, env: Environment) -> Vector:
 
 
     # We could not acquire the precision we desired, return our closest attempt.
-    xyz[:] = cam16_to_xyz_d65(J=best, C=c, h=h, env=env)
+    xyz[:] = cam_to_xyz(J=best, C=c, h=h, env=env)
 
     # ```
     # if not converged:
@@ -152,7 +152,7 @@ def xyz_to_hct(coords: Vector, env: Environment) -> Vector:
     t = y_to_lstar(coords[1])
     if t == 0.0:
         return [0.0, 0.0, 0.0]
-    c, h = xyz_d65_to_cam16(coords, env)[1:3]
+    c, h = xyz_to_cam(coords, env)[1:3]
     return [h, c, t]
 
 

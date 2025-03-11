@@ -7,13 +7,14 @@ https://doi.org/10.1002/col.22131
 """
 from __future__ import annotations
 import math
-from .cam16_jmh import CAM16JMh, xyz_d65_to_cam16, cam16_to_xyz_d65, Environment
+from .cam16_jmh import CAM16JMh, xyz_to_cam, cam_to_xyz, Environment
 from ..spaces import Space, Labish
 from .lch import ACHROMATIC_THRESHOLD
 from ..cat import WHITES
 from .. import util
 from ..channels import Channel, FLG_MIRROR_PERCENT
 from ..types import Vector
+from typing import Callable
 
 COEFFICENTS = {
     'lcd': (0.77, 0.007, 0.0053),
@@ -22,7 +23,13 @@ COEFFICENTS = {
 }
 
 
-def cam16_jmh_to_cam16_ucs(jmh: Vector, model: str, env: Environment) -> Vector:
+def cam_jmh_to_cam_ucs(
+    jmh: Vector,
+    model: str,
+    env: Environment,
+    tx_to: Callable[..., Vector],
+    tx_from: Callable[..., Vector]
+) -> Vector:
     """
     CAM16 (Jab) to CAM16 UCS (Jab).
 
@@ -37,7 +44,7 @@ def cam16_jmh_to_cam16_ucs(jmh: Vector, model: str, env: Environment) -> Vector:
 
     # Account for negative colorfulness by reconverting
     if M < 0:
-        cam16 = xyz_d65_to_cam16(cam16_to_xyz_d65(J=J, M=M, h=h, env=env), env=env)
+        cam16 = tx_to(tx_from(J=J, M=M, h=h, env=env), env=env)
         J, M, h = cam16[0], cam16[5], cam16[2]
 
     c1, c2 = COEFFICENTS[model][1:]
@@ -57,7 +64,7 @@ def cam16_jmh_to_cam16_ucs(jmh: Vector, model: str, env: Environment) -> Vector:
     ]
 
 
-def cam16_ucs_to_cam16_jmh(ucs: Vector, model: str) -> Vector:
+def cam_ucs_to_cam_jmh(ucs: Vector, model: str) -> Vector:
     """
     CAM16 UCS (Jab) to CAM16 (Jab).
 
@@ -106,18 +113,18 @@ class CAM16UCS(Labish, Space):
     def is_achromatic(self, coords: Vector) -> bool:
         """Check if color is achromatic."""
 
-        j, m = cam16_ucs_to_cam16_jmh(coords, self.MODEL)[:-1]
+        j, m = cam_ucs_to_cam_jmh(coords, self.MODEL)[:-1]
         return j == 0 or abs(m) < ACHROMATIC_THRESHOLD
 
     def to_base(self, coords: Vector) -> Vector:
         """To CAM16 JMh from CAM16."""
 
-        return cam16_ucs_to_cam16_jmh(coords, self.MODEL)
+        return cam_ucs_to_cam_jmh(coords, self.MODEL)
 
     def from_base(self, coords: Vector) -> Vector:
         """From CAM16 JMh to CAM16."""
 
-        return cam16_jmh_to_cam16_ucs(coords, self.MODEL, self.ENV)
+        return cam_jmh_to_cam_ucs(coords, self.MODEL, self.ENV, xyz_to_cam, cam_to_xyz)
 
 
 class CAM16LCD(CAM16UCS):

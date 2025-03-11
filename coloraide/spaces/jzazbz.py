@@ -66,7 +66,7 @@ IZAZBZ_TO_LMS_P = [
 ]
 
 
-def xyz_d65_to_izazbz(xyz: Vector, lms_matrix: Matrix, m2: float) -> Vector:
+def xyz_to_izazbz(xyz: Vector, lms_matrix: Matrix, m2: float) -> Vector:
     """Absolute XYZ to Izazbz."""
 
     xa, ya, za = xyz
@@ -83,7 +83,7 @@ def xyz_d65_to_izazbz(xyz: Vector, lms_matrix: Matrix, m2: float) -> Vector:
     return alg.matmul_x3(lms_matrix, pqlms, dims=alg.D2_D1)
 
 
-def izazbz_to_xyz_d65(izazbz: Vector, lms_matrix: Matrix, m2: float) -> Vector:
+def izazbz_to_xyz(izazbz: Vector, lms_matrix: Matrix, m2: float) -> Vector:
     """Izazbz to absolute XYZ."""
 
     # Convert to LMS prime
@@ -100,7 +100,7 @@ def izazbz_to_xyz_d65(izazbz: Vector, lms_matrix: Matrix, m2: float) -> Vector:
     return [xa, ya, za]
 
 
-def jzazbz_to_xyz_d65(jzazbz: Vector) -> Vector:
+def jzazbz_to_xyz(jzazbz: Vector) -> Vector:
     """From Jzazbz to XYZ."""
 
     jz, az, bz = jzazbz
@@ -109,13 +109,13 @@ def jzazbz_to_xyz_d65(jzazbz: Vector) -> Vector:
     iz = alg.zdiv((jz + D0), (1 + D - D * (jz + D0)))
 
     # Convert back to normal XYZ D65
-    return util.absxyz_to_xyz(izazbz_to_xyz_d65([iz, az, bz], IZAZBZ_TO_LMS_P, M2), YW)
+    return util.absxyz_to_xyz(izazbz_to_xyz([iz, az, bz], IZAZBZ_TO_LMS_P, M2), YW)
 
 
-def xyz_d65_to_jzazbz(xyzd65: Vector) -> Vector:
+def xyz_to_jzazbz(xyz: Vector) -> Vector:
     """From XYZ to Jzazbz."""
 
-    iz, az, bz = xyz_d65_to_izazbz(util.xyz_to_absxyz(xyzd65, YW), LMS_P_TO_IZAZBZ,  M2)
+    iz, az, bz = xyz_to_izazbz(util.xyz_to_absxyz(xyz, YW), LMS_P_TO_IZAZBZ,  M2)
 
     # Calculate Jz
     jz = ((1 + D) * iz) / (1 + (D * iz)) - D0
@@ -145,9 +145,9 @@ class Jzazbz(Lab, Space):
     def to_base(self, coords: Vector) -> Vector:
         """To XYZ from Jzazbz."""
 
-        return jzazbz_to_xyz_d65(coords)
+        return jzazbz_to_xyz(coords)
 
     def from_base(self, coords: Vector) -> Vector:
         """From XYZ to Jzazbz."""
 
-        return xyz_d65_to_jzazbz(coords)
+        return xyz_to_jzazbz(coords)

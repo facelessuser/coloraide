@@ -2,7 +2,7 @@
 import unittest
 from . import util
 from coloraide.everything import ColorAll as Color, NaN
-from coloraide.spaces.zcam_jmh import zcam_to_xyz_d65, xyz_d65_to_zcam, ZCAMJMh
+from coloraide.spaces.zcam_jmh import zcam_to_xyz, xyz_to_zcam, ZCAMJMh
 from collections import namedtuple
 import pytest
 
@@ -146,32 +146,32 @@ class TestZCAMApperanceModel(util.ColorAsserts, unittest.TestCase):
         """Test conversion failure when no equivalent lightness."""
 
         with self.assertRaises(ValueError):
-            zcam_to_xyz_d65(Cz=self.COORDS.Cz, hz=self.COORDS.hz, env=ZCAMJMh.ENV)
+            zcam_to_xyz(Cz=self.COORDS.Cz, hz=self.COORDS.hz, env=ZCAMJMh.ENV)
 
     def test_no_chroma(self):
         """Test conversion failure when no equivalent chroma."""
 
         with self.assertRaises(ValueError):
-            zcam_to_xyz_d65(Jz=self.COORDS.Jz, hz=self.COORDS.hz, env=ZCAMJMh.ENV)
+            zcam_to_xyz(Jz=self.COORDS.Jz, hz=self.COORDS.hz, env=ZCAMJMh.ENV)
 
     def test_no_hue(self):
         """Test conversion failure when no equivalent hue."""
 
         with self.assertRaises(ValueError):
-            zcam_to_xyz_d65(Jz=self.COORDS.Jz, Cz=self.COORDS.Cz, env=ZCAMJMh.ENV)
+            zcam_to_xyz(Jz=self.COORDS.Jz, Cz=self.COORDS.Cz, env=ZCAMJMh.ENV)
 
     def test_no_environment(self):
         """Test no test no environment."""
 
         with self.assertRaises(ValueError):
-            zcam_to_xyz_d65(Jz=self.COORDS.Jz, Cz=self.COORDS.Cz, hz=self.COORDS.hz)
+            zcam_to_xyz(Jz=self.COORDS.Jz, Cz=self.COORDS.Cz, hz=self.COORDS.hz)
 
     def test_lightness_convert(self):
         """Test convert lightness."""
 
         for a, b in zip(
-            zcam_to_xyz_d65(Jz=self.COORDS.Jz, Cz=self.COORDS.Cz, hz=self.COORDS.hz, env=ZCAMJMh.ENV),
-            zcam_to_xyz_d65(Qz=self.COORDS.Qz, Cz=self.COORDS.Cz, hz=self.COORDS.hz, env=ZCAMJMh.ENV)
+            zcam_to_xyz(Jz=self.COORDS.Jz, Cz=self.COORDS.Cz, hz=self.COORDS.hz, env=ZCAMJMh.ENV),
+            zcam_to_xyz(Qz=self.COORDS.Qz, Cz=self.COORDS.Cz, hz=self.COORDS.hz, env=ZCAMJMh.ENV)
         ):
             self.assertCompare(a, b, 14)
 
@@ -179,32 +179,32 @@ class TestZCAMApperanceModel(util.ColorAsserts, unittest.TestCase):
         """Test convert chroma."""
 
         for a, b in zip(
-            zcam_to_xyz_d65(Jz=self.COORDS.Jz, Cz=self.COORDS.Cz, hz=self.COORDS.hz, env=ZCAMJMh.ENV),
-            zcam_to_xyz_d65(Qz=self.COORDS.Qz, Sz=self.COORDS.Sz, hz=self.COORDS.hz, env=ZCAMJMh.ENV)
+            zcam_to_xyz(Jz=self.COORDS.Jz, Cz=self.COORDS.Cz, hz=self.COORDS.hz, env=ZCAMJMh.ENV),
+            zcam_to_xyz(Qz=self.COORDS.Qz, Sz=self.COORDS.Sz, hz=self.COORDS.hz, env=ZCAMJMh.ENV)
         ):
             self.assertCompare(a, b, 14)
 
         for a, b in zip(
-            zcam_to_xyz_d65(Jz=self.COORDS.Jz, Cz=self.COORDS.Cz, hz=self.COORDS.hz, env=ZCAMJMh.ENV),
-            zcam_to_xyz_d65(Qz=self.COORDS.Qz, Mz=self.COORDS.Mz, hz=self.COORDS.hz, env=ZCAMJMh.ENV)
+            zcam_to_xyz(Jz=self.COORDS.Jz, Cz=self.COORDS.Cz, hz=self.COORDS.hz, env=ZCAMJMh.ENV),
+            zcam_to_xyz(Qz=self.COORDS.Qz, Mz=self.COORDS.Mz, hz=self.COORDS.hz, env=ZCAMJMh.ENV)
         ):
             self.assertCompare(a, b, 14)
 
         for a, b in zip(
-            zcam_to_xyz_d65(Jz=self.COORDS.Jz, Cz=self.COORDS.Cz, hz=self.COORDS.hz, env=ZCAMJMh.ENV),
-            zcam_to_xyz_d65(Qz=self.COORDS.Qz, Vz=self.COORDS.Vz, hz=self.COORDS.hz, env=ZCAMJMh.ENV)
+            zcam_to_xyz(Jz=self.COORDS.Jz, Cz=self.COORDS.Cz, hz=self.COORDS.hz, env=ZCAMJMh.ENV),
+            zcam_to_xyz(Qz=self.COORDS.Qz, Vz=self.COORDS.Vz, hz=self.COORDS.hz, env=ZCAMJMh.ENV)
         ):
             self.assertCompare(a, b, 14)
 
         for a, b in zip(
-            zcam_to_xyz_d65(Jz=self.COORDS.Jz, Cz=self.COORDS.Cz, hz=self.COORDS.hz, env=ZCAMJMh.ENV),
-            zcam_to_xyz_d65(Qz=self.COORDS.Qz, Kz=self.COORDS.Kz, hz=self.COORDS.hz, env=ZCAMJMh.ENV)
+            zcam_to_xyz(Jz=self.COORDS.Jz, Cz=self.COORDS.Cz, hz=self.COORDS.hz, env=ZCAMJMh.ENV),
+            zcam_to_xyz(Qz=self.COORDS.Qz, Kz=self.COORDS.Kz, hz=self.COORDS.hz, env=ZCAMJMh.ENV)
         ):
             self.assertCompare(a, b, 14)
 
         for a, b in zip(
-            zcam_to_xyz_d65(Jz=self.COORDS.Jz, Cz=self.COORDS.Cz, hz=self.COORDS.hz, env=ZCAMJMh.ENV),
-            zcam_to_xyz_d65(Qz=self.COORDS.Qz, Wz=self.COORDS.Wz, hz=self.COORDS.hz, env=ZCAMJMh.ENV)
+            zcam_to_xyz(Jz=self.COORDS.Jz, Cz=self.COORDS.Cz, hz=self.COORDS.hz, env=ZCAMJMh.ENV),
+            zcam_to_xyz(Qz=self.COORDS.Qz, Wz=self.COORDS.Wz, hz=self.COORDS.hz, env=ZCAMJMh.ENV)
         ):
             self.assertCompare(a, b, 14)
 
@@ -212,24 +212,24 @@ class TestZCAMApperanceModel(util.ColorAsserts, unittest.TestCase):
         """Test convert hue."""
 
         for a, b in zip(
-            zcam_to_xyz_d65(Jz=self.COORDS.Jz, Cz=self.COORDS.Cz, hz=self.COORDS.hz, env=ZCAMJMh.ENV),
-            zcam_to_xyz_d65(Jz=self.COORDS.Jz, Cz=self.COORDS.Cz, Hz=self.COORDS.Hz, env=ZCAMJMh.ENV)
+            zcam_to_xyz(Jz=self.COORDS.Jz, Cz=self.COORDS.Cz, hz=self.COORDS.hz, env=ZCAMJMh.ENV),
+            zcam_to_xyz(Jz=self.COORDS.Jz, Cz=self.COORDS.Cz, Hz=self.COORDS.Hz, env=ZCAMJMh.ENV)
         ):
             self.assertCompare(a, b, 14)
 
     def test_hue_quadrature(self):
         """Test conversion to and from test_hue_quadrature."""
 
-        xyz = zcam_to_xyz_d65(Jz=self.COORDS.Jz, Cz=self.COORDS.Cz, Hz=self.COORDS.Hz, env=ZCAMJMh.ENV)
-        coords = xyz_d65_to_zcam(xyz, ZCAMJMh.ENV, True)
+        xyz = zcam_to_xyz(Jz=self.COORDS.Jz, Cz=self.COORDS.Cz, Hz=self.COORDS.Hz, env=ZCAMJMh.ENV)
+        coords = xyz_to_zcam(xyz, ZCAMJMh.ENV, True)
         self.assertCompare(self.COORDS.Hz, coords[-1], 12)
 
     def test_hue_quadrature_low_end(self):
         """Exercise when the hue quadrature is on the low end."""
 
         xyz = Color('pink').convert('xyz-d65')
-        coords = ZCAMCoords(*xyz_d65_to_zcam(xyz.coords(), ZCAMJMh.ENV, True))
+        coords = ZCAMCoords(*xyz_to_zcam(xyz.coords(), ZCAMJMh.ENV, True))
         self.assertCompare(387.07995, coords[-1])
-        xyz2 = zcam_to_xyz_d65(Jz=coords.Jz, Mz=coords.Mz, Hz=coords.Hz, env=ZCAMJMh.ENV)
+        xyz2 = zcam_to_xyz(Jz=coords.Jz, Mz=coords.Mz, Hz=coords.Hz, env=ZCAMJMh.ENV)
         for a, b in zip(xyz, xyz2):
             self.assertCompare(a, b, 12)
