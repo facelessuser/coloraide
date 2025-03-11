@@ -283,7 +283,7 @@ def xyz_d65_to_cam16(xyzd65: Vector, env: Environment, calc_hue_quadrature: bool
         env.fl
     )
 
-    p1 = 2 * rgb_a[0] + rgb_a[1] + 0.05 * rgb_a[2]
+    p2 = 2 * rgb_a[0] + rgb_a[1] + 0.05 * rgb_a[2]
     a = rgb_a[0] + (-12 * rgb_a[1] + rgb_a[2]) / 11
     b = (rgb_a[0] + rgb_a[1] - 2 * rgb_a[2]) / 9
     u = rgb_a[0] + rgb_a[1] + 1.05 * rgb_a[2]
@@ -294,16 +294,16 @@ def xyz_d65_to_cam16(xyzd65: Vector, env: Environment, calc_hue_quadrature: bool
     # Eccentricity
     et = 0.25 * (math.cos(h_rad + 2) + 3.8)
 
-    t = 5e4 / 13 * env.nc * env.ncb * alg.zdiv(et * math.sqrt(a ** 2 + b ** 2), u + 0.305)
+    p1 = 5e4 / 13 * env.nc * env.ncb * et
+    t = alg.zdiv(p1 * math.sqrt(a ** 2 + b ** 2), u + 0.305)
     alpha = alg.spow(t, 0.9) * math.pow(1.64 - math.pow(0.29, env.n), 0.73)
 
     # Achromatic response
-    A = env.nbb * p1
-
-    J_root = alg.spow(A / env.a_w, 0.5 * env.c * env.z)
+    A = env.nbb * p2
 
     # Lightness
-    J = 100 * alg.spow(J_root, 2)
+    J = 100 * alg.spow(A / env.a_w, env.c * env.z)
+    J_root = alg.nth_root(J / 100, 2)
 
     # Brightness
     Q = (4 / env.c * J_root * (env.a_w + 4) * env.fl_root)
