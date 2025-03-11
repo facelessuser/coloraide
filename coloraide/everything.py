@@ -26,8 +26,11 @@ from .spaces.aces2065_1 import ACES20651
 from .spaces.acescg import ACEScg
 from .spaces.acescc import ACEScc
 from .spaces.acescct import ACEScct
+from .spaces.cam02_jmh import CAM02JMh
+from .spaces.cam02_ucs import CAM02UCS, CAM02LCD, CAM02SCD
 from .spaces.cam16_jmh import CAM16JMh
 from .spaces.cam16_ucs import CAM16UCS, CAM16LCD, CAM16SCD
+from .spaces.hellwig_jmh import HellwigJMh, HellwigHKJMh
 from .spaces.zcam_jmh import ZCAMJMh
 from .spaces.hct import HCT
 from .spaces.ucs import UCS
@@ -36,6 +39,7 @@ from .spaces.ryb import RYB, RYBBiased
 from .spaces.cubehelix import Cubehelix
 from .distance.delta_e_99o import DE99o
 from .distance.delta_e_cam16 import DECAM16
+from .distance.delta_e_cam02 import DECAM02
 from .distance.delta_e_hct import DEHCT
 from .gamut.fit_hct_chroma import HCTChroma
 from .interpolate.catmull_rom import CatmullRom
@@ -81,10 +85,16 @@ ColorAll.register(
         ACEScg(),
         ACEScc(),
         ACEScct(),
+        CAM02JMh(),
+        CAM02UCS(),
+        CAM02LCD(),
+        CAM02SCD(),
         CAM16JMh(),
         CAM16UCS(),
         CAM16SCD(),
         CAM16LCD(),
+        HellwigJMh(),
+        HellwigHKJMh(),
         HCT(),
         UCS(),
         RYB(),
@@ -95,6 +105,7 @@ ColorAll.register(
         # Delta E
         DE99o(),
         DECAM16(),
+        DECAM02(),
         DEHCT(),
 
         # Gamut Mapping

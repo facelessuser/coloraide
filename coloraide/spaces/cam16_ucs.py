@@ -1,5 +1,5 @@
 """
-CAM 16 UCS.
+CAM16 UCS.
 
 https://observablehq.com/@jrus/cam16
 https://arxiv.org/abs/1802.06067
@@ -7,13 +7,12 @@ https://doi.org/10.1002/col.22131
 """
 from __future__ import annotations
 import math
-from .cam16_jmh import CAM16JMh, xyz_to_cam, cam_to_xyz, Environment
+from .cam16_jmh import CAM16JMh, xyz_to_cam, cam_to_xyz
 from .lab import Lab
 from ..cat import WHITES
 from .. import util
 from ..channels import Channel, FLG_MIRROR_PERCENT
 from ..types import Vector
-from typing import Callable
 
 COEFFICENTS = {
     'lcd': (0.77, 0.007, 0.0053),
@@ -24,10 +23,7 @@ COEFFICENTS = {
 
 def cam_jmh_to_cam_ucs(
     jmh: Vector,
-    model: str,
-    env: Environment,
-    tx_to: Callable[..., Vector],
-    tx_from: Callable[..., Vector]
+    model: str
 ) -> Vector:
     """
     CAM16 (Jab) to CAM16 UCS (Jab).
@@ -40,11 +36,6 @@ def cam_jmh_to_cam_ucs(
 
     if J == 0.0:
         return [0.0, 0.0, 0.0]
-
-    # Account for negative colorfulness by reconverting
-    if M < 0:
-        cam16 = tx_to(tx_from(J=J, M=M, h=h, env=env), env=env)
-        J, M, h = cam16[0], cam16[5], cam16[2]
 
     c1, c2 = COEFFICENTS[model][1:]
 
@@ -123,7 +114,12 @@ class CAM16UCS(Lab):
     def from_base(self, coords: Vector) -> Vector:
         """From CAM16 JMh to CAM16."""
 
-        return cam_jmh_to_cam_ucs(coords, self.MODEL, self.ENV, xyz_to_cam, cam_to_xyz)
+        # Account for negative colorfulness by reconverting as this can many times correct the problem
+        if coords[1] < 0:
+            cam16 = xyz_to_cam(cam_to_xyz(J=coords[0], M=coords[1], h=coords[2], env=self.ENV), env=self.ENV)
+            coords = [cam16[0], cam16[5], cam16[2]]
+
+        return cam_jmh_to_cam_ucs(coords, self.MODEL)
 
 
 class CAM16LCD(CAM16UCS):
