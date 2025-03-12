@@ -1,6 +1,7 @@
 """
 CAM02 class (JMh).
 
+https://www.researchgate.net/publication/318152296_Comprehensive_color_solutions_CAM16_CAT16_and_CAM16-UCS
 https://en.wikipedia.org/wiki/CIECAM02
 https://www.researchgate.net/publication/221501922_The_CIECAM02_color_appearance_model
 https://arxiv.org/abs/1802.06067
@@ -125,8 +126,10 @@ class Environment:
 
         # Degree of adaptation calculating if not discounting illuminant (assumed eye is fully adapted)
         self.d = alg.clamp(f * (1 - 1 / 3.6 * math.exp((-self.la - 42) / 92)), 0, 1) if not discounting else 1
-        self.rgb_cw = [((self.yw * (self.d / coord) + 1 - self.d) * coord) for coord in self.rgb_w]
-        self.rgb_pw = alg.matmul(alg.matmul(XYZ_TO_HPE, M02_INV), self.rgb_cw)
+        self.d_rgb = [(self.yw * (self.d / coord) + 1 - self.d) for coord in self.rgb_w]
+        self.d_rgb_inv = [1 / coord for coord in self.d_rgb]
+        self.rgb_cw = alg.multiply_x3(self.d_rgb, self.rgb_w, dims=alg.D1)
+        self.rgb_pw = alg.matmul_x3(alg.matmul_x3(XYZ_TO_HPE, M02_INV), self.rgb_cw)
 
         # Achromatic response
         rgb_aw = adapt(self.rgb_pw, self.fl)
@@ -204,7 +207,7 @@ def cam_to_xyz(
     # Achromatic response
     A = env.a_w * alg.spow(J_root, 2 / env.c / env.z)
 
-    # Calculate red-green and yellow-blue components
+    # Calculate red-green and yellow-blue components from hue
     p1 = 5e4 / 13 * env.nc * env.ncb * et
     p2 = A / env.nbb
     r = 23 * (p2 + 0.305) * alg.zdiv(t, 23 * p1 + t * (11 * cos_h + 108 * sin_h))
@@ -212,28 +215,27 @@ def cam_to_xyz(
     b = r * sin_h
 
     # Calculate back from cone response to XYZ
-    rgb_c = alg.matmul(
-        alg.matmul(M02, HPE_TO_XYZ),
-        unadapt(alg.multiply_x3(alg.matmul_x3(M1, [p2, a, b], dims=alg.D2_D1), 1 / 1403, dims=alg.D1_SC), env.fl)
-    )
-    rgb = [rgb_c[i] / (env.yw * (env.d / env.rgb_w[i]) + 1 - env.d) for i in range(3)]
-    return util.scale1(alg.matmul_x3(M02_INV, rgb, dims=alg.D2_D1))
+    rgb_a = alg.multiply_x3(alg.matmul_x3(M1, [p2, a, b], dims=alg.D2_D1), 1 / 1403, dims=alg.D1_SC)
+    rgb_c = alg.matmul_x3(alg.matmul_x3(M02, HPE_TO_XYZ, dims=alg.D2), unadapt(rgb_a, env.fl), dims=alg.D2_D1)
+    return util.scale1(alg.matmul_x3(M02_INV, alg.multiply_x3(rgb_c, env.d_rgb_inv, dims=alg.D1), dims=alg.D2_D1))
 
 
 def xyz_to_cam(xyz: Vector, env: Environment, calc_hue_quadrature: bool = False) -> Vector:
     """From XYZ to CAM02."""
 
-    # Cone response
-    rgb =  alg.matmul_x3(M02, util.scale100(xyz), dims=alg.D2_D1)
-    rgb_c = [(env.yw * (env.d / env.rgb_w[i]) + 1 - env.d) * rgb[i] for i in range(3)]
-    rgb_a = adapt(alg.matmul(alg.matmul(XYZ_TO_HPE, M02_INV), rgb_c), env.fl)
+    # Calculate cone response
+    rgb_c = alg.multiply_x3(
+        env.d_rgb,
+        alg.matmul_x3(M02, util.scale100(xyz), dims=alg.D2_D1),
+        dims=alg.D1
+    )
+    rgb_a = adapt(alg.matmul_x3(alg.matmul_x3(XYZ_TO_HPE, M02_INV, dims=alg.D2), rgb_c, dims=alg.D2_D1), env.fl)
 
+    # Calculate red-green and yellow components and resultant hue
     p2 = 2 * rgb_a[0] + rgb_a[1] + 0.05 * rgb_a[2]
     a = rgb_a[0] + (-12 * rgb_a[1] + rgb_a[2]) / 11
     b = (rgb_a[0] + rgb_a[1] - 2 * rgb_a[2]) / 9
     u = rgb_a[0] + rgb_a[1] + 1.05 * rgb_a[2]
-
-    # Calculate hue from red-green and yellow-blue components
     h_rad = math.atan2(b, a) % math.tau
 
     # Eccentricity

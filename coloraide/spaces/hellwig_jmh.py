@@ -208,28 +208,26 @@ def cam_to_xyz(
     b = r * sin_h
 
     # Calculate back from cone response to XYZ
-    rgb_c = unadapt(alg.multiply_x3(alg.matmul_x3(M1, [p2, a, b], dims=alg.D2_D1), 1 / 1403, dims=alg.D1_SC), env.fl)
+    rgb_a = alg.multiply_x3(alg.matmul_x3(M1, [p2, a, b], dims=alg.D2_D1), 1 / 1403, dims=alg.D1_SC)
+    rgb_c = unadapt(rgb_a, env.fl)
     return util.scale1(alg.matmul_x3(MI6_INV, alg.multiply_x3(rgb_c, env.d_rgb_inv, dims=alg.D1), dims=alg.D2_D1))
 
 
 def xyz_to_cam(xyz: Vector, env: Environment, calc_hue_quadrature: bool = False) -> Vector:
     """From XYZ to CAM16."""
 
-    # Cone response
-    rgb_a = adapt(
-        alg.multiply_x3(
-            alg.matmul_x3(M16, util.scale100(xyz), dims=alg.D2_D1),
-            env.d_rgb,
-            dims=alg.D1
-        ),
-        env.fl
+    # Calculate cone response
+    rgb_c = alg.multiply_x3(
+        alg.matmul_x3(M16, util.scale100(xyz), dims=alg.D2_D1),
+        env.d_rgb,
+        dims=alg.D1
     )
+    rgb_a = adapt(rgb_c, env.fl)
 
+    # Calculate red-green and yellow components and resultant hue
     p2 = 2 * rgb_a[0] + rgb_a[1] + 0.05 * rgb_a[2]
     a = rgb_a[0] + (-12 * rgb_a[1] + rgb_a[2]) / 11
     b = (rgb_a[0] + rgb_a[1] - 2 * rgb_a[2]) / 9
-
-    # Calculate hue from red-green and yellow-blue components
     h_rad = math.atan2(b, a) % math.tau
 
     # Eccentricity

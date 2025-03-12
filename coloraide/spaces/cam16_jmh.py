@@ -165,10 +165,10 @@ class Environment:
         self.yb = background_luminance
         # Absolute luminance of the reference white.
         xyz_w = util.scale100(self.ref_white)
-        yw = xyz_w[1]
+        self.yw = xyz_w[1]
 
         # Cone response for reference white
-        rgb_w = alg.matmul_x3(M16, xyz_w, dims=alg.D2_D1)
+        self.rgb_w = alg.matmul_x3(M16, xyz_w, dims=alg.D2_D1)
 
         # Surround: dark, dim, and average
         f, self.c, self.nc = SURROUND[self.surround]
@@ -180,19 +180,19 @@ class Environment:
         self.fl = (k4 * self.la + 0.1 * (1 - k4) * (1 - k4) * math.pow(5 * self.la, 1 / 3))
         self.fl_root = math.pow(self.fl, 0.25)
 
-        self.n = self.yb / yw
+        self.n = self.yb / self.yw
         self.z = 1.48 + math.sqrt(self.n)
         self.nbb = 0.725 * math.pow(self.n, -0.2)
         self.ncb = self.nbb
 
         # Degree of adaptation calculating if not discounting illuminant (assumed eye is fully adapted)
-        d = alg.clamp(f * (1 - 1 / 3.6 * math.exp((-self.la - 42) / 92)), 0, 1) if not discounting else 1
-        self.d_rgb = [alg.lerp(1, yw / coord, d) for coord in rgb_w]
+        self.d = alg.clamp(f * (1 - 1 / 3.6 * math.exp((-self.la - 42) / 92)), 0, 1) if not discounting else 1
+        self.d_rgb = [alg.lerp(1, self.yw / coord, self.d) for coord in self.rgb_w]
         self.d_rgb_inv = [1 / coord for coord in self.d_rgb]
 
         # Achromatic response
-        rgb_cw = alg.multiply_x3(rgb_w, self.d_rgb, dims=alg.D1)
-        rgb_aw = adapt(rgb_cw, self.fl)
+        self.rgb_cw = alg.multiply_x3(self.rgb_w, self.d_rgb, dims=alg.D1)
+        rgb_aw = adapt(self.rgb_cw, self.fl)
         self.a_w = self.nbb * (2 * rgb_aw[0] + rgb_aw[1] + 0.05 * rgb_aw[2])
 
 
@@ -275,29 +275,27 @@ def cam_to_xyz(
     b = r * sin_h
 
     # Calculate back from cone response to XYZ
-    rgb_c = unadapt(alg.multiply_x3(alg.matmul_x3(M1, [p2, a, b], dims=alg.D2_D1), 1 / 1403, dims=alg.D1_SC), env.fl)
+    rgb_a = alg.multiply_x3(alg.matmul_x3(M1, [p2, a, b], dims=alg.D2_D1), 1 / 1403, dims=alg.D1_SC)
+    rgb_c = unadapt(rgb_a, env.fl)
     return util.scale1(alg.matmul_x3(MI6_INV, alg.multiply_x3(rgb_c, env.d_rgb_inv, dims=alg.D1), dims=alg.D2_D1))
 
 
 def xyz_to_cam(xyz: Vector, env: Environment, calc_hue_quadrature: bool = False) -> Vector:
     """From XYZ to CAM16."""
 
-    # Cone response
-    rgb_a = adapt(
-        alg.multiply_x3(
-            alg.matmul_x3(M16, util.scale100(xyz), dims=alg.D2_D1),
-            env.d_rgb,
-            dims=alg.D1
-        ),
-        env.fl
+    # Calculate cone response
+    rgb_c = alg.multiply_x3(
+        alg.matmul_x3(M16, util.scale100(xyz), dims=alg.D2_D1),
+        env.d_rgb,
+        dims=alg.D1
     )
+    rgb_a = adapt(rgb_c, env.fl)
 
+    # Calculate red-green and yellow components and resultant hue
     p2 = 2 * rgb_a[0] + rgb_a[1] + 0.05 * rgb_a[2]
     a = rgb_a[0] + (-12 * rgb_a[1] + rgb_a[2]) / 11
     b = (rgb_a[0] + rgb_a[1] - 2 * rgb_a[2]) / 9
     u = rgb_a[0] + rgb_a[1] + 1.05 * rgb_a[2]
-
-    # Calculate hue from red-green and yellow-blue components
     h_rad = math.atan2(b, a) % math.tau
 
     # Eccentricity

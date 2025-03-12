@@ -42,7 +42,7 @@ class CAM02UCS(Labish, Space):
     def from_base(self, coords: Vector) -> Vector:
         """From base to UCS."""
 
-        # Account for negative colorfulness by reconverting as this can many times correct the problem
+        # Account for negative colorfulness by reconverting as this can many times corrects the problem
         if coords[1] < 0:
             cam16 = xyz_to_cam(cam_to_xyz(J=coords[0], M=coords[1], h=coords[2], env=self.ENV), env=self.ENV)
             coords = [cam16[0], cam16[5], cam16[2]]
