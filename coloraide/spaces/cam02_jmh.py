@@ -14,16 +14,16 @@ from ..spaces import Space, LChish
 from ..cat import WHITES, CAT02
 from ..channels import Channel, FLG_ANGLE
 from .lch import ACHROMATIC_THRESHOLD
-from ..types import Vector, VectorLike
+from ..types import Vector
 from .cam16_jmh import (
     M1,
-    SURROUND,
     hue_quadrature,
     inv_hue_quadrature,
     eccentricity,
     adapt,
     unadapt
 )
+from .cam16_jmh import Environment as _Environment
 
 # CAT02
 M02 = CAT02.MATRIX
@@ -46,7 +46,7 @@ HPE_TO_XYZ = [
 ]
 
 
-class Environment:
+class Environment(_Environment):
     """
     Class to calculate and contain any required environmental data (viewing conditions included).
 
@@ -78,54 +78,12 @@ class Environment:
     discounting: Whether we are discounting the illuminance. Done when eye is assumed to be fully adapted.
     """
 
-    def __init__(
-        self,
-        *,
-        white: VectorLike,
-        adapting_luminance: float,
-        background_luminance: float,
-        surround: str,
-        discounting: bool
-    ):
-        """
-        Initialize environmental viewing conditions.
-
-        Using the specified viewing conditions, and general environmental data,
-        initialize anything that we can ahead of time to speed up the process.
-        """
-
-        self.discounting = discounting
-        self.ref_white = util.xy_to_xyz(white)
-        self.surround = surround
-
-        # The average luminance of the environment in `cd/m^2cd/m` (a.k.a. nits)
-        self.la = adapting_luminance
-        # The relative luminance of the nearby background
-        self.yb = background_luminance
-        # Absolute luminance of the reference white.
-        xyz_w = util.scale100(self.ref_white)
-        self.yw = xyz_w[1]
+    def calculate_adaptation(self, xyz_w: Vector) -> None:
+        """Calculate the adaptation of the reference point and related variables."""
 
         # Cone response for reference white
         self.rgb_w = alg.matmul_x3(M02, xyz_w, dims=alg.D2_D1)
 
-        # Surround: dark, dim, and average
-        f, self.c, self.nc = SURROUND[self.surround]
-
-        k = 1 / (5 * self.la + 1)
-        k4 = k ** 4
-
-        # Factor of luminance level adaptation
-        self.fl = (k4 * self.la + 0.1 * (1 - k4) * (1 - k4) * math.pow(5 * self.la, 1 / 3))
-        self.fl_root = math.pow(self.fl, 0.25)
-
-        self.n = self.yb / self.yw
-        self.z = 1.48 + math.sqrt(self.n)
-        self.nbb = 0.725 * math.pow(self.n, -0.2)
-        self.ncb = self.nbb
-
-        # Degree of adaptation calculating if not discounting illuminant (assumed eye is fully adapted)
-        self.d = alg.clamp(f * (1 - 1 / 3.6 * math.exp((-self.la - 42) / 92)), 0, 1) if not discounting else 1
         self.d_rgb = [(self.yw * (self.d / coord) + 1 - self.d) for coord in self.rgb_w]
         self.d_rgb_inv = [1 / coord for coord in self.d_rgb]
         self.rgb_cw = alg.multiply_x3(self.d_rgb, self.rgb_w, dims=alg.D1)
@@ -262,14 +220,14 @@ def xyz_to_cam(xyz: Vector, env: Environment, calc_hue_quadrature: bool = False)
     # Colorfulness
     M = C * env.fl_root
 
+    # Saturation
+    s = 50 * alg.nth_root(env.c * alpha / (env.a_w + 4), 2)
+
     # Hue
     h = util.constrain_hue(math.degrees(h_rad))
 
     # Hue quadrature
     H = hue_quadrature(h) if calc_hue_quadrature else alg.NaN
-
-    # Saturation
-    s = 50 * alg.nth_root(env.c * alpha / (env.a_w + 4), 2)
 
     return [J, C, h, s, Q, M, H]
 

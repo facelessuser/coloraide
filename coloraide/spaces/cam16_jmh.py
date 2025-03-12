@@ -167,9 +167,6 @@ class Environment:
         xyz_w = util.scale100(self.ref_white)
         self.yw = xyz_w[1]
 
-        # Cone response for reference white
-        self.rgb_w = alg.matmul_x3(M16, xyz_w, dims=alg.D2_D1)
-
         # Surround: dark, dim, and average
         f, self.c, self.nc = SURROUND[self.surround]
 
@@ -187,6 +184,14 @@ class Environment:
 
         # Degree of adaptation calculating if not discounting illuminant (assumed eye is fully adapted)
         self.d = alg.clamp(f * (1 - 1 / 3.6 * math.exp((-self.la - 42) / 92)), 0, 1) if not discounting else 1
+        self.calculate_adaptation(xyz_w)
+
+    def calculate_adaptation(self, xyz_w: Vector) -> None:
+        """Calculate the adaptation of the reference point and related variables."""
+
+        # Cone response for reference white
+        self.rgb_w = alg.matmul_x3(M16, xyz_w, dims=alg.D2_D1)
+
         self.d_rgb = [alg.lerp(1, self.yw / coord, self.d) for coord in self.rgb_w]
         self.d_rgb_inv = [1 / coord for coord in self.d_rgb]
 
@@ -322,14 +327,14 @@ def xyz_to_cam(xyz: Vector, env: Environment, calc_hue_quadrature: bool = False)
     # Colorfulness
     M = C * env.fl_root
 
+    # Saturation
+    s = 50 * alg.nth_root(env.c * alpha / (env.a_w + 4), 2)
+
     # Hue
     h = util.constrain_hue(math.degrees(h_rad))
 
     # Hue quadrature
     H = hue_quadrature(h) if calc_hue_quadrature else alg.NaN
-
-    # Saturation
-    s = 50 * alg.nth_root(env.c * alpha / (env.a_w + 4), 2)
 
     return [J, C, h, s, Q, M, H]
 

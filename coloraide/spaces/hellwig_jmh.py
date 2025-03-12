@@ -32,7 +32,7 @@ from .. import util
 from .. import algebra as alg
 from ..cat import WHITES
 from ..channels import Channel, FLG_ANGLE
-from ..types import Vector, VectorLike
+from ..types import Vector
 
 
 def hue_angle_dependency(h: float) -> float:
@@ -94,32 +94,19 @@ class Environment(_Environment):
     discounting: Whether we are discounting the illuminance. Done when eye is assumed to be fully adapted.
     """
 
-    def __init__(
-        self,
-        *,
-        white: VectorLike,
-        adapting_luminance: float,
-        background_luminance: float,
-        surround: str,
-        discounting: bool
-    ):
-        """
-        Initialize environmental viewing conditions.
+    def calculate_adaptation(self, xyz_w: Vector) -> None:
+        """Calculate the adaptation of the reference point and related variables."""
 
-        Using the specified viewing conditions, and general environmental data,
-        initialize anything that we can ahead of time to speed up the process.
-        """
+        # Cone response for reference white
+        self.rgb_w = alg.matmul_x3(M16, xyz_w, dims=alg.D2_D1)
 
-        super().__init__(
-            white=white,
-            adapting_luminance=adapting_luminance,
-            background_luminance=background_luminance,
-            surround=surround,
-            discounting=discounting
-        )
+        self.d_rgb = [alg.lerp(1, self.yw / coord, self.d) for coord in self.rgb_w]
+        self.d_rgb_inv = [1 / coord for coord in self.d_rgb]
 
-        # `nbb` is not needed anymore, so remove it.
-        self.a_w /= self.nbb
+        # Achromatic response
+        self.rgb_cw = alg.multiply_x3(self.rgb_w, self.d_rgb, dims=alg.D1)
+        rgb_aw = adapt(self.rgb_cw, self.fl)
+        self.a_w = (2 * rgb_aw[0] + rgb_aw[1] + 0.05 * rgb_aw[2])
 
 
 def cam_to_xyz(
@@ -248,14 +235,14 @@ def xyz_to_cam(xyz: Vector, env: Environment, calc_hue_quadrature: bool = False)
     # Chroma
     C = 35 * (M / env.a_w)
 
+    # Saturation
+    s = 100 * alg.zdiv(M, Q)
+
     # Hue
     h = util.constrain_hue(math.degrees(h_rad))
 
     # Hue quadrature
     H = hue_quadrature(h) if calc_hue_quadrature else alg.NaN
-
-    # Saturation
-    s = 100 * alg.zdiv(M, Q)
 
     # Lightness: Helmholtz-Kohlrausch effect
     Jhk = J + hue_angle_dependency(h_rad) * alg.spow(C, 0.587)
