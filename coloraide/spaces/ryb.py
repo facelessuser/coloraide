@@ -6,6 +6,7 @@ http://bahamas10.github.io/ryb/assets/ryb.pdf
 """
 from __future__ import annotations
 import math
+from .. import util
 from ..spaces import Regular, Space
 from .. import algebra as alg
 from ..channels import Channel
@@ -77,7 +78,7 @@ class RYB(Regular, Space):
 
         coords = self.to_base(coords)
         for x in alg.vcross(coords, [1, 1, 1]):
-            if not math.isclose(0.0, x, abs_tol=1e-5):
+            if not math.isclose(0.0, x, abs_tol=util.ACHROMATIC_THRESHOLD):
                 return False
         return True
 

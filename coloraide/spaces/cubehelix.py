@@ -24,7 +24,7 @@ TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
 THIS SOFTWARE.
 """
 from __future__ import annotations
-from ..spaces import Space, HSLish
+from . hsl import HSL
 from ..cat import WHITES
 from ..channels import Channel, FLG_ANGLE
 import math
@@ -72,7 +72,7 @@ def cubehelix_to_srgb(coords: Vector) -> Vector:
     ]
 
 
-class Cubehelix(HSLish, Space):
+class Cubehelix(HSL):
     """Cubehelix class."""
 
     BASE = 'srgb'
@@ -103,7 +103,7 @@ class Cubehelix(HSLish, Space):
     def is_achromatic(self, coords: Vector) -> bool:
         """Check if color is achromatic."""
 
-        return abs(coords[1]) < 1e-4 or coords[2] > (1 - 1e-7) or coords[2] < 1e-08
+        return abs(coords[1]) < self.achromatic_threshold or coords[2] > (1 - 1e-7) or coords[2] < 1e-08
 
     def to_base(self, coords: Vector) -> Vector:
         """To LChuv from HSLuv."""

@@ -38,12 +38,11 @@ color(--hct 256.79 31.766 33.344 / 1)
 """
 from __future__ import annotations
 from .. import algebra as alg
-from ..spaces import Space, LChish
+from .lch import LCh
 from ..cat import WHITES
 from ..channels import Channel, FLG_ANGLE
 from .cam16_jmh import Environment, cam_to_xyz, xyz_to_cam
 from .lab import EPSILON, KAPPA, KE
-from .lch import ACHROMATIC_THRESHOLD
 from ..types import Vector
 import math
 
@@ -156,7 +155,7 @@ def xyz_to_hct(coords: Vector, env: Environment) -> Vector:
     return [h, c, t]
 
 
-class HCT(LChish, Space):
+class HCT(LCh):
     """HCT class."""
 
     BASE = "xyz-d65"
@@ -200,7 +199,7 @@ class HCT(LChish, Space):
         """Check if color is achromatic."""
 
         # Account for both positive and negative chroma
-        return coords[2] == 0 or abs(coords[1]) < ACHROMATIC_THRESHOLD
+        return coords[2] == 0 or abs(coords[1]) < self.achromatic_threshold
 
     def names(self) -> tuple[Channel, ...]:
         """Return LCh-ish names in the order L C h."""

@@ -1,5 +1,6 @@
 """sRGB Linear color class."""
 from __future__ import annotations
+from .. import util
 from ..cat import WHITES
 from ..spaces import RGBish, Space
 from ..channels import Channel
@@ -59,7 +60,7 @@ class sRGBLinear(RGBish, Space):
 
         white = [1, 1, 1]
         for x in alg.vcross(coords, white):
-            if not math.isclose(0.0, x, abs_tol=1e-5):
+            if not math.isclose(0.0, x, abs_tol=util.ACHROMATIC_THRESHOLD_SM):
                 return False
         return True
 

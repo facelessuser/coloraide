@@ -4,6 +4,7 @@ Uncalibrated, naive CMYK color space.
 https://www.w3.org/TR/css-color-5/#cmyk-rgb
 """
 from __future__ import annotations
+from .. import util
 from ..spaces import Space
 from ..channels import Channel
 from ..cat import WHITES
@@ -60,12 +61,12 @@ class CMYK(Space):
     def is_achromatic(self, coords: Vector) -> bool:
         """Test if color is achromatic."""
 
-        if math.isclose(1.0, coords[-1], abs_tol=1e-4):
+        if math.isclose(1.0, coords[-1], abs_tol=util.ACHROMATIC_THRESHOLD_SM):
             return True
 
         black = [1, 1, 1]
         for x in alg.vcross(coords[:-1], black):
-            if not math.isclose(0.0, x, abs_tol=1e-5):
+            if not math.isclose(0.0, x, abs_tol=util.ACHROMATIC_THRESHOLD_SM):
                 return False
         return True
 

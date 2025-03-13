@@ -2,6 +2,8 @@
 
 ## 4.3.1
 
+-   **FIX**: Scale achromatic threshold depending on order of magnitude of component scaling. This ensures colors that
+    are scaled roughly between 0 - 1 are not considered achromatic earlier than a space scaled roughly between 0 - 100.
 -   **FIX**: Optimized matrix math operations should handle column vectors.
 
 ## 4.3

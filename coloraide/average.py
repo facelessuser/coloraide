@@ -1,15 +1,13 @@
 """Average colors together."""
 from __future__ import annotations
 import math
+from . import util
 from .spaces import HWBish
 from .types import ColorInput
 from typing import Iterable, TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
     from .color import Color
-
-
-ACHROMATIC_THRESHOLD = 1e-4
 
 
 def average(
@@ -88,7 +86,7 @@ def average(
             else:
                 sin /= total
                 cos /= total
-            if abs(sin) < ACHROMATIC_THRESHOLD and abs(cos) < ACHROMATIC_THRESHOLD:
+            if abs(sin) < util.ACHROMATIC_THRESHOLD_SM and abs(cos) < util.ACHROMATIC_THRESHOLD_SM:
                 sums[i] = math.nan
             else:
                 avg_theta = math.degrees(math.atan2(sin, cos))

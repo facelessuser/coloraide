@@ -126,8 +126,8 @@ class TestsAchromatic(util.ColorAsserts, unittest.TestCase):
 
         self.assertEqual(Color('oklab', [0.3, 0, 0]).is_achromatic(), True)
         self.assertEqual(Color('oklab', [-0.3, 0, 0]).is_achromatic(), True)
-        self.assertEqual(Color('oklab', [0.3, 0.000001, 0]).is_achromatic(), True)
-        self.assertEqual(Color('oklab', [NaN, 0.00001, 0]).is_achromatic(), True)
+        self.assertEqual(Color('oklab', [0.3, 0.0000001, 0]).is_achromatic(), True)
+        self.assertEqual(Color('oklab', [NaN, 0.0000001, 0]).is_achromatic(), True)
         self.assertEqual(Color('oklab', [0, NaN, NaN]).is_achromatic(), True)
         self.assertEqual(Color('oklab', [0, NaN, NaN]).is_achromatic(), True)
         self.assertEqual(Color('oklab', [0, 0.3, -0.4]).is_achromatic(), False)

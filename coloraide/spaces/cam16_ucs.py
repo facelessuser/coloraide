@@ -8,8 +8,7 @@ https://doi.org/10.1002/col.22131
 from __future__ import annotations
 import math
 from .cam16_jmh import CAM16JMh, xyz_to_cam, cam_to_xyz, Environment
-from ..spaces import Space, Labish
-from .lch import ACHROMATIC_THRESHOLD
+from .lab import Lab
 from ..cat import WHITES
 from .. import util
 from ..channels import Channel, FLG_MIRROR_PERCENT
@@ -91,7 +90,7 @@ def cam_ucs_to_cam_jmh(ucs: Vector, model: str) -> Vector:
     ]
 
 
-class CAM16UCS(Labish, Space):
+class CAM16UCS(Lab):
     """CAM16 UCS (Jab) class."""
 
     BASE = "cam16-jmh"
@@ -114,7 +113,7 @@ class CAM16UCS(Labish, Space):
         """Check if color is achromatic."""
 
         j, m = cam_ucs_to_cam_jmh(coords, self.MODEL)[:-1]
-        return j == 0 or abs(m) < ACHROMATIC_THRESHOLD
+        return j == 0 or abs(m) < self.achromatic_threshold
 
     def to_base(self, coords: Vector) -> Vector:
         """To CAM16 JMh from CAM16."""

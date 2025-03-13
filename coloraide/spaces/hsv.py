@@ -1,10 +1,12 @@
 """HSV class."""
 from __future__ import annotations
+from .. import algebra as alg
 from ..spaces import Space, HSVish
 from ..cat import WHITES
 from ..channels import Channel, FLG_ANGLE
 from .. import util
 from ..types import Vector
+from typing import Any
 
 
 def hsv_to_srgb(hsv: Vector) -> Vector:
@@ -77,6 +79,13 @@ class HSV(HSVish, Space):
     CLIP_SPACE = "hsv"  # type: str | None
     WHITE = WHITES['2deg']['D65']
 
+    def __init__(self, **kwargs: Any):
+        """Initialize."""
+
+        super().__init__(**kwargs)
+        order = alg.order(self.channels[self.indexes()[2]].high)
+        self.achromatic_threshold = util.ACHROMATIC_THRESHOLD_SM if order == 0 else util.ACHROMATIC_THRESHOLD
+
     def normalize(self, coords: Vector) -> Vector:
         """Normalize coordinates."""
 
@@ -88,7 +97,7 @@ class HSV(HSVish, Space):
     def is_achromatic(self, coords: Vector) -> bool:
         """Check if color is achromatic."""
 
-        return abs(coords[1]) < 1e-5 or coords[2] == 0.0
+        return abs(coords[1]) < self.achromatic_threshold or coords[2] == 0.0
 
     def to_base(self, coords: Vector) -> Vector:
         """To HSL from HSV."""

@@ -137,8 +137,8 @@ class TestsAchromatic(util.ColorAsserts, unittest.TestCase):
         """Test when color is achromatic."""
 
         self.assertEqual(Color('lab', [30, 0, 0]).is_achromatic(), True)
-        self.assertEqual(Color('lab', [30, 0.000001, 0]).is_achromatic(), True)
-        self.assertEqual(Color('lab', [NaN, 0.00001, 0]).is_achromatic(), True)
+        self.assertEqual(Color('lab', [30, 0.0000001, 0]).is_achromatic(), True)
+        self.assertEqual(Color('lab', [NaN, 0.0000001, 0]).is_achromatic(), True)
         self.assertEqual(Color('lab', [0, NaN, NaN]).is_achromatic(), True)
         self.assertEqual(Color('lab', [0, NaN, NaN]).is_achromatic(), True)
         self.assertEqual(Color('lab', [0, 30, -40]).is_achromatic(), False)

@@ -25,9 +25,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 from __future__ import annotations
-from ..spaces import Space, HSLish
 from ..cat import WHITES
 from ..channels import Channel, FLG_ANGLE
+from .hsl import HSL
 from .lab import EPSILON, KAPPA
 from .srgb_linear import XYZ_TO_RGB
 import math
@@ -106,7 +106,7 @@ def luv_to_hsluv(luv: Vector) -> Vector:
     return [util.constrain_hue(h), s, l]
 
 
-class HSLuv(HSLish, Space):
+class HSLuv(HSL):
     """HSLuv class."""
 
     BASE = 'luv'
@@ -137,7 +137,7 @@ class HSLuv(HSLish, Space):
     def is_achromatic(self, coords: Vector) -> bool:
         """Check if color is achromatic."""
 
-        return abs(coords[1]) < 1e-4 or coords[2] > (100 - 1e-7) or coords[2] < 1e-08
+        return abs(coords[1]) < self.achromatic_threshold or coords[2] > (100 - 1e-7) or coords[2] < 1e-08
 
     def to_base(self, coords: Vector) -> Vector:
         """To LChuv from HSLuv."""

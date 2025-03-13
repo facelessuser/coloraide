@@ -1,5 +1,6 @@
 """Uncalibrated, naive CMY color space."""
 from __future__ import annotations
+from .. import util
 from ..spaces import Regular, Space
 from ..channels import Channel
 from ..cat import WHITES
@@ -43,7 +44,7 @@ class CMY(Regular, Space):
 
         black = [1, 1, 1]
         for x in alg.vcross(coords, black):
-            if not math.isclose(0.0, x, abs_tol=1e-4):
+            if not math.isclose(0.0, x, abs_tol=util.ACHROMATIC_THRESHOLD_SM):
                 return False
         return True
 

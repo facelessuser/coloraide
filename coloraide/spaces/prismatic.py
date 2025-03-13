@@ -7,6 +7,7 @@ http://psgraphics.blogspot.com/2015/10/prismatic-color-model.html
 https://studylib.net/doc/14656976/the-prismatic-color-space-for-rgb-computations
 """
 from __future__ import annotations
+from .. import util
 from ..spaces import Space
 from ..channels import Channel
 from ..cat import WHITES
@@ -58,12 +59,12 @@ class Prismatic(Space):
     def is_achromatic(self, coords: Vector) -> bool:
         """Test if color is achromatic."""
 
-        if math.isclose(0.0, coords[0], abs_tol=1e-4):
+        if math.isclose(0.0, coords[0], abs_tol=util.ACHROMATIC_THRESHOLD_SM):
             return True
 
         white = [1, 1, 1]
         for x in alg.vcross(coords[:-1], white):
-            if not math.isclose(0.0, x, abs_tol=1e-5):
+            if not math.isclose(0.0, x, abs_tol=util.ACHROMATIC_THRESHOLD_SM):
                 return False
         return True
 

@@ -14,11 +14,10 @@ import math
 import bisect
 from .. import util
 from .. import algebra as alg
-from ..spaces import Space
 from ..cat import WHITES
 from ..channels import Channel, FLG_ANGLE
 from ..types import Vector, VectorLike
-from .lch import LCh, ACHROMATIC_THRESHOLD
+from .lch import LCh
 from .jzazbz import izazbz_to_xyz, xyz_to_izazbz
 from .. import cat
 
@@ -379,7 +378,7 @@ def zcam_jmh_to_xyz(jmh: Vector, env: Environment) -> Vector:
     return zcam_to_xyz(Jz=Jz, Mz=Mz, hz=hz, env=env)
 
 
-class ZCAMJMh(LCh, Space):
+class ZCAMJMh(LCh):
     """ZCAM class (JMh)."""
 
     BASE = "xyz-d65"
@@ -430,7 +429,7 @@ class ZCAMJMh(LCh, Space):
         """Check if color is achromatic."""
 
         # Account for both positive and negative chroma
-        return coords[0] == 0 or abs(coords[1]) < ACHROMATIC_THRESHOLD
+        return coords[0] == 0 or abs(coords[1]) < self.achromatic_threshold
 
     def hue_name(self) -> str:
         """Hue name."""

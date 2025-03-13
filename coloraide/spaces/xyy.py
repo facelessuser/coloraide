@@ -32,7 +32,7 @@ class xyY(Space):
         if math.isclose(0.0, coords[-1], abs_tol=1e-4):
             return True
 
-        if not math.isclose(0.0, alg.vcross(coords[:-1], self.WHITE), abs_tol=1e-6):
+        if not math.isclose(0.0, alg.vcross(coords[:-1], self.WHITE), abs_tol=util.ACHROMATIC_THRESHOLD_SM):
             return False
         return True
 

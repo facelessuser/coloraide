@@ -162,10 +162,8 @@ class TestsAchromatic(util.ColorAsserts, unittest.TestCase):
     def test_achromatic(self):
         """Test when color is achromatic."""
 
-        self.assertEqual(Color('#222222').convert('jzczhz').is_achromatic(), True)
-        self.assertEqual(Color('#222222').convert('jzczhz').set('cz', lambda c: c + 1e-8).is_achromatic(), True)
         self.assertEqual(
-            Color('#222222').convert('jzczhz').set('cz', lambda c: -c).set('h', lambda h: h + 180).is_achromatic(),
+            Color('srgb', [0.000000001] * 3).convert('jzczhz').set('c', lambda x: x + 1e-8).is_achromatic(),
             True
         )
         self.assertEqual(Color('jzczhz', [NaN, 0.0, 270]).is_achromatic(), True)

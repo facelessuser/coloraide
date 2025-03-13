@@ -26,7 +26,7 @@ class XYZD65(RGBish, Space):
         """Is achromatic."""
 
         for x in alg.vcross(coords, util.xy_to_xyz(self.white())):
-            if not math.isclose(0.0, x, abs_tol=1e-5):
+            if not math.isclose(0.0, x, abs_tol=util.ACHROMATIC_THRESHOLD_SM):
                 return False
         return True
 
