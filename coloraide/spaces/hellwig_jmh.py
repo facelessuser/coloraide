@@ -156,8 +156,6 @@ def cam_to_xyz(
         h_rad = math.radians(h % 360)
     elif H is not None:
         h_rad = math.radians(inv_hue_quadrature(H))
-    cos_h = math.cos(h_rad)
-    sin_h = math.sin(h_rad)
 
     # Calculate `J_root` from one of the lightness derived coordinates.
     if M is not None:
@@ -188,6 +186,8 @@ def cam_to_xyz(
     A = env.a_w * alg.nth_root(J / 100, env.c * env.z)  # type: ignore[operator]
 
     # Calculate red-green and yellow-blue components
+    cos_h = math.cos(h_rad)
+    sin_h = math.sin(h_rad)
     p1 = 43 * env.nc * et
     p2 = A
     r = M / p1  # type: ignore[operator]
