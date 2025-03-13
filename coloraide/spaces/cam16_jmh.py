@@ -12,10 +12,9 @@ import math
 import bisect
 from .. import util
 from .. import algebra as alg
-from ..spaces import Space, LChish
+from .lch import LCh
 from ..cat import WHITES, CAT16
 from ..channels import Channel, FLG_ANGLE
-from .lch import ACHROMATIC_THRESHOLD
 from ..types import Vector, VectorLike
 
 # CAT16
@@ -352,7 +351,7 @@ def cam_jmh_to_xyz(jmh: Vector, env: Environment) -> Vector:
     return cam_to_xyz(J=J, M=M, h=h, env=env)
 
 
-class CAM16JMh(LChish, Space):
+class CAM16JMh(LCh):
     """CAM16 class (JMh)."""
 
     BASE = "xyz-d65"
@@ -396,7 +395,7 @@ class CAM16JMh(LChish, Space):
         """Check if color is achromatic."""
 
         # Account for both positive and negative chroma
-        return coords[0] == 0 or abs(coords[1]) < ACHROMATIC_THRESHOLD
+        return coords[0] == 0 or abs(coords[1]) < self.achromatic_threshold
 
     def to_base(self, coords: Vector) -> Vector:
         """From CAM16 JMh to XYZ."""

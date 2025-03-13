@@ -4,10 +4,9 @@ Luv class.
 https://en.wikipedia.org/wiki/CIELuv
 """
 from __future__ import annotations
-from ..spaces import Space, Labish
 from ..cat import WHITES
 from ..channels import Channel, FLG_MIRROR_PERCENT
-from .lab import KAPPA, EPSILON, KE, ACHROMATIC_THRESHOLD
+from .lab import KAPPA, EPSILON, KE, Lab
 from .. import util
 from .. import algebra as alg
 from ..types import Vector
@@ -54,7 +53,7 @@ def luv_to_xyz(luv: Vector, white: tuple[float, float]) -> Vector:
     return [x, y, z]
 
 
-class Luv(Labish, Space):
+class Luv(Lab):
     """Luv class."""
 
     BASE = "xyz-d65"
@@ -73,7 +72,7 @@ class Luv(Labish, Space):
     def is_achromatic(self, coords: Vector) -> bool:
         """Check if color is achromatic."""
 
-        return coords[0] == 0.0 or alg.rect_to_polar(coords[1], coords[2])[0] < ACHROMATIC_THRESHOLD
+        return coords[0] == 0.0 or alg.rect_to_polar(coords[1], coords[2])[0] < self.achromatic_threshold
 
     def to_base(self, coords: Vector) -> Vector:
         """To XYZ D50 from Luv."""

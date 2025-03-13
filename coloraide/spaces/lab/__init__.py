@@ -9,10 +9,11 @@ from ...spaces import Space, Labish
 from ...cat import WHITES
 from ...channels import Channel, FLG_MIRROR_PERCENT
 from ... import util
+from ... util import ACHROMATIC_THRESHOLD
 from ... import algebra as alg
 from ...types import VectorLike, Vector
+from typing import Any
 
-ACHROMATIC_THRESHOLD = 1e-4
 EPSILON = 216 / 24389  # `6^3 / 29^3`
 EPSILON3 = 6 / 29  # Cube root of EPSILON
 KAPPA = 24389 / 27
@@ -67,10 +68,17 @@ class Lab(Labish, Space):
         "lightness": "l"
     }
 
+    def __init__(self, **kwargs: Any):
+        """Initialize."""
+
+        super().__init__(**kwargs)
+        order = alg.order(self.channels[self.indexes()[0]].high)
+        self.achromatic_threshold = util.ACHROMATIC_THRESHOLD_SM if order == 0 else ACHROMATIC_THRESHOLD
+
     def is_achromatic(self, coords: Vector) -> bool:
         """Check if color is achromatic."""
 
-        return alg.rect_to_polar(coords[1], coords[2])[0] < ACHROMATIC_THRESHOLD
+        return alg.rect_to_polar(coords[1], coords[2])[0] < self.achromatic_threshold
 
     def to_base(self, coords: Vector) -> Vector:
         """To XYZ D50 from Lab."""

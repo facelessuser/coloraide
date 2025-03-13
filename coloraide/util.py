@@ -21,6 +21,9 @@ DEF_CONTRAST = "wcag21"
 DEF_CCT = "robertson-1968"
 DEF_INTERPOLATOR = "linear"
 
+ACHROMATIC_THRESHOLD = 1e-4
+ACHROMATIC_THRESHOLD_SM = 1e-6
+
 # PQ Constants
 # https://en.wikipedia.org/wiki/High-dynamic-range_video#Perceptual_quantizer
 M1 = 2610 / 16384

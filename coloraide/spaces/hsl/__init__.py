@@ -1,10 +1,12 @@
 """HSL class."""
 from __future__ import annotations
+from ... import algebra as alg
 from ...spaces import HSLish, Space
 from ...cat import WHITES
 from ...channels import Channel, FLG_ANGLE
 from ... import util
 from ...types import Vector
+from typing import Any
 
 
 def srgb_to_hsl(rgb: Vector) -> Vector:
@@ -82,6 +84,13 @@ class HSL(HSLish, Space):
     GAMUT_CHECK = "srgb"  # type: str | None
     CLIP_SPACE = "hsl"  # type: str | None
 
+    def __init__(self, **kwargs: Any):
+        """Initialize."""
+
+        super().__init__(**kwargs)
+        order = alg.order(self.channels[self.indexes()[2]].high)
+        self.achromatic_threshold = util.ACHROMATIC_THRESHOLD_SM if order == 0 else util.ACHROMATIC_THRESHOLD
+
     def normalize(self, coords: Vector) -> Vector:
         """Normalize coordinates."""
 
@@ -94,7 +103,11 @@ class HSL(HSLish, Space):
     def is_achromatic(self, coords: Vector) -> bool | None:
         """Check if color is achromatic."""
 
-        return abs(coords[1]) < 1e-4 or coords[2] == 0.0 or abs(1 - coords[2]) < 1e-7
+        return (
+            abs(coords[1]) < self.achromatic_threshold or
+            coords[2] == 0.0 or
+            abs(1 - coords[2]) < self.achromatic_threshold
+        )
 
     def to_base(self, coords: Vector) -> Vector:
         """To sRGB from HSL."""

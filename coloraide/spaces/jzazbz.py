@@ -10,7 +10,6 @@ This is confirmed here: https://www.itu.int/dms_pub/itu-r/opb/rep/R-REP-BT.2408-
 If at some time that these assumptions are incorrect, we will be happy to alter the model.
 """
 from __future__ import annotations
-from ..spaces import Space
 from ..cat import WHITES
 from ..channels import Channel, FLG_MIRROR_PERCENT
 from .. import util
@@ -122,7 +121,7 @@ def xyz_to_jzazbz(xyz: Vector) -> Vector:
     return [jz, az, bz]
 
 
-class Jzazbz(Lab, Space):
+class Jzazbz(Lab):
     """Jzazbz class."""
 
     BASE = "xyz-d65"

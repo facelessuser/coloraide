@@ -1,13 +1,12 @@
 """LChuv class."""
 from __future__ import annotations
-from ..spaces import Space
+from .lch import LCh
 from ..cat import WHITES
 from ..channels import Channel, FLG_ANGLE
-from .lch import LCh, ACHROMATIC_THRESHOLD
 from ..types import Vector
 
 
-class LChuv(LCh, Space):
+class LChuv(LCh):
     """LChuv class."""
 
     BASE = "luv"
@@ -23,4 +22,4 @@ class LChuv(LCh, Space):
     def is_achromatic(self, coords: Vector) -> bool:
         """Check if color is achromatic."""
 
-        return coords[0] == 0.0 or coords[1] < ACHROMATIC_THRESHOLD
+        return coords[0] == 0.0 or coords[1] < self.achromatic_threshold
