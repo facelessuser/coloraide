@@ -76,7 +76,7 @@ When doing this, the space should be derived from the default. A UCS variant wou
 
 ```py play
 from coloraide import Color as Base
-from coloraide.spaces.cam16_jmh import CAM16JMh, Environment
+from coloraide.spaces.cam16 import CAM16JMh, Environment
 from coloraide.cat import WHITES
 from coloraide import util
 import math
@@ -137,7 +137,7 @@ Color("cam16-jmh", [78.364, 9.6945, 28.629], 1).to_string()
 
 ```py
 from coloraide import Color as Base
-from coloraide.spaces.cam16_jmh import CAM16JMh
+from coloraide.spaces.cam16 import CAM16JMh
 
 class Color(Base): ...
 

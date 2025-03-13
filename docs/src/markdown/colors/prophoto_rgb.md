@@ -29,7 +29,7 @@ CIE 1931 xy Chromaticity -- ProPhoto RGB Chromaticities
 
 The ProPhoto RGB color space, also known as ROMM RGB (Reference Output Medium Metric), is an output referred RGB color
 space developed by Kodak. It offers an especially large gamut designed for use with photographic output in mind. The
-ProPhoto RGB color space encompasses over 90% of possible surface colors in the [CIE L\*a\*b\*](#cielab) color space,
+ProPhoto RGB color space encompasses over 90% of possible surface colors in the [CIE L\*a\*b\*](./lab.md) color space,
 and 100% of likely occurring real-world surface colors documented by Pointer in 1980.
 
 _[Learn about ProPhoto](https://en.wikipedia.org/wiki/ProPhoto_RGB_color_space)_

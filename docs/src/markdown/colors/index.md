@@ -228,7 +228,7 @@ flowchart LR
     click acescg "./acescg/" _self
     click acescc "./acescc/" _self
     click acescct "./acescct/" _self
-    click cam16-jmh "./cam16_jmh/" _self
+    click cam16-jmh "./cam16/" _self
     click cam16-ucs "./cam16_ucs/" _self
     click cam16-scd "./cam16_scd/" _self
     click cam16-lcd "./cam16_lcd/" _self
@@ -236,7 +236,7 @@ flowchart LR
     click xyb "./xyb/" _self
     click ryb "./ryb/" _self
     click cubehelix "./cubehelix/" _self
-    click zcam-jmh "./zcam_jmh/" _self
+    click zcam-jmh "./zcam/" _self
 ```
 ///
 
@@ -252,7 +252,7 @@ Color Space                                     | ID
 [ACEScc](./acescc.md)                           | `acescc`
 [ACEScct](./acescct.md)                         | `acescct`
 [ACEScg](./acescg.md)                           | `acescg`
-[CAM16 JMh](./cam16_jmh.md)                     | `cam16-jmh`
+[CAM16 JMh](./cam16.md)                         | `cam16-jmh`
 [CAM16 LCD](./cam16_lcd.md)                     | `cam16-lcd`
 [CAM16 SCD](./cam16_scd.md)                     | `cam16-scd`
 [CAM16 UCS](./cam16_ucs.md)                     | `cam16-ucs`
@@ -308,4 +308,4 @@ Color Space                                     | ID
 [xyY](./xyy.md)                                 | `xyy`
 [XYZ (D50)](./xyz_d50.md)                       | `xyz-d50`
 [XYZ (D65)](./xyz_d65.md)                       | `xyz-d65`
-[ZCAM JMh](./zcam_jmh.md)                       | `zcam-jmh`
+[ZCAM JMh](./zcam.md)                           | `zcam-jmh`

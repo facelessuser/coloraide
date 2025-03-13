@@ -2,7 +2,7 @@
 import unittest
 from . import util
 from coloraide.everything import ColorAll as Color, NaN
-from coloraide.spaces.cam02_jmh import cam_to_xyz, xyz_to_cam, CAM02JMh
+from coloraide.spaces.cam02 import cam_to_xyz, xyz_to_cam, CAM02JMh
 from collections import namedtuple
 import pytest
 

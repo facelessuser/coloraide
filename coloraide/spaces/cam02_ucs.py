@@ -1,15 +1,14 @@
 """CAM02 UCS."""
 from __future__ import annotations
-from .cam02_jmh import xyz_to_cam, cam_to_xyz, CAM02JMh
+from .cam02 import xyz_to_cam, cam_to_xyz, CAM02JMh
 from .cam16_ucs import cam_jmh_to_cam_ucs, cam_ucs_to_cam_jmh
-from ..spaces import Space, Labish
-from .lch import ACHROMATIC_THRESHOLD
+from .lab import Lab
 from ..cat import WHITES
 from ..channels import Channel, FLG_MIRROR_PERCENT
 from ..types import Vector
 
 
-class CAM02UCS(Labish, Space):
+class CAM02UCS(Lab):
     """CAM02 UCS (Jab) class."""
 
     BASE = "cam02-jmh"
@@ -32,7 +31,7 @@ class CAM02UCS(Labish, Space):
         """Check if color is achromatic."""
 
         j, m = cam_ucs_to_cam_jmh(coords, self.MODEL)[:-1]
-        return j == 0 or abs(m) < ACHROMATIC_THRESHOLD
+        return j == 0 or abs(m) < self.achromatic_threshold
 
     def to_base(self, coords: Vector) -> Vector:
         """To base from UCS."""

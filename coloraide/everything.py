@@ -26,12 +26,12 @@ from .spaces.aces2065_1 import ACES20651
 from .spaces.acescg import ACEScg
 from .spaces.acescc import ACEScc
 from .spaces.acescct import ACEScct
-from .spaces.cam02_jmh import CAM02JMh
+from .spaces.cam02 import CAM02JMh
 from .spaces.cam02_ucs import CAM02UCS, CAM02LCD, CAM02SCD
-from .spaces.cam16_jmh import CAM16JMh
+from .spaces.cam16 import CAM16JMh
 from .spaces.cam16_ucs import CAM16UCS, CAM16LCD, CAM16SCD
-from .spaces.hellwig_jmh import HellwigJMh, HellwigHKJMh
-from .spaces.zcam_jmh import ZCAMJMh
+from .spaces.hellwig import HellwigJMh, HellwigHKJMh
+from .spaces.zcam import ZCAMJMh
 from .spaces.hct import HCT
 from .spaces.ucs import UCS
 from .spaces.rec709 import Rec709

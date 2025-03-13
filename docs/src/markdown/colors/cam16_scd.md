@@ -36,7 +36,7 @@ This is the SCD variant of the CAM16 UCS color space and is optimized for "small
 
 ## Viewing Conditions
 
-CAM16 SCD uses the same environment setup for viewing conditions as [CAM16 JMh](./cam16_jmh.md), so check out the
+CAM16 SCD uses the same environment setup for viewing conditions as [CAM16 JMh](./cam16.md), so check out the
 related documentation if creating a CAM16 SCD variant is desired.
 
 ## Channel Aliases

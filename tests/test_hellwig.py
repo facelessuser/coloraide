@@ -2,7 +2,7 @@
 import unittest
 from . import util
 from coloraide.everything import ColorAll as Color, NaN
-from coloraide.spaces.hellwig_jmh import cam_to_xyz, xyz_to_cam, HellwigJMh
+from coloraide.spaces.hellwig import cam_to_xyz, xyz_to_cam, HellwigJMh
 from collections import namedtuple
 import pytest
 

@@ -7,7 +7,7 @@ https://doi.org/10.1002/col.22131
 """
 from __future__ import annotations
 import math
-from .cam16_jmh import CAM16JMh, xyz_to_cam, cam_to_xyz
+from .cam16 import CAM16JMh, xyz_to_cam, cam_to_xyz
 from .lab import Lab
 from ..cat import WHITES
 from .. import util

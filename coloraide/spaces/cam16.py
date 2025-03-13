@@ -1,68 +1,113 @@
 """
-Hellwig 2022: CAM16 class (JMh) with corrections.
+CAM16 class (JMh).
 
-CAM16
 https://www.researchgate.net/publication/318152296_Comprehensive_color_solutions_CAM16_CAT16_and_CAM16-UCS
 https://www.researchgate.net/publication/220865484_Usage_guidelines_for_CIECAM97s
 https://doi.org/10.1002/col.22131
 https://observablehq.com/@jrus/cam16
 https://arxiv.org/abs/1802.06067
-
-CAM16 Corrections: Hellwig and Fairchild
-http://markfairchild.org/PDFs/PAP45.pdf
-
-Helmholtz Kohlrausch Effect extension: Hellwig, Stolitzka, and Fairchild
-https://www.scribd.com/document/788387893/Color-Research-Application-2022-Hellwig-Extending-CIECAM02-and-CAM16-for-the-Helmholtz-Kohlrausch-effect
 """
 from __future__ import annotations
 import math
-from .cam16_jmh import (
-    M16,
-    MI6_INV,
-    M1,
-    adapt,
-    unadapt,
-    hue_quadrature,
-    inv_hue_quadrature
-)
-from .cam16_jmh import Environment as _Environment
-from ..spaces import Space, LChish
-from .lch import ACHROMATIC_THRESHOLD
+import bisect
 from .. import util
 from .. import algebra as alg
-from ..cat import WHITES
+from .lch import LCh
+from ..cat import WHITES, CAT16
 from ..channels import Channel, FLG_ANGLE
-from ..types import Vector
+from ..types import Vector, VectorLike
+
+# CAT16
+M16 = CAT16.MATRIX
+MI6_INV = [
+    [1.8620678550872327, -1.0112546305316843, 0.14918677544445175],
+    [0.38752654323613717, 0.6214474419314753, -0.008973985167612518],
+    [-0.015841498849333856, -0.03412293802851557, 1.0499644368778496]
+]
+
+M1 = [
+    [460.0, 451.0, 288.0],
+    [460.0, -891.0, -261.0],
+    [460.0, -220.0, -6300.0]
+]
+
+ADAPTED_COEF = 0.42
+ADAPTED_COEF_INV = 1 / ADAPTED_COEF
+
+SURROUND = {
+    'dark': (0.8, 0.525, 0.8),
+    'dim': (0.9, 0.59, 0.9),
+    'average': (1, 0.69, 1)
+}
+
+HUE_QUADRATURE = {
+    # Red, Yellow, Green, Blue, Red
+    "h": (20.14, 90.00, 164.25, 237.53, 380.14),
+    "e": (0.8, 0.7, 1.0, 1.2, 0.8),
+    "H": (0.0, 100.0, 200.0, 300.0, 400.0)
+}
 
 
-def hue_angle_dependency(h: float) -> float:
-    """Calculate the hue angle dependency for CAM16."""
+def hue_quadrature(h: float) -> float:
+    """
+    Hue to hue quadrature.
 
-    return (
-        -0.160 * math.cos(h)
-        + 0.132 * math.cos(2 * h)
-        - 0.405 * math.sin(h)
-        + 0.080 * math.sin(2 * h)
-        + 0.792
-    )
+    https://onlinelibrary.wiley.com/doi/pdf/10.1002/col.22324
+    """
+
+    hp = util.constrain_hue(h)
+    if hp <= HUE_QUADRATURE['h'][0]:
+        hp += 360
+
+    i = bisect.bisect_left(HUE_QUADRATURE['h'], hp) - 1
+    hi, hii = HUE_QUADRATURE['h'][i:i + 2]
+    ei, eii = HUE_QUADRATURE['e'][i:i + 2]
+    Hi = HUE_QUADRATURE['H'][i]
+
+    t = (hp - hi) / ei
+    return Hi + (100 * t) / (t + (hii - hp) / eii)
 
 
 def eccentricity(h: float) -> float:
     """Calculate eccentricity."""
 
-    # Eccentricity
-    h2 = 2 * h
-    h3 = 3 * h
-    h4 = 4 * h
-    return (
-        -0.0582 * math.cos(h) - 0.0258 * math.cos(h2)
-        - 0.1347 * math.cos(h3) + 0.0289 * math.cos(h4)
-        -0.1475 * math.sin(h) - 0.0308 * math.sin(h2)
-        + 0.0385 * math.sin(h3) + 0.0096 * math.sin(h4) + 1
-    )
+    return 0.25 * (math.cos(h + 2) + 3.8)
 
 
-class Environment(_Environment):
+def inv_hue_quadrature(H: float) -> float:
+    """Hue quadrature to hue."""
+
+    Hp = (H % 400 + 400) % 400
+    i = math.floor(0.01 * Hp)
+    Hp = Hp % 100
+    hi, hii = HUE_QUADRATURE['h'][i:i + 2]
+    ei, eii = HUE_QUADRATURE['e'][i:i + 2]
+
+    return util.constrain_hue((Hp * (eii * hi - ei * hii) - 100 * hi * eii) / (Hp * (eii - ei) - 100 * eii))
+
+
+def adapt(coords: Vector, fl: float) -> Vector:
+    """Adapt the coordinates."""
+
+    adapted = []
+    for c in coords:
+        x = (fl * abs(c) * 0.01) ** ADAPTED_COEF
+        adapted.append(400 * math.copysign(x, c) / (x + 27.13))
+    return adapted
+
+
+def unadapt(adapted: Vector, fl: float) -> Vector:
+    """Remove adaptation from coordinates."""
+
+    coords = []
+    constant = 100 / fl * (27.13 ** ADAPTED_COEF_INV)
+    for c in adapted:
+        cabs = abs(c)
+        coords.append(math.copysign(constant * alg.spow(cabs / (400 - cabs), ADAPTED_COEF_INV), c))
+    return coords
+
+
+class Environment:
     """
     Class to calculate and contain any required environmental data (viewing conditions included).
 
@@ -94,6 +139,53 @@ class Environment(_Environment):
     discounting: Whether we are discounting the illuminance. Done when eye is assumed to be fully adapted.
     """
 
+    def __init__(
+        self,
+        *,
+        white: VectorLike,
+        adapting_luminance: float,
+        background_luminance: float,
+        surround: str,
+        discounting: bool
+    ):
+        """
+        Initialize environmental viewing conditions.
+
+        Using the specified viewing conditions, and general environmental data,
+        initialize anything that we can ahead of time to speed up the process.
+        """
+
+        self.discounting = discounting
+        self.ref_white = util.xy_to_xyz(white)
+        self.surround = surround
+
+        # The average luminance of the environment in `cd/m^2cd/m` (a.k.a. nits)
+        self.la = adapting_luminance
+        # The relative luminance of the nearby background
+        self.yb = background_luminance
+        # Absolute luminance of the reference white.
+        xyz_w = util.scale100(self.ref_white)
+        self.yw = xyz_w[1]
+
+        # Surround: dark, dim, and average
+        f, self.c, self.nc = SURROUND[self.surround]
+
+        k = 1 / (5 * self.la + 1)
+        k4 = k ** 4
+
+        # Factor of luminance level adaptation
+        self.fl = (k4 * self.la + 0.1 * (1 - k4) * (1 - k4) * math.pow(5 * self.la, 1 / 3))
+        self.fl_root = math.pow(self.fl, 0.25)
+
+        self.n = self.yb / self.yw
+        self.z = 1.48 + math.sqrt(self.n)
+        self.nbb = 0.725 * math.pow(self.n, -0.2)
+        self.ncb = self.nbb
+
+        # Degree of adaptation calculating if not discounting illuminant (assumed eye is fully adapted)
+        self.d = alg.clamp(f * (1 - 1 / 3.6 * math.exp((-self.la - 42) / 92)), 0, 1) if not discounting else 1
+        self.calculate_adaptation(xyz_w)
+
     def calculate_adaptation(self, xyz_w: Vector) -> None:
         """Calculate the adaptation of the reference point and related variables."""
 
@@ -106,7 +198,7 @@ class Environment(_Environment):
         # Achromatic response
         self.rgb_cw = alg.multiply_x3(self.rgb_w, self.d_rgb, dims=alg.D1)
         rgb_aw = adapt(self.rgb_cw, self.fl)
-        self.a_w = (2 * rgb_aw[0] + rgb_aw[1] + 0.05 * rgb_aw[2])
+        self.a_w = self.nbb * (2 * rgb_aw[0] + rgb_aw[1] + 0.05 * rgb_aw[2])
 
 
 def cam_to_xyz(
@@ -116,8 +208,6 @@ def cam_to_xyz(
     s: float | None = None,
     Q: float | None = None,
     M: float | None = None,
-    Jhk: float | None = None,
-    Qhk: float | None = None,
     H: float | None = None,
     env: Environment | None = None
 ) -> Vector:
@@ -132,8 +222,8 @@ def cam_to_xyz(
     """
 
     # These check ensure one, and only one attribute for a given category is provided.
-    if not ((J is not None) ^ (Q is not None) ^ (Jhk is not None) ^ (Qhk is not None)):
-        raise ValueError("Conversion requires one and only one: 'J', 'Q', 'Jhk', or 'Qhk'")
+    if not ((J is not None) ^ (Q is not None)):
+        raise ValueError("Conversion requires one and only one: 'J' or 'Q'")
 
     if not ((C is not None) ^ (M is not None) ^ (s is not None)):
         raise ValueError("Conversion requires one and only one: 'C', 'M' or 's'")
@@ -147,7 +237,7 @@ def cam_to_xyz(
         raise ValueError("No viewing conditions/environment provided")
 
     # Black
-    if J == 0.0 or Q == 0.0 or Jhk == 0.0 or Qhk == 0.0:
+    if J == 0.0 or Q == 0.0:
         return [0.0, 0.0, 0.0]
 
     # Break hue into Cartesian components
@@ -158,39 +248,34 @@ def cam_to_xyz(
         h_rad = math.radians(inv_hue_quadrature(H))
 
     # Calculate `J_root` from one of the lightness derived coordinates.
-    if M is not None:
-        C = M * 35 / env.a_w
-    elif C is not None:
-        M = (C * env.a_w) / 35
-
-    if Qhk is not None:
-        Jhk = (50 * env.c * Qhk) / env.a_w
-
-    if Jhk is not None:
-        if C is None:
-            raise ValueError('C or M is required to resolve Jhk and Qhk')
-        J = Jhk - hue_angle_dependency(h_rad) * alg.spow(C, 0.587)
-
+    J_root = 0.0
     if J is not None:
-        Q = (2 / env.c) * (J / 100) * env.a_w
+        J_root = alg.nth_root(J, 2) * 0.1
     elif Q is not None:
-        J = (50 * env.c * Q) / env.a_w
+        J_root = 0.25 * env.c * Q / ((env.a_w + 4) * env.fl_root)
 
-    if s is not None:
-        M = Q * (s / 100)  # type: ignore[operator]
+    # Calculate the `t` value from one of the chroma derived coordinates
+    alpha = 0.0
+    if C is not None:
+        alpha = C / J_root
+    elif M is not None:
+        alpha = (M / env.fl_root) / J_root
+    elif s is not None:
+        alpha = 0.0004 * (s ** 2) * (env.a_w + 4) / env.c
+    t = alg.spow(alpha * math.pow(1.64 - math.pow(0.29, env.n), -0.73), 10 / 9)
 
     # Eccentricity
     et = eccentricity(h_rad)
 
     # Achromatic response
-    A = env.a_w * alg.nth_root(J / 100, env.c * env.z)  # type: ignore[operator]
+    A = env.a_w * alg.spow(J_root, 2 / env.c / env.z)
 
     # Calculate red-green and yellow-blue components
     cos_h = math.cos(h_rad)
     sin_h = math.sin(h_rad)
-    p1 = 43 * env.nc * et
-    p2 = A
-    r = M / p1  # type: ignore[operator]
+    p1 = 5e4 / 13 * env.nc * env.ncb * et
+    p2 = A / env.nbb
+    r = 23 * (p2 + 0.305) * alg.zdiv(t, 23 * p1 + t * (11 * cos_h + 108 * sin_h))
     a = r * cos_h
     b = r * sin_h
 
@@ -215,28 +300,35 @@ def xyz_to_cam(xyz: Vector, env: Environment, calc_hue_quadrature: bool = False)
     p2 = 2 * rgb_a[0] + rgb_a[1] + 0.05 * rgb_a[2]
     a = rgb_a[0] + (-12 * rgb_a[1] + rgb_a[2]) / 11
     b = (rgb_a[0] + rgb_a[1] - 2 * rgb_a[2]) / 9
+    u = rgb_a[0] + rgb_a[1] + 1.05 * rgb_a[2]
     h_rad = math.atan2(b, a) % math.tau
 
     # Eccentricity
     et = eccentricity(h_rad)
 
+    # Calculate `t` so we can calculate `alpha`
+    p1 = 5e4 / 13 * env.nc * env.ncb * et
+    t = alg.zdiv(p1 * math.sqrt(a ** 2 + b ** 2), u + 0.305)
+    alpha = alg.spow(t, 0.9) * math.pow(1.64 - math.pow(0.29, env.n), 0.73)
+
     # Achromatic response
-    A = p2
+    A = env.nbb * p2
 
     # Lightness
     J = 100 * alg.spow(A / env.a_w, env.c * env.z)
+    J_root = alg.nth_root(J / 100, 2)
 
     # Brightness
-    Q = (2 / env.c) * (J / 100) * env.a_w
-
-    # Colorfulness
-    M = 43 * env.nc * et * math.hypot(a, b)
+    Q = (4 / env.c * J_root * (env.a_w + 4) * env.fl_root)
 
     # Chroma
-    C = 35 * (M / env.a_w)
+    C = alpha * J_root
+
+    # Colorfulness
+    M = C * env.fl_root
 
     # Saturation
-    s = 100 * alg.zdiv(M, Q)
+    s = 50 * alg.nth_root(env.c * alpha / (env.a_w + 4), 2)
 
     # Hue
     h = util.constrain_hue(math.degrees(h_rad))
@@ -244,44 +336,36 @@ def xyz_to_cam(xyz: Vector, env: Environment, calc_hue_quadrature: bool = False)
     # Hue quadrature
     H = hue_quadrature(h) if calc_hue_quadrature else alg.NaN
 
-    # Lightness: Helmholtz-Kohlrausch effect
-    Jhk = J + hue_angle_dependency(h_rad) * alg.spow(C, 0.587)
-
-    # Brightness: Helmholtz-Kohlrausch effect
-    Qhk = (2 / env.c) * (Jhk / 100) * env.a_w
-
-    return [J, C, h, s, Q, M, Jhk, Qhk, H]
+    return [J, C, h, s, Q, M, H]
 
 
-def xyz_to_cam_jmh(xyz: Vector, env: Environment, hk: bool = False) -> Vector:
-    """XYZ to CAM16 JMh with corrections."""
+def xyz_to_cam_jmh(xyz: Vector, env: Environment) -> Vector:
+    """XYZ to CAM16 JMh."""
 
     cam16 = xyz_to_cam(xyz, env)
-    J, M, h = (cam16[6] if hk else cam16[0]), cam16[5], cam16[2]
+    J, M, h = cam16[0], cam16[5], cam16[2]
     return [J, M, h]
 
 
-def cam_jmh_to_xyz(jmh: Vector, env: Environment, hk: bool = False) -> Vector:
-    """CAM16 JMh with corrections to XYZ."""
+def cam_jmh_to_xyz(jmh: Vector, env: Environment) -> Vector:
+    """CAM16 JMh to XYZ."""
 
     J, M, h = jmh
-    return cam_to_xyz(Jhk=J, M=M, h=h, env=env) if hk else cam_to_xyz(J=J, M=M, h=h, env=env)
+    return cam_to_xyz(J=J, M=M, h=h, env=env)
 
 
-class HellwigJMh(LChish, Space):
-    """CAM16 class (JMh) with corrections."""
+class CAM16JMh(LCh):
+    """CAM16 class (JMh)."""
 
     BASE = "xyz-d65"
-    NAME = "hellwig-jmh"
-    SERIALIZE = ("--hellwig-jmh",)
+    NAME = "cam16-jmh"
+    SERIALIZE = ("--cam16-jmh",)
     CHANNEL_ALIASES = {
         "lightness": "j",
         "colorfulness": 'm',
         "hue": 'h'
     }
     WHITE = WHITES['2deg']['D65']
-    HK = False
-
     # Assuming sRGB which has a lux of 64: `((E * R) / PI) / 5` where `R = 1`.
     ENV = Environment(
         # Our white point.
@@ -298,7 +382,7 @@ class HellwigJMh(LChish, Space):
     )
     CHANNELS = (
         Channel("j", 0.0, 100.0),
-        Channel("m", 0, 70.0),
+        Channel("m", 0, 105.0),
         Channel("h", 0.0, 360.0, flags=FLG_ANGLE)
     )
 
@@ -314,43 +398,14 @@ class HellwigJMh(LChish, Space):
         """Check if color is achromatic."""
 
         # Account for both positive and negative chroma
-        return coords[0] == 0 or abs(coords[1]) < ACHROMATIC_THRESHOLD
+        return coords[0] == 0 or abs(coords[1]) < self.achromatic_threshold
 
     def to_base(self, coords: Vector) -> Vector:
         """From CAM16 JMh to XYZ."""
 
-        return cam_jmh_to_xyz(coords, self.ENV, hk=self.HK)
+        return cam_jmh_to_xyz(coords, self.ENV)
 
     def from_base(self, coords: Vector) -> Vector:
         """From XYZ to CAM16 JMh."""
 
-        return xyz_to_cam_jmh(coords, self.ENV, hk=self.HK)
-
-
-class HellwigHKJMh(HellwigJMh):
-    """CAM16 class (JMh) with corrections and accounting for the Helmholtz-Kohlrausch effect."""
-
-    NAME = "hellwig-hk-jmh"
-    SERIALIZE = ("--hellwig-hk-jmh",)
-    WHITE = WHITES['2deg']['D65']
-    HK = True
-
-    # Assuming sRGB which has a lux of 64: `((E * R) / PI) / 5` where `R = 1`.
-    ENV = Environment(
-        # Our white point.
-        white=WHITE,
-        # Assuming sRGB which has a lux of 64: `((E * R) / PI)` where `R = 1`.
-        # Divided by 5 (or multiplied by 20%) assuming gray world.
-        adapting_luminance=64 / math.pi * 0.2,
-        # Gray world assumption, 20% of reference white's `Yw = 100`.
-        background_luminance=20,
-        # Average surround
-        surround='average',
-        # Do not discount illuminant
-        discounting=False
-    )
-    CHANNELS = (
-        Channel("j", 0.0, 101.56018891418564),
-        Channel("m", 0, 70.0),
-        Channel("h", 0.0, 360.0, flags=FLG_ANGLE)
-    )
+        return xyz_to_cam_jmh(coords, self.ENV)
