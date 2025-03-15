@@ -194,7 +194,7 @@ def cam_to_xyz(
     if J is not None:
         if env.hk:
             if C is None:
-                raise ValueError('C or M is required to resolve Jhk and Qhk')
+                raise ValueError('C or M is required to resolve J and Q when H-K effect is enabled')
             J -= hue_angle_dependency(h_rad) * alg.spow(C, 0.587)
         Q = (2 / env.c) * (J / 100) * env.a_w
     elif Q is not None:
