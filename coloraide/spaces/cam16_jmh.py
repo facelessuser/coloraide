@@ -3,7 +3,7 @@ Deprecated CAM16 submodule.
 
 Users should import from `coloraide.spaces.cam16` instead.
 """
-from .cam16 import *
+from .cam16 import *  # noqa: F403
 from warnings import warn
 
 warn(
