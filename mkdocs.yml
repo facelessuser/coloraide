@@ -314,7 +314,7 @@ markdown_extensions:
   - pymdownx.blocks.caption:
 
 extra_css:
-  - assets/coloraide-extras/extra-17fdb77316.css
+  - assets/coloraide-extras/extra-9476cd9525.css
   - https://cdn.jsdelivr.net/npm/ace-builds@1.39.0/css/ace.css
 extra_javascript:
   - https://cdn.jsdelivr.net/npm/ace-builds@1.39.0/src-min-noconflict/ace.js
