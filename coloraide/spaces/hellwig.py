@@ -91,7 +91,25 @@ class Environment(_Environment):
         Average | > 20%     | Viewing surface colors
 
     discounting: Whether we are discounting the illuminance. Done when eye is assumed to be fully adapted.
+
+    hk: Whether to adjust lightness for the Helmholtz-Kohlrausch effect.
     """
+
+    def __init__(
+        self,
+        *,
+        hk: bool,
+        **kwargs
+    ):
+        """
+        Initialize environmental viewing conditions.
+
+        Using the specified viewing conditions, and general environmental data,
+        initialize anything that we can ahead of time to speed up the process.
+        """
+
+        super().__init__(**kwargs)
+        self.hk = hk
 
     def calculate_adaptation(self, xyz_w: Vector) -> None:
         """Calculate the adaptation of the reference point and related variables."""
@@ -115,8 +133,6 @@ def cam_to_xyz(
     s: float | None = None,
     Q: float | None = None,
     M: float | None = None,
-    Jhk: float | None = None,
-    Qhk: float | None = None,
     H: float | None = None,
     env: Environment | None = None
 ) -> Vector:
@@ -131,8 +147,8 @@ def cam_to_xyz(
     """
 
     # These check ensure one, and only one attribute for a given category is provided.
-    if not ((J is not None) ^ (Q is not None) ^ (Jhk is not None) ^ (Qhk is not None)):
-        raise ValueError("Conversion requires one and only one: 'J', 'Q', 'Jhk', or 'Qhk'")
+    if not ((J is not None) ^ (Q is not None)):
+        raise ValueError("Conversion requires one and only one: 'J' or 'Q'")
 
     if not ((C is not None) ^ (M is not None) ^ (s is not None)):
         raise ValueError("Conversion requires one and only one: 'C', 'M' or 's'")
@@ -146,7 +162,7 @@ def cam_to_xyz(
         raise ValueError("No viewing conditions/environment provided")
 
     # Black
-    if J == 0.0 or Q == 0.0 or Jhk == 0.0 or Qhk == 0.0:
+    if J == 0.0 or Q == 0.0:
         return [0.0, 0.0, 0.0]
 
     # Break hue into Cartesian components
@@ -162,17 +178,16 @@ def cam_to_xyz(
     elif C is not None:
         M = (C * env.a_w) / 35
 
-    if Qhk is not None:
-        Jhk = (50 * env.c * Qhk) / env.a_w
-
-    if Jhk is not None:
-        if C is None:
-            raise ValueError('C or M is required to resolve Jhk and Qhk')
-        J = Jhk - hue_angle_dependency(h_rad) * alg.spow(C, 0.587)
+    if env.hk and Q is not None:
+        J = (50 * env.c * Q) / env.a_w
 
     if J is not None:
+        if env.hk:
+            if C is None:
+                raise ValueError('C or M is required to resolve Jhk and Qhk')
+            J -= hue_angle_dependency(h_rad) * alg.spow(C, 0.587)
         Q = (2 / env.c) * (J / 100) * env.a_w
-    elif Q is not None:
+    else:
         J = (50 * env.c * Q) / env.a_w
 
     if s is not None:
@@ -243,28 +258,27 @@ def xyz_to_cam(xyz: Vector, env: Environment, calc_hue_quadrature: bool = False)
     # Hue quadrature
     H = hue_quadrature(h) if calc_hue_quadrature else alg.NaN
 
-    # Lightness: Helmholtz-Kohlrausch effect
-    Jhk = J + hue_angle_dependency(h_rad) * alg.spow(C, 0.587)
+    # Adjust lightness and brightness for the Helmholtz-Kohlrausch effect
+    if env.hk:
+        J += hue_angle_dependency(h_rad) * alg.spow(C, 0.587)
+        Q = (2 / env.c) * (J / 100) * env.a_w
 
-    # Brightness: Helmholtz-Kohlrausch effect
-    Qhk = (2 / env.c) * (Jhk / 100) * env.a_w
-
-    return [J, C, h, s, Q, M, Jhk, Qhk, H]
+    return [J, C, h, s, Q, M, H]
 
 
-def xyz_to_cam_jmh(xyz: Vector, env: Environment, hk: bool = False) -> Vector:
+def xyz_to_cam_jmh(xyz: Vector, env: Environment) -> Vector:
     """XYZ to CAM16 JMh with corrections."""
 
     cam16 = xyz_to_cam(xyz, env)
-    J, M, h = (cam16[6] if hk else cam16[0]), cam16[5], cam16[2]
+    J, M, h = cam16[0], cam16[5], cam16[2]
     return [J, M, h]
 
 
-def cam_jmh_to_xyz(jmh: Vector, env: Environment, hk: bool = False) -> Vector:
+def cam_jmh_to_xyz(jmh: Vector, env: Environment) -> Vector:
     """CAM16 JMh with corrections to XYZ."""
 
     J, M, h = jmh
-    return cam_to_xyz(Jhk=J, M=M, h=h, env=env) if hk else cam_to_xyz(J=J, M=M, h=h, env=env)
+    return cam_to_xyz(J=J, M=M, h=h, env=env)
 
 
 class HellwigJMh(LCh):
@@ -293,7 +307,9 @@ class HellwigJMh(LCh):
         # Average surround
         surround='average',
         # Do not discount illuminant
-        discounting=False
+        discounting=False,
+        # Account for Helmholtz-Kohlrausch effect
+        hk=False
     )
     CHANNELS = (
         Channel("j", 0.0, 100.0),
@@ -318,12 +334,12 @@ class HellwigJMh(LCh):
     def to_base(self, coords: Vector) -> Vector:
         """From CAM16 JMh to XYZ."""
 
-        return cam_jmh_to_xyz(coords, self.ENV, hk=self.HK)
+        return cam_jmh_to_xyz(coords, self.ENV)
 
     def from_base(self, coords: Vector) -> Vector:
         """From XYZ to CAM16 JMh."""
 
-        return xyz_to_cam_jmh(coords, self.ENV, hk=self.HK)
+        return xyz_to_cam_jmh(coords, self.ENV)
 
 
 class HellwigHKJMh(HellwigJMh):
@@ -332,7 +348,6 @@ class HellwigHKJMh(HellwigJMh):
     NAME = "hellwig-hk-jmh"
     SERIALIZE = ("--hellwig-hk-jmh",)
     WHITE = WHITES['2deg']['D65']
-    HK = True
 
     # Assuming sRGB which has a lux of 64: `((E * R) / PI) / 5` where `R = 1`.
     ENV = Environment(
@@ -346,7 +361,9 @@ class HellwigHKJMh(HellwigJMh):
         # Average surround
         surround='average',
         # Do not discount illuminant
-        discounting=False
+        discounting=False,
+        # Account for Helmholtz-Kohlrausch effect
+        hk=True
     )
     CHANNELS = (
         Channel("j", 0.0, 101.56018891418564),

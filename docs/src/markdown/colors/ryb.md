@@ -47,25 +47,9 @@ Johannes Itten's color wheel (which we showed an example of above), but in all t
 same color wheel and no precise color codes.
 
 ColorAide implements Gossett and Chen's algorithm to convert from RYB to sRGB, but also uses an algorithm that employs
-Newton's method to approximates the reverse transform. Additionally, their paper implements an easing function that
-biases the color transforms to corners of the cube. While we've also implemented this behavior to be true to the paper,
-the color spaces does not utilize this biasing by default, but we provide an alternative version that does. The biasing
-does not improve the color space, but limits the intermediate colors, essentially clumping them near the corners of the
-RYB color cube which was a requirement for the types of data representations that they were performing.
+Newton's method to approximates the reverse transform, something that wasn't covered in the paper.
 
-Notice how the colors in the "biased" RYB  are more concentrated at the corners while in the normal RYB they blend more.
-
-//// tab | RYB
-![RYB](../images/ryb-3d.png)
-////
-
-//// tab | RYB Biased
-![RYB](../images/ryb-biased-3d.png)
-////
-
-
-While precisely emulating paint mixing was not entirely the focus, the RYB space does do a better job than other color
-spaces.
+This approach to transforming the RGB color spaces does provide more paint like mixing.
 
 ```py play
 Color.interpolate(['color(--ryb 0 0 1)', 'color(--ryb 0 1 0)'], space='ryb')
@@ -87,6 +71,59 @@ of colors outside the gamut will have poor conversions.
 [Learn more](http://bahamas10.github.io/ryb/assets/ryb.pdf).
 ///
 
+### RYB Biased
+
+/// failure | The RYB Biased color space is not registered in `Color` by default
+///
+
+/// html | div.info-container
+//// info | Properties
+    attrs: {class: inline end}
+
+**Name:** `ryb-biased`
+
+**White Point:** D65 / 2˚
+
+**Coordinates:**
+
+Name | Range
+---- | -----
+`r`  | [0, 1]
+`y`  | [0, 1]
+`b`  | [0, 1]
+
+////
+
+
+```py play
+Wheel(Color('ryb-biased', [1, 0, 0]).harmony('wheel', space='ryb-biased'))
+```
+
+In the Gosset and Chen paper, they also implemented an easing function that was applied to the trilinear interpolation
+transform. This additional easing function biases the color transform more to the corners of the cube. The idea was to
+better simulate how paint clumps when mixing. While we've also implemented this behavior to be true to the paper, the
+RYB color space does not utilize this biasing by default, but we instead provide an alternative RYB color space
+(`ryb-biased`) that implements everything fully.
+
+Notice how the colors in the "biased" RYB  are more concentrated at the corners while in the normal RYB they blend more.
+
+//// tab | RYB
+![RYB](../images/ryb-3d.png)
+////
+
+//// tab | RYB Biased
+![RYB](../images/ryb-biased-3d.png)
+////
+
+
+```py play
+Color.interpolate(Color('ryb', [1, 0, 0]).harmony('wheel', space='ryb'), space='ryb')
+Color.interpolate(Color('ryb-biased', [1, 0, 0]).harmony('wheel', space='ryb-biased'), space='ryb-biased')
+```
+
+[Learn more](http://bahamas10.github.io/ryb/assets/ryb.pdf).
+///
+
 ## Channel Aliases
 
 Channels | Aliases
@@ -98,49 +135,33 @@ Channels | Aliases
 ## Input/Output
 
 RYB is not currently supported in the CSS spec, the parsed input and string output formats use the
-`#!css-color color()` function format using the custom name `#!css-color --ryb`:
+`#!css-color color()` function format using the custom name `#!css-color --ryb`. If using RYB Biased, then
+the custom name `#!css-color --ryb-biased` is used.
 
 ```css-color
 color(--ryb r y b / a)  // Color function
+color(--ryb-biased r y b / a)  // Color function
 ```
 
 The string representation of the color object and the default string output use the
-`#!css-color color(--ryb r y b / a)` form.
+`#!css-color color(--ryb r y b / a)` form or `#!css-color color(--ryb-biased r y b / a)` for the baised variant.
 
 ```py play
 Color("ryb", [1, 0, 0])
-Color("ryb", [1, 1, 0]).to_string()
+Color("ryb", [0.70588, 1, 0]).to_string()
+Color("ryb", [0, 1, 0])
+Color("ryb", [0.37952, 1.289, 1.014]).to_string()
 ```
 
 ## Registering
 
-```py
-from coloraide import Color as Base
-from coloraide.spaces.ryb import RYB
-
-class Color(Base): ...
-
-Color.register(RYB())
-```
-
-## RYB Biased
-
-The biased RYB from Gosset and Chen's paper can be used via the `ryb-biased` color space, CSS custom name
-`#!css-color --ryb-biased`. It has the same channel ranges as `ryb`, but conversions will be biased to the corners of
-the RYB cube.
-
-```py play
-Color.interpolate(Color('ryb', [1, 0, 0]).harmony('wheel', space='ryb'), space='ryb')
-Color.interpolate(Color('ryb-biased', [1, 0, 0]).harmony('wheel', space='ryb-biased'), space='ryb-biased')
-```
-
-Space can be registered via:
+Either RYB, RYB Biased, or both can be registered.
 
 ```py
 from coloraide import Color as Base
-from coloraide.spaces.ryb import RYBBiased
+from coloraide.spaces.ryb import RYB, RYBBiased
 
 class Color(Base): ...
 
-Color.register(RYBBiased())
+Color.register([RYB(), RYBBiased()])
 ```

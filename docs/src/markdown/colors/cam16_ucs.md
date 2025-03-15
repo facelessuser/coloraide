@@ -28,17 +28,13 @@ relation to the Display P3 color space.
 The sRGB gamut represented within the CAM16 UCS color space.
 ////
 
-A color appearance model (CAM) is a mathematical model that seeks to describe the perceptual aspects of human color
-vision, i.e. viewing conditions under which the appearance of a color does not tally with the corresponding physical
-measurement of the stimulus source.
+The CAM16 UCS space takes the [CAM16](./cam16.md) model and applies an additional nonlinear transformation to lightness
+and colorfulness so that a color difference metric ΔE can be based more closely on Euclidean distance. The `cam16-ucd`
+color space in ColorAide is based off CAM16 (Jab) which uses M (colorfulness) to derive the a and b values. There are
+also [SCD](./cam16_scd.md) and [LCD](./cam16_lcd.md) variants which optimize the spaces for "small" and "large" color
+distancing respectively.
 
-The CAM16 model is a successor of CIECAM02 with various fixes and improvements. The CAM16 UCS space takes the CAM16
-model and applies an additional nonlinear transformation to lightness and colorfulness so that a color difference metric
-ΔE can be based more closely on Euclidean distance. The `cam16-ucd` color space in ColorAide is based off CAM16 (Jab)
-which uses M (colorfulness) to derive the a and b values. There are also [SCD](./cam16_scd.md) and [LCD](./cam16_lcd.md)
-variants which optimize the spaces for "small" and "large" color distancing respectively.
-
-[Learn more](https://doi.org/10.1002/col.22131).
+[Learn more](https://www.researchgate.net/publication/318152296_Comprehensive_color_solutions_CAM16_CAT16_and_CAM16-UCS).
 ///
 
 ## Viewing Conditions

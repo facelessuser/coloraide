@@ -2,11 +2,11 @@
 import unittest
 from . import util
 from coloraide.everything import ColorAll as Color, NaN
-from coloraide.spaces.hellwig import cam_to_xyz, xyz_to_cam, HellwigJMh
+from coloraide.spaces.hellwig import cam_to_xyz, xyz_to_cam, HellwigJMh, HellwigHKJMh
 from collections import namedtuple
 import pytest
 
-HellwigCoords = namedtuple("HellwigCoords", "J C h s Q M Jhk Qhk H")
+HellwigCoords = namedtuple("HellwigCoords", "J C h s Q M H")
 
 
 class TestHellwigJMh(util.ColorAssertsPyTest):
@@ -136,7 +136,12 @@ class TestHellwigApperanceModel(util.ColorAsserts, unittest.TestCase):
 
     COORDS = HellwigCoords(
         46.02570140815224, 64.95847406394218, 27.3932565675869, 139.1190006974829, 34.03332581089115,
-        47.34682277223029, 53.03748017532689, 39.21812786705006, 9.204194063758099
+        47.34682277223029, 9.204194063758099
+    )
+
+    COORDS_HK = HellwigCoords(
+        53.03748017532689, 64.95847406394218, 27.3932565675869, 139.1190006974829, 39.21812786705006,
+        47.34682277223029, 9.204194063758099
     )
 
     def test_no_lightness(self):
@@ -173,8 +178,8 @@ class TestHellwigApperanceModel(util.ColorAsserts, unittest.TestCase):
             self.assertCompare(a, b, 14)
 
         for a, b in zip(
-            cam_to_xyz(Jhk=self.COORDS.Jhk, C=self.COORDS.C, h=self.COORDS.h, env=HellwigJMh.ENV),
-            cam_to_xyz(Qhk=self.COORDS.Qhk, C=self.COORDS.C, h=self.COORDS.h, env=HellwigJMh.ENV)
+            cam_to_xyz(J=self.COORDS.J, C=self.COORDS.C, h=self.COORDS.h, env=HellwigHKJMh.ENV),
+            cam_to_xyz(Q=self.COORDS.Q, C=self.COORDS.C, h=self.COORDS.h, env=HellwigHKJMh.ENV)
         ):
             self.assertCompare(a, b, 14)
 
@@ -223,4 +228,4 @@ class TestHellwigApperanceModel(util.ColorAsserts, unittest.TestCase):
         """Hellwig with H-K effect cannot resolve with saturation."""
 
         with self.assertRaises(ValueError):
-            cam_to_xyz(Jhk=self.COORDS.Jhk, s=self.COORDS.s, h=self.COORDS.h, env=HellwigJMh.ENV)
+            cam_to_xyz(J=self.COORDS.J, s=self.COORDS.s, h=self.COORDS.h, env=HellwigHKJMh.ENV)

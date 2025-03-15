@@ -31,7 +31,7 @@ The sRGB gamut represented within the CAM16 SCD color space.
 This is the SCD variant of the CAM16 UCS color space and is optimized for "small" color distancing. See
 [CAM16 UCS](./cam16_ucs.md) for more info.
 
-[Learn more](https://doi.org/10.1002/col.22131).
+[Learn more](https://www.researchgate.net/publication/318152296_Comprehensive_color_solutions_CAM16_CAT16_and_CAM16-UCS).
 ///
 
 ## Viewing Conditions

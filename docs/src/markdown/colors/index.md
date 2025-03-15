@@ -86,10 +86,17 @@ flowchart LR
 
     xyz-d65 --- din99o --- lch99o
 
+    xyz-d65 --- cam02-jmh
+        cam02-jmh --- cam02-ucs
+        cam02-jmh --- cam02-scd
+        cam02-jmh --- cam02-lcd
+
     xyz-d65 --- cam16-jmh
         cam16-jmh --- cam16-ucs
         cam16-jmh --- cam16-scd
         cam16-jmh --- cam16-lcd
+
+    xyz-d65 --- hellwig-jmh
 
     xyz-d65 --- hct
 
@@ -165,10 +172,15 @@ flowchart LR
     acescg(ACEScg)
     acescc(ACEScc)
     acescct(ACEScct)
+    cam02-jmh(CAM02 JMh)
+    cam02-ucs(CAM02 UCS)
+    cam02-scd(CAM02 SCD)
+    cam02-lcd(CAM02 LCD)
     cam16-jmh(CAM16 JMh)
     cam16-ucs(CAM16 UCS)
     cam16-scd(CAM16 SCD)
     cam16-lcd(CAM16 LCD)
+    hellwig-jmh(Hellwig JMh)
     hct(HCT)
     xyb(XYB)
     ryb(RYB)
@@ -228,10 +240,15 @@ flowchart LR
     click acescg "./acescg/" _self
     click acescc "./acescc/" _self
     click acescct "./acescct/" _self
+    click cam02-jmh "./cam16/" _self
+    click cam02-ucs "./cam16_ucs/" _self
+    click cam02-scd "./cam16_scd/" _self
+    click cam02-lcd "./cam16_lcd/" _self
     click cam16-jmh "./cam16/" _self
     click cam16-ucs "./cam16_ucs/" _self
     click cam16-scd "./cam16_scd/" _self
     click cam16-lcd "./cam16_lcd/" _self
+    click hellwig-jmh "./hellwig/" _self
     click hct "./hct/" _self
     click xyb "./xyb/" _self
     click ryb "./ryb/" _self
@@ -252,6 +269,10 @@ Color Space                                     | ID
 [ACEScc](./acescc.md)                           | `acescc`
 [ACEScct](./acescct.md)                         | `acescct`
 [ACEScg](./acescg.md)                           | `acescg`
+[CAM02 JMh](./cam02.md)                         | `cam02-jmh`
+[CAM02 LCD](./cam02_lcd.md)                     | `cam02-lcd`
+[CAM02 SCD](./cam02_scd.md)                     | `cam02-scd`
+[CAM16 UCS](./cam02_ucs.md)                     | `cam02-ucs`
 [CAM16 JMh](./cam16.md)                         | `cam16-jmh`
 [CAM16 LCD](./cam16_lcd.md)                     | `cam16-lcd`
 [CAM16 SCD](./cam16_scd.md)                     | `cam16-scd`
@@ -263,6 +284,7 @@ Color Space                                     | ID
 [DIN99o](./din99o.md)                           | `din99o`
 [Display P3](./display_p3.md)                   | `display-p3`
 [HCT](./hct.md)                                 | `hct`
+[Hellwig JMh](./hellwig.md)                     | `hellwig-jmh`
 [HPLuv](./hpluv.md)                             | `hpluv`
 [HSI](./hsi.md)                                 | `hsi`
 [HSL](./hsl.md)                                 | `hsl`
