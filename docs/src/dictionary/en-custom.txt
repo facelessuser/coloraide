@@ -90,6 +90,8 @@ HSVish
 HUSL
 HWB
 HWBish
+Hellwig
+Hermann
 Horner
 HyAB
 Hz
@@ -117,6 +119,7 @@ Jz
 JzCzhz
 JzMzhz
 Jzazbz
+Kohlrausch
 Kries
 Kubelka
 Kz
@@ -198,6 +201,7 @@ Safdar
 Scalable
 Sharma
 Sijmen
+Stolitzka
 Sz
 TODO
 TORTIOUS
@@ -346,6 +350,7 @@ subclassed
 subclasses
 subclassing
 sublicense
+submodule
 subsamplings
 subtractive
 tetradic

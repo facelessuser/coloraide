@@ -22,7 +22,7 @@ class TestRoundTrip:
     Color.deregister('space:hpluv')
     Color.deregister('space:ryb-biased')
 
-    SPACES = {k: 6 for k in Color.CS_MAP.keys()}
+    SPACES = dict.fromkeys(Color.CS_MAP, 6)
     # Not as accurate due to approximation back to CAM16
 
     COLORS = [
@@ -92,7 +92,7 @@ class TestAchromaticRoundTrip(TestRoundTrip):
     Color.deregister('space:ryb')
     Color.deregister('space:ryb-biased')
 
-    SPACES = {k: 6 for k in Color.CS_MAP.keys()}
+    SPACES = dict.fromkeys(Color.CS_MAP, 6)
     # Precision just isn't as high for these in achromatic region
     # but it is good enough for practical purposes.
 

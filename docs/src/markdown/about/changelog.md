@@ -1,7 +1,9 @@
 # Changelog
 
-## 4.3.1
+## 4.4
 
+-   **NEW**: Deprecate submodule name `cam16_jmh` and `zcam_jmh` in favor of the more generic `cam16` and `zcam` names.
+    Legacy name is still accessible, but will be remove at some future time.
 -   **FIX**: Scale achromatic threshold depending on order of magnitude of component scaling. This ensures colors that
     are scaled roughly between 0 - 1 are not considered achromatic earlier than a space scaled roughly between 0 - 100.
 -   **FIX**: Optimized matrix math operations should handle column vectors.

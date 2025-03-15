@@ -101,6 +101,9 @@ nav:
         - IPT: colors/ipt.md
         - ICtCp: colors/ictcp.md
         - IgPgTg: colors/igpgtg.md
+        - CAM02 UCS: colors/cam02_ucs.md
+        - CAM02 SCD: colors/cam02_scd.md
+        - CAM02 LCD: colors/cam02_lcd.md
         - CAM16 UCS: colors/cam16_ucs.md
         - CAM16 SCD: colors/cam16_scd.md
         - CAM16 LCD: colors/cam16_lcd.md
@@ -114,9 +117,11 @@ nav:
         - LCh(uv): colors/lchuv.md
         - DIN99 LCh: colors/lch99o.md
         - JzCzhz: colors/jzczhz.md
-        - CAM16 JMh: colors/cam16_jmh.md
+        - CAM02 JMh: colors/cam02.md
+        - CAM16 JMh: colors/cam16.md
+        - Hellwig JMh: colors/hellwig.md
         - HCT: colors/hct.md
-        - ZCAM JMh: colors/zcam_jmh.md
+        - ZCAM JMh: colors/zcam.md
 
       - ACES Spaces:
         - ACES 2065-1: colors/aces2065_1.md

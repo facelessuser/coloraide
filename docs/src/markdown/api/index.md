@@ -863,7 +863,7 @@ Parameters
 - 
     Parameters      | Defaults          | Description
     --------------- | ----------------- | -----------
-    `colors`        |                   | A list of color strings, [`Color`](#color) objects, dictionaries representing a color, [`stop`](#piecewise) objects, or easing functions.
+    `colors`        |                   | A list of color strings, [`Color`](#color) objects, dictionaries representing a color, [`stop`](#stop) objects, or easing functions.
     `space`         | `#!py "lab"`      | Color space to interpolate in.
     `out_space`     | `#!py None`       | Color space that the new color should be in. If `#!py None`, the return color will be in the same color space as specified by `space`.
     `progress`      | `#!py None`       | An optional function that allows for custom logic to perform non-linear interpolation.
@@ -919,7 +919,7 @@ Parameters
 - 
     Parameters                 | Defaults                           | Description
     -------------------------- | ---------------------------------- | -----------
-    `color`                    |                                    | A list of color strings, [`Color`](#color) objects, dictionaries representing a color, [`stop`](#piecewise) objects, or easing functions.
+    `color`                    |                                    | A list of color strings, [`Color`](#color) objects, dictionaries representing a color, [`stop`](#stop) objects, or easing functions.
     `steps`                    | `#!py 2`                           | Minimum number of steps.
     `max_steps`                | `#!py 1000`                        | Maximum number of steps.
     `max_delta_e`              | `#!py 0`                           | Maximum delta E distance between the color stops. A value of `0` or less will be ignored.
@@ -967,7 +967,7 @@ Parameters
 - 
     Parameters                       | Defaults                           | Description
     -------------------------------- | ---------------------------------- | -----------
-    `color`                          |                                    | A list of color strings, [`Color`](#color) objects, dictionaries representing a color, [`stop`](#piecewise) objects, or easing functions.
+    `color`                          |                                    | A list of color strings, [`Color`](#color) objects, dictionaries representing a color, [`stop`](#stop) objects, or easing functions.
     `space`                          | `#!py "lab"`                       | Color space to interpolate in.
     `out_space`                      | `#!py None`                        | Color space that the new color should be in. If `#!py None`, the return color will be in the same color space as specified by `space`.
     `steps`                          | `#!py None`                        | Minimum number of steps. If `#!py None`, steps will be set to the number of input colors.
@@ -1238,8 +1238,8 @@ Parameters
     Parameters  | Defaults       | Description
     ----------- | -------------- | -----------
     `backdrop`  |                | A background color or sequence of background colors represented with strings, [`Color`](#color) objects, and/or dictionaries representing a color.
-    `blend`     | `#!py3 None`   | A blend mode to use to use when compositing. Values should be a string specifying the name of the blend mode to use. If `#!py None`, [`normal`](#normal) will be used. If `#!py False`, blending will be skipped.
-    `operator`  | `#!py3 None`   | A Porter Duff operator to use for alpha compositing. Values should be a string specifying the name of the operator to use. If `#!py None`, [`source-over`](#source-over) will be used. If `#!py False`, alpha compositing will be skipped.
+    `blend`     | `#!py3 None`   | A blend mode to use to use when compositing. Values should be a string specifying the name of the blend mode to use. If `#!py None`, [`normal`](../compositing.md#normal) will be used. If `#!py False`, blending will be skipped.
+    `operator`  | `#!py3 None`   | A Porter Duff operator to use for alpha compositing. Values should be a string specifying the name of the operator to use. If `#!py None`, [`source-over`](../compositing.md#source-over) will be used. If `#!py False`, alpha compositing will be skipped.
     `space`     | `#!py3 None`   | A color space to perform the overlay in. If `#!py None`, the base color's space will be used.
     `out_space` | `#!py None`    | Color space that the new color should be in. If `#!py None`, the return color will be in the same color space as specified by `space`.
     `in_place`  | `#!py3 False`  | Boolean used to determine if the current color should be modified "in place" or a new [`Color`](#color) object should be returned.
@@ -1302,8 +1302,8 @@ Parameters
     Parameters  | Defaults       | Description
     ----------- | -------------- | -----------
     `colors`    |                | A sequence of color strings, [`Color`](#color) objects, and/or dictionaries representing a color.
-    `blend`     | `#!py3 None`   | A blend mode to use to use when compositing. Values should be a string specifying the name of the blend mode to use. If `#!py None`, [`normal`](#normal) will be used. If `#!py False`, blending will be skipped.
-    `operator`  | `#!py3 None`   | A Porter Duff operator to use for alpha compositing. Values should be a string specifying the name of the operator to use. If `#!py None`, [`source-over`](#source-over) will be used. If `#!py False`, alpha compositing will be skipped.
+    `blend`     | `#!py3 None`   | A blend mode to use to use when compositing. Values should be a string specifying the name of the blend mode to use. If `#!py None`, [`normal`](../compositing.md#normal) will be used. If `#!py False`, blending will be skipped.
+    `operator`  | `#!py3 None`   | A Porter Duff operator to use for alpha compositing. Values should be a string specifying the name of the operator to use. If `#!py None`, [`source-over`](../compositing.md#source-over) will be used. If `#!py False`, alpha compositing will be skipped.
     `space`     | `#!py3 None`   | A color space to perform the overlay in. If `#!py None`, the base color's space will be used.
     `out_space` | `#!py None`    | Color space that the new color should be in. If `#!py None`, the return color will be in the same color space as specified by `space`.
 

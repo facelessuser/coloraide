@@ -49,7 +49,7 @@ A color space can be constructed of using a subset of these attributes: JCh, JMh
 construct Lab like spaces taking using the hue and either C, M, or s. The `cam16-jmh` color space in ColorAide
 represents the JMh configuration.
 
-[Learn more](https://doi.org/10.1002/col.22131).
+[Learn more](https://www.researchgate.net/publication/318152296_Comprehensive_color_solutions_CAM16_CAT16_and_CAM16-UCS).
 ///
 
 ## Viewing Conditions
@@ -76,7 +76,7 @@ When doing this, the space should be derived from the default. A UCS variant wou
 
 ```py play
 from coloraide import Color as Base
-from coloraide.spaces.cam16_jmh import CAM16JMh, Environment
+from coloraide.spaces.cam16 import CAM16JMh, Environment
 from coloraide.cat import WHITES
 from coloraide import util
 import math
@@ -103,9 +103,11 @@ Color('white').convert('cam16-custom')
 
 /// note
 It can be noted in the above example that white does not have the typical zero chroma. This is because the eye is not
-assumed as being fully adapted to the environment. If `discounting` was enabled, the eye is then assumed to be fully
-adapted, white would have a chroma of zero. So the settings can affect things like what is considered achromatic in the
-space. This is not a bug, but simply the way the model works.
+assumed as being fully adapted to the environment. Due to the environment, the colors considered achromatic may appear
+differently.
+
+If `discounting` was enabled, the eye is then assumed to be fully adapted, and achromatic colors would align better with
+expectations in other color spaces.
 ///
 
 ## Channel Aliases
@@ -137,7 +139,7 @@ Color("cam16-jmh", [78.364, 9.6945, 28.629], 1).to_string()
 
 ```py
 from coloraide import Color as Base
-from coloraide.spaces.cam16_jmh import CAM16JMh
+from coloraide.spaces.cam16 import CAM16JMh
 
 class Color(Base): ...
 

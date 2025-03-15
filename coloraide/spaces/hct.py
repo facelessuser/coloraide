@@ -41,7 +41,7 @@ from .. import algebra as alg
 from .lch import LCh
 from ..cat import WHITES
 from ..channels import Channel, FLG_ANGLE
-from .cam16_jmh import Environment, cam_to_xyz, xyz_to_cam
+from .cam16 import Environment, cam_to_xyz, xyz_to_cam
 from .lab import EPSILON, KAPPA, KE
 from ..types import Vector
 import math
