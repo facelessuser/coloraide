@@ -5,7 +5,7 @@ from coloraide.everything import ColorAll as Color, NaN
 import pytest
 
 
-class TestCAM16CAM16UCS(util.ColorAssertsPyTest):
+class TestCAM16UCS(util.ColorAssertsPyTest):
     """Test CAM16 UCS."""
 
     COLORS = [
@@ -100,7 +100,7 @@ class TestCAM16UCSPoperties(util.ColorAsserts, unittest.TestCase):
         self.assertEqual(c['alpha'], 0.5)
 
 
-class TestCAM16CAM16SCD(util.ColorAssertsPyTest):
+class TestCAM16SCD(util.ColorAssertsPyTest):
     """Test CAM16 SCD."""
 
     COLORS = [
@@ -192,7 +192,7 @@ class TestCAM16SCDPoperties(util.ColorAsserts, unittest.TestCase):
         self.assertEqual(c['alpha'], 0.5)
 
 
-class TestCAM16CAM16LCD(util.ColorAssertsPyTest):
+class TestCAM16LCD(util.ColorAssertsPyTest):
     """Test CAM16 LCD."""
 
     COLORS = [

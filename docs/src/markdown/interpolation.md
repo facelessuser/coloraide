@@ -32,7 +32,7 @@ returned interpolation function accepts numerical input in the [domain](#domains
 between the specified colors to be returned.
 
 By default, colors are interpolated in the perceptually uniform Oklab color space, though any supported color space can
-be used instead. This also applies to all methods that use interpolation, such as [`discrete`](#discrete),
+be used instead. This also applies to all methods that use interpolation, such as [`discrete`](#discrete-interpolation),
 [`steps`](#steps), [`mix`](#mixing), etc.
 
 As an example, below we create an interpolation between `#!color rebeccapurple` and `#!color lch(85% 100 85)`. We then
@@ -950,7 +950,7 @@ Color.steps(
 )
 ```
 
-Wile you can technically feed `domain` into [`mix`](#mix), it is probably not as useful. It will respect the domain
+Wile you can technically feed `domain` into [`mix`](#mixing), it is probably not as useful. It will respect the domain
 alignment, but mix always accepts a percentage of [0, 1], regardless of the underlying domain.
 
 ## Extrapolation
@@ -1019,9 +1019,9 @@ for the same channel, then `NaN` will be returned.
 
 /// tip | Continuous NaN Handling
 `NaN` handling is a bit different for the [Continuous](#continuous-interpolation) and
-[Cubic Spline](#cubic-spline-interpolaton) interpolation approaches. Linear only evaluates colors at a given time, while
-the others will take into consideration more than two colors. Because the context is much wider and more complicated,
-`NaN` values will often get context from both sides.
+[Cubic Spline](#cubic-spline-interpolation) interpolation approaches. Linear only evaluates colors at a given time,
+while the others will take into consideration more than two colors. Because the context is much wider and more
+complicated, `NaN` values will often get context from both sides.
 ///
 
 Notice that in this example, because white's saturation is zero, the hue is undefined. Because the hue is undefined,

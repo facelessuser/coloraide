@@ -211,7 +211,7 @@ Color('color(display-p3 1 1 0)').clip('srgb')
 When indirectly gamut mapping in another color space, results may vary depending on what color space you are in and
 what color space you are using to fit the color. The operation may not get the color precisely in gamut. This is
 because we must convert the color to the gamut mapping space, apply the gamut mapping, and then convert it back to
-the original color. The process will be subject to any errors that occur in the [round trip](#notes-on-round-trip-accuracy)
+the original color. The process will be subject to any errors that occur in the [round trip](./advanced.md#round-trip-accuracy)
 to and from the targeted space. This is mainly mentioned as fitting in one color space and round tripping back may
 not give exact results and, in some cases, exceed "in gamut" thresholds.
 ///
@@ -408,7 +408,7 @@ Much like the other LCh chroma reduction algorithms, HCT Chroma performs gamut m
 [LCh Chroma](#lch-chroma) with the exception that it uses the HCT color space as the working LCh color space.
 
 Google's Material Design uses a new color space called [HCT](./colors/hct.md). It uses the hue and chroma from
-[CAM16](./colors/cam16_jmh.md) space and the tone/lightness from the [CIELab](./colors/lab_d65.md) space. HCT takes
+[CAM16](./colors/cam16.md) space and the tone/lightness from the [CIELab](./colors/lab_d65.md) space. HCT takes
 advantage of the good hue preservation of CAM16 and has the better lightness predictability of CIELab. Using these
 characteristics, the color space is adept at generating tonal palettes with predictable lightness. This makes it easier
 to construct UIs with decent contrast. But to do this well, you must work in HCT and gamut map in HCT. For this reason,
@@ -450,8 +450,8 @@ Color.register([HCT(), DEHCT(), HCTChroma()])
 /// New | New in 4.0
 The default perceptual space is now OkLCh.
 
-Please see [Ray Tracing Chroma Reduction in Any Perceptual Space](#ray-tracing-chroma-reduction-in-any-perceptual-space)
-to learn how to use different perceptual spaces and how to set your own default.
+Please see [Gamut Mapping in Any Perceptual Space](#gamut-mapping-in-any-perceptual-space) to learn how to use different
+perceptual spaces and how to set your own default.
 ///
 
 ColorAide has developed a chroma reduction technique that employs ray tracing. Its aim is to provide faster chrome

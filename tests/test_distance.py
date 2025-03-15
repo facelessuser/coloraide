@@ -755,6 +755,114 @@ class TestDistance(util.ColorAssertsPyTest):
             rounding=4
         )
 
+    @pytest.mark.parametrize(
+        'color1,color2,value',
+        [
+            ('red', 'red', 0),
+            ('red', 'orange', 35.1417),
+            ('red', 'yellow', 62.633),
+            ('red', 'green', 64.2923),
+            ('red', 'blue', 84.1186),
+            ('red', 'indigo', 66.7648),
+            ('red', 'violet', 45.5446),
+            ('red', 'white', 62.3845),
+            ('red', 'black', 75.4572),
+            ('red', 'gray', 47.3177),
+            ('red', 'red', 0),
+            ('orange', 'red', 35.1417),
+            ('yellow', 'red', 62.633),
+            ('green', 'red', 64.2923),
+            ('blue', 'red', 84.1186),
+            ('indigo', 'red', 66.7648),
+            ('violet', 'red', 45.5446),
+            ('white', 'red', 62.3845),
+            ('black', 'red', 75.4572),
+            ('gray', 'red', 47.3177)
+        ]
+    )
+    def test_delta_e_cam02(self, color1, color2, value):
+        """Test delta e CAM02 UCS."""
+
+        print('color1: ', color1)
+        print('color2: ', color2)
+        self.assertCompare(
+            Color(color1).delta_e(color2, method="cam02"),
+            value,
+            rounding=4
+        )
+
+    @pytest.mark.parametrize(
+        'color1,color2,value',
+        [
+            ('red', 'red', 0),
+            ('red', 'orange', 50.4075),
+            ('red', 'yellow', 86.8582),
+            ('red', 'green', 90.7039),
+            ('red', 'blue', 119.5814),
+            ('red', 'indigo', 92.0904),
+            ('red', 'violet', 64.944),
+            ('red', 'white', 86.5454),
+            ('red', 'black', 102.818),
+            ('red', 'gray', 68.6731),
+            ('red', 'red', 0),
+            ('orange', 'red', 50.4075),
+            ('yellow', 'red', 86.8582),
+            ('green', 'red', 90.7039),
+            ('blue', 'red', 119.5814),
+            ('indigo', 'red', 92.0904),
+            ('violet', 'red', 64.944),
+            ('white', 'red', 86.5454),
+            ('black', 'red', 102.818),
+            ('gray', 'red', 68.6731)
+        ]
+    )
+    def test_delta_e_cam02_lcd(self, color1, color2, value):
+        """Test delta e CAM02 LCD."""
+
+        print('color1: ', color1)
+        print('color2: ', color2)
+        self.assertCompare(
+            Color(color1).delta_e(color2, method="cam02", space='cam02-lcd'),
+            value,
+            rounding=4
+        )
+
+    @pytest.mark.parametrize(
+        'color1,color2,value',
+        [
+            ('red', 'red', 0),
+            ('red', 'orange', 28.7237),
+            ('red', 'yellow', 51.5154),
+            ('red', 'green', 53.6348),
+            ('red', 'blue', 69.5705),
+            ('red', 'indigo', 55.2779),
+            ('red', 'violet', 37.762),
+            ('red', 'white', 51.2275),
+            ('red', 'black', 61.3327),
+            ('red', 'gray', 39.215),
+            ('red', 'red', 0),
+            ('orange', 'red', 28.7237),
+            ('yellow', 'red', 51.5154),
+            ('green', 'red', 53.6348),
+            ('blue', 'red', 69.5705),
+            ('indigo', 'red', 55.2779),
+            ('violet', 'red', 37.762),
+            ('white', 'red', 51.2275),
+            ('black', 'red', 61.3327),
+            ('gray', 'red', 39.215)
+        ]
+    )
+    def test_delta_e_cam02_scd(self, color1, color2, value):
+        """Test delta e CAM02 SCD."""
+
+        print('color1: ', color1)
+        print('color2: ', color2)
+        self.assertCompare(
+            Color(color1).delta_e(color2, method="cam02", space='cam02-scd'),
+            value,
+            rounding=4
+        )
+
 
 class TestDistanceSpecificCases(util.ColorAsserts, unittest.TestCase):
     """Test distance specific cases."""
@@ -848,3 +956,10 @@ class TestClosest(util.ColorAsserts, unittest.TestCase):
 
         with self.assertRaises(ValueError):
             Color('red').delta_e('blue', method='cam16', space='lab')
+
+    def test_bad_de_cam02_space(self):
+        """Test bad space in CAM02."""
+
+        with self.assertRaises(ValueError):
+            Color('red').delta_e('blue', method='cam02', space='lab')
+

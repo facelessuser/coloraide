@@ -28,7 +28,7 @@ range of `i` = [0, 1], `ct` = [-1, 1] and `cp` = [1, 1] for percentage input and
 The sRGB gamut represented within the ICtCp color space.
 ////
 
-ICtCp is a color space format with better perceptual uniformity than [CIELab](#cielab) and is used as a part of the
+ICtCp is a color space format with better perceptual uniformity than [CIELab](./lab.md) and is used as a part of the
 color image pipeline in video and digital photography systems for high dynamic range (HDR) and wide color gamut (WCG)
 imagery. It was developed by Dolby Laboratories from the IPT color space by Ebner and Fairchild. It was designed with
 the intention to replace YCbCr.

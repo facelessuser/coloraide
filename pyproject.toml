@@ -130,7 +130,8 @@ lint.ignore = [
 [tool.coverage.report]
 # Regexes for lines to exclude from consideration
 omit = [
-    "coloraide/spaces/cam16.py",
+    "coloraide/spaces/cam16_jmh.py",
+    "coloraide/spaces/zcam_jmh.py",
     "coloraide/deprecate.py"
 ]
 

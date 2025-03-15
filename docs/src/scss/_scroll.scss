@@ -1,6 +1,6 @@
 @use "utilities/convert";
 
-.md-typeset textarea {
+.md-typeset div.ace_scrollbar {  /* stylelint-disable-line selector-class-pattern */
 
   scrollbar-color: var(--md-default-fg-color--lighter) transparent;
   scrollbar-width: thin;

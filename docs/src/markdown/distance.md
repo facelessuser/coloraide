@@ -191,8 +191,8 @@ Delta\ E                                 | Symmetrical           | Name         
 
 Various algorithms are designed for and perform decently in the SDR range, but ∆E~itp~ aims to provide good
 distancing in the HDR range using the [ICtCp](./colors/ictcp.md) color space (must be registered in order to use ∆E~itp~).
-It was determined that a `scalar` of 240 was more comparable to the average [∆E^\*^~00~](#delta-e-2000) result from the
-JND data set and 720 equates them to a JND.
+It was determined that a `scalar` of 240 was more comparable to the average [∆E^\*^~00~](#delta-e-ciede2000) result from
+the JND data set and 720 equates them to a JND.
 
 ### Delta E Z
 
@@ -258,7 +258,7 @@ to use this ∆E method.
 from coloraide import Color as Base
 from coloraide.distance.delta_e_cam16 import DECAM16
 from coloraide.spaces.cam16_ucs import CAM16UCS, CAM16SCD, CAM16LCD
-from coloraide.spaces.cam16_jmh import CAM16JMh
+from coloraide.spaces.cam16 import CAM16JMh
 
 class Color(Base): ...
 
@@ -272,7 +272,7 @@ Color.register([CAM16JMh(), CAM16UCS(), CAM16SCD(), CAM16LCD(), DECAM16()])
 
 /// warning
 This approach was specifically added to help produce tonal palettes, but with the recent addition of the [ray trace
-approach to chroma reduction in any perceptual space](./gamut.md#ray-tracing-chroma-reduction-in-any-perceptual-space),
+approach to chroma reduction in any perceptual space](./gamut.md#gamut-mapping-in-any-perceptual-space),
 users can defer to the ray tracing approach which does not require a special ∆E method and it performs much faster.
 
 On occasions, MINDE approach can be slightly more accurate very close to white due to the way ray trace handles HCT's
