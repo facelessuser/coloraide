@@ -31,7 +31,7 @@ from .. import util
 from .. import algebra as alg
 from ..cat import WHITES
 from ..channels import Channel, FLG_ANGLE
-from ..types import Vector
+from ..types import Vector, VectorLike
 
 
 def hue_angle_dependency(h: float) -> float:
@@ -98,9 +98,13 @@ class Environment(_Environment):
     def __init__(
         self,
         *,
+        white: VectorLike,
+        adapting_luminance: float,
+        background_luminance: float,
+        surround: str,
+        discounting: bool,
         hk: bool,
-        **kwargs
-    ):
+    ) -> None:
         """
         Initialize environmental viewing conditions.
 
@@ -108,7 +112,13 @@ class Environment(_Environment):
         initialize anything that we can ahead of time to speed up the process.
         """
 
-        super().__init__(**kwargs)
+        super().__init__(
+            white=white,
+            adapting_luminance=adapting_luminance,
+            background_luminance=background_luminance,
+            surround=surround,
+            discounting=discounting
+        )
         self.hk = hk
 
     def calculate_adaptation(self, xyz_w: Vector) -> None:
@@ -187,7 +197,7 @@ def cam_to_xyz(
                 raise ValueError('C or M is required to resolve Jhk and Qhk')
             J -= hue_angle_dependency(h_rad) * alg.spow(C, 0.587)
         Q = (2 / env.c) * (J / 100) * env.a_w
-    else:
+    elif Q is not None:
         J = (50 * env.c * Q) / env.a_w
 
     if s is not None:
