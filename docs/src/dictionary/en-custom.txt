@@ -91,6 +91,7 @@ HUSL
 HWB
 HWBish
 Hellwig
+Hermann
 Horner
 HyAB
 Hz
@@ -349,6 +350,7 @@ subclassed
 subclasses
 subclassing
 sublicense
+submodule
 subsamplings
 subtractive
 tetradic

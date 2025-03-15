@@ -52,21 +52,21 @@ class Environment(_Environment):
     Usage Guidelines for CIECAM97s (Nathan Moroney)
     https://www.researchgate.net/publication/220865484_Usage_guidelines_for_CIECAM97s
 
-    white: This is the (x, y) chromaticity points for the white point. This should be the same
+    `white`: This is the (x, y) chromaticity points for the white point. This should be the same
         value as set in the color class `WHITE` value.
 
-    adapting_luminance: This is the luminance of the adapting field. The units are in cd/m2.
+    `adapting_luminance`: This is the luminance of the adapting field. The units are in cd/m2.
         The equation is `L = (E * R) / π`, where `E` is the illuminance in lux, `R` is the reflectance,
         and `L` is the luminance. If we assume a perfectly reflecting diffuser, `R` is assumed as 1.
         For the "gray world" assumption, we must also divide by 5 (or multiply by 0.2 - 20%).
         This results in `La = E / π * 0.2`. You can also ignore this gray world assumption converting
         lux directly to nits (cd/m2) `lux / π`.
 
-    background_luminance: The background is the region immediately surrounding the stimulus and
+    `background_luminance`: The background is the region immediately surrounding the stimulus and
         for images is the neighboring portion of the image. Generally, this value is set to a value of 20.
         This implicitly assumes a gray world assumption.
 
-    surround: The surround is categorical and is defined based on the relationship between the relative
+    `surround`: The surround is categorical and is defined based on the relationship between the relative
         luminance of the surround and the luminance of the scene or image white. While there are 4 defined
         surrounds, usually just `average`, `dim`, and `dark` are used.
 
@@ -74,7 +74,7 @@ class Environment(_Environment):
         Dim     | 0% to 20% | Viewing television
         Average | > 20%     | Viewing surface colors
 
-    discounting: Whether we are discounting the illuminance. Done when eye is assumed to be fully adapted.
+    `discounting`: Whether we are discounting the illuminance. Done when eye is assumed to be fully adapted.
     """
 
     def calculate_adaptation(self, xyz_w: Vector) -> None:

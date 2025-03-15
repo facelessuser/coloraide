@@ -144,7 +144,7 @@ color(--ryb-biased r y b / a)  // Color function
 ```
 
 The string representation of the color object and the default string output use the
-`#!css-color color(--ryb r y b / a)` form or `#!css-color color(--ryb-biased r y b / a)` for the baised variant.
+`#!css-color color(--ryb r y b / a)` form or `#!css-color color(--ryb-biased r y b / a)` for the biased variant.
 
 ```py play
 Color("ryb", [1, 0, 0])

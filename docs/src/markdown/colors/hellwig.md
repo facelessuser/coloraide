@@ -29,7 +29,7 @@ The sRGB gamut represented within the Hellwig JMh color space.
 ////
 
 The Hellwig color model is an unofficial name for the CAM16 model with applied "fixes" as published by Luke Hellwig and
-Markfairchild entilted 'Brightness, lightness, colorfulness, and chroma in CIECAM02 and CAM16'. The paper suggests
+Mark Fairchild entitled 'Brightness, lightness, colorfulness, and chroma in CIECAM02 and CAM16'. The paper suggests
 a number of changes to the brightness and lightness properties changing their non-linear relationship to a linear
 relationship. It also details a reevaluation of chroma, colorfulness, and saturation making some suggestions additional
 changes.
@@ -91,8 +91,8 @@ After the initial paper describing the Hellwig corrections, Luke Hellwig, Dale S
 another paper that modified lightness and brightness further to better represent the Helmholtz–Kohlrausch effect in the
 CAM16 model.
 
-The paper entiled 'Extending CIECAM02 and CAM16 for the Helmholtz–Kohlrausch effect' outlined additional changes to the
-lightness and brightness calculations of CAM16 and CIECAM02 that allowed the modles to better simulate the
+The paper entitled 'Extending CIECAM02 and CAM16 for the Helmholtz–Kohlrausch effect' outlined additional changes to the
+lightness and brightness calculations of CAM16 and CIECAM02 that allowed the models to better simulate the
 Helmholtz–Kohlrausch effect. These changes are required to made on top of the original modifications of brightness and
 lightness as described by in the first Hellwig paper.
 
