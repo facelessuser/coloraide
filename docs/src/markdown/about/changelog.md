@@ -2,8 +2,13 @@
 
 ## 4.4
 
+-   **NEW**: Add support for the CAM02 color model and add the CAM02 JMh, CAM02 UCS, CAM02 SCD, and CAM02 LCD color
+    spaces.
+-   **NEW**: Add the Hellwig corrections to CAM16 under a new color model variant called Hellwig which adds two new
+    color spaces: Hellwig JMh and Hellwig H-k JMh. The H-K variant add additional changes that adjusts lightness for the
+    Helmholtz–Kohlrausch effect.
 -   **NEW**: Deprecate submodule name `cam16_jmh` and `zcam_jmh` in favor of the more generic `cam16` and `zcam` names.
-    Legacy name is still accessible, but will be remove at some future time.
+    Legacy submodule names are still accessible but will now raise a deprecation warning.
 -   **FIX**: Scale achromatic threshold depending on order of magnitude of component scaling. This ensures colors that
     are scaled roughly between 0 - 1 are not considered achromatic earlier than a space scaled roughly between 0 - 100.
 -   **FIX**: Optimized matrix math operations should handle column vectors.
