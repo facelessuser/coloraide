@@ -23,6 +23,7 @@ used as long as the final results are converted to normal types. It is certainly
 that we could switch to using `numpy` in a major release in the future.
 """
 from __future__ import annotations
+import sys
 import cmath
 import math
 import operator
@@ -36,6 +37,8 @@ from .types import (
 )
 from typing import Callable, Sequence, Iterator, Any, Iterable, overload
 
+RTOL = 4 * sys.float_info.epsilon
+ATOL = 1e-12
 NaN = math.nan
 INF = math.inf
 
@@ -218,8 +221,8 @@ def solve_bisect(
     args: tuple[Any] | tuple[()] = (),
     start: float | None = None,
     maxiter: int = 50,
-    rtol: float = 1e-12,
-    atol: float = 9e-13,
+    rtol: float = RTOL,
+    atol: float = ATOL,
 ) -> tuple[float, bool]:
     """
     Apply the bisect method to converge upon an answer.
@@ -233,7 +236,7 @@ def solve_bisect(
     x = math.nan
     for _ in range(maxiter):
         x = f(t, *args) if args else f(t)
-        if abs(x) == 0:  # pragma: no cover
+        if math.isclose(x, 0, rel_tol=rtol, abs_tol=atol):
             return t, True
         if x > 0:
             high = t
@@ -244,7 +247,7 @@ def solve_bisect(
         if math.isclose(low, high, rel_tol=rtol, abs_tol=atol):  # pragma: no cover
             break
 
-    return t, abs(x) < atol
+    return t, abs(x) < atol  # pragma: no cover
 
 
 def _solve_quadratic(poly: Vector) -> Vector:
@@ -391,8 +394,8 @@ def solve_newton(
     dx2: Callable[..., float] | None = None,
     args: tuple[Any] | tuple[()] = (),
     maxiter: int = 50,
-    rtol: float = 1e-12,
-    atol: float = 9e-13,
+    rtol: float = RTOL,
+    atol: float = ATOL,
     ostrowski: bool = False
 ) -> tuple[float, bool | None]:
     """

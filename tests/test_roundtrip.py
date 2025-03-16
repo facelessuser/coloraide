@@ -20,7 +20,6 @@ class TestRoundTrip:
         """Local color object."""
 
     Color.deregister('space:hpluv')
-    Color.deregister('space:ryb-biased')
 
     SPACES = dict.fromkeys(Color.CS_MAP, 6)
     # Not as accurate due to approximation back to CAM16
@@ -93,8 +92,6 @@ class TestAchromaticRoundTrip(TestRoundTrip):
     Color.deregister('space:ryb-biased')
 
     SPACES = dict.fromkeys(Color.CS_MAP, 6)
-    # Precision just isn't as high for these in achromatic region
-    # but it is good enough for practical purposes.
 
     COLORS = [
         Color('darkgrey'),

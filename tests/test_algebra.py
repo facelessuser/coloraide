@@ -2745,7 +2745,7 @@ class TestAlgebra(unittest.TestCase):
         f0 = _bezier(a, b, c, y=t)
         r, converged = alg.solve_bisect(0.0, 1.0, f0, start=0.5)
         self.assertTrue(converged)
-        self.assertEqual(r, 0.45396879531722334)
+        self.assertEqual(r, 0.4539687953174507)
 
     def test_solve_poly(self):
         """Test cubic solving."""
