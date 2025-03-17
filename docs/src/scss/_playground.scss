@@ -5,6 +5,17 @@
 }
 
 /* stylelint-disable */
+.ace-dracula {
+  .ace_marker-layer .ace_active-line {
+    background: #2E334B;
+  }
+
+  .ace_gutter-active-line {
+    color: #AEB7D1;
+    background-color: #2E334B;
+  }
+}
+
 [data-md-color-scheme="default"] {
    .ace-dracula {
     color: #1F1F1F;
@@ -25,7 +36,7 @@
     }
 
     .ace_marker-layer .ace_selection {
-      background: #DCDEEF;
+      background: #CFCFDE;
     }
 
     .ace_multiselect .ace_selection.ace_start {
@@ -47,6 +58,7 @@
     }
 
     .ace_gutter-active-line {
+      color: #1F1F1F;
       background-color: #DCDEEF;
     }
 
