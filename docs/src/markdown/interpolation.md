@@ -92,17 +92,18 @@ Color.interpolate(['red', 'blue'], space='hsl', hue='longer')
 ///
 
 ColorAide and CSS apply hue fix-ups to ensure proper interpolation occurs along a given hue arc in the desired way.
-ColorAide's default linear interpolation waits until right before the actual interpolation takes place to resolve any
-and all undefined channels. This means that hue fix-ups are applied while hues are still undefined making it impossible
-to define a shorter or longer arc. This means that when a hue is undefined, whether `longer` or `shorter` is chosen, the
-result will be the same. Ultimately, ColorAide takes the stance that undefined hues cannot have an arc between itself
-and another hue as their is no hue to compare against.
+ColorAide's default linear interpolation waits until _after_ hue fix-ups are applied when resolve undefined hues while
+CSS resolves undefined hues _before_ hue fix-ups are applied.
 
-CSS, on the other hand, resolves undefined hues _before_ hue fix-ups are applied. This means that as long as the other
-hue is defined, the undefined hue will take on the value of the defined hue before the fix-up. With both hues defined
-this creates _pseudo_ arc lengths (both shorter and longer) between the two hues. This subtle difference makes a large
-impact when evaluating `longer` hue interpolations. Instead of interpolating an undefined hue and a defined hue, CSS
-actually interpolates between either a shorter angel difference of 0˚ or a longer angle difference of 360˚.
+In ColorAide's approach, if only one hue is defined, an arc length does not exist between the undefined hue and the
+defined hue. This means that during interpolation, the undefined hue will simply inherit the hue from the defined hue
+during the interpolation calculation.
+
+CSS, on the other hand, resolves the undefined hue _before_ hue fix-ups are applied which forces the hue to be defined
+before during hue fix-ups and creates a _pseudo_ arc length between the undefined and defined hue. This subtle
+difference makes a large impact when evaluating `longer` hue interpolations. Instead of interpolating an undefined hue
+and a defined hue, CSS actually interpolates between either a `shorter` angel difference of 0˚ or a `longer` angle
+difference of 360˚.
 
 /// tab | CSS Longer
 ![CSS Longer](images/css-hue-longer.png)
