@@ -1,5 +1,9 @@
 # Changelog
 
+## 4.4.1
+
+-   **FIX**: Fix XYB transform.
+
 ## 4.4
 
 -   **NEW**: Add support for the CAM02 color model and add the CAM02 JMh, CAM02 UCS, CAM02 SCD, and CAM02 LCD color

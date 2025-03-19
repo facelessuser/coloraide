@@ -9,13 +9,13 @@ class TestXYB(util.ColorAssertsPyTest):
     """Test XYB."""
 
     COLORS = [
-        ('red', 'color(--xyb 0.0281 0.48819 0.01157)'),
-        ('orange', 'color(--xyb 0.01132 0.64596 -0.10359)'),
+        ('red', 'color(--xyb 0.0281 0.48819 -0.01653)'),
+        ('orange', 'color(--xyb 0.01132 0.64596 -0.1149)'),
         ('yellow', 'color(--xyb 0 0.81867 -0.20719)'),
-        ('green', 'color(--xyb -0.0091 0.36999 -0.17163)'),
+        ('green', 'color(--xyb -0.0091 0.36999 -0.16253)'),
         ('blue', 'color(--xyb 0 0.27813 0.38801)'),
-        ('indigo', 'color(--xyb 0.00704 0.18547 0.18989)'),
-        ('violet', 'color(--xyb 0.01268 0.60656 0.15033)'),
+        ('indigo', 'color(--xyb 0.00704 0.18547 0.18285)'),
+        ('violet', 'color(--xyb 0.01268 0.60656 0.13766)'),
         ('white', 'color(--xyb 0 0.84531 0)'),
         ('gray', 'color(--xyb 0 0.44741 0)'),
         ('black', 'color(--xyb 0 0 0)'),

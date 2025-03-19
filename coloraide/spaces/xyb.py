@@ -25,34 +25,35 @@ LMS_TO_LRGB = [
     [-3.6588512867136815, 2.712923045936092, 1.945928240777589]
 ]
 
-# https://twitter.com/jonsneyers/status/1605321352143331328
-# @jonsneyers Feb 22
-# Yes, the default is to just subtract Y from B. In general there are locally
-# signaled float multipliers to subtract some multiple of Y from X and some
-# other multiple from B. But this is the baseline, making X=B=0 grayscale.
-# ----
-# We adjust the matrix to subtract Y from B match this statement.
 XYB_LMS_TO_XYB = [
     [0.5, -0.5, 0.0],
     [0.5, 0.5, 0.0],
-    [0.0, -1.0, 1.0],
+    [0.0, 0.0, 1.0]
 ]
 
 XYB_TO_XYB_LMS = [
     [1.0, 1.0, 0.0],
     [-1.0, 1.0, 0.0],
-    [-1.0, 1.0, 1.0]
+    [0.0, 0.0, 1.0]
 ]
 
 
 def rgb_to_xyb(rgb: Vector) -> Vector:
     """Linear sRGB to XYB."""
 
-    return alg.matmul_x3(
+    xyb = alg.matmul_x3(
         XYB_LMS_TO_XYB,
         [alg.nth_root(c + BIAS, 3) - BIAS_CBRT for c in alg.matmul_x3(LRGB_TO_LMS, rgb, dims=alg.D2_D1)],
         dims=alg.D2_D1
     )
+
+    # https://twitter.com/jonsneyers/status/1605321352143331328
+    # @jonsneyers Feb 22
+    # Yes, the default is to just subtract Y from B. In general there are locally
+    # signaled float multipliers to subtract some multiple of Y from X and some
+    # other multiple from B. But this is the baseline, making X=B=0 grayscale.
+    xyb[2] -= xyb[1]
+    return xyb
 
 
 def xyb_to_rgb(xyb: Vector) -> Vector:
@@ -62,6 +63,7 @@ def xyb_to_rgb(xyb: Vector) -> Vector:
     if not any(xyb):
         return [0.0] * 3
 
+    xyb[2] += xyb[1]
     return alg.matmul_x3(
         LMS_TO_LRGB,
         [(c + BIAS_CBRT) ** 3 - BIAS for c in alg.matmul_x3(XYB_TO_XYB_LMS, xyb, dims=alg.D2_D1)],
