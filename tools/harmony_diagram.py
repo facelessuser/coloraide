@@ -108,7 +108,8 @@ def plot_slice(
     gamut='srgb',
     gmap=None,
     res=500,
-    scatter_size=16
+    scatter_size=16,
+    pspace=None
 ):
     """Plot a slice."""
 
@@ -120,7 +121,8 @@ def plot_slice(
         hue, chroma, lightness = cs.names()
     else:
         lightness, chroma, hue = cs.names()
-    pspace = cs.NAME
+    if pspace is None:
+        pspace = cs.NAME
 
     # Interpolate between each x axis color along the y axis
     cmap = []
@@ -163,6 +165,7 @@ def main():
     parser.add_argument('--max-chroma', '-M', help="Maximum chroma.")
     parser.add_argument('--harmony', '-n', default='', help="Color harmony to use.")
     parser.add_argument('--gamut', '-g', default="srgb", help='Gamut to evaluate the color in (default is sRGB).')
+    parser.add_argument('--pspace', '-p', help="Specific perceptual space to gamut map in.")
     parser.add_argument('--map-colors', '-m', action='store_true', help="Gamut map colors to be within the gamut.")
     parser.add_argument('--gamut-map-method', '-f', default="raytrace", help="Gamut mapping space.")
     parser.add_argument('--title', '-t', default='', help="Provide a title for the diagram.")
@@ -224,7 +227,8 @@ def main():
         gamut=args.gamut,
         gmap=gmap,
         res=args.resolution,
-        scatter_size=int(args.scatter_size)
+        scatter_size=int(args.scatter_size),
+        pspace=args.pspace if args.pspace else None
     )
 
     if args.harmony:
