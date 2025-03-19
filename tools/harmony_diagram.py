@@ -120,6 +120,7 @@ def plot_slice(
         hue, chroma, lightness = cs.names()
     else:
         lightness, chroma, hue = cs.names()
+    pspace = cs.NAME
 
     # Interpolate between each x axis color along the y axis
     cmap = []
@@ -130,7 +131,7 @@ def plot_slice(
         custom[hue] = h
         custom[lightness] = constant
         custom[chroma] = max_chroma
-        custom.fit(gamut, method=gmap)
+        custom.fit(gamut, method=gmap, pspace=pspace)
         mx = custom[chroma]
         chromas = []
         for c in alg.linspace(0, mx, res):
@@ -138,15 +139,15 @@ def plot_slice(
             custom[chroma] = c
             theta.append(h)
             chromas.append(c)
-            cmap.append(custom.convert('srgb').to_string(hex=True, fit=gmap))
+            cmap.append(custom.convert('srgb').to_string(hex=True, fit=gmap, pspace=pspace))
         maximums.append((h, mx))
-        r.extend(alg.divide(chromas, mx))
+        r.extend([alg.zdiv(ci, mx) for ci in chromas])
 
     fig.add_traces(data=go.Scatterpolar(
         r=r,
         theta=theta,
         mode='markers',
-        marker={'color': cmap, 'size': 16},
+        marker={'color': cmap, 'size': scatter_size},
         showlegend=False
     ))
 
@@ -165,7 +166,7 @@ def main():
     parser.add_argument('--map-colors', '-m', action='store_true', help="Gamut map colors to be within the gamut.")
     parser.add_argument('--gamut-map-method', '-f', default="raytrace", help="Gamut mapping space.")
     parser.add_argument('--title', '-t', default='', help="Provide a title for the diagram.")
-    parser.add_argument('--resolution', '-r', type=int, default=400, help="How densely to render the figure.")
+    parser.add_argument('--resolution', '-r', type=int, default=500, help="How densely to render the figure.")
     parser.add_argument('--scatter-size', '-S', type=int, default=4, help="Define scatter plot size.")
     parser.add_argument('--output', '-o', default='', help='Output file.')
     parser.add_argument('--height', '-H', type=int, default=800, help="Height")
