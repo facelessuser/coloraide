@@ -61,8 +61,8 @@ The string representation of the color object and the default string output use 
 `#!css-color color(--xyb x y b / a)` form.
 
 ```py play
-Color("xyb", [0.0281, 0.48819, 0.01157])
-Color("xyb", [0.01132, 0.64596, -0.10359]).to_string()
+Color("xyb", [0.0281, 0.48819, -0.01653])
+Color("xyb", [0.01132, 0.64596, -0.1149]).to_string()
 ```
 
 ## Registering
