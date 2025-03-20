@@ -33,8 +33,15 @@ computationally efficient decoding.
 
 //// tip | Chroma/Luma Adjustments
 Per the creator, the default subtracts the Y component from the B component which makes Y function as lightness and X
-and Y like Lab a and b. When X=Y=0, the color is achromatic. You may find other implementations do not do this only
-because it is not documented well.
+and B will function similar to Lab 'a' and 'b' components. When X=Y=0, the color is achromatic.
+
+You may find other implementations may not do this and store the colors without this operation. It may be that in real
+world use it is not stored in this way. If desired, you can add Y to B to get the color exactly as specified in the
+white paper.
+
+While in this configuration the color operates in a Lab-like way, but the scaling of X and B is quite different not
+making it practical to convert this to a LCh-like space for reasonable hue values. To do so, you would need to scale X
+to a similar order of magnitude compared to B (maybe a factor of 10).
 ////
 
 [Learn more](https://ds.jpeg.org/whitepapers/jpeg-xl-whitepaper.pdf).
