@@ -107,6 +107,9 @@ class TestAchromaticRoundTrip(TestRoundTrip):
 
         for c in self.COLORS:
             self.assert_round_trip(c, space)
+            if c._space.is_polar():
+                hue = c._space.hue_name()
+                assert math.isnan(c[hue]) is True
 
 
 class TestRYBRoundTrip(TestRoundTrip):
