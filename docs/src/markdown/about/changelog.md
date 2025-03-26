@@ -1,5 +1,13 @@
 # Changelog
 
+## 4.5.0
+
+-   **NEW**: Support change in CSS HDR spec that now specifies Jzazbz, JzCzhz, and ICtCp serialization as using the
+    respective named color functions: `jzazbz()`, `jzczhz()`, and `ictcp()`. The `color()` will prefer the custom
+    hyphenated forms using `--jzazbz`, `--jzczhz`, and `--ictcp` respectively. The non-hyphenated names are still
+    supported in the `color()` form for backwards compatibility, but usage is discouraged as at some future time
+    support for non-hyphenated names will be dropped as CSS has moved away from this as a supported convention.
+
 ## 4.4.1
 
 -   **FIX**: Fix XYB transform.

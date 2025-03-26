@@ -30,7 +30,7 @@ RE_FUNC_START = re.compile(r'(\()\s*')
 RE_FUNC_END = re.compile(r'\s*(\))')
 RE_COMMA = re.compile(r'\s*(,)\s*')
 RE_SLASH = re.compile(r'\s*(/)\s*')
-RE_CSS_FUNC = re.compile(r'\b(color|rgba?|hsla?|hwb|(?:ok)?lab|(?:ok)?lch)\b')
+RE_CSS_FUNC = re.compile(r'\b(color|rgba?|hsla?|hwb|(?:ok)?lab|(?:ok)?lch|jzazbz|jzczhz|ictcp)\b')
 
 
 def norm_float(string: str) -> float:
@@ -426,13 +426,13 @@ def tokenize_css(css: str, start: int = 0) -> dict[str, Any]:
             if not validate_cylindrical_srgb(tokens):
                 return {}
 
-        elif func_name in ('lab', 'oklab'):
+        elif func_name in ('lab', 'oklab', 'jzazbz', 'ictcp'):
             tokens['id'] = '--' + func_name
 
             if not validate_lab(tokens):
                 return {}
 
-        elif func_name in ('oklch', 'lch'):
+        elif func_name in ('oklch', 'lch', 'jzczhz'):
             tokens['id'] = '--' + func_name
 
             if not validate_lch(tokens):

@@ -46,10 +46,12 @@ Channels | Aliases
 
 ## Input/Output
 
-Parsed input and string output formats support all valid CSS forms:
+Parsed input and string output formats support all valid CSS forms in addition to allowing the `#!css-color color()`
+function format as well using the custom name `#!css-color --ictcp`.
 
 ```css-color
-color(ictcp i ct cp / a)  // Color function
+ictcp(i ct cp / a)          // ICtCp function
+color(--ictcp i ct cp / a)  // Color function
 ```
 
 When manually creating a color via raw data or specifying a color space as a parameter in a function, the color
@@ -59,19 +61,21 @@ space name is always used:
 Color("ictcp", [0, 0, 0], 1)
 ```
 
-The string representation of the color object and the default string output use the
-`#!css-color color(ictcp i ct cp / a)` form.
+The string representation of the color object will always default to the `#!css-color color(--ictcp i ct cp / a)`
+form, but the default string output will be the `#!css-color ictcp(i ct cp / a)` form.
 
 ```py play
-Color("ictcp", [0.42785, -0.11574, 0.2788])
-Color("ictcp", [0.50497, -0.20797, 0.11077]).to_string()
+Color("ictcp", [0.42788, -0.1157, 0.27873])
+Color("ictcp", [0.50498, -0.20797, 0.11073]).to_string()
+Color("ictcp", [0.56983, -0.25169, 0.03788]).to_string(percent=True)
+Color("ictcp", [0.39138, -0.24061, -0.04423]).to_string(color=True)
 ```
 
 ## Registering
 
 ```py
 from coloraide import Color as Base
-from coloraide.spaces.ictcp import ICtCp
+from coloraide.spaces.ictcp.css import ICtCp
 
 class Color(Base): ...
 

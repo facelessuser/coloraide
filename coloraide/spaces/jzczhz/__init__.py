@@ -4,9 +4,9 @@ JzCzhz class.
 https://www.osapublishing.org/oe/fulltext.cfm?uri=oe-25-13-15131&id=368272
 """
 from __future__ import annotations
-from ..cat import WHITES
-from .lch import LCh
-from ..channels import Channel, FLG_ANGLE
+from ...cat import WHITES
+from ..lch import LCh
+from ...channels import Channel, FLG_ANGLE
 
 
 class JzCzhz(LCh):

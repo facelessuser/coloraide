@@ -49,32 +49,29 @@ Channels | Aliases
 
 ## Input/Output
 
-Parsed input and string output formats support all valid CSS forms:
+Parsed input and string output formats support all valid CSS forms in addition to allowing the `#!css-color color()`
+function format as well using the custom name `#!css-color --jzazbz`.
 
 ```css-color
-color(jzazbz jz az bz / a)  // Color function
+jzazbz(jz az bz / a)          // Jzazbz function
+color(--jzazbz jz az bz / a)  // Color function
 ```
 
-When manually creating a color via raw data or specifying a color space as a parameter in a function, the color
-space name is always used:
-
-```py
-Color("jzazbz", [0, 0, 0], 1)
-```
-
-The string representation of the color object and the default string output use the
-`#!css-color color(jzazbz jz az bz / a)` form.
+The string representation of the color object will always default to the `#!css-color color(--jzazbz jz az bz / a)`
+form, but the default string output will be the `#!css-color jzazbz(jz az bz / a)` form.
 
 ```py play
 Color("jzazbz", [0.13438, 0.11789, 0.11188])
 Color("jzazbz", [0.16937, 0.0312, 0.12308]).to_string()
+Color("jzazbz", [0.2096, -0.02864, 0.13479]).to_string(percent=True)
+Color("jzazbz", [0.09203, -0.07454, 0.07996]).to_string(color=True)
 ```
 
 ## Registering
 
 ```py
 from coloraide import Color as Base
-from coloraide.spaces.jzazbz import Jzazbz
+from coloraide.spaces.jzazbz.css import Jzazbz
 
 class Color(Base): ...
 

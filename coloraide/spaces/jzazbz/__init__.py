@@ -10,12 +10,12 @@ This is confirmed here: https://www.itu.int/dms_pub/itu-r/opb/rep/R-REP-BT.2408-
 If at some time that these assumptions are incorrect, we will be happy to alter the model.
 """
 from __future__ import annotations
-from ..cat import WHITES
-from ..channels import Channel, FLG_MIRROR_PERCENT
-from .. import util
-from .. import algebra as alg
-from ..types import Vector, Matrix  # noqa: F401
-from .lab import Lab
+from ...cat import WHITES
+from ...channels import Channel, FLG_MIRROR_PERCENT
+from ... import util
+from ... import algebra as alg
+from ...types import Vector, Matrix  # noqa: F401
+from ..lab import Lab
 
 B = 1.15
 G = 0.66

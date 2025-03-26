@@ -46,9 +46,9 @@ from .spaces.oklch.css import OkLCh
 from .spaces.rec2100_pq import Rec2100PQ
 from .spaces.rec2100_hlg import Rec2100HLG
 from .spaces.rec2100_linear import Rec2100Linear
-from .spaces.jzazbz import Jzazbz
-from .spaces.jzczhz import JzCzhz
-from .spaces.ictcp import ICtCp
+from .spaces.jzazbz.css import Jzazbz
+from .spaces.jzczhz.css import JzCzhz
+from .spaces.ictcp.css import ICtCp
 from .distance import DeltaE
 from .distance.delta_e_76 import DE76
 from .distance.delta_e_94 import DE94
