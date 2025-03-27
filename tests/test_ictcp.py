@@ -22,12 +22,12 @@ class TestICtCp(util.ColorAssertsPyTest):
         # Test color
         ('ictcp(0.5 0.1 -0.1)', 'ictcp(0.5 0.1 -0.1)'),
         ('ictcp(0.5 0.1 -0.1 / 0.5)', 'ictcp(0.5 0.1 -0.1 / 0.5)'),
-        ('ictcp(50% 50% -50% / 50%)', 'ictcp(0.5 0.5 -0.5 / 0.5)'),
+        ('ictcp(50% 50% -50% / 50%)', 'ictcp(0.5 0.25 -0.25 / 0.5)'),
         ('ictcp(none none none / none)', 'ictcp(none none none / none)'),
         # Test percent ranges
         ('ictcp(0% 0% 0%)', 'ictcp(0 0 0)'),
-        ('ictcp(100% 100% 100%)', 'ictcp(1 1 1)'),
-        ('ictcp(-100% -100% -100%)', 'ictcp(-1 -1 -1)')
+        ('ictcp(100% 100% 100%)', 'ictcp(1 0.5 0.5)'),
+        ('ictcp(-100% -100% -100%)', 'ictcp(-1 -0.5 -0.5)')
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)

@@ -16,8 +16,8 @@
 Name | Range^\*^
 ---- | ---------
 `jz` | [0, 1]
-`az` | [-0.5, 0.5]
-`bz` | [-0.5, 0.5]
+`az` | [-0.21, 0.21]
+`bz` | [-0.21, 0.21]
 
 ^\*^ Space is not bound to the defined range above but represents a practical range for HDR color spaces. CSS uses a
 range of `jz` = [0, 1], `az` = [-1, 1] and `bz` = [1, 1] for percentage input and output.

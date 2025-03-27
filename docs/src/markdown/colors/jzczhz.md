@@ -16,7 +16,7 @@
 Name | Range
 ---- | -----
 `jz` | [0, 1]
-`cz` | [0, 0.5]
+`cz` | [0, 0.26]
 `hz` | [0, 360)
 
 ^\*^ Space is not bound to the defined range above but represents a practical range for HDR color spaces. CSS uses a

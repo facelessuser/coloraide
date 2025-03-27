@@ -129,8 +129,8 @@ class Jzazbz(Lab):
     SERIALIZE = ("jzazbz", "--jzazbz",)
     CHANNELS = (
         Channel("jz", 0.0, 1.0),
-        Channel("az", -1.0, 1.0, flags=FLG_MIRROR_PERCENT),
-        Channel("bz", -1.0, 1.0, flags=FLG_MIRROR_PERCENT)
+        Channel("az", -0.21, 0.21, flags=FLG_MIRROR_PERCENT),
+        Channel("bz", -0.21, 0.21, flags=FLG_MIRROR_PERCENT)
     )
     CHANNEL_ALIASES = {
         "lightness": 'jz',

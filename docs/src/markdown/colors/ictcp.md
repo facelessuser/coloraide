@@ -19,8 +19,7 @@ Name       | Range^\*^
 `ct`       | [-0.5, 0.5]
 `cp`       | [-0.5, 0.5]
 
-^\*^ Space is not bound to the above, defined range but represents a practical range for HDR color spaces. CSS uses a
-range of `i` = [0, 1], `ct` = [-1, 1] and `cp` = [1, 1] for percentage input and output.
+^\*^ Space is not bound to the above, defined range but represents a practical range for HDR color spaces.
 ////
 
 ![ICtCp](../images/ictcp-3d.png)
