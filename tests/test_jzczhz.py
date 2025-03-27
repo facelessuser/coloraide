@@ -10,25 +10,25 @@ class TestJzCzhz(util.ColorAssertsPyTest):
     """Test JzCzhz."""
 
     COLORS = [
-        ('red', 'color(jzczhz 0.13438 0.16252 43.502)'),
-        ('orange', 'color(jzczhz 0.16937 0.12698 75.776)'),
-        ('yellow', 'color(jzczhz 0.2096 0.1378 102)'),
-        ('green', 'color(jzczhz 0.09203 0.10932 132.99)'),
-        ('blue', 'color(jzczhz 0.09577 0.19029 257.61)'),
-        ('indigo', 'color(jzczhz 0.06146 0.10408 287.05)'),
-        ('violet', 'color(jzczhz 0.16771 0.08468 319.37)'),
-        ('white', 'color(jzczhz 0.22207 0.0002 216.08)'),
-        ('gray', 'color(jzczhz 0.11827 0.00014 216.08)'),
-        ('black', 'color(jzczhz 0 0 none)'),
+        ('red', 'jzczhz(0.13438 0.16252 43.502)'),
+        ('orange', 'jzczhz(0.16937 0.12698 75.776)'),
+        ('yellow', 'jzczhz(0.2096 0.1378 102)'),
+        ('green', 'jzczhz(0.09203 0.10932 132.99)'),
+        ('blue', 'jzczhz(0.09577 0.19029 257.61)'),
+        ('indigo', 'jzczhz(0.06146 0.10408 287.05)'),
+        ('violet', 'jzczhz(0.16771 0.08468 319.37)'),
+        ('white', 'jzczhz(0.22207 0.0002 216.08)'),
+        ('gray', 'jzczhz(0.11827 0.00014 216.08)'),
+        ('black', 'jzczhz(0 0 none)'),
         # Test color
-        ('color(jzczhz 1 0.3 270)', 'color(jzczhz 1 0.3 270)'),
-        ('color(jzczhz 1 0.3 270 / 0.5)', 'color(jzczhz 1 0.3 270 / 0.5)'),
-        ('color(jzczhz 50% 50% 180 / 50%)', 'color(jzczhz 0.5 0.5 180 / 0.5)'),
-        ('color(jzczhz none none none / none)', 'color(jzczhz none none none / none)'),
+        ('jzczhz(1 0.3 270)', 'jzczhz(1 0.3 270)'),
+        ('jzczhz(1 0.3 270 / 0.5)', 'jzczhz(1 0.3 270 / 0.5)'),
+        ('jzczhz(50% 50% 180 / 50%)', 'jzczhz(0.5 0.13 180 / 0.5)'),
+        ('jzczhz(none none none / none)', 'jzczhz(none none none / none)'),
         # Test percent ranges
-        ('color(jzczhz 0% 0% 0)', 'color(jzczhz 0 0 0)'),
-        ('color(jzczhz 100% 100% 360)', 'color(jzczhz 1 1 360 / 1)'),
-        ('color(jzczhz -100% -100% -360)', 'color(jzczhz -1 -1 -360 / 1)')
+        ('jzczhz(0% 0% 0)', 'jzczhz(0 0 0)'),
+        ('jzczhz(100% 100% 360)', 'jzczhz(1 0.26 360 / 1)'),
+        ('jzczhz(-100% -100% -360)', 'jzczhz(-1 -0.26 -360 / 1)')
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)
@@ -43,16 +43,16 @@ class TestJzCzhzSerialize(util.ColorAssertsPyTest):
 
     COLORS = [
         # Test color
-        ('color(jzczhz 0.75 0.3 50 / 0.5)', {}, 'color(jzczhz 0.75 0.3 50 / 0.5)'),
+        ('jzczhz(0.75 0.3 50 / 0.5)', {}, 'jzczhz(0.75 0.3 50 / 0.5)'),
         # Test alpha
-        ('color(jzczhz 0.75 0.3 50)', {'alpha': True}, 'color(jzczhz 0.75 0.3 50 / 1)'),
-        ('color(jzczhz 0.75 0.3 50 / 0.5)', {'alpha': False}, 'color(jzczhz 0.75 0.3 50)'),
+        ('jzczhz(0.75 0.3 50)', {'alpha': True}, 'jzczhz(0.75 0.3 50 / 1)'),
+        ('jzczhz(0.75 0.3 50 / 0.5)', {'alpha': False}, 'jzczhz(0.75 0.3 50)'),
         # Test None
-        ('color(jzczhz none 0.3 50)', {}, 'color(jzczhz 0 0.3 50)'),
-        ('color(jzczhz none 0.3 50)', {'none': True}, 'color(jzczhz none 0.3 50)'),
+        ('jzczhz(none 0.3 50)', {}, 'jzczhz(0 0.3 50)'),
+        ('jzczhz(none 0.3 50)', {'none': True}, 'jzczhz(none 0.3 50)'),
         # Test Fit (not bound)
-        ('color(jzczhz 0.75 0.6 50)', {}, 'color(jzczhz 0.75 0.6 50)'),
-        ('color(jzczhz 0.75 0.6 50)', {'fit': False}, 'color(jzczhz 0.75 0.6 50)')
+        ('jzczhz(0.75 0.6 50)', {}, 'jzczhz(0.75 0.6 50)'),
+        ('jzczhz(0.75 0.6 50)', {'fit': False}, 'jzczhz(0.75 0.6 50)')
     ]
 
     @pytest.mark.parametrize('color1,options,color2', COLORS)
@@ -68,7 +68,7 @@ class TestJzCzhzProperties(util.ColorAsserts, unittest.TestCase):
     def test_names(self):
         """Test LCh-ish names."""
 
-        c = Color('color(jzczhz 0.22 0.5 270 / 1)')
+        c = Color('jzczhz(0.22 0.5 270 / 1)')
         self.assertEqual(c._space.names(), ('jz', 'cz', 'hz'))
         self.assertEqual(c._space.radial_name(), 'cz')
         self.assertEqual(c._space.hue_name(), 'hz')
@@ -76,7 +76,7 @@ class TestJzCzhzProperties(util.ColorAsserts, unittest.TestCase):
     def test_jz(self):
         """Test `jz`."""
 
-        c = Color('color(jzczhz 0.22 0.5 270 / 1)')
+        c = Color('jzczhz(0.22 0.5 270 / 1)')
         self.assertEqual(c['jz'], 0.22)
         c['jz'] = 0.2
         self.assertEqual(c['jz'], 0.2)
@@ -84,7 +84,7 @@ class TestJzCzhzProperties(util.ColorAsserts, unittest.TestCase):
     def test_cz(self):
         """Test `chroma`."""
 
-        c = Color('color(jzczhz 0.22 0.5 270 / 1)')
+        c = Color('jzczhz(0.22 0.5 270 / 1)')
         self.assertEqual(c['chroma'], 0.5)
         c['chroma'] = 0.1
         self.assertEqual(c['chroma'], 0.1)
@@ -92,7 +92,7 @@ class TestJzCzhzProperties(util.ColorAsserts, unittest.TestCase):
     def test_hue(self):
         """Test `hue`."""
 
-        c = Color('color(jzczhz 0.22 0.5 270 / 1)')
+        c = Color('jzczhz(0.22 0.5 270 / 1)')
         self.assertEqual(c['hue'], 270)
         c['hue'] = 0.1
         self.assertEqual(c['hue'], 0.1)
@@ -100,7 +100,7 @@ class TestJzCzhzProperties(util.ColorAsserts, unittest.TestCase):
     def test_alpha(self):
         """Test `alpha`."""
 
-        c = Color('color(jzczhz 0.22 0.5 270 / 1)')
+        c = Color('jzczhz(0.22 0.5 270 / 1)')
         self.assertEqual(c['alpha'], 1)
         c['alpha'] = 0.5
         self.assertEqual(c['alpha'], 0.5)
@@ -108,7 +108,7 @@ class TestJzCzhzProperties(util.ColorAsserts, unittest.TestCase):
     def test_hue_name(self):
         """Test `hue_name`."""
 
-        c = Color('color(jzczhz 0.22 0.5 270 / 1)')
+        c = Color('jzczhz(0.22 0.5 270 / 1)')
         self.assertEqual(c._space.hue_name(), 'hz')
 
 
@@ -124,7 +124,7 @@ class TestNull(util.ColorAsserts, unittest.TestCase):
     def test_none_input(self):
         """Test `none` null."""
 
-        c = Color('color(jzczhz 90% 0 none / 1)')
+        c = Color('jzczhz(90% 0 none / 1)')
         self.assertTrue(c.is_nan('hue'))
 
     def test_null_normalization_min_chroma(self):
@@ -141,8 +141,8 @@ class TestQuirks(util.ColorAsserts, unittest.TestCase):
         """Test handling of negative chroma when converting to Jzazbz."""
 
         self.assertColorEqual(
-            Color('color(jzczhz 90% -10 120 / 1)').convert('jzazbz'),
-            Color('color(jzczhz 90% 10 300 / 1)').convert('jzazbz')
+            Color('jzczhz(90% -10 120 / 1)').convert('jzazbz'),
+            Color('jzczhz(90% 10 300 / 1)').convert('jzazbz')
         )
 
     def test_to_negative_lightness(self):

@@ -16,7 +16,7 @@
 Name | Range
 ---- | -----
 `jz` | [0, 1]
-`cz` | [0, 0.5]
+`cz` | [0, 0.26]
 `hz` | [0, 360)
 
 ^\*^ Space is not bound to the defined range above but represents a practical range for HDR color spaces. CSS uses a
@@ -43,32 +43,29 @@ Channels | Aliases
 
 ## Input/Output
 
-Parsed input and string output formats support all valid CSS forms:
+Parsed input and string output formats support all valid CSS forms in addition to allowing the `#!css-color color()`
+function format as well using the custom name `#!css-color --jzczhz`.
 
 ```css-color
-color(jzczhz jz cz hz / a)  // Color function
+jzczhz(jz cz hz / a)          // Jzazbz function
+color(--jzczhz jz cz hz / a)  // Color function
 ```
 
-When manually creating a color via raw data or specifying a color space as a parameter in a function, the color
-space name is always used:
-
-```py
-Color("jzczhz", [0, 0, 0], 1)
-```
-
-The string representation of the color object and the default string output use the
-`#!css-color color(jzczhz jz cz hz / a)` form.
+The string representation of the color object will always default to the `#!css-color color(--jzczhz jz cz hz / a)`
+form, but the default string output will be the `#!css-color jzczhz(jz cz hz / a)` form.
 
 ```py play
 Color("jzczhz", [0.13438, 0.16252, 43.502])
 Color("jzczhz", [0.16937, 0.12698, 75.776]).to_string()
+Color("jzczhz", [0.2096, 0.1378, 102]).to_string(percent=True)
+Color("jzczhz", [0.09203, 0.10932, 132.99]).to_string(color=True)
 ```
 
 ## Registering
 
 ```py
 from coloraide import Color as Base
-from coloraide.spaces.jzczhz import JzCzhz
+from coloraide.spaces.jzczhz.css import JzCzhz
 
 class Color(Base): ...
 

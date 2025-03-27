@@ -283,7 +283,7 @@ RE_COLOR_START = re.compile(
     r"""(?ix)
     (?:
         # CSS functions
-        \b(?<![-#&$])(?:color\((?!\s*-)|(?:hsla?|(?:ok)?(?:lch|lab)|hwb|rgba?)\()|
+        \b(?<![-#&$])(?:color\((?!\s*-)|(?:hsla?|(?:ok)?(?:lch|lab)|jzczhz|jzazbz|ictcp|hwb|rgba?)\()|
         # Color words
         \b(?<![-#&$])[\w]{3,}(?![(-])\b|
         # Hex codes

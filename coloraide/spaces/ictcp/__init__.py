@@ -4,12 +4,12 @@ ICtCp class.
 https://professional.dolby.com/siteassets/pdfs/ictcp_dolbywhitepaper_v071.pdf
 """
 from __future__ import annotations
-from .lab import Lab
-from ..cat import WHITES
-from ..channels import Channel, FLG_MIRROR_PERCENT
-from .. import util
-from .. import algebra as alg
-from ..types import Vector
+from ..lab import Lab
+from ...cat import WHITES
+from ...channels import Channel, FLG_MIRROR_PERCENT
+from ... import util
+from ... import algebra as alg
+from ...types import Vector
 
 # All PQ Values are equivalent to defaults as stated in link below:
 # https://en.wikipedia.org/wiki/High-dynamic-range_video#Perceptual_quantizer
@@ -93,8 +93,8 @@ class ICtCp(Lab):
     SERIALIZE = ("ictcp", "--ictcp",)
     CHANNELS = (
         Channel("i", 0.0, 1.0),
-        Channel("ct", -1.0, 1.0, flags=FLG_MIRROR_PERCENT),
-        Channel("cp", -1.0, 1.0, flags=FLG_MIRROR_PERCENT)
+        Channel("ct", -0.5, 0.5, flags=FLG_MIRROR_PERCENT),
+        Channel("cp", -0.5, 0.5, flags=FLG_MIRROR_PERCENT)
     )
     CHANNEL_ALIASES = {
         "intensity": "i",
