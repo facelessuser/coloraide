@@ -18,7 +18,7 @@ class JzCzhz(LCh):
 
     BASE = "jzazbz"
     NAME = "jzczhz"
-    SERIALIZE = ("jzczhz", "--jzczhz",)
+    SERIALIZE = ("--jzczhz", "jzczhz")
     WHITE = WHITES['2deg']['D65']
     DYNAMIC_RANGE = 'hdr'
     CHANNEL_ALIASES = {

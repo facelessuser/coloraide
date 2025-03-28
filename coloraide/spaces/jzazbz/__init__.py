@@ -126,7 +126,7 @@ class Jzazbz(Lab):
 
     BASE = "xyz-d65"
     NAME = "jzazbz"
-    SERIALIZE = ("jzazbz", "--jzazbz",)
+    SERIALIZE = ("--jzazbz", "jzazbz")
     CHANNELS = (
         Channel("jz", 0.0, 1.0),
         Channel("az", -0.21, 0.21, flags=FLG_MIRROR_PERCENT),

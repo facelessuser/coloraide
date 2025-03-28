@@ -1,5 +1,10 @@
 # Changelog
 
+## 4.5.1
+
+-   **FIX**: Ensure Jzazbz, JzCzhz, and ICtCp actually use `--jzazbz`, `--jzczhz`, and `--ictcp` by default when
+    serialized in the `color()` format.
+
 ## 4.5.0
 
 -   **NEW**: Support change in CSS HDR spec that now specifies Jzazbz, JzCzhz, and ICtCp serialization as using the

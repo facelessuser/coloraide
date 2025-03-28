@@ -90,7 +90,7 @@ class ICtCp(Lab):
 
     BASE = "xyz-d65"
     NAME = "ictcp"
-    SERIALIZE = ("ictcp", "--ictcp",)
+    SERIALIZE = ("--ictcp", "ictcp")
     CHANNELS = (
         Channel("i", 0.0, 1.0),
         Channel("ct", -0.5, 0.5, flags=FLG_MIRROR_PERCENT),
