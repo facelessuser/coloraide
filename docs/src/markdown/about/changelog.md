@@ -3,11 +3,11 @@
 ## 4.5.0
 
 -   **NEW**: Support change in CSS HDR spec that now specifies Jzazbz, JzCzhz, and ICtCp serialization as using the
-    respective named color functions: `jzazbz()`, `jzczhz()`, and `ictcp()`. The `color()` will prefer the custom
-    hyphenated forms using `--jzazbz`, `--jzczhz`, and `--ictcp` respectively. The non-hyphenated names are still
+    respective named color functions: `jzazbz()`, `jzczhz()`, and `ictcp()`. The `color()` format also use the custom
+    hyphenated names `--jzazbz`, `--jzczhz`, and `--ictcp` respectively by default. The non-hyphenated names are still
     supported in the `color()` form for backwards compatibility, but usage is discouraged as at some future time
     support for non-hyphenated names will be dropped as CSS has moved away from this as a supported convention.
--   **FIX**: Reference ranges for Jzazbz, JzCzhz, and ICtCp, now match the latest CSS HDR spec.
+-   **NEW**: Reference ranges for Jzazbz, JzCzhz, and ICtCp, now match the latest CSS HDR spec.
 -   **FIX**: Fix order of magnitude calculation.
 
 ## 4.4.1
