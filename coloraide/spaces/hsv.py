@@ -83,8 +83,8 @@ class HSV(HSVish, Space):
         """Initialize."""
 
         super().__init__(**kwargs)
-        order = alg.order(self.channels[self.indexes()[2]].high)
-        self.achromatic_threshold = util.ACHROMATIC_THRESHOLD_SM if order == 0 else util.ACHROMATIC_THRESHOLD
+        order = alg.order(round(self.channels[self.indexes()[2]].high, 5))
+        self.achromatic_threshold = (1 * 10.0 ** order) / 1_000_000
 
     def normalize(self, coords: Vector) -> Vector:
         """Normalize coordinates."""
