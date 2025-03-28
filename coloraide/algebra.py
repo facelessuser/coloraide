@@ -23,6 +23,7 @@ used as long as the final results are converted to normal types. It is certainly
 that we could switch to using `numpy` in a major release in the future.
 """
 from __future__ import annotations
+import decimal
 import sys
 import cmath
 import math
@@ -88,9 +89,8 @@ def sign(x: float) -> float:
 def order(x: float) -> int:
     """Get the order of magnitude of a number."""
 
-    if x == 0:
-        return 0
-    return math.floor(math.log10(abs(x)))
+    _, digits, exponent = decimal.Decimal(x).as_tuple()
+    return len(digits) + int(exponent) - 1
 
 
 def round_half_up(n: float, scale: int = 0) -> float:

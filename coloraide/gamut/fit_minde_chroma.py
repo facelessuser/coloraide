@@ -21,7 +21,7 @@ BLACK = [0.0, 0.0, 0.0]
 def calc_epsilon(jnd: float) -> float:
     """Calculate the epsilon to 2 degrees smaller than the specified JND."""
 
-    return float(f"1e{alg.order(jnd) - 2:d}")
+    return (1 * 10.0 ** (alg.order(jnd) - 2))
 
 
 class MINDEChroma(Fit):

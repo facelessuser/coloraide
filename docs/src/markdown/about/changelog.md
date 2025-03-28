@@ -8,6 +8,7 @@
     supported in the `color()` form for backwards compatibility, but usage is discouraged as at some future time
     support for non-hyphenated names will be dropped as CSS has moved away from this as a supported convention.
 -   **FIX**: Reference ranges for Jzazbz, JzCzhz, and ICtCp, now match the latest CSS HDR spec.
+-   **FIX**: Fix order of magnitude calculation.
 
 ## 4.4.1
 

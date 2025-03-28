@@ -5,7 +5,6 @@ from ...spaces import Space, LChish
 from ...cat import WHITES
 from ...channels import Channel, FLG_ANGLE
 from ... import util
-from ... util import ACHROMATIC_THRESHOLD
 import math
 from ...types import Vector
 from typing import Any
@@ -52,8 +51,8 @@ class LCh(LChish, Space):
         """Initialize."""
 
         super().__init__(**kwargs)
-        order = alg.order(self.channels[self.indexes()[0]].high)
-        self.achromatic_threshold = util.ACHROMATIC_THRESHOLD_SM if order == 0 else ACHROMATIC_THRESHOLD
+        order = alg.order(round(self.channels[self.indexes()[0]].high, 5))
+        self.achromatic_threshold = (1 * 10.0 ** order) / 1_000_000
 
     def normalize(self, coords: Vector) -> Vector:
         """Normalize coordinates."""

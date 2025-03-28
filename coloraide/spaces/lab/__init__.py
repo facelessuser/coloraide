@@ -9,7 +9,6 @@ from ...spaces import Space, Labish
 from ...cat import WHITES
 from ...channels import Channel, FLG_MIRROR_PERCENT
 from ... import util
-from ... util import ACHROMATIC_THRESHOLD
 from ... import algebra as alg
 from ...types import VectorLike, Vector
 from typing import Any
@@ -72,8 +71,8 @@ class Lab(Labish, Space):
         """Initialize."""
 
         super().__init__(**kwargs)
-        order = alg.order(self.channels[self.indexes()[0]].high)
-        self.achromatic_threshold = util.ACHROMATIC_THRESHOLD_SM if order == 0 else ACHROMATIC_THRESHOLD
+        order = alg.order(round(self.channels[self.indexes()[0]].high, 5))
+        self.achromatic_threshold = (1 * 10.0 ** order) / 1_000_000
 
     def is_achromatic(self, coords: Vector) -> bool:
         """Check if color is achromatic."""
