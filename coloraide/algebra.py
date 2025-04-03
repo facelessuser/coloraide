@@ -103,28 +103,52 @@ def round_half_up(n: float, scale: int = 0) -> float:
     return math.floor(n * mult + 0.5) / mult
 
 
-def round_to(f: float, p: int = 0, half_up: bool = True) -> float:
-    """Round to the specified precision using "half up" rounding."""
+def _round_location(
+    f: float,
+    p: int = 0,
+    d: int | bool = True,
+) -> int:
+    """Get rounding location."""
 
-    _round = round_half_up if half_up else round  # type: Callable[..., float]
+    if f == 0:
+        return 0
 
-    # Do no rounding, just return a float with full precision
-    if p == -1:
-        return float(f)
+    # Shortcut for specifying full precision
+    if p < 0:
+        p = 17
 
-    # Integer rounding
+    # Fractional constraint takes on the length of precision
+    if d is True:
+        d = p
+
+    # No fractional precision is needed so set to double
+    elif d is False:
+        d = 17
+
+    # Perform integer rounding
     if p == 0:
-        return _round(f)
+        p = 17
+        d = min(0, d)
 
-    # Ignore infinity
+    # Round to specified significant figure or fractional digit, which ever is less
+    v = -math.floor(math.log10(abs(f))) + (p - 1)
+    return d if d < v else v
+
+
+def round_to(
+    f: float,
+    p: int = 0,
+    d: int | bool = True,
+    rounding: Callable[[float, int], float]=round_half_up
+) -> float:
+    """Round to the specified precision using "half up" rounding by default."""
+
+    # Return non-finite values without further processing
     if not math.isfinite(f):
         return f
 
-    # Round to the specified precision
-    else:
-        whole = int(f)
-        digits = 0 if whole == 0 else int(math.log10(-whole if whole < 0 else whole)) + 1
-        return _round(whole if digits > p else f, p - digits)
+    # Round to the specified location using the specified rounding function
+    return rounding(f, _round_location(f, p, d))
 
 
 def minmax(value: VectorLike | Iterable[float]) -> tuple[float, float]:

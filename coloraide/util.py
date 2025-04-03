@@ -7,6 +7,7 @@ from .types import Vector, VectorLike
 from typing import Any, Callable, Sequence
 
 DEF_PREC = 5
+DEF_DEC = True  # type: int | bool
 DEF_FIT_TOLERANCE = 0.000075
 DEF_ALPHA = 1.0
 DEF_MIX = 0.5
@@ -205,7 +206,7 @@ def cmp_coords(c1: VectorLike, c2: VectorLike) -> bool:
         return all(map(lambda a, b: (math.isnan(a) and math.isnan(b)) or a == b, c1, c2))
 
 
-def fmt_float(f: float, p: int = 0, percent: float = 0.0, offset: float = 0.0) -> str:
+def fmt_float(f: float, p: int = 0, d: int | bool = True, percent: float = 0.0, offset: float = 0.0) -> str:
     """
     Set float precision and trim precision zeros.
 
@@ -214,22 +215,28 @@ def fmt_float(f: float, p: int = 0, percent: float = 0.0, offset: float = 0.0) -
     <positive number>: precision level
     """
 
+    # Undefined values should be none
     if math.isnan(f):
         return "none"
 
-    value = alg.round_to((f + offset) / (percent * 0.01) if percent else f, p)
-    if p == -1:
-        p = 17  # ~double precision
+    # Infinite values do not get rounded
+    if not math.isfinite(f):
+        raise ValueError(f'Cannot format non-finite number {f}')
+
+    # Apply rounding
+    f = (f + offset) / (percent * 0.01) if percent else f
+    p = alg._round_location(f, p, d)
+    value = alg.round_half_up(f, p)
 
     # Calculate actual print decimal precision
     whole = int(value)
     if whole:
-        whole = int(math.log10(-whole if whole < 0 else whole)) + 1
-        if p:
-            p = max(p - whole, 0)
+        whole = int(math.log10(abs(value))) + 1
+    if p < 0:
+        p = 0
 
     # Format the string
-    s = '{{:{}{}f}}'.format('' if whole >= p else '.', p).format(value).rstrip('0').rstrip('.')
+    s = f"{{:{'' if whole >= p else '.'}{p}f}}".format(value).rstrip('0').rstrip('.')
     return s + '%' if percent else s
 
 

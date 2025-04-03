@@ -352,7 +352,8 @@ Properties             | Defaults               | Description
 `INTERPOLATE`          | `#!py "oklab"`         | The default color space used for interpolation.
 `INTERPOLATOR`         | `#!py "linear"`        | The default interpolator to use.
 `DELTA_E`              | `#!py "76"`            | The default ∆E algorithm used. This applies to when [`delta_e()`](./distance.md#delta-e) is called without specifying a method or when using color distancing to separate color when using the interpolation method called [`steps`](./interpolation.md#steps).
-`PRECISION`            | `#!py 5`               | The default precision for string outputs.
+`PRECISION`            | `#!py 5`               | The default precision for string outputs. `-1` applies no restriction.
+`DECIMAL`              | `#!py -1`              | The default fractional decimal places to limit a number for string output, `-1` essentially applies no further restriction.
 `CHROMATIC_ADAPTATION` | `#!py "bradford"`      | Chromatic adaptation method used when converting between two color spaces with different white points. See [Chromatic Adaptation](./cat.md) for more information.
 `HARMONY`              | `#!py "oklch"`         | Default color space to use for calculating color harmonies. This should be a cylindrical color space.
 `CONTRAST`             | `#!py "wcag21"`        | Default contrast algorithm.

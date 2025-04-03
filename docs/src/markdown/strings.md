@@ -27,11 +27,58 @@ All color spaces support the following parameters.
 When in the default state, `alpha` will only be shown if the alpha channel has a value less than 100%, but if set to
 `#!py3 True`, alpha will always be shown. Setting to `#!py3 False` will cause alpha to be ignored in the output.
 
-### Precision
+### Precision and Decimal Rounding
 
-`precision` controls the precision of the output values. The name is a little misleading as it will actually adjusts the
-precision and scale of the values. The default is 5. In some cases, like the sRGB hex output, precision may not really
-come into play as hex values are rounded to the nearest whole number.
+`precision` and `decimal` control how numbers are rounded during serialization.
+
+`precision` adjusts the significant figures to which the numbers are rounded. Significant figures are non-leading zero
+digits. So `#!py 100.003` has 6 significant figures and `#!py 0.000345` has 3 significant figures.
+
+```py play
+Color("rgb(30.3456% 75% 100%)").to_string(precision=5, decimal=False, percent=True)
+Color("rgb(30.3456% 75% 100%)").to_string(precision=4, decimal=False, percent=True)
+Color("rgb(30.3456% 75% 100%)").to_string(precision=3, decimal=False, percent=True)
+Color("rgb(30.3456% 75% 100%)").to_string(precision=2, decimal=False, percent=True)
+Color("rgb(30.3456% 75% 100%)").to_string(precision=1, decimal=False, percent=True)
+```
+
+Precision is configured with positive integer values, with `#!py 17` being the largest practical value as it corresponds
+to the double-precision floating point's maximum significant decimal digits. If `#!py 0` is specified, integer rounding
+will be used instead of floating point rounding, and if a negative value is used, `precision` will be ignored and will
+default to the largest practical value of `#!py 17`.
+
+
+```py play
+Color("rgb(30.3456% 75% 100%)").to_string(precision=0, decimal=False, percent=True)
+Color("rgb(30.3456% 75% 100%)").to_string(precision=-1, decimal=False, percent=True)
+```
+
+`decimal`, on the other hand, adjusts the rounding to specific decimal places: positive integer values representing
+fractional decimal positions (after the `.`) and negative integer values representing integer positions (before the `.`).
+
+```py play
+Color("rgb(30.3456% 75% 100%)").to_string(precision=-1, decimal=3, percent=True)
+Color("rgb(30.3456% 75% 100%)").to_string(precision=-1, decimal=2, percent=True)
+Color("rgb(30.3456% 75% 100%)").to_string(precision=-1, decimal=1, percent=True)
+Color("rgb(30.3456% 75% 100%)").to_string(precision=-1, decimal=0, percent=True)
+Color("rgb(30.3456% 75% 100%)").to_string(precision=-1, decimal=-1, percent=True)
+```
+
+Both `precision` and `decimal` are used together, and which ever yields the lesser precision is what is used.
+
+```py play
+Color("rgb(30.3456% 75% 100%)").to_string(precision=3, decimal=3, percent=True)
+Color("rgb(30.3456% 75% 100%)").to_string(precision=3, decimal=2, percent=True)
+Color("rgb(30.3456% 75% 100%)").to_string(precision=3, decimal=4, percent=True)
+Color("rgb(30.3456% 75% 100%)").to_string(precision=3, decimal=0, percent=True)
+```
+
+If desired, `decimal` rounding can be disabled by setting it to `#!py False` which will round all values to significant
+figures only. If `decimal` is set to a non-explicit value of `#!py True`, `decimal` assumes the same value as
+`precision` which will cause a number to be rounded to _n_ digits instead of _n_ significant digits.
+
+By default, ColorAide assumes a `precision` of 5, and sets `decimal` to `#!py True` which causes numbers to round to 5
+non-significant digits. By adjusting `precision` alone we can change how many digits a number is rounded to.
 
 ```py play
 Color("rgb(30.3456% 75% 100%)").to_string(precision=5, percent=True)
@@ -41,46 +88,34 @@ Color("rgb(30.3456% 75% 100%)").to_string(precision=2, percent=True)
 Color("rgb(30.3456% 75% 100%)").to_string(precision=1, percent=True)
 ```
 
-Providing a precision of `0` will enable simple rounding to the nearest whole number.
+Lastly, there are some times where the channel coordinates need to have different precision. If needed, ColorAide will
+allow an list of values for both `precision` and `decimal` where each index in the list will correspond to a different
+color coordinate.
+
+Let's say we are outputting sRGB colors in the CSS `rgb()` format and we want to round the color components to whole
+integers. We can do this by just setting `precision` to `0` which will force integer rounding, but when we do this,
+it will round the alpha channel to 0 and 1 which is undesirable.
 
 ```py play
-Color("rgb(30.3456% 75% 100%)").to_string(precision=0, percent=True)
+Color("rgb(30.3456% 75% 100% / 0.75)").to_string(precision=0)
 ```
 
-Providing a precision of `-1` is a special input that will give the highest, useful precision that can be given.
-Precision will be given out to double precision. Higher can be used, but will most likely be unhelpful.
-
-```py play
-Color("rgb(30.3456% 75% 100%)").to_string(precision=-1, percent=True)
-```
-
-One note though, format of the value matters. Here we output in the range of 0 - 255. We can see that a precision of
-`1`, in this case, can throw the color out of gamut. So remember to use a sufficient precision for what you are
-doing and the values you are working in.
-
-```py play
-Color("rgb(30.3456% 75% 100%)").to_string(precision=1)
-```
-
-There are some times where the channel coordinates need to have different precision, for instance the alpha channel
-which always has values between 0 - 1 may be a very different scale than CIELab which scales lightness between 0 - 100.
-In these cases, it may be desirable to use a different precision for alpha, especially when rounding other channels to
-integers.
-
-If needed, users can control precision per channel by providing a list of precision, each index in the list
-corresponding to the channel at that index.
+If we provide a list of precision we can control each channel individually.
 
 ```py play
 Color("rgb(30.3456% 75% 100% / 0.75)").to_string(precision=[0, 0, 0, 3])
 ```
 
-If a channel is omitted, the default precision is assumed for that channel.
+If a channel is omitted, the current default precision is assumed for that channel.
 
 ```py play
 Color("rgb(30.3456% 75% 100% / 0.75)").to_string(precision=[0, 0, 0])
 ```
 
 /// new | New in 4.0: Per Channel Precision Control
+///
+
+/// new | New 4.6: Decimal Option Added
 ///
 
 ### Fit
