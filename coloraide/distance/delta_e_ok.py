@@ -1,7 +1,7 @@
 """Delta E OK."""
 from __future__ import annotations
 from ..distance import DeltaE, distance_euclidean
-from ..types import TypeColor
+from ..types import ColorType
 from typing import Any
 
 
@@ -15,7 +15,7 @@ class DEOK(DeltaE):
 
         self.scalar = scalar
 
-    def distance(self, color: TypeColor, sample: TypeColor, scalar: float | None = None, **kwargs: Any) -> float:
+    def distance(self, color: ColorType, sample: ColorType, scalar: float | None = None, **kwargs: Any) -> float:
         """
         Delta E OK color distance formula.
 

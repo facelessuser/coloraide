@@ -3,7 +3,7 @@ from __future__ import annotations
 from .. import hsl as base
 from ...css import parse
 from ...css import serialize
-from ...types import Vector, TypeColor
+from ...types import Vector, ColorType
 from typing import Any, Sequence
 
 
@@ -12,7 +12,7 @@ class HSL(base.HSL):
 
     def to_string(
         self,
-        parent: TypeColor,
+        parent: ColorType,
         *,
         alpha: bool | None = None,
         precision: int | Sequence[int] | None = None,

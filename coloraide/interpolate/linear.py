@@ -3,11 +3,11 @@ from __future__ import annotations
 import math
 from .. import algebra as alg
 from ..interpolate import Interpolator, Interpolate
-from ..types import Vector, TypeColor
+from ..types import Vector, ColorType
 from typing import Any
 
 
-class InterpolatorLinear(Interpolator[TypeColor]):
+class InterpolatorLinear(Interpolator[ColorType]):
     """Interpolate multiple ranges of colors using linear, Piecewise interpolation."""
 
     def normalize_hue(
@@ -145,12 +145,12 @@ class InterpolatorLinear(Interpolator[TypeColor]):
         return channels
 
 
-class Linear(Interpolate[TypeColor]):
+class Linear(Interpolate[ColorType]):
     """Linear interpolation plugin."""
 
     NAME = "linear"
 
-    def interpolator(self, *args: Any, **kwargs: Any) -> Interpolator[TypeColor]:
+    def interpolator(self, *args: Any, **kwargs: Any) -> Interpolator[ColorType]:
         """Return the linear interpolator."""
 
         return InterpolatorLinear(*args, **kwargs)

@@ -3,11 +3,11 @@ from __future__ import annotations
 import math
 from .linear import InterpolatorLinear
 from ..interpolate import Interpolator, Interpolate
-from ..types import Vector, TypeColor
+from ..types import Vector, ColorType
 from typing import Any
 
 
-class InterpolatorCSSLinear(InterpolatorLinear[TypeColor]):
+class InterpolatorCSSLinear(InterpolatorLinear[ColorType]):
     """Interpolate multiple ranges of colors using linear, Piecewise interpolation, but adhere to CSS requirements."""
 
     def normalize_hue(
@@ -80,12 +80,12 @@ class InterpolatorCSSLinear(InterpolatorLinear[TypeColor]):
         color2[index] = c2
 
 
-class CSSLinear(Interpolate[TypeColor]):
+class CSSLinear(Interpolate[ColorType]):
     """CSS Linear interpolation plugin."""
 
     NAME = "css-linear"
 
-    def interpolator(self, *args: Any, **kwargs: Any) -> Interpolator[TypeColor]:
+    def interpolator(self, *args: Any, **kwargs: Any) -> Interpolator[ColorType]:
         """Return the CSS linear interpolator."""
 
         return InterpolatorCSSLinear(*args, **kwargs)

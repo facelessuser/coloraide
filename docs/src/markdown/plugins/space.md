@@ -528,7 +528,7 @@ all the parameters we need, in our case we accept the common parameters and late
 ```py
     def to_string(
         self,
-        parent: TypeColor,
+        parent: ColorType,
         *,
         alpha: bool | None = None,
         precision: int | None = None,

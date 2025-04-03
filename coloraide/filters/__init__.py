@@ -1,7 +1,7 @@
 """Provides a plugin system for filtering colors."""
 from __future__ import annotations
 from abc import ABCMeta, abstractmethod
-from ..types import Plugin, TypeColor
+from ..types import Plugin, ColorType
 from typing import Any
 
 
@@ -13,19 +13,19 @@ class Filter(Plugin, metaclass=ABCMeta):
     ALLOWED_SPACES = ('srgb-linear',)  # type: tuple[str, ...]
 
     @abstractmethod
-    def filter(self, color: TypeColor, amount: float | None, **kwargs: Any) -> None:  # noqa: A003
+    def filter(self, color: ColorType, amount: float | None, **kwargs: Any) -> None:  # noqa: A003
         """Filter the given color."""
 
 
 def filters(
-    color: TypeColor,
+    color: ColorType,
     name: str,
     amount: float | None = None,
     space: str | None = None,
     out_space: str | None = None,
     in_place: bool = False,
     **kwargs: Any
-) -> TypeColor:
+) -> ColorType:
     """Filter."""
 
     f = color.FILTER_MAP.get(name)

@@ -14,7 +14,7 @@ import math
 from ..distance import DeltaE
 from ..spaces.cam02_ucs import CAM02UCS
 from ..spaces.cam16_ucs import COEFFICENTS
-from ..types import TypeColor
+from ..types import ColorType
 from typing import Any
 
 
@@ -25,8 +25,8 @@ class DECAM02(DeltaE):
 
     def distance(
         self,
-        color: TypeColor,
-        sample: TypeColor,
+        color: ColorType,
+        sample: ColorType,
         space: str = "cam02-ucs",
         **kwargs: Any
     ) -> float:

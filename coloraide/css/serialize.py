@@ -6,7 +6,7 @@ from .. import util
 from .. import algebra as alg
 from .color_names import to_name
 from ..channels import FLG_ANGLE
-from ..types import Vector, TypeColor
+from ..types import Vector, ColorType
 from typing import Sequence, Any
 
 RE_COMPRESS = re.compile(r'(?i)^#([a-f0-9])\1([a-f0-9])\2([a-f0-9])\3(?:([a-f0-9])\4)?$')
@@ -18,7 +18,7 @@ EMPTY = ''
 
 
 def named_color(
-    obj: TypeColor,
+    obj: ColorType,
     alpha: bool | None,
     fit: str | bool | dict[str, Any]
 ) -> str | None:
@@ -31,7 +31,7 @@ def named_color(
 
 
 def color_function(
-    obj: TypeColor,
+    obj: ColorType,
     func: str | None,
     alpha: bool | None,
     precision: int | Sequence[int],
@@ -101,7 +101,7 @@ def color_function(
 
 
 def get_coords(
-    obj: TypeColor,
+    obj: ColorType,
     fit: bool | str | dict[str, Any],
     none: bool,
     legacy: bool
@@ -121,7 +121,7 @@ def get_coords(
 
 
 def get_alpha(
-    obj: TypeColor,
+    obj: ColorType,
     alpha: bool | None,
     none: bool,
     legacy: bool
@@ -134,7 +134,7 @@ def get_alpha(
 
 
 def hexadecimal(
-    obj: TypeColor,
+    obj: ColorType,
     alpha: bool | None = None,
     fit: str | bool | dict[str, Any] = True,
     upper: bool = False,
@@ -170,7 +170,7 @@ def hexadecimal(
 
 
 def serialize_css(
-    obj: TypeColor,
+    obj: ColorType,
     func: str = '',
     color: bool = False,
     alpha: bool | None = None,

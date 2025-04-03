@@ -3,7 +3,7 @@ from __future__ import annotations
 import math
 from ..distance import DeltaE
 from ..spaces.lab import CIELab
-from .. types import TypeColor
+from .. types import ColorType
 from typing import Any
 
 
@@ -28,8 +28,8 @@ class DE94(DeltaE):
 
     def distance(
         self,
-        color: TypeColor,
-        sample: TypeColor,
+        color: ColorType,
+        sample: ColorType,
         kl: float | None = None,
         k1: float | None = None,
         k2: float | None = None,

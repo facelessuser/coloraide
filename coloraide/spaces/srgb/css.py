@@ -4,7 +4,7 @@ from .. import srgb as base
 from ...css import parse
 from ...css import serialize
 from typing import Any, Sequence
-from ...types import Vector, TypeColor
+from ...types import Vector, ColorType
 
 
 class sRGB(base.sRGB):
@@ -12,7 +12,7 @@ class sRGB(base.sRGB):
 
     def to_string(
         self,
-        parent: TypeColor,
+        parent: ColorType,
         *,
         alpha: bool | None = None,
         precision: int | Sequence[int] | None = None,

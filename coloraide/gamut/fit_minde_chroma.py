@@ -7,7 +7,7 @@ from .. import util
 import math
 from .. import algebra as alg
 from .tools import adaptive_hue_independent
-from ..types import TypeColor
+from ..types import ColorType
 from typing import Any
 
 XYZ = 'xyz-d65'
@@ -45,7 +45,7 @@ class MINDEChroma(Fit):
 
     def fit(
         self,
-        color: TypeColor,
+        color: ColorType,
         space: str,
         *,
         pspace: str | None = None,

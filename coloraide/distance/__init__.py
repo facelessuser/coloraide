@@ -3,11 +3,11 @@ from __future__ import annotations
 import math
 from .. import algebra as alg
 from abc import ABCMeta, abstractmethod
-from ..types import ColorInput, Plugin, TypeColor
+from ..types import ColorInput, Plugin, ColorType
 from typing import Any, Sequence
 
 
-def closest(color: TypeColor, colors: Sequence[ColorInput], method: str | None = None, **kwargs: Any) -> TypeColor:
+def closest(color: ColorType, colors: Sequence[ColorInput], method: str | None = None, **kwargs: Any) -> ColorType:
     """Get the closest color."""
 
     if method is None:
@@ -32,7 +32,7 @@ def closest(color: TypeColor, colors: Sequence[ColorInput], method: str | None =
     return closest
 
 
-def distance_euclidean(color: TypeColor, sample: TypeColor, space: str = "lab-d65") -> float:
+def distance_euclidean(color: ColorType, sample: ColorType, space: str = "lab-d65") -> float:
     """
     Euclidean distance.
 
@@ -65,5 +65,5 @@ class DeltaE(Plugin, metaclass=ABCMeta):
     NAME = ''
 
     @abstractmethod
-    def distance(self, color: TypeColor, sample: TypeColor, **kwargs: Any) -> float:
+    def distance(self, color: ColorType, sample: ColorType, **kwargs: Any) -> float:
         """Get distance between color and sample."""

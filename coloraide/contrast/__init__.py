@@ -1,7 +1,7 @@
 """Contrast."""
 from __future__ import annotations
 from abc import ABCMeta, abstractmethod
-from ..types import Plugin, TypeColor
+from ..types import Plugin, ColorType
 from typing import Any
 
 
@@ -11,11 +11,11 @@ class ColorContrast(Plugin, metaclass=ABCMeta):
     NAME = ''
 
     @abstractmethod
-    def contrast(self, color1: TypeColor, color2: TypeColor, **kwargs: Any) -> float:
+    def contrast(self, color1: ColorType, color2: ColorType, **kwargs: Any) -> float:
         """Get the contrast of the two provided colors."""
 
 
-def contrast(name: str | None, color1: TypeColor, color2: TypeColor, **kwargs: Any) -> float:
+def contrast(name: str | None, color1: ColorType, color2: ColorType, **kwargs: Any) -> float:
     """Get the appropriate contrast plugin."""
 
     if name is None:

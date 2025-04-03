@@ -10,7 +10,7 @@ plugins.
 Plugins are created by subclassing `#!py3 coloraide.interpolate.Interpolate`.
 
 ```py
-class Interpolate(Generic[TypeColor], Plugin, metaclass=ABCMeta):
+class Interpolate(Generic[ColorType], Plugin, metaclass=ABCMeta):
     """Interpolation plugin."""
 
     NAME = ""
@@ -20,7 +20,7 @@ class Interpolate(Generic[TypeColor], Plugin, metaclass=ABCMeta):
         self,
         coordinates: list[Vector],
         channel_names: Sequence[str],
-        color_cls: type[TypeColor],
+        color_cls: type[ColorType],
         easings: list[Callable[..., float] | None],
         stops: dict[int, float],
         space: str,
@@ -31,10 +31,10 @@ class Interpolate(Generic[TypeColor], Plugin, metaclass=ABCMeta):
         domain: list[float] | None = None,
         hue: str = 'shorter',
         **kwargs: Any
-    ) -> Interpolator[TypeColor]:
+    ) -> Interpolator[ColorType]:
         """Get the interpolator object."""
 
-    def get_space(self, space: str | None, color_cls: type[TypeColor]) -> str:
+    def get_space(self, space: str | None, color_cls: type[ColorType]) -> str:
         """
         Get and validate the color space for interpolation.
 
@@ -61,7 +61,7 @@ In general, the `Interpolate` plugin is mainly a wrapper to ensure the interpola
 that must be defined.
 
 ```py
-class Interpolator(Generic[TypeColor], metaclass=ABCMeta):
+class Interpolator(Generic[ColorType], metaclass=ABCMeta):
     """Interpolator."""
 
     @abstractmethod

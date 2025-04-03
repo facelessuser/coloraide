@@ -19,7 +19,7 @@ import functools
 from abc import ABCMeta, abstractmethod
 from .. import algebra as alg
 from .. spaces import HSVish, HSLish, RGBish, LChish, Labish
-from ..types import Matrix, Vector, ColorInput, Plugin, TypeColor
+from ..types import Matrix, Vector, ColorInput, Plugin, ColorType
 from typing import Callable, Sequence, Mapping, Any, Generic
 
 __all__ = ('stop', 'hint', 'interpolator', 'Interpolate', 'Interpolator')
@@ -62,14 +62,14 @@ def normalize_domain(d: Vector) -> Vector:
     return values
 
 
-class Interpolator(Generic[TypeColor], metaclass=ABCMeta):
+class Interpolator(Generic[ColorType], metaclass=ABCMeta):
     """Interpolator."""
 
     def __init__(
         self,
         coordinates: Matrix,
         channel_names: Sequence[str],
-        color_cls: type[TypeColor],
+        color_cls: type[ColorType],
         easings: list[Callable[..., float] | None],
         stops: dict[int, float],
         space: str,
@@ -124,13 +124,13 @@ class Interpolator(Generic[TypeColor], metaclass=ABCMeta):
         max_delta_e: float = 0,
         delta_e: str | None = None,
         delta_e_args: dict[str, Any] | None = None,
-    ) -> Interpolator[TypeColor]:
+    ) -> Interpolator[ColorType]:
         """Make the interpolation a discretized interpolation."""
 
         from .linear import Linear
 
         # Get the discrete steps for the new discrete interpolation
-        colors = self.steps(steps, max_steps, max_delta_e, delta_e, delta_e_args)  # type: list[TypeColor]
+        colors = self.steps(steps, max_steps, max_delta_e, delta_e, delta_e_args)  # type: list[ColorType]
 
         if not colors:
             raise ValueError('Discrete interpolation requires at least 1 discrete step.')
@@ -251,7 +251,7 @@ class Interpolator(Generic[TypeColor], metaclass=ABCMeta):
         max_delta_e: float = 0,
         delta_e: str | None = None,
         delta_e_args: dict[str, Any] | None = None,
-    ) -> list[TypeColor]:
+    ) -> list[ColorType]:
         """Steps."""
 
         actual_steps = steps
@@ -267,7 +267,7 @@ class Interpolator(Generic[TypeColor], metaclass=ABCMeta):
         if max_steps is not None:
             actual_steps = min(actual_steps, max_steps)
 
-        ret = []  # type: list[tuple[float, TypeColor]]
+        ret = []  # type: list[tuple[float, ColorType]]
         if actual_steps == 1:
             ret = [(0.5, self(0.5))]
         elif actual_steps > 1:
@@ -351,7 +351,7 @@ class Interpolator(Generic[TypeColor], metaclass=ABCMeta):
 
             coords[i] = value / alpha
 
-    def begin(self, point: float, first: float, last: float, index: int) -> TypeColor:
+    def begin(self, point: float, first: float, last: float, index: int) -> ColorType:
         """
         Begin interpolation.
 
@@ -427,7 +427,7 @@ class Interpolator(Generic[TypeColor], metaclass=ABCMeta):
             point = size * index + (adjusted * size)
         return point
 
-    def __call__(self, point: float) -> TypeColor:
+    def __call__(self, point: float) -> ColorType:
         """Find which leg of the interpolation the request is between."""
 
         if self._domain:
@@ -460,7 +460,7 @@ class Interpolator(Generic[TypeColor], metaclass=ABCMeta):
         raise RuntimeError(f'Iterpolation could not be found for {point}')  # pragma: no cover
 
 
-class Interpolate(Generic[TypeColor], Plugin, metaclass=ABCMeta):
+class Interpolate(Generic[ColorType], Plugin, metaclass=ABCMeta):
     """Interpolation plugin."""
 
     NAME = ""
@@ -470,7 +470,7 @@ class Interpolate(Generic[TypeColor], Plugin, metaclass=ABCMeta):
         self,
         coordinates: Matrix,
         channel_names: Sequence[str],
-        color_cls: type[TypeColor],
+        color_cls: type[ColorType],
         easings: list[Callable[..., float] | None],
         stops: dict[int, float],
         space: str,
@@ -482,10 +482,10 @@ class Interpolate(Generic[TypeColor], Plugin, metaclass=ABCMeta):
         padding: float | tuple[float, float] | None = None,
         hue: str = 'shorter',
         **kwargs: Any
-    ) -> Interpolator[TypeColor]:
+    ) -> Interpolator[ColorType]:
         """Get the interpolator object."""
 
-    def get_space(self, space: str | None, color_cls: type[TypeColor]) -> str:
+    def get_space(self, space: str | None, color_cls: type[ColorType]) -> str:
         """
         Get and validate the color space for interpolation.
 
@@ -573,7 +573,7 @@ def process_mapping(
     return {aliases.get(k, k): v for k, v in progress.items()}
 
 
-def carryforward_convert(color: TypeColor, space: str, hue_index: int, powerless: bool) -> None:  # pragma: no cover
+def carryforward_convert(color: ColorType, space: str, hue_index: int, powerless: bool) -> None:  # pragma: no cover
     """Carry forward undefined values during conversion."""
 
     carry = []
@@ -662,7 +662,7 @@ def carryforward_convert(color: TypeColor, space: str, hue_index: int, powerless
 
 
 def interpolator(
-    color_cls: type[TypeColor],
+    color_cls: type[ColorType],
     interpolator: str,
     colors: Sequence[ColorInput | stop | Callable[..., float]],
     space: str | None,
@@ -676,7 +676,7 @@ def interpolator(
     carryforward: bool = False,
     powerless: bool = False,
     **kwargs: Any
-) -> Interpolator[TypeColor]:
+) -> Interpolator[ColorType]:
     """Get desired blend mode."""
 
     plugin = color_cls.INTERPOLATE_MAP.get(interpolator)

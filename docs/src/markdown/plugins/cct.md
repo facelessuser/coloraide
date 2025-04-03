@@ -13,20 +13,20 @@ class CCT(Plugin, metaclass=ABCMeta):
     NAME = ''
 
     @abstractmethod
-    def to_cct(self, color: TypeColor, **kwargs: Any) -> Vector:
+    def to_cct(self, color: ColorType, **kwargs: Any) -> Vector:
         """Calculate a color's CCT."""
 
     @abstractmethod
     def from_cct(
         self,
-        color: type[TypeColor],
+        color: type[ColorType],
         space: str,
         kelvin: float,
         duv: float,
         scale: bool,
         scale_space: str | None,
         **kwargs: Any
-    ) -> TypeColor:
+    ) -> ColorType:
         """Calculate a color that satisfies the CCT."""
 ```
 

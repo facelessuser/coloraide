@@ -9,11 +9,11 @@ from __future__ import annotations
 from .. import algebra as alg
 from .continuous import InterpolatorContinuous
 from ..interpolate import Interpolator, Interpolate
-from ..types import Vector, TypeColor
+from ..types import Vector, ColorType
 from typing import Any
 
 
-class InterpolatorBSpline(InterpolatorContinuous[TypeColor]):
+class InterpolatorBSpline(InterpolatorContinuous[ColorType]):
     """Interpolate with B-spline."""
 
     def adjust_endpoints(self) -> None:
@@ -70,12 +70,12 @@ class InterpolatorBSpline(InterpolatorContinuous[TypeColor]):
         return channels
 
 
-class BSpline(Interpolate[TypeColor]):
+class BSpline(Interpolate[ColorType]):
     """B-spline interpolation plugin."""
 
     NAME = "bspline"
 
-    def interpolator(self, *args: Any, **kwargs: Any) -> Interpolator[TypeColor]:
+    def interpolator(self, *args: Any, **kwargs: Any) -> Interpolator[ColorType]:
         """Return the B-spline interpolator."""
 
         return InterpolatorBSpline(*args, **kwargs)

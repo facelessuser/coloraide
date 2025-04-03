@@ -8,7 +8,7 @@ from .spaces.hsl import HSL
 from .spaces.lch import LCh
 from .cat import WHITES
 from . import util
-from .types import Vector, TypeColor
+from .types import Vector, ColorType
 from typing import Any
 
 WHITE = util.xy_to_xyz(WHITES['2deg']['D65'])
@@ -63,10 +63,10 @@ class Harmony(metaclass=ABCMeta):
     """Color harmony."""
 
     @abstractmethod
-    def harmonize(self, color: TypeColor, space: str) -> list[TypeColor]:
+    def harmonize(self, color: ColorType, space: str) -> list[ColorType]:
         """Get color harmonies."""
 
-    def get_cylinder(self, color: TypeColor, space: str) -> Any:
+    def get_cylinder(self, color: ColorType, space: str) -> Any:
         """Create a cylinder from a select number of color spaces on the fly."""
 
         color = color.convert(space, norm=False).normalize()
@@ -146,7 +146,7 @@ class Monochromatic(Harmony):
 
     DELTA_E = '2000'
 
-    def harmonize(self, color: TypeColor, space: str, count: int = 5) -> list[TypeColor]:
+    def harmonize(self, color: ColorType, space: str, count: int = 5) -> list[ColorType]:
         """Get color harmonies."""
 
         if count < 1:
@@ -245,7 +245,7 @@ class Geometric(Harmony):
 
         self.count = 12
 
-    def harmonize(self, color: TypeColor, space: str) -> list[TypeColor]:
+    def harmonize(self, color: ColorType, space: str) -> list[ColorType]:
         """Get color harmonies."""
 
         # Get the color cylinder
@@ -273,7 +273,7 @@ class Geometric(Harmony):
 class Wheel(Geometric):
     """Generate a color wheel."""
 
-    def harmonize(self, color: TypeColor, space: str, count: int = 12) -> list[TypeColor]:
+    def harmonize(self, color: ColorType, space: str, count: int = 12) -> list[ColorType]:
         """Generate a color wheel with the given count."""
 
         self.count = count
@@ -310,7 +310,7 @@ class TetradicSquare(Geometric):
 class SplitComplementary(Harmony):
     """Split Complementary colors."""
 
-    def harmonize(self, color: TypeColor, space: str) -> list[TypeColor]:
+    def harmonize(self, color: ColorType, space: str) -> list[ColorType]:
         """Get color harmonies."""
 
         # Get the color cylinder
@@ -332,7 +332,7 @@ class SplitComplementary(Harmony):
 class Analogous(Harmony):
     """Analogous colors."""
 
-    def harmonize(self, color: TypeColor, space: str) -> list[TypeColor]:
+    def harmonize(self, color: ColorType, space: str) -> list[ColorType]:
         """Get color harmonies."""
 
         color1 = self.get_cylinder(color, space)
@@ -353,7 +353,7 @@ class Analogous(Harmony):
 class TetradicRect(Harmony):
     """Tetradic (rectangular) colors."""
 
-    def harmonize(self, color: TypeColor, space: str) -> list[TypeColor]:
+    def harmonize(self, color: ColorType, space: str) -> list[ColorType]:
         """Get color harmonies."""
 
         # Get the color cylinder
@@ -385,7 +385,7 @@ SUPPORTED = {
 }  # type: dict[str, Harmony]
 
 
-def harmonize(color: TypeColor, name: str, space: str, **kwargs: Any) -> list[TypeColor]:
+def harmonize(color: ColorType, name: str, space: str, **kwargs: Any) -> list[ColorType]:
     """Get specified color harmonies."""
 
     h = SUPPORTED.get(name)

@@ -7,7 +7,7 @@ from __future__ import annotations
 import math
 from ..distance import DeltaE
 from ..spaces.cam16_ucs import COEFFICENTS, CAM16UCS
-from ..types import TypeColor
+from ..types import ColorType
 from typing import Any
 
 
@@ -18,8 +18,8 @@ class DECAM16(DeltaE):
 
     def distance(
         self,
-        color: TypeColor,
-        sample: TypeColor,
+        color: ColorType,
+        sample: ColorType,
         space: str = "cam16-ucs",
         **kwargs: Any
     ) -> float:

@@ -11,7 +11,7 @@ from .. import cmfs
 from .. import util
 from .. import algebra as alg
 from ..temperature import CCT
-from ..types import Vector, VectorLike, TypeColor
+from ..types import Vector, VectorLike, ColorType
 from typing import Any
 
 
@@ -157,7 +157,7 @@ class Ohno2013(CCT):
 
     def to_cct(
         self,
-        color: TypeColor,
+        color: ColorType,
         start: float = 1000,
         end: float = 100000,
         samples: int = 10,
@@ -249,14 +249,14 @@ class Ohno2013(CCT):
 
     def from_cct(
         self,
-        color: type[TypeColor],
+        color: type[ColorType],
         space: str,
         kelvin: float,
         duv: float,
         scale: bool,
         scale_space: str | None,
         **kwargs: Any
-    ) -> TypeColor:
+    ) -> ColorType:
         """Calculate a color that satisfies the CCT using Planck's law."""
 
         u0, v0 = self.blackbody(kelvin, exact=True)
