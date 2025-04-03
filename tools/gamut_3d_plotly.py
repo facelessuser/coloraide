@@ -661,7 +661,8 @@ def plot_interpolation(
     extrapolate,
     steps,
     gmap,
-    simulate_alpha
+    simulate_alpha,
+    interp_gmap
 ):
     """Plot interpolations."""
 
@@ -695,8 +696,9 @@ def plot_interpolation(
     cmap = []
     for c in colors:
         c.convert(space, in_place=True)
+        if interp_gmap:
+            c.fit('srgb', **gmap)
         store_coords(c, x, y, z, flags)
-
         c.convert('srgb', in_place=True)
         c.fit(**gmap)
         if simulate_alpha:
@@ -762,6 +764,9 @@ def main():
     parser.add_argument('--interp-space', default='oklab', help="Interpolation space.")
     parser.add_argument(
         '--interp-alpha', action='store_true', help="Simulate interpolation opacity by overlaying on white"
+    )
+    parser.add_argument(
+        '--interp-gmap', action='store_true', help="Force plotted interpolation results to be gamut mapped."
     )
     parser.add_argument('--hue', default='shorter', help="Hue interpolation handling.")
     parser.add_argument('--extrapolate', action='store_true', help='Extrapolate values.')
@@ -855,7 +860,8 @@ def main():
         args.extrapolate,
         args.steps,
         gmap,
-        args.interp_alpha
+        args.interp_alpha,
+        args.interp_gmap
     )
 
     # Plot gamut mapping examples
