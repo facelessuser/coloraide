@@ -7,10 +7,8 @@ from .. import util
 import math
 from .. import algebra as alg
 from .tools import adaptive_hue_independent
-from typing import TYPE_CHECKING, Any
-
-if TYPE_CHECKING:  # pragma: no cover
-    from ..color import Color
+from ..types import TypeColor
+from typing import Any
 
 XYZ = 'xyz-d65'
 WHITE = util.xy_to_xyz(WHITES['2deg']['D65'])
@@ -47,7 +45,7 @@ class MINDEChroma(Fit):
 
     def fit(
         self,
-        color: Color,
+        color: TypeColor,
         space: str,
         *,
         pspace: str | None = None,

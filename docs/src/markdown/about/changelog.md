@@ -1,5 +1,9 @@
 # Changelog
 
+## 4.x.x
+
+-   **FIX**: Fix typing for inherited colors.
+
 ## 4.5.1
 
 -   **FIX**: Ensure Jzazbz, JzCzhz, and ICtCp actually use `--jzazbz`, `--jzczhz`, and `--ictcp` by default when

@@ -4,12 +4,10 @@ Delta E z.
 https://www.osapublishing.org/oe/fulltext.cfm?uri=oe-25-13-15131&id=368272
 """
 from __future__ import annotations
-from ..distance import DeltaE
 import math
-from typing import TYPE_CHECKING, Any
-
-if TYPE_CHECKING:  # pragma: no cover
-    from ..color import Color
+from ..distance import DeltaE
+from ..types import TypeColor
+from typing import Any
 
 
 class DEZ(DeltaE):
@@ -17,7 +15,7 @@ class DEZ(DeltaE):
 
     NAME = "jz"
 
-    def distance(self, color: Color, sample: Color, **kwargs: Any) -> float:
+    def distance(self, color: TypeColor, sample: TypeColor, **kwargs: Any) -> float:
         """Delta E z color distance formula."""
 
         jz1, az1, bz1 = color.convert('jzazbz').coords(nans=False)

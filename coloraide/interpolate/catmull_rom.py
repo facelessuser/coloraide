@@ -7,10 +7,11 @@ from __future__ import annotations
 from .bspline import InterpolatorBSpline
 from ..interpolate import Interpolator, Interpolate
 from .. import algebra as alg
+from .. types import TypeColor
 from typing import Any
 
 
-class InterpolatorCatmullRom(InterpolatorBSpline):
+class InterpolatorCatmullRom(InterpolatorBSpline[TypeColor]):
     """Interpolate with Catmull-Rom spline."""
 
     def setup(self) -> None:
@@ -20,12 +21,12 @@ class InterpolatorCatmullRom(InterpolatorBSpline):
         self.spline = alg.catrom
 
 
-class CatmullRom(Interpolate):
+class CatmullRom(Interpolate[TypeColor]):
     """Catmull-Rom interpolation plugin."""
 
     NAME = "catrom"
 
-    def interpolator(self, *args: Any, **kwargs: Any) -> Interpolator:
+    def interpolator(self, *args: Any, **kwargs: Any) -> Interpolator[TypeColor]:
         """Return the Catmull-Rom interpolator."""
 
         return InterpolatorCatmullRom(*args, **kwargs)

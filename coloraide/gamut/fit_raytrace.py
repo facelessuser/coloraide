@@ -13,11 +13,8 @@ from ..spaces.hsv import hsv_to_srgb, srgb_to_hsv
 from ..spaces.hwb import hwb_to_hsv, hsv_to_hwb
 from ..spaces.srgb_linear import sRGBLinear
 from .tools import adaptive_hue_independent
-from ..types import Vector, VectorLike
-from typing import TYPE_CHECKING, Callable, Any  # noqa: F401
-
-if TYPE_CHECKING:  # pragma: no cover
-    from ..color import Color
+from ..types import Vector, VectorLike, TypeColor
+from typing import Callable, Any  # noqa: F401
 
 
 def project_onto(a: Vector, b: Vector, o: Vector) -> Vector:
@@ -55,7 +52,7 @@ def srgb_to_hwb(coords: Vector) -> Vector:  # pragma: no cover
     return hsv_to_hwb(srgb_to_hsv(coords))
 
 
-def coerce_to_rgb(OrigColor: type[Color], cs: Space) -> tuple[type[Color], str]:
+def coerce_to_rgb(OrigColor: type[TypeColor], cs: Space) -> tuple[Any, str]:
     """
     Coerce an HSL, HSV, or HWB color space to RGB to allow us to ray trace the gamut.
 
@@ -192,7 +189,7 @@ class RayTrace(Fit):
 
     def fit(
         self,
-        color: Color,
+        color: TypeColor,
         space: str,
         *,
         pspace: str | None = None,

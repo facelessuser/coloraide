@@ -3,10 +3,8 @@ from __future__ import annotations
 from ..distance import DeltaE
 from ..spaces.lab import CIELab
 import math
-from typing import TYPE_CHECKING, Any
-
-if TYPE_CHECKING:  # pragma: no cover
-    from ..color import Color
+from ..types import TypeColor
+from typing import Any
 
 
 class DECMC(DeltaE):
@@ -28,8 +26,8 @@ class DECMC(DeltaE):
 
     def distance(
         self,
-        color: Color,
-        sample: Color,
+        color: TypeColor,
+        sample: TypeColor,
         l: float | None = None,
         c: float | None = None,
         space: str | None = None,

@@ -3,11 +3,8 @@ from __future__ import annotations
 from .. import lch as base
 from ...css import parse
 from ...css import serialize
-from ...types import Vector
-from typing import Any, TYPE_CHECKING, Sequence
-
-if TYPE_CHECKING:  # pragma: no cover
-    from ...color import Color
+from ...types import Vector, TypeColor
+from typing import Any, Sequence
 
 
 class LCh(base.CIELCh):
@@ -15,7 +12,7 @@ class LCh(base.CIELCh):
 
     def to_string(
         self,
-        parent: Color,
+        parent: TypeColor,
         *,
         alpha: bool | None = None,
         precision: int | Sequence[int] | None = None,
