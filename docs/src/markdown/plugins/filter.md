@@ -15,7 +15,7 @@ class Filter(Plugin, metaclass=ABCMeta):
     ALLOWED_SPACES = ('srgb-linear', 'srgb')
 
     @abstractmethod
-    def filter(self, color: 'Color', amount: float | None, **kwargs: Any) -> None:
+    def filter(self, color: TypeColor, amount: float | None, **kwargs: Any) -> None:
         """Filter the given color."""
 ```
 
