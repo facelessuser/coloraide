@@ -3,7 +3,7 @@ from __future__ import annotations
 import math
 from .. import algebra as alg
 from ..interpolate import Interpolator, Interpolate
-from ..types import Vector
+from ..types import Vector, AnyColor
 from typing import Any
 
 
@@ -51,7 +51,7 @@ def adjust_decrease(h1: float, h2: float, offset: float) -> tuple[float, float]:
     return h2, offset
 
 
-class InterpolatorContinuous(Interpolator):
+class InterpolatorContinuous(Interpolator[AnyColor]):
     """Interpolate with continuous piecewise."""
 
     def normalize_hue(
@@ -236,12 +236,12 @@ class InterpolatorContinuous(Interpolator):
         return channels
 
 
-class Continuous(Interpolate):
+class Continuous(Interpolate[AnyColor]):
     """Continuous interpolation plugin."""
 
     NAME = "continuous"
 
-    def interpolator(self, *args: Any, **kwargs: Any) -> Interpolator:
+    def interpolator(self, *args: Any, **kwargs: Any) -> Interpolator[AnyColor]:
         """Return the continuous interpolator."""
 
         return InterpolatorContinuous(*args, **kwargs)

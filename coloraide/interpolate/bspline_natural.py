@@ -7,10 +7,11 @@ from __future__ import annotations
 from .. interpolate import Interpolate, Interpolator
 from .bspline import InterpolatorBSpline
 from .. import algebra as alg
+from .. types import AnyColor
 from typing import Any
 
 
-class InterpolatorNaturalBSpline(InterpolatorBSpline):
+class InterpolatorNaturalBSpline(InterpolatorBSpline[AnyColor]):
     """Natural B-spline class."""
 
     def setup(self) -> None:
@@ -30,12 +31,12 @@ class InterpolatorNaturalBSpline(InterpolatorBSpline):
         self.adjust_endpoints()
 
 
-class NaturalBSpline(Interpolate):
+class NaturalBSpline(Interpolate[AnyColor]):
     """Natural B-spline interpolation plugin."""
 
     NAME = "natural"
 
-    def interpolator(self, *args: Any, **kwargs: Any) -> Interpolator:
+    def interpolator(self, *args: Any, **kwargs: Any) -> Interpolator[AnyColor]:
         """Return the natural B-spline interpolator."""
 
         return InterpolatorNaturalBSpline(*args, **kwargs)

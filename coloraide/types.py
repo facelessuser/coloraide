@@ -10,6 +10,10 @@ else:
 if TYPE_CHECKING:  # pragma: no cover
     from .color import Color
 
+# Generic color template for handling inherited colors
+AnyColor = TypeVar('AnyColor', bound='Color')
+
+# Color inputs which can be an object, string, or a mapping describing the color.
 ColorInput = Union['Color', str, Mapping[str, Any]]
 
 # Vectors, Matrices, and Arrays are assumed to be mutable lists

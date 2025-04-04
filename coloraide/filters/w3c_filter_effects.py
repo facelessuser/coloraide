@@ -5,7 +5,7 @@ from ..filters import Filter
 from .. import algebra as alg
 from typing import Any, TYPE_CHECKING
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:  #pragma: no cover
     from ..color import Color
 
 

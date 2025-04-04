@@ -10,10 +10,10 @@ from ..spaces.lab import xyz_to_lab, lab_to_xyz
 from ..spaces.lch import lab_to_lch, lch_to_lab
 from .. import algebra as alg
 from .. import util
-from ..types import Vector, Matrix
+from ..types import Vector, Matrix, AnyColor
 from typing import TYPE_CHECKING
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:  #pragma: no cover
     from ..color import Color
 
 # White point C as defined in the Pointer data spreadsheet
@@ -77,7 +77,7 @@ def to_lch_sc(color: Color) -> Vector:
     return lab_to_lch(xyz_to_lab(xyz_sc, util.xy_to_xyz(WHITE_POINT_SC)))
 
 
-def from_lch_sc(color: Color, lch: Vector) -> Color:
+def from_lch_sc(color: AnyColor, lch: Vector) -> AnyColor:
     """Convert a color from LCh with an SC illuminant."""
 
     xyz_sc = lab_to_xyz(lch_to_lab(lch), util.xy_to_xyz(WHITE_POINT_SC))
@@ -142,7 +142,7 @@ def get_chroma_limit(l: float, h: float) -> float:
     return alg.lerp(alg.lerp(row1[li], row1[li + 1], lf), alg.lerp(row2[li], row2[li + 1], lf), hf)
 
 
-def fit_pointer_gamut(color: Color) -> Color:
+def fit_pointer_gamut(color: AnyColor) -> AnyColor:
     """Fit a color to the Pointer gamut."""
 
     # Convert to CIE LCh with the SC illuminant

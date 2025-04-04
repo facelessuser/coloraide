@@ -5,7 +5,7 @@ from ..filters import Filter
 from ..types import Vector, Matrix
 from typing import Any, Callable, TYPE_CHECKING
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:  #pragma: no cover
     from ..color import Color
 
 LRGB_TO_LMS = [

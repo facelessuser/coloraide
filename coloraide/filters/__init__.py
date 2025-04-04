@@ -1,10 +1,10 @@
 """Provides a plugin system for filtering colors."""
 from __future__ import annotations
 from abc import ABCMeta, abstractmethod
-from ..types import Plugin
+from ..types import Plugin, AnyColor
 from typing import Any, TYPE_CHECKING
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:  #pragma: no cover
     from ..color import Color
 
 
@@ -21,14 +21,14 @@ class Filter(Plugin, metaclass=ABCMeta):
 
 
 def filters(
-    color: Color,
+    color: AnyColor,
     name: str,
     amount: float | None = None,
     space: str | None = None,
     out_space: str | None = None,
     in_place: bool = False,
     **kwargs: Any
-) -> Color:
+) -> AnyColor:
     """Filter."""
 
     f = color.FILTER_MAP.get(name)

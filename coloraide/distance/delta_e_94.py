@@ -1,12 +1,10 @@
 """Delta E 94."""
 from __future__ import annotations
+import math
 from ..distance import DeltaE
 from ..spaces.lab import CIELab
-import math
-from typing import TYPE_CHECKING, Any
-
-if TYPE_CHECKING:  # pragma: no cover
-    from ..color import Color
+from .. types import AnyColor
+from typing import Any
 
 
 class DE94(DeltaE):
@@ -30,8 +28,8 @@ class DE94(DeltaE):
 
     def distance(
         self,
-        color: Color,
-        sample: Color,
+        color: AnyColor,
+        sample: AnyColor,
         kl: float | None = None,
         k1: float | None = None,
         k2: float | None = None,

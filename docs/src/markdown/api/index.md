@@ -274,7 +274,7 @@ def new(
     data: VectorLike | None = None,
     alpha: float = util.DEF_ALPHA,
     **kwargs: Any
-) -> Color:
+) -> Self:
     ...
 ```
 
@@ -307,7 +307,7 @@ def random(
     space: str,
     *,
     limits: Sequence[Sequence[float] | None] | None = None
-) -> Color:
+) -> Self:
     ...
 ```
 
@@ -362,7 +362,7 @@ def update(
     *,
     norm: bool = True,
     **kwargs: Any
-) -> Color:
+) -> Self:
     ...
 ```
 
@@ -400,7 +400,7 @@ def mutate(
     data: VectorLike | None = None,
     alpha: float = util.DEF_ALPHA,
     **kwargs: Any
-) -> Color:
+) -> Self:
     ...
 ```
 
@@ -434,7 +434,7 @@ def convert(
     fit: bool | str = False,
     in_place: bool = False,
     norm: bool = True
-) -> Color:
+) -> Self:
     ...
 ```
 
@@ -487,7 +487,7 @@ def normalize(
     self,
     *,
     nans: bool = True
-) -> Color:
+) -> Self:
     ...
 ```
 
@@ -743,7 +743,7 @@ def closest(
     *,
     method: str | None = None,
     **kwargs: Any
-) -> Color:
+) -> Self:
     ...
 ```
 
@@ -776,7 +776,7 @@ def mask(
     *,
     invert: bool = False,
     in_place: bool = False
-) -> Color:
+) -> Self:
     ...
 ```
 
@@ -896,7 +896,7 @@ def steps(
     delta_e: str | None = None,
     delta_e_args: dict[str, Any] | None = None,
     **interpolate_args: Any
-) -> list[Color]:
+) -> list[Self]:
     ...
 ```
 
@@ -949,7 +949,7 @@ def discrete(
     delta_e_args: dict[str, Any] | None = None,
     domain: list[float] | None = None,
     **interpolate_args: Any
-) -> Interpolator:
+) -> Interpolator[Self]:
     ...
 ```
 
@@ -994,7 +994,7 @@ def mix(
     *,
     in_place: bool = False,
     **interpolate_args: Any
-) -> Color:
+) -> Self:
     ...
 ```
 
@@ -1034,7 +1034,7 @@ def average(
     premultiplied: bool = True,
     powerelss: bool | None = None
     **kwargs: Any
-) -> Color:
+) -> Self:
     ...
 ```
 
@@ -1077,7 +1077,7 @@ def filter(
     in_place: bool = False,
     out_space: str | None = None,
     **kwargs: Any
-) -> Color:
+) -> Self:
     ...
 ```
 
@@ -1146,7 +1146,7 @@ def harmony(
     space: str | None = None,
     out_space: str | None = None,
     **kwargs: Any
-) -> list[Color]:
+) -> list[Self]:
     ...
 ```
 
@@ -1199,7 +1199,7 @@ def compose(
     space: str | None = None,
     out_space: str | None = None,
     in_place: bool = False
-) -> Color:
+) -> Self:
     ...
 ```
 
@@ -1262,7 +1262,7 @@ def layer(
     operator: str | bool = True,
     space: str | None = None,
     out_space: str | None = None
-) -> Color:
+) -> Self:
     ...
 ```
 
@@ -1318,7 +1318,7 @@ Return
 def clip(
     self,
     space: str | None = None
-) -> Color:
+) -> Self:
     ...
 ```
 
@@ -1348,7 +1348,7 @@ def fit(
     *,
     method: str | None = None,
     **kwargs: Any
-) -> Color:
+) -> Self:
     ...
 ```
 
@@ -1476,7 +1476,7 @@ def set(
     value: float | Callable[..., float] | None = None,
     *,
     nans: bool = True
-) -> Color:
+) -> Self:
     ...
 ```
 
@@ -1653,7 +1653,7 @@ def blackbody(
     out_space: str | None = None,
     method: str | None = None,
     **kwargs: Any
-) -> Color:
+) -> Self:
     ...
 ```
 
@@ -1857,7 +1857,7 @@ def chromaticity(
     scale: bool = False,
     scale_space: str | None = None,
     white: VectorLike | None = None
-) -> Color:
+) -> Self:
     ...
 ```
 

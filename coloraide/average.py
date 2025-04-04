@@ -3,19 +3,15 @@ from __future__ import annotations
 import math
 from . import util
 from .spaces import HWBish
-from .types import ColorInput
-from typing import Iterable, TYPE_CHECKING
-
-if TYPE_CHECKING:  # pragma: no cover
-    from .color import Color
-
+from .types import ColorInput, AnyColor
+from typing import Iterable
 
 def average(
-    color_cls: type[Color],
+    color_cls: type[AnyColor],
     colors: Iterable[ColorInput],
     space: str,
     premultiplied: bool = True
-) -> Color:
+) -> AnyColor:
     """
     Average a list of colors together.
 

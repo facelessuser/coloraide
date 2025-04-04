@@ -3,10 +3,10 @@ from __future__ import annotations
 from .. import srgb as base
 from ...css import parse
 from ...css import serialize
-from typing import Any, TYPE_CHECKING, Sequence
+from typing import Any, Sequence, TYPE_CHECKING
 from ...types import Vector
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:  #pragma: no cover
     from ...color import Color
 
 

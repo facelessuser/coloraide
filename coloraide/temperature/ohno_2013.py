@@ -11,11 +11,8 @@ from .. import cmfs
 from .. import util
 from .. import algebra as alg
 from ..temperature import CCT
-from ..types import Vector, VectorLike
-from typing import TYPE_CHECKING, Any
-
-if TYPE_CHECKING:  # pragma: no cover
-    from ..color import Color
+from ..types import Vector, VectorLike, AnyColor
+from typing import Any
 
 
 class BlackBodyCurve:
@@ -160,7 +157,7 @@ class Ohno2013(CCT):
 
     def to_cct(
         self,
-        color: Color,
+        color: AnyColor,
         start: float = 1000,
         end: float = 100000,
         samples: int = 10,
@@ -252,14 +249,14 @@ class Ohno2013(CCT):
 
     def from_cct(
         self,
-        color: type[Color],
+        color: type[AnyColor],
         space: str,
         kelvin: float,
         duv: float,
         scale: bool,
         scale_space: str | None,
         **kwargs: Any
-    ) -> Color:
+    ) -> AnyColor:
         """Calculate a color that satisfies the CCT using Planck's law."""
 
         u0, v0 = self.blackbody(kelvin, exact=True)

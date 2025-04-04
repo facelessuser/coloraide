@@ -8,10 +8,10 @@ from .spaces.hsl import HSL
 from .spaces.lch import LCh
 from .cat import WHITES
 from . import util
-from .types import Vector
-from typing import TYPE_CHECKING, Any
+from .types import Vector, AnyColor
+from typing import Any, TYPE_CHECKING
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:  #pragma: no cover
     from .color import Color
 
 WHITE = util.xy_to_xyz(WHITES['2deg']['D65'])
@@ -66,10 +66,10 @@ class Harmony(metaclass=ABCMeta):
     """Color harmony."""
 
     @abstractmethod
-    def harmonize(self, color: Color, space: str) -> list[Color]:
+    def harmonize(self, color: AnyColor, space: str) -> list[AnyColor]:
         """Get color harmonies."""
 
-    def get_cylinder(self, color: Color, space: str) -> Color:
+    def get_cylinder(self, color: Color, space: str) -> Any:
         """Create a cylinder from a select number of color spaces on the fly."""
 
         color = color.convert(space, norm=False).normalize()
@@ -129,7 +129,7 @@ class Harmony(metaclass=ABCMeta):
 
             ColorCyl.register(custom_space())
 
-            return ColorCyl(color).convert('-harmony-cylinder')  # type: ignore[no-any-return]
+            return ColorCyl(color).convert('-harmony-cylinder')
 
         raise ValueError(f'Unsupported color space type {color.space()}')
 
@@ -149,7 +149,7 @@ class Monochromatic(Harmony):
 
     DELTA_E = '2000'
 
-    def harmonize(self, color: Color, space: str, count: int = 5) -> list[Color]:
+    def harmonize(self, color: AnyColor, space: str, count: int = 5) -> list[AnyColor]:
         """Get color harmonies."""
 
         if count < 1:
@@ -248,7 +248,7 @@ class Geometric(Harmony):
 
         self.count = 12
 
-    def harmonize(self, color: Color, space: str) -> list[Color]:
+    def harmonize(self, color: AnyColor, space: str) -> list[AnyColor]:
         """Get color harmonies."""
 
         # Get the color cylinder
@@ -256,7 +256,7 @@ class Geometric(Harmony):
         output = space
         space = color1.space()
 
-        name = color1._space.hue_name()  # type: ignore[attr-defined]
+        name = color1._space.hue_name()
 
         degree = current = 360.0 / self.count
         colors = []
@@ -276,7 +276,7 @@ class Geometric(Harmony):
 class Wheel(Geometric):
     """Generate a color wheel."""
 
-    def harmonize(self, color: Color, space: str, count: int = 12) -> list[Color]:
+    def harmonize(self, color: AnyColor, space: str, count: int = 12) -> list[AnyColor]:
         """Generate a color wheel with the given count."""
 
         self.count = count
@@ -313,14 +313,14 @@ class TetradicSquare(Geometric):
 class SplitComplementary(Harmony):
     """Split Complementary colors."""
 
-    def harmonize(self, color: Color, space: str) -> list[Color]:
+    def harmonize(self, color: AnyColor, space: str) -> list[AnyColor]:
         """Get color harmonies."""
 
         # Get the color cylinder
         color1 = self.get_cylinder(color, space)
         output = space
         space = color1.space()
-        name = color1._space.hue_name()  # type: ignore[attr-defined]
+        name = color1._space.hue_name()
 
         color2 = color1.clone().set(name, lambda x: adjust_hue(x, 210))
         color3 = color1.clone().set(name, lambda x: adjust_hue(x, -210))
@@ -335,13 +335,13 @@ class SplitComplementary(Harmony):
 class Analogous(Harmony):
     """Analogous colors."""
 
-    def harmonize(self, color: Color, space: str) -> list[Color]:
+    def harmonize(self, color: AnyColor, space: str) -> list[AnyColor]:
         """Get color harmonies."""
 
         color1 = self.get_cylinder(color, space)
         output = space
         space = color1.space()
-        name = color1._space.hue_name()  # type: ignore[attr-defined]
+        name = color1._space.hue_name()
 
         color2 = color1.clone().set(name, lambda x: adjust_hue(x, 30))
         color3 = color1.clone().set(name, lambda x: adjust_hue(x, -30))
@@ -356,14 +356,14 @@ class Analogous(Harmony):
 class TetradicRect(Harmony):
     """Tetradic (rectangular) colors."""
 
-    def harmonize(self, color: Color, space: str) -> list[Color]:
+    def harmonize(self, color: AnyColor, space: str) -> list[AnyColor]:
         """Get color harmonies."""
 
         # Get the color cylinder
         color1 = self.get_cylinder(color, space)
         output = space
         space = color1.space()
-        name = color1._space.hue_name()  # type: ignore[attr-defined]
+        name = color1._space.hue_name()
 
         color2 = color1.clone().set(name, lambda x: adjust_hue(x, 30))
         color3 = color1.clone().set(name, lambda x: adjust_hue(x, 180))
@@ -388,7 +388,7 @@ SUPPORTED = {
 }  # type: dict[str, Harmony]
 
 
-def harmonize(color: Color, name: str, space: str, **kwargs: Any) -> list[Color]:
+def harmonize(color: AnyColor, name: str, space: str, **kwargs: Any) -> list[AnyColor]:
     """Get specified color harmonies."""
 
     h = SUPPORTED.get(name)

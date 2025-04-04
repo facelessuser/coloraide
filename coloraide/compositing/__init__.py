@@ -9,11 +9,8 @@ from . import porter_duff
 from . import blend_modes
 from .. import algebra as alg
 from ..channels import Channel
-from ..types import Vector, ColorInput
-from typing import TYPE_CHECKING, Sequence
-
-if TYPE_CHECKING:  # pragma: no cover
-    from ..color import Color
+from ..types import Vector, ColorInput, AnyColor
+from typing import Sequence
 
 
 def clip_channel(coord: float, channel: Channel) -> float:
@@ -76,13 +73,13 @@ def apply_compositing(
 
 
 def compose(
-    color_cls: type[Color],
+    color_cls: type[AnyColor],
     colors: Sequence[ColorInput],
     blend: str | bool = True,
     operator: str | bool = True,
     space: str | None = None,
     out_space: str | None = None
-) -> Color:
+) -> AnyColor:
     """Blend colors using the specified blend mode."""
 
     if not colors:  # pragma: no cover

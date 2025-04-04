@@ -12,12 +12,10 @@ https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9698626/pdf/sensors-22-08869.pdf
 from __future__ import annotations
 import math
 from ..distance import DeltaE
-from typing import Any, TYPE_CHECKING
 from ..spaces.cam02_ucs import CAM02UCS
 from ..spaces.cam16_ucs import COEFFICENTS
-
-if TYPE_CHECKING:  # pragma: no cover
-    from ..color import Color
+from ..types import AnyColor
+from typing import Any
 
 
 class DECAM02(DeltaE):
@@ -27,8 +25,8 @@ class DECAM02(DeltaE):
 
     def distance(
         self,
-        color: Color,
-        sample: Color,
+        color: AnyColor,
+        sample: AnyColor,
         space: str = "cam02-ucs",
         **kwargs: Any
     ) -> float:

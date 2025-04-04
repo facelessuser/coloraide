@@ -7,10 +7,8 @@ https://material.io/blog/science-of-color-design
 """
 from __future__ import annotations
 from ..contrast import ColorContrast
-from typing import Any, TYPE_CHECKING
-
-if TYPE_CHECKING:  # pragma: no cover
-    from ..color import Color
+from ..types import AnyColor
+from typing import Any
 
 
 class LstarContrast(ColorContrast):
@@ -18,7 +16,7 @@ class LstarContrast(ColorContrast):
 
     NAME = "lstar"
 
-    def contrast(self, color1: Color, color2: Color, **kwargs: Any) -> float:
+    def contrast(self, color1: AnyColor, color2: AnyColor, **kwargs: Any) -> float:
         """Contrast."""
 
         l1 = color1.get('lch-d65.lightness', nans=False)

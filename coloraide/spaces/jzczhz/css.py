@@ -4,9 +4,9 @@ from .. import jzczhz as base
 from ...css import parse
 from ...css import serialize
 from ...types import Vector
-from typing import Any, TYPE_CHECKING, Sequence
+from typing import Any, Sequence, TYPE_CHECKING
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:  #pragma: no cover
     from ...color import Color
 
 

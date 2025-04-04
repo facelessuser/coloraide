@@ -3,10 +3,10 @@ from __future__ import annotations
 import math
 from ..distance import DeltaE
 from ..spaces.cam16_ucs import COEFFICENTS
-from ..types import VectorLike
+from ..types import VectorLike, AnyColor
 from typing import Any, TYPE_CHECKING
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:  #pragma: no cover
     from ..color import Color
 
 COEFF2 = COEFFICENTS['ucs'][2]
@@ -34,7 +34,7 @@ class DEHCT(DeltaE):
 
     NAME = "hct"
 
-    def distance(self, color: Color, sample: Color, **kwargs: Any) -> float:
+    def distance(self, color: AnyColor, sample: AnyColor, **kwargs: Any) -> float:
         """Delta E HCT color distance formula."""
 
         t1, a1, b1 = convert_ucs_ab(

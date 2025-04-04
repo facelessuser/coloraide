@@ -17,7 +17,7 @@ class DeltaE(Plugin, metaclass=ABCMeta):
     NAME = ''
 
     @abstractmethod
-    def distance(self, color: 'Color', sample: 'Color', **kwargs: Any) -> float:
+    def distance(self, color: AnyColor, sample: AnyColor, **kwargs: Any) -> float:
         """Get distance between color and sample."""
 ```
 

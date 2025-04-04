@@ -4,10 +4,10 @@ import math
 from ..channels import FLG_ANGLE
 from abc import ABCMeta, abstractmethod
 from ..types import Plugin
-from typing import TYPE_CHECKING, Any
+from typing import Any, TYPE_CHECKING
 from . import pointer
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:  #pragma: no cover
     from ..color import Color
 
 __all__ = ('clip_channels', 'verify', 'Fit', 'pointer')
