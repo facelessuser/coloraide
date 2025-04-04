@@ -9,7 +9,7 @@ from . import porter_duff
 from . import blend_modes
 from .. import algebra as alg
 from ..channels import Channel
-from ..types import Vector, ColorInput, ColorType
+from ..types import Vector, ColorInput, AnyColor
 from typing import Sequence
 
 
@@ -73,13 +73,13 @@ def apply_compositing(
 
 
 def compose(
-    color_cls: type[ColorType],
+    color_cls: type[AnyColor],
     colors: Sequence[ColorInput],
     blend: str | bool = True,
     operator: str | bool = True,
     space: str | None = None,
     out_space: str | None = None
-) -> ColorType:
+) -> AnyColor:
     """Blend colors using the specified blend mode."""
 
     if not colors:  # pragma: no cover

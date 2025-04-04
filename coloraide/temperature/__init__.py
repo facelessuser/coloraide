@@ -1,8 +1,11 @@
 """Temperature plugin."""
 from __future__ import annotations
 from abc import ABCMeta, abstractmethod
-from ..types import Plugin, Vector, ColorType
-from typing import Any
+from ..types import Plugin, Vector, AnyColor
+from typing import Any, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from ..color import Color
 
 
 class CCT(Plugin, metaclass=ABCMeta):
@@ -11,24 +14,24 @@ class CCT(Plugin, metaclass=ABCMeta):
     NAME = ''
 
     @abstractmethod
-    def to_cct(self, color: ColorType, **kwargs: Any) -> Vector:
+    def to_cct(self, color: Color, **kwargs: Any) -> Vector:
         """Calculate a color's CCT."""
 
     @abstractmethod
     def from_cct(
         self,
-        color: type[ColorType],
+        color: type[AnyColor],
         space: str,
         kelvin: float,
         duv: float,
         scale: bool,
         scale_space: str | None,
         **kwargs: Any
-    ) -> ColorType:
+    ) -> AnyColor:
         """Calculate a color that satisfies the CCT."""
 
 
-def cct(name: str | None, color: type[ColorType] | ColorType) -> CCT:
+def cct(name: str | None, color: type[AnyColor] | AnyColor) -> CCT:
     """Get the appropriate contrast plugin."""
 
     if name is None:

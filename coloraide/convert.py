@@ -1,10 +1,11 @@
 """Convert the color."""
 from __future__ import annotations
-from .types import Vector, ColorType
+from .types import Vector
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
     from .spaces import Space
+    from .color import Color
 
 # XYZ is the absolute base, meaning that XYZ is the final base in any conversion chain.
 # This is a design expectation regardless of whether someone assigns a different base to XYZ or not.
@@ -12,7 +13,7 @@ ABSOLUTE_BASE = 'xyz-d65'
 
 
 def calc_path_to_xyz(
-    color: type[ColorType],
+    color: type[Color],
     space: str
 ) -> tuple[list[Space], dict[str, int]]:
     """
@@ -52,7 +53,7 @@ def calc_path_to_xyz(
 
 
 def get_convert_chain(
-    color: type[ColorType],
+    color: type[Color],
     space: Space,
     target: str
 ) -> list[tuple[Space, Space, int, bool]]:
@@ -118,7 +119,7 @@ def get_convert_chain(
     return chain
 
 
-def convert(color: ColorType, space: str) -> tuple[Space, Vector]:
+def convert(color: Color, space: str) -> tuple[Space, Vector]:
     """Convert the color coordinates to the specified space."""
 
     # Grab the convert for the current space to the desired space

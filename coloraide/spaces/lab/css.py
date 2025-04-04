@@ -3,8 +3,11 @@ from __future__ import annotations
 from .. import lab as base
 from ...css import parse
 from ...css import serialize
-from ...types import Vector, ColorType
-from typing import Any, Sequence
+from ...types import Vector
+from typing import Any, Sequence, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from ...color import Color
 
 
 class Lab(base.CIELab):
@@ -12,7 +15,7 @@ class Lab(base.CIELab):
 
     def to_string(
         self,
-        parent: ColorType,
+        parent: Color,
         *,
         alpha: bool | None = None,
         precision: int | Sequence[int] | None = None,

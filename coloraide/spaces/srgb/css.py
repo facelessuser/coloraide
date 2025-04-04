@@ -3,8 +3,11 @@ from __future__ import annotations
 from .. import srgb as base
 from ...css import parse
 from ...css import serialize
-from typing import Any, Sequence
-from ...types import Vector, ColorType
+from typing import Any, Sequence, TYPE_CHECKING
+from ...types import Vector
+
+if TYPE_CHECKING:
+    from ...color import Color
 
 
 class sRGB(base.sRGB):
@@ -12,7 +15,7 @@ class sRGB(base.sRGB):
 
     def to_string(
         self,
-        parent: ColorType,
+        parent: Color,
         *,
         alpha: bool | None = None,
         precision: int | Sequence[int] | None = None,

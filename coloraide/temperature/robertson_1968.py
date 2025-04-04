@@ -14,8 +14,11 @@ from .. import util
 from .. import cat
 from .. import cmfs
 from ..temperature import CCT
-from ..types import Vector, VectorLike, ColorType
-from typing import Any
+from ..types import Vector, VectorLike, AnyColor
+from typing import Any, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from ..color import Color
 
 # Original 31 mired points 0 - 600
 MIRED_ORIGINAL = tuple(range(0, 100, 10)) + tuple(range(100, 601, 25))
@@ -97,7 +100,7 @@ class Robertson1968(CCT):
                 table.append((t, uv[0], uv[1], m))
         return table
 
-    def to_cct(self, color: ColorType, **kwargs: Any) -> Vector:
+    def to_cct(self, color: Color, **kwargs: Any) -> Vector:
         """Calculate a color's CCT."""
 
         u, v = color.split_chromaticity(self.CHROMATICITY)[:-1]
@@ -158,14 +161,14 @@ class Robertson1968(CCT):
 
     def from_cct(
         self,
-        color: type[ColorType],
+        color: type[AnyColor],
         space: str,
         kelvin: float,
         duv: float,
         scale: bool,
         scale_space: str | None,
         **kwargs: Any
-    ) -> ColorType:
+    ) -> AnyColor:
         """Calculate a color that satisfies the CCT."""
 
         # Find inverse temperature to use as index.

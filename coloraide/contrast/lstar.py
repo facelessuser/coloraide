@@ -7,7 +7,7 @@ https://material.io/blog/science-of-color-design
 """
 from __future__ import annotations
 from ..contrast import ColorContrast
-from ..types import ColorType
+from ..types import AnyColor
 from typing import Any
 
 
@@ -16,7 +16,7 @@ class LstarContrast(ColorContrast):
 
     NAME = "lstar"
 
-    def contrast(self, color1: ColorType, color2: ColorType, **kwargs: Any) -> float:
+    def contrast(self, color1: AnyColor, color2: AnyColor, **kwargs: Any) -> float:
         """Contrast."""
 
         l1 = color1.get('lch-d65.lightness', nans=False)

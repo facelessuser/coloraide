@@ -3,7 +3,7 @@ from __future__ import annotations
 from ..distance import DeltaE
 from ..spaces.lab import CIELab
 import math
-from ..types import ColorType
+from ..types import AnyColor
 from typing import Any
 
 
@@ -26,8 +26,8 @@ class DECMC(DeltaE):
 
     def distance(
         self,
-        color: ColorType,
-        sample: ColorType,
+        color: AnyColor,
+        sample: AnyColor,
         l: float | None = None,
         c: float | None = None,
         space: str | None = None,

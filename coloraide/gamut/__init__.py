@@ -3,14 +3,17 @@ from __future__ import annotations
 import math
 from ..channels import FLG_ANGLE
 from abc import ABCMeta, abstractmethod
-from ..types import Plugin, ColorType
-from typing import Any
+from ..types import Plugin
+from typing import Any, TYPE_CHECKING
 from . import pointer
+
+if TYPE_CHECKING:
+    from ..color import Color
 
 __all__ = ('clip_channels', 'verify', 'Fit', 'pointer')
 
 
-def clip_channels(color: ColorType, nans: bool = True) -> bool:
+def clip_channels(color: Color, nans: bool = True) -> bool:
     """Clip channels."""
 
     clipped = False
@@ -39,7 +42,7 @@ def clip_channels(color: ColorType, nans: bool = True) -> bool:
     return clipped
 
 
-def verify(color: ColorType, tolerance: float) -> bool:
+def verify(color: Color, tolerance: float) -> bool:
     """Verify the values are in bound."""
 
     cs = color._space
@@ -65,5 +68,5 @@ class Fit(Plugin, metaclass=ABCMeta):
     NAME = ''
 
     @abstractmethod
-    def fit(self, color: ColorType, space: str, **kwargs: Any) -> None:
+    def fit(self, color: Color, space: str, **kwargs: Any) -> None:
         """Get coordinates of the new gamut mapped color."""
