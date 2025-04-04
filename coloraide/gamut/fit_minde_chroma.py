@@ -9,7 +9,7 @@ from .. import algebra as alg
 from .tools import adaptive_hue_independent
 from typing import Any, TYPE_CHECKING
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  #pragma: no cover
     from ..color import Color
 
 XYZ = 'xyz-d65'

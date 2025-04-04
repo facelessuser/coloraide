@@ -9,7 +9,7 @@ from ..channels import FLG_ANGLE
 from ..types import Vector
 from typing import Sequence, Any, TYPE_CHECKING
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  #pragma: no cover
     from ..color import Color
 
 RE_COMPRESS = re.compile(r'(?i)^#([a-f0-9])\1([a-f0-9])\2([a-f0-9])\3(?:([a-f0-9])\4)?$')

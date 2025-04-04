@@ -7,7 +7,7 @@ from ..types import Plugin
 from typing import Any, TYPE_CHECKING
 from . import pointer
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  #pragma: no cover
     from ..color import Color
 
 __all__ = ('clip_channels', 'verify', 'Fit', 'pointer')

@@ -6,7 +6,7 @@ from ..spaces.cam16_ucs import COEFFICENTS
 from ..types import VectorLike, AnyColor
 from typing import Any, TYPE_CHECKING
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  #pragma: no cover
     from ..color import Color
 
 COEFF2 = COEFFICENTS['ucs'][2]

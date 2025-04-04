@@ -6,7 +6,7 @@ from ...css import serialize
 from ...types import Vector
 from typing import Any, Sequence, TYPE_CHECKING
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  #pragma: no cover
     from ...color import Color
 
 

@@ -17,7 +17,7 @@ from ..temperature import CCT
 from ..types import Vector, VectorLike, AnyColor
 from typing import Any, TYPE_CHECKING
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  #pragma: no cover
     from ..color import Color
 
 # Original 31 mired points 0 - 600

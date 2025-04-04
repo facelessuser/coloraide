@@ -11,7 +11,7 @@ from . import util
 from .types import Vector, AnyColor
 from typing import Any, TYPE_CHECKING
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  #pragma: no cover
     from .color import Color
 
 WHITE = util.xy_to_xyz(WHITES['2deg']['D65'])

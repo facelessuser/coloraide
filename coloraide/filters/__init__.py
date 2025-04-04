@@ -4,7 +4,7 @@ from abc import ABCMeta, abstractmethod
 from ..types import Plugin, AnyColor
 from typing import Any, TYPE_CHECKING
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  #pragma: no cover
     from ..color import Color
 
 

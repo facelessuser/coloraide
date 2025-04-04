@@ -22,7 +22,7 @@ from .. spaces import HSVish, HSLish, RGBish, LChish, Labish
 from ..types import Matrix, Vector, ColorInput, Plugin, AnyColor
 from typing import Callable, Sequence, Mapping, Any, Generic, TYPE_CHECKING
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  #pragma: no cover
     from ..color import Color
 
 __all__ = ('stop', 'hint', 'interpolator', 'Interpolate', 'Interpolator')

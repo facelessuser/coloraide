@@ -16,7 +16,7 @@ from .tools import adaptive_hue_independent
 from ..types import Vector, VectorLike
 from typing import Callable, Any, TYPE_CHECKING  # noqa: F401
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  #pragma: no cover
     from ..color import Color
 
 

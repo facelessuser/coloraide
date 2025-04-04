@@ -13,7 +13,7 @@ from .. import util
 from ..types import Vector, Matrix, AnyColor
 from typing import TYPE_CHECKING
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  #pragma: no cover
     from ..color import Color
 
 # White point C as defined in the Pointer data spreadsheet
