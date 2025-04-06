@@ -43,10 +43,9 @@ Color("rgb(30.3456% 75% 100%)").to_string(precision=1, decimal=False, percent=Tr
 ```
 
 Precision is configured with positive integer values, with `#!py 17` being the largest practical value as it corresponds
-to the double-precision floating point's maximum significant decimal digits. If `#!py 0` is specified, integer rounding
+to the double-precision floating point's maximum significant decimal digit. If `#!py 0` is specified, integer rounding
 will be used instead of floating point rounding, and if a negative value is used, `precision` will be ignored and will
 default to the largest practical value of `#!py 17`.
-
 
 ```py play
 Color("rgb(30.3456% 75% 100%)").to_string(precision=0, decimal=False, percent=True)
@@ -89,12 +88,12 @@ Color("rgb(30.3456% 75% 100%)").to_string(precision=1, percent=True)
 ```
 
 Lastly, there are some times where the channel coordinates need to have different precision. If needed, ColorAide will
-allow an list of values for both `precision` and `decimal` where each index in the list will correspond to a different
+allow a list of values for both `precision` and `decimal` where each index in the list will correspond to a different
 color coordinate.
 
-Let's say we are outputting sRGB colors in the CSS `rgb()` format and we want to round the color components to whole
-integers. We can do this by just setting `precision` to `0` which will force integer rounding, but when we do this,
-it will round the alpha channel to 0 and 1 which is undesirable.
+As an example, let's say we are outputting sRGB colors in the CSS `rgb()` format and we want to round the color
+components to whole integers. We can do this by just setting `precision` to `0` which will force integer rounding, but
+when we do this, it will round the alpha channel to 0 and 1 which is undesirable.
 
 ```py play
 Color("rgb(30.3456% 75% 100% / 0.75)").to_string(precision=0)
