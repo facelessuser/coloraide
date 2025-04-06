@@ -210,9 +210,17 @@ def fmt_float(f: float, p: int = 0, d: int | bool = True, percent: float = 0.0, 
     """
     Set float precision and trim precision zeros.
 
-    0: Round to whole integer
-    -1: Full precision
-    <positive number>: precision level
+    -   `p`: Rounding precision. A value of `0` rounds to whole integer, a negative value ignores precision,
+        and a positive value rounds to the specified significant figures.
+
+    -   `d`: Round to the specified decimal place with a positive value being the fractional decimal place
+        and a negative value being an integer decimal place. `True` Assume the value of `p` and `False`
+        disables decimal place rounding.
+
+    -   `percent`: Treat as a percent.
+
+    -   `offset`: Apply an offset (used in conjunction with `percent`).
+
     """
 
     # Undefined values should be none
@@ -228,15 +236,8 @@ def fmt_float(f: float, p: int = 0, d: int | bool = True, percent: float = 0.0, 
     p = alg._round_location(f, p, d)
     value = alg.round_half_up(f, p)
 
-    # Calculate actual print decimal precision
-    whole = int(value)
-    if whole:
-        whole = int(math.log10(abs(value))) + 1
-    if p < 0:
-        p = 0
-
     # Format the string
-    s = f"{{:{'' if whole >= p else '.'}{p}f}}".format(value).rstrip('0').rstrip('.')
+    s = f"{{:.{1 if p < 1 else p}f}}".format(value).rstrip('0').rstrip('.')
     return s + '%' if percent else s
 
 
