@@ -1328,7 +1328,8 @@ class Color(metaclass=ColorMeta):
         ...
 
     def get(
-        self, name: str | list[str] | tuple[str, ...],
+        self,
+        name: str | list[str] | tuple[str, ...],
         *,
         nans: bool = True,
         precision: int | Sequence[int] | None = None,
