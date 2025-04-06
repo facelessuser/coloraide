@@ -270,6 +270,7 @@ class Space(Plugin, metaclass=SpaceMeta):
         *,
         alpha: bool | None = None,
         precision: int | Sequence[int] | None = None,
+        decimal: int | Sequence[int] | None = None,
         fit: str | bool | dict[str, Any] = True,
         none: bool = False,
         percent: bool | Sequence[bool] = False,
@@ -282,6 +283,7 @@ class Space(Plugin, metaclass=SpaceMeta):
             color=True,
             alpha=alpha,
             precision=precision,
+            decimal=decimal,
             fit=fit,
             none=none,
             percent=percent

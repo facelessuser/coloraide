@@ -38,6 +38,7 @@ def color_function(
     func: str | None,
     alpha: bool | None,
     precision: int | Sequence[int],
+    decimal: int | Sequence[int],
     fit: str | bool | dict[str, Any],
     none: bool,
     percent: bool | Sequence[bool],
@@ -73,6 +74,7 @@ def color_function(
 
     # Ensure precision list is filled
     is_precision_list = not isinstance(precision, int)
+    is_decimal_list = not isinstance(decimal, int)
 
     # Iterate the coordinates formatting them by scaling the values, formatting for percent, etc.
     for idx, value in enumerate(coords):
@@ -94,6 +96,7 @@ def color_function(
             util.fmt_float(
                 value,
                 util.get_index(precision, idx, obj.PRECISION) if is_precision_list else precision,  # type: ignore[arg-type]
+                util.get_index(decimal, idx, obj.DECIMAL) if is_decimal_list else decimal,  # type: ignore[arg-type]
                 span,
                 offset
             )
@@ -178,6 +181,7 @@ def serialize_css(
     color: bool = False,
     alpha: bool | None = None,
     precision: int | Sequence[int] | None = None,
+    decimal: int | Sequence[int] | None = None,
     fit: bool | str | dict[str, Any] = True,
     none: bool = False,
     percent: bool | Sequence[bool] = False,
@@ -193,9 +197,12 @@ def serialize_css(
     if precision is None:
         precision = obj.PRECISION
 
+    if decimal is None:
+        decimal = obj.DECIMAL
+
     # Color format
     if color:
-        return color_function(obj, None, alpha, precision, fit, none, percent, False, 1.0)
+        return color_function(obj, None, alpha, precision, decimal, fit, none, percent, False, 1.0)
 
     # CSS color names
     if name:
@@ -209,6 +216,6 @@ def serialize_css(
 
     # Normal CSS named function format
     if func:
-        return color_function(obj, func, alpha, precision, fit, none, percent, legacy, scale)
+        return color_function(obj, func, alpha, precision, decimal, fit, none, percent, legacy, scale)
 
     raise RuntimeError('Could not identify a CSS format to serialize to')  # pragma: no cover
