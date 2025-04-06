@@ -66,10 +66,12 @@ Color("rgb(30.3456% 75% 100%)").to_string(precision=-1, decimal=-1, percent=True
 Both `precision` and `decimal` are used together, and which ever yields the lesser precision is what is used.
 
 ```py play
-Color("rgb(30.3456% 75% 100%)").to_string(precision=3, decimal=3, percent=True)
-Color("rgb(30.3456% 75% 100%)").to_string(precision=3, decimal=2, percent=True)
-Color("rgb(30.3456% 75% 100%)").to_string(precision=3, decimal=4, percent=True)
-Color("rgb(30.3456% 75% 100%)").to_string(precision=3, decimal=0, percent=True)
+Color("rgb(30.3456% 75% 100%)").to_string(precision=5, decimal=4, percent=True)
+Color("rgb(30.3456% 75% 100%)").to_string(precision=5, decimal=3, percent=True)
+Color("rgb(30.3456% 75% 100%)").to_string(precision=5, decimal=2, percent=True)
+Color("rgb(30.3456% 75% 100%)").to_string(precision=5, decimal=1, percent=True)
+Color("rgb(30.3456% 75% 100%)").to_string(precision=5, decimal=0, percent=True)
+Color("rgb(30.3456% 75% 100%)").to_string(precision=5, decimal=-1, percent=True)
 ```
 
 If desired, `decimal` rounding can be disabled by setting it to `#!py False` which will round all values to significant
