@@ -1,7 +1,11 @@
 # Changelog
 
-## 4.x.x
+## 4.6.0
 
+-   **NEW**: Separate `precision` option into `precision` and `decimal`, the first controlling rounding to significant
+    figures and the second controlling rounding to specific decimal places. By default `decimal` will assume the same
+    value as `precision` unless explicitly set which provides the same familiar rounding behavior that as always been
+    present.
 -   **FIX**: Fix typing for inherited colors.
 
 ## 4.5.1
