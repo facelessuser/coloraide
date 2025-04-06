@@ -517,7 +517,8 @@ def to_dict(
     self,
     *,
     nans: bool = True,
-    precision: int | Sequence[int] | None = None
+    precision: int | Sequence[int] | None = None,
+    decimal: int | bool | Sequence[int | bool] | None = None
 ) -> Mapping[str, Any]:
     ...
 ```
@@ -541,7 +542,8 @@ Parameters
     Parameters | Defaults      | Description
     ---------- | ------------- | -----------
     `nans`     | `#!py True`   | Return channel values having undefined values resolved as defined values.
-    `precision`| `#!py None`   | If `precision` is not `#!py None`, the return values will be rounded according to the precision. If the precision is a sequence, each returned channel will be rounded according to the precision at the corresponding index in the sequence.
+    `precision`| `#!py None`  | Return value rounded to the specified significant figures. `0` will result in integer rounding. If `#!py None`, the default will be used. If the precision is a sequence, each returned coordinate will be rounded according to the precision at the corresponding index in the sequence.
+    `decimal`  | `#!py None`  | Return value rounded to the specific decimal point. If `#!py None`, the default will be used. If the decimal is a sequence, each returned coordinate will be rounded according to the decimal at the corresponding index in the sequence.
 
 Return
 
@@ -1422,7 +1424,8 @@ def get(self,
     name: str,
     *,
     nans: bool = True,
-    precision: int | Sequence[int] | None = None
+    precision: int | Sequence[int] | None = None,
+    decimal: int | bool | Sequence[int | bool] | None = None
 ) -> float:
     ...
 
@@ -1432,7 +1435,8 @@ def get(
     name: list[str] | tuple[str, ...],
     *,
     nans: bool = True,
-    precision: int | Sequence[int] | None = None
+    precision: int | Sequence[int] | None = None,
+    decimal: int | bool | Sequence[int | bool] | None = None
 ) -> Vector:
     ...
 
@@ -1440,7 +1444,8 @@ def get(
     self, name: str | list[str] | tuple[str, ...],
     *,
     nans: bool = True,
-    precision: int | Sequence[int] | None = None
+    precision: int | Sequence[int] | None = None,
+    decimal: int | bool | Sequence[int | bool] | None = None
 ) -> float | Vector:
     ...
 ```
@@ -1459,7 +1464,8 @@ Parameters
     ---------- | ------------------ | -----------
     `name`     |                    | Channel name or sequence of channel names. Channel names can define the color space and channel name to retrieve value from a different color space.
     `nans`     | `#!py True`        | Determines whether an undefined value is allowed to be returned. If disabled, undefined values will be resolved before returning.
-    `precision`| `#!py None`        | If `precision` is not `#!py None`, the return value will be rounded according to the precision. If the precision is a sequence, each returned coordinate will be rounded according to the precision at the corresponding index in the sequence.
+    `precision`| `#!py None`  | Return value rounded to the specified significant figures. `0` will result in integer rounding. If `#!py None`, the default will be used. If the precision is a sequence, each returned coordinate will be rounded according to the precision at the corresponding index in the sequence.
+    `decimal`  | `#!py None`  | Return value rounded to the specific decimal point. If `#!py None`, the default will be used. If the decimal is a sequence, each returned coordinate will be rounded according to the decimal at the corresponding index in the sequence.
 Return
 
 -   Returns a numerical value that is stored internally for the specified channel, or a calculated value in the case
@@ -1516,7 +1522,8 @@ def coords(
     self,
     *,
     nans: bool = True,
-    precision: int | Sequence[int] | None = None
+    precision: int | Sequence[int] | None = None,
+    decimal: int | bool | Sequence[int | bool] | None = None
 ) -> Vector:
     ...
 ```
@@ -1533,7 +1540,8 @@ Parameters
     Parameters | Defaults     | Description
     ---------- | ------------ | -----------
     `nans`     | `#!py True`  | If `nans` is set to `#!py False`, all undefined values will be returned as defined.
-    `precision`| `#!py None`  | If `precision` is not `#!py None`, the return value will be rounded according to the precision. If the precision is a sequence, each returned coordinate will be rounded according to the precision at the corresponding index in the sequence.
+    `precision`| `#!py None`  | Return value rounded to the specified significant figures. `0` will result in integer rounding. If `#!py None`, the default will be used. If the precision is a sequence, each returned coordinate will be rounded according to the precision at the corresponding index in the sequence.
+    `decimal`  | `#!py None`  | Return value rounded to the specific decimal point. If `#!py None`, the default will be used. If the decimal is a sequence, each returned coordinate will be rounded according to the decimal at the corresponding index in the sequence.
 
 Return
 
@@ -1548,7 +1556,8 @@ def alpha(
     self,
     *,
     nans: bool = True,
-    precision: int | None = None
+    precision: int | None = None,
+    decimal: int | bool | None = None
 ) -> float:
     ...
 ```
@@ -1563,8 +1572,9 @@ Parameters
 - 
     Parameters | Defaults     | Description
     ---------- | ------------ | -----------
-    `nans`    | `#!py True`  | If `nans` is set to `#!py False`, an undefined value will be returned as defined.
-    `precision`| `#!py None`  | If `precision` is not `#!py None`, the return value will be rounded according to the precision.
+    `nans`     | `#!py True`  | If `nans` is set to `#!py False`, an undefined value will be returned as defined.
+    `precision`| `#!py None`  | Return value rounded to the specified significant figures. `0` will result in integer rounding. If `#!py None`, the default will be used.
+    `decimal`  | `#!py None`  | Return value rounded to the specific decimal point. If `#!py None`, the default will be used.
 
 Return
 

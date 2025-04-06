@@ -538,7 +538,7 @@ class Color(metaclass=ColorMeta):
         *,
         nans: bool = True,
         precision: int | Sequence[int] | None = None,
-        decimal: int | Sequence[int] | None = None
+        decimal: int | bool | Sequence[int | bool] | None = None
     ) -> Mapping[str, Any]:
         """Return color as a data object."""
 
@@ -1468,7 +1468,7 @@ class Color(metaclass=ColorMeta):
         *,
         nans: bool = True,
         precision: int | Sequence[int] | None = None,
-        decimal: int | Sequence[int] | None = None
+        decimal: int | bool | Sequence[int | bool] | None = None
     ) -> Vector:
         """Get the color channels and optionally remove undefined values."""
 
@@ -1499,7 +1499,13 @@ class Color(metaclass=ColorMeta):
             for index in range(len(self._coords) - 1)
         ]
 
-    def alpha(self, *, nans: bool = True, precision: int | None = None, decimal: int | None = None) -> float:
+    def alpha(
+        self,
+        *,
+        nans: bool = True,
+        precision: int | None = None,
+        decimal: int | bool | None = None
+    ) -> float:
         """Get the alpha channel."""
 
         value = self[-1] if nans else self._space.resolve_channel(-1, self._coords)
