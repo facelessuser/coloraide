@@ -106,29 +106,41 @@ def round_half_up(n: float, scale: int = 0) -> float:
 def _round_location(
     f: float,
     p: int = 0,
-    d: int | bool = True,
+    mode: str = 'sigfig-decimal'
 ) -> int:
     """Get rounding location."""
 
-    if f == 0:
-        return 0
-
-    # Shortcut for specifying full precision
-    if p < 0:
-        p = 17
-
-    # Fractional constraint takes on the length of precision
-    if d is True:
+    # Round to number of digits
+    if mode == 'sigfig-decimal':
+        # Less than zero we assume double precision
+        if p < 0:
+            p = 17
         d = p
+        # If zero, assume integer rounding
+        if p == 0:
+            p = 17
 
-    # No fractional precision is needed so set to double
-    elif d is False:
-        d = 17
-
-    # Perform integer rounding
-    if p == 0:
+    # Round to decimal place
+    elif mode == 'decimal':
+        d = p
         p = 17
-        d = min(0, d)
+
+    # Round of significant digits
+    elif mode == 'sigfig':
+        d = 17
+        # Less than zero we assume double precision
+        if p < 0:
+            p = 17
+        # If zero, assume integer rounding
+        elif p == 0:
+            p = 17
+            d = 0
+
+    else:
+        raise ValueError("Unknown rounding mode '{mode}'")
+
+    if f == 0 or not math.isfinite(f):
+        return 0
 
     # Round to specified significant figure or fractional digit, which ever is less
     v = -math.floor(math.log10(abs(f))) + (p - 1)
@@ -138,17 +150,19 @@ def _round_location(
 def round_to(
     f: float,
     p: int = 0,
-    d: int | bool = True,
+    mode: str = 'sigfig-decimal',
     rounding: Callable[[float, int], float]=round_half_up
 ) -> float:
     """Round to the specified precision using "half up" rounding by default."""
+
+    p = _round_location(f, p, mode)
 
     # Return non-finite values without further processing
     if not math.isfinite(f):
         return f
 
     # Round to the specified location using the specified rounding function
-    return rounding(f, _round_location(f, p, d))
+    return rounding(f, p)
 
 
 def minmax(value: VectorLike | Iterable[float]) -> tuple[float, float]:

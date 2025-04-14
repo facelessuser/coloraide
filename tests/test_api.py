@@ -26,16 +26,16 @@ class TestMisc(util.ColorAsserts, unittest.TestCase):
         coords = [c1.get(str(i), precision=3) for i in range(4)]
         self.assertEqual(coords, [29.7, 56.1, -36.3, 0.751])
 
-        coords = [c1.get(str(i), decimal=2) for i in range(4)]
+        coords = [c1.get(str(i), precision=2, rounding="decimal") for i in range(4)]
         self.assertEqual(coords, [29.69, 56.11, -36.29, 0.75])
 
-        coords = [c1.get(str(i), decimal=2) for i in range(4)]
-        self.assertEqual(coords, [29.69, 56.11, -36.29, 0.75])
+        coords = [c1.get(str(i), precision=2, rounding='sigfig') for i in range(4)]
+        self.assertEqual(coords, [30.0, 56.0, -36.0, 0.75])
 
         coords = c1.get(['0', '1', '2', '3'], precision=[0, 0, 0, 2])
         self.assertEqual(coords, [30.0, 56.0, -36.0, 0.75])
 
-        coords = c1.get(['0', '1', '2', '3'], decimal=[2, 2, 2, 3])
+        coords = c1.get(['0', '1', '2', '3'], precision=[2, 2, 2, 3], rounding='decimal')
         self.assertEqual(coords, [29.69, 56.11, -36.29, 0.751])
 
     def test_to_string_alpha_precision(self):
@@ -149,13 +149,13 @@ class TestMisc(util.ColorAsserts, unittest.TestCase):
 
         self.assertEqual(d, {'space': 'lab', 'coords': [29.7, 56.1, -36.3], 'alpha': 0.751})
 
-        d = c1.to_dict(decimal=2)
+        d = c1.to_dict(precision=2, rounding="decimal")
         self.assertEqual(d, {'alpha': 0.75, 'coords': [29.69, 56.11, -36.29], 'space': 'lab'})
 
         d2 = c1.to_dict(precision=[0, 0, 0, 2])
         self.assertEqual(d2, {'space': 'lab', 'coords': [30.0, 56.0, -36.0], 'alpha': 0.75})
 
-        d = c1.to_dict(decimal=[2, 2, 2, 3])
+        d = c1.to_dict(precision=[2, 2, 2, 3], rounding='decimal')
         self.assertEqual(d, {'alpha': 0.751, 'coords': [29.69, 56.11, -36.29], 'space': 'lab'})
 
     def test_dict_input(self):

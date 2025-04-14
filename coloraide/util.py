@@ -7,7 +7,7 @@ from .types import Vector, VectorLike
 from typing import Any, Callable, Sequence
 
 DEF_PREC = 5
-DEF_DEC = True  # type: int | bool
+DEF_ROUND_MODE = 'sigfig-decimal'
 DEF_FIT_TOLERANCE = 0.000075
 DEF_ALPHA = 1.0
 DEF_MIX = 0.5
@@ -206,16 +206,13 @@ def cmp_coords(c1: VectorLike, c2: VectorLike) -> bool:
         return all(map(lambda a, b: (math.isnan(a) and math.isnan(b)) or a == b, c1, c2))
 
 
-def fmt_float(f: float, p: int = 0, d: int | bool = True, percent: float = 0.0, offset: float = 0.0) -> str:
+def fmt_float(f: float, p: int = 0, rounding: str = 'sigfig-decimal', percent: float = 0.0, offset: float = 0.0) -> str:
     """
     Set float precision and trim precision zeros.
 
-    -   `p`: Rounding precision. A value of `0` rounds to whole integer, a negative value ignores precision,
-        and a positive value rounds to the specified significant figures.
+    -   `p`: Rounding precision.
 
-    -   `d`: Round to the specified decimal place with a positive value being the fractional decimal place
-        and a negative value being an integer decimal place. `True` Assume the value of `p` and `False`
-        disables decimal place rounding.
+    -   `rounding`: Specify specific rounding mode.
 
     -   `percent`: Treat as a percent.
 
@@ -233,7 +230,7 @@ def fmt_float(f: float, p: int = 0, d: int | bool = True, percent: float = 0.0, 
 
     # Apply rounding
     f = (f + offset) / (percent * 0.01) if percent else f
-    p = alg._round_location(f, p, d)
+    p = alg._round_location(f, p, rounding)
     value = alg.round_half_up(f, p)
 
     # Format the string
