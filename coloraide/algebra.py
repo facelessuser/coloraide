@@ -106,12 +106,12 @@ def round_half_up(n: float, scale: int = 0) -> float:
 def _round_location(
     f: float,
     p: int = 0,
-    mode: str = 'sigfig-decimal'
+    mode: str = 'digits'
 ) -> int:
     """Get rounding location."""
 
     # Round to number of digits
-    if mode == 'sigfig-decimal':
+    if mode == 'digits':
         # Less than zero we assume double precision
         if p < 0:
             p = 17
@@ -150,7 +150,7 @@ def _round_location(
 def round_to(
     f: float,
     p: int = 0,
-    mode: str = 'sigfig-decimal',
+    mode: str = 'digits',
     rounding: Callable[[float, int], float]=round_half_up
 ) -> float:
     """Round to the specified precision using "half up" rounding by default."""

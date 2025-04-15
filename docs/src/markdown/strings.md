@@ -27,75 +27,105 @@ All color spaces support the following parameters.
 When in the default state, `alpha` will only be shown if the alpha channel has a value less than 100%, but if set to
 `#!py3 True`, alpha will always be shown. Setting to `#!py3 False` will cause alpha to be ignored in the output.
 
-### Precision and Decimal Rounding
+### Rounding
 
-`precision` and `decimal` control how numbers are rounded during serialization.
+/// new | New in 4.6
+///
+
+There are various ways to approach rounding of data. ColorAide implements a few approaches in an attempt accommodate
+most needs. The following modes can be selected via the `rounding` parameter:
+
+1. `sigfig` is a rounding approach that ensures a specific number of significant figures, the default being 5.
+	Significant figures are non-leading zero digits.
+
+    ```py play
+    Color("rgb(30.34567543% 0.0234567% 100%)").to_string(rounding='sigfig', percent=True)
+    ```
+
+    The number of significant figures is controlled via the `precision` parameter. Generally, values should be greater
+    than 0 with 17 being the largest precision that is supported by double-precision floating point numbers. For
+    convenience, `#!py 0` can be used as a shortcut for rounding whole integers, and if a negative value is provided,
+    the precision will just default to `#!py 17`.
+
+    Admittedly, this can be less useful as it can give significance to very, very small values beyond a reasonable,
+    measurable precision for a specific color space.
+
+2. `decimal` is a rounding approach that ensures rounding to a specific decimal position, the default being 5.
+
+
+	```py play
+    Color("rgb(30.34567543% 0.0234567% 100%)").to_string(rounding='decimal', percent=True)
+    ```
+
+    Decimal places can be positive or negative. Positive values will round to fractional positions (after the decimal),
+    while negative values will round to integer positions (before the decimal).
+
+    This can be good for being precise about how many decimals of precision a current color space may be accurate to,
+    but it doesn't scale very very well as a default for various color spaces which may have reference ranges that
+    differ by orders of magnitude.
+
+3.  `digits` is a rounding approach that combines `sigfig` and `decimal` where the lowest precision of the two
+    wins. When applied in this way, rounding will try to round to the specified number of non-significant figures. This
+    is the default mode that ColorAide operates in with a default number of digits of 5.
+
+    ```py play
+    Color("rgb(30.34567543% 0.0234567% 100%)").to_string(rounding='digits', percent=True)
+    ```
+
+    Like `sigfig`, values should be greater than 0 with 17 being the largest precision that is supported by
+    double-precision floating point numbers. For convenience, `#!py 0` can be used as a shortcut for rounding whole
+    integers, and if a negative value is provided, the precision will just default to `#!py 17`.
+
+    Because this is a marriage between `sigfig` and `decimal`, it scales better as a default. Color spaces with
+    reference ranges of smaller magnitude have more decimals of precision than color spaces with reference ranges of
+    larger magnitudes.
+
+### Precision
+
+`precision` is used to configure the precision of the currently selected [`rounding`](#rounding) mode. ColorAide, by
+default, uses a value of `#!py 5` regardless of the rounding mode. How the number is handled is purely dependent on
+the rounding mode.
 
 `precision` adjusts the significant figures to which the numbers are rounded. Significant figures are non-leading zero
 digits. So `#!py 100.003` has 6 significant figures and `#!py 0.000345` has 3 significant figures.
 
+/// tab | `digits`
 ```py play
-Color("rgb(30.3456% 75% 100%)").to_string(precision=5, decimal=False, percent=True)
-Color("rgb(30.3456% 75% 100%)").to_string(precision=4, decimal=False, percent=True)
-Color("rgb(30.3456% 75% 100%)").to_string(precision=3, decimal=False, percent=True)
-Color("rgb(30.3456% 75% 100%)").to_string(precision=2, decimal=False, percent=True)
-Color("rgb(30.3456% 75% 100%)").to_string(precision=1, decimal=False, percent=True)
+Color("rgb(30.34567543% 0.0234567% 100%)").to_string(precision=5, percent=True)
+Color("rgb(30.34567543% 0.0234567% 100%)").to_string(precision=4, percent=True)
+Color("rgb(30.34567543% 0.0234567% 100%)").to_string(precision=3, percent=True)
+Color("rgb(30.34567543% 0.0234567% 100%)").to_string(precision=2, percent=True)
+Color("rgb(30.34567543% 0.0234567% 100%)").to_string(precision=1, percent=True)
 ```
+///
 
-Precision is configured with positive integer values, with `#!py 17` being the largest practical value as it corresponds
-to the double-precision floating point's maximum significant decimal digit. If `#!py 0` is specified, integer rounding
-will be used instead of floating point rounding, and if a negative value is used, `precision` will be ignored and will
-default to the largest practical value of `#!py 17`.
 
+/// tab | `sigfig`
 ```py play
-Color("rgb(30.3456% 75% 100%)").to_string(precision=0, decimal=False, percent=True)
-Color("rgb(30.3456% 75% 100%)").to_string(precision=-1, decimal=False, percent=True)
+Color("rgb(30.34567543% 0.0234567% 100%)").to_string(precision=5, rounding='sigfig', percent=True)
+Color("rgb(30.34567543% 0.0234567% 100%)").to_string(precision=4, rounding='sigfig', percent=True)
+Color("rgb(30.34567543% 0.0234567% 100%)").to_string(precision=3, rounding='sigfig', percent=True)
+Color("rgb(30.34567543% 0.0234567% 100%)").to_string(precision=2, rounding='sigfig', percent=True)
+Color("rgb(30.34567543% 0.0234567% 100%)").to_string(precision=1, rounding='sigfig', percent=True)
 ```
+///
 
-`decimal`, on the other hand, adjusts the rounding to specific decimal places: positive integer values representing
-fractional decimal positions (after the `.`) and negative integer values representing integer positions (before the `.`).
-
+/// tab | `decimal`
 ```py play
-Color("rgb(30.3456% 75% 100%)").to_string(precision=-1, decimal=3, percent=True)
-Color("rgb(30.3456% 75% 100%)").to_string(precision=-1, decimal=2, percent=True)
-Color("rgb(30.3456% 75% 100%)").to_string(precision=-1, decimal=1, percent=True)
-Color("rgb(30.3456% 75% 100%)").to_string(precision=-1, decimal=0, percent=True)
-Color("rgb(30.3456% 75% 100%)").to_string(precision=-1, decimal=-1, percent=True)
+Color("rgb(30.34567543% 0.0234567% 100%)").to_string(precision=5, rounding='decimal', percent=True)
+Color("rgb(30.34567543% 0.0234567% 100%)").to_string(precision=4, rounding='decimal', percent=True)
+Color("rgb(30.34567543% 0.0234567% 100%)").to_string(precision=3, rounding='decimal', percent=True)
+Color("rgb(30.34567543% 0.0234567% 100%)").to_string(precision=2, rounding='decimal', percent=True)
+Color("rgb(30.34567543% 0.0234567% 100%)").to_string(precision=1, rounding='decimal', percent=True)
 ```
-
-Both `precision` and `decimal` are used together, and which ever yields the lesser precision is what is used.
-
-```py play
-Color("rgb(30.3456% 75% 100%)").to_string(precision=5, decimal=4, percent=True)
-Color("rgb(30.3456% 75% 100%)").to_string(precision=5, decimal=3, percent=True)
-Color("rgb(30.3456% 75% 100%)").to_string(precision=5, decimal=2, percent=True)
-Color("rgb(30.3456% 75% 100%)").to_string(precision=5, decimal=1, percent=True)
-Color("rgb(30.3456% 75% 100%)").to_string(precision=5, decimal=0, percent=True)
-Color("rgb(30.3456% 75% 100%)").to_string(precision=5, decimal=-1, percent=True)
-```
-
-If desired, `decimal` rounding can be disabled by setting it to `#!py False` which will round all values to significant
-figures only. If `decimal` is set to a non-explicit value of `#!py True`, `decimal` assumes the same value as
-`precision` which will cause a number to be rounded to _n_ digits instead of _n_ significant digits.
-
-By default, ColorAide assumes a `precision` of 5, and sets `decimal` to `#!py True` which causes numbers to round to 5
-non-significant digits. By adjusting `precision` alone we can change how many digits a number is rounded to.
-
-```py play
-Color("rgb(30.3456% 75% 100%)").to_string(precision=5, percent=True)
-Color("rgb(30.3456% 75% 100%)").to_string(precision=4, percent=True)
-Color("rgb(30.3456% 75% 100%)").to_string(precision=3, percent=True)
-Color("rgb(30.3456% 75% 100%)").to_string(precision=2, percent=True)
-Color("rgb(30.3456% 75% 100%)").to_string(precision=1, percent=True)
-```
+///
 
 Lastly, there are some times where the channel coordinates need to have different precision. If needed, ColorAide will
-allow a list of values for both `precision` and `decimal` where each index in the list will correspond to a different
-color coordinate.
+allow a list of values for `precision` where each index in the list will correspond to a different color coordinate.
 
 As an example, let's say we are outputting sRGB colors in the CSS `rgb()` format and we want to round the color
-components to whole integers. We can do this by just setting `precision` to `0` which will force integer rounding, but
-when we do this, it will round the alpha channel to 0 and 1 which is undesirable.
+components to whole integers. We can do this by just setting `precision` to `#!py 0` which will force integer rounding,
+but when we do this, it will round the alpha channel to 0 and 1 which is undesirable.
 
 ```py play
 Color("rgb(30.3456% 75% 100% / 0.75)").to_string(precision=0)
@@ -114,9 +144,6 @@ Color("rgb(30.3456% 75% 100% / 0.75)").to_string(precision=[0, 0, 0])
 ```
 
 /// new | New in 4.0: Per Channel Precision Control
-///
-
-/// new | New 4.6: Decimal Option Added
 ///
 
 ### Fit

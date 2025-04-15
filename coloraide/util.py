@@ -7,7 +7,7 @@ from .types import Vector, VectorLike
 from typing import Any, Callable, Sequence
 
 DEF_PREC = 5
-DEF_ROUND_MODE = 'sigfig-decimal'
+DEF_ROUND_MODE = 'digits'
 DEF_FIT_TOLERANCE = 0.000075
 DEF_ALPHA = 1.0
 DEF_MIX = 0.5
@@ -206,7 +206,7 @@ def cmp_coords(c1: VectorLike, c2: VectorLike) -> bool:
         return all(map(lambda a, b: (math.isnan(a) and math.isnan(b)) or a == b, c1, c2))
 
 
-def fmt_float(f: float, p: int = 0, rounding: str = 'sigfig-decimal', percent: float = 0.0, offset: float = 0.0) -> str:
+def fmt_float(f: float, p: int = 0, rounding: str = 'digits', percent: float = 0.0, offset: float = 0.0) -> str:
     """
     Set float precision and trim precision zeros.
 
