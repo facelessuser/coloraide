@@ -9,6 +9,14 @@ import math
 class TestMisc(util.ColorAsserts, unittest.TestCase):
     """Test miscellaneous API features."""
 
+    def test_precision_cases(self):
+        """Test some precision cases."""
+
+        self.assertEqual(
+            Color('srgb', [0.000000000123] * 3).to_string(color=True, precision=11),
+            'color(srgb 0.00000000012 0.00000000012 0.00000000012)'
+        )
+
     def test_coord_precision(self):
         """Test coordinate precision."""
 
