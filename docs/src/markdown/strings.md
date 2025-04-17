@@ -42,13 +42,21 @@ most needs. The following modes can be selected via the `rounding` parameter:
     Color("rgb(30.34567543% 0.0234567% 100%)").to_string(rounding='sigfig', percent=True)
     ```
 
-    The number of significant figures is controlled via the `precision` parameter. Generally, values should be greater
-    than 0 with 17 being the largest precision that is supported by double-precision floating point numbers. For
-    convenience, `#!py 0` can be used as a shortcut for rounding whole integers, and if a negative value is provided,
-    the precision will just default to `#!py 17`.
+    The number of significant figures is controlled via the `precision` parameter. Generally, values should be between
+    [1, 17] with 17 being the largest precision that is supported by double-precision floating point numbers. For
+    convenience, `#!py 0` can be used as a shortcut for rounding whole integers. Any values that exceed this
+    specification are ignored and full precision (`#!py 17`) is used.
 
-    Admittedly, this can be less useful as it can give significance to very, very small values beyond a reasonable,
-    measurable precision for a specific color space.
+    This is similar to how floating point numbers actually work, the difference being that the number of significant
+    figures can be controlled. Since this will emphasize very small values, which may be well below the resolution that
+    a color space can guarantee accuracy for, this isn't always recommended unless you want to get the exact values
+    stored in a color.
+
+    ```py play
+    c = Color('srgb', [2e-203] * 3)
+    c.to_string(color=True, rounding='sigfig', precision=17)
+    c.coords(rounding='sigfig', precision=17)
+    ```
 
 2. `decimal` is a rounding approach that ensures rounding to a specific decimal position, the default being 5.
 
@@ -62,11 +70,19 @@ most needs. The following modes can be selected via the `rounding` parameter:
 
     This can be good for being precise about how many decimals of precision a current color space may be accurate to,
     but it doesn't scale very very well as a default for various color spaces which may have reference ranges that
-    differ by orders of magnitude.
+    differ by orders of magnitude. For this reason, it is recommended to use this if you are working in a specific color
+    space and which to control the rounding to an exact precision.
+
+    If negative values are used, the color will be rounded to the integer decimal place, `#!py -1` representing the ones
+    place, `#!py -2` the tens place, etc.
+
+    ```py play
+    Color("rgb(35.34567543% 0.0234567% 100%)").to_string(rounding='decimal', precision=-1, percent=True)
+    ```
 
 3.  `digits` is a rounding approach that combines `sigfig` and `decimal` where the lowest precision of the two
-    wins. When applied in this way, rounding will try to round to the specified number of non-significant figures. This
-    is the default mode that ColorAide operates in with a default number of digits of 5.
+    wins. When applied in this way, rounding will try to round to the specified number digits. This is the default mode
+    that ColorAide operates in with a default number of digits of 5.
 
     ```py play
     Color("rgb(30.34567543% 0.0234567% 100%)").to_string(rounding='digits', percent=True)

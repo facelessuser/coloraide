@@ -234,7 +234,30 @@ def fmt_float(f: float, p: int = 0, rounding: str = 'digits', percent: float = 0
     value = alg.round_half_up(f, p)
 
     # Format the string
-    s = f"{{:.{1 if p < 1 else p}f}}".format(value).rstrip('0').rstrip('.')
+    s = str(value)
+    # For numbers that are small, and within normal double-precision decimal range,
+    # avoid scientific notation.
+    if p > 0 and p <= 17:
+        parts = s.split('e-')
+        if len(parts) > 1:
+            # Calculate scientific exponent and fractional decimal length
+            exp = int(parts[1])
+            s = parts[0]
+            parts = s.split('.')
+            if len(parts) > 1:
+                dec = len(parts[0])
+                s = parts[0] + parts[1]
+            else:
+                dec = 0
+            # Reconstruct non-scientific notation number
+            if value < 0:
+                s =  '-0.' + ('0' * (exp - dec)) + s[1:]
+            else:
+                s =  '0.' + ('0' * (exp - dec)) + s
+    # Strip trailing zero decimals
+    if s.endswith('.0'):
+        s = s[:-2]
+
     return s + '%' if percent else s
 
 

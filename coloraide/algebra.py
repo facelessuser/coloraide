@@ -42,6 +42,7 @@ RTOL = 4 * sys.float_info.epsilon
 ATOL = 1e-12
 NaN = math.nan
 INF = math.inf
+MAX_10_EXP = sys.float_info.max_10_exp
 
 # Keeping for backwards compatibility
 prod = math.prod
@@ -99,6 +100,12 @@ def round_half_up(n: float, scale: int = 0) -> float:
     if not isinstance(scale, int):
         raise ValueError("'float' object cannot be interpreted as an integer")
 
+    # Generally, Python reports the minimum float is 2.2250738585072014e-308,
+    # but there are outliers as small as 5e-324. `mult` is limited by a scale of 308
+    # due to overflow, but we could calculate greater values by splitting the `mult`
+    # factor into two smaller factors when the scale exceeds 308. This would allow us
+    # to round out to 324 decimal places for really small values like 5e-324, but
+    # these values simply aren't practical enough to warrant the extra effort.
     mult = 10.0 ** scale
     return math.floor(n * mult + 0.5) / mult
 
@@ -123,13 +130,13 @@ def _round_location(
     # Round to decimal place
     elif mode == 'decimal':
         d = p
-        p = 17
+        p = MAX_10_EXP
 
     # Round of significant digits
     elif mode == 'sigfig':
-        d = 17
+        d = MAX_10_EXP
         # Less than zero we assume double precision
-        if p < 0:
+        if p < 0 or p > 17:
             p = 17
         # If zero, assume integer rounding
         elif p == 0:
