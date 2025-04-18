@@ -67,10 +67,9 @@ print(d)
 Color(d)
 ```
 
-You can also control the precision of the output values with the `precision` and `decimal` parameters. `precision`
-controls the significant figures a value is rounded to and `decimal` controls the decimal place it is rounded to, the
-lesser precision taking priority. See [Precision and Decimal Rounding](./strings.md#precision-and-decimal-rounding) for
-specifics on how these two parameters work.
+You can also control the precision of your output values with the `precision` parameter. For more information or to
+learn more about more advanced controls of precision, see the sections on [precision](./strings.md#precision) and
+[rounding](./strings.md#rounding.md) which applies to both serialization and coordinate retrieval.
 
 ```py play
 d = Color('purple').to_dict(precision=3)

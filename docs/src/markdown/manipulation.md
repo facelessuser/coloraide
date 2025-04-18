@@ -109,10 +109,10 @@ color.coords()
 color.coords(nans=False)
 ```
 
-You can control the precision of output values in either `coords()` or `alpha()` with the `precision` and `decimal`
-parameters. `precision` controls the significant figures a value is rounded to and `decimal` controls the decimal place
-it is rounded to, the lesser precision taking priority. See
-[Precision and Decimal Rounding](./strings.md#precision-and-decimal-rounding) for more specifics.
+Lastly, you can control the precision of your output values with the `precision` parameter in either `coords()` or
+`alpha()`. For more information or to learn more about more advanced controls of precision, see the sections on
+[precision](./strings.md#precision) and [rounding](./strings.md#rounding.md) which applies to both serialization and
+coordinate retrieval.
 
 ```py play
 color = Color("hsl", [NaN, 0, 0.7534848], 0.523456)
@@ -216,10 +216,9 @@ color.set(
 )
 ```
 
-Lastly, you can control the precision of your output values with the `precision` and `decimal` parameter. `precision`
-controls the significant figures a value is rounded to and `decimal` controls the decimal place it is rounded to, the
-lesser precision taking priority.See [Precision and Decimal Rounding](./strings.md#precision-and-decimal-rounding) for
-more specifics.
+Lastly, you can control the precision of your output values with the `precision` parameter. For more information or
+to learn more about more advanced controls of precision, see the sections on [precision](./strings.md#precision) and
+[rounding](./strings.md#rounding.md) which applies to both serialization and coordinate retrieval.
 
 ```py play
 color = Color("hsl", [NaN, 0, 0.7534848], 0.523456)
