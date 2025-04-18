@@ -43,9 +43,9 @@ most needs. The following modes can be selected via the `rounding` parameter:
     ```
 
     The number of significant figures is controlled via the `precision` parameter. Generally, values should be between
-    [1, 17] with 17 being the largest precision that is supported by double-precision floating point numbers. For
-    convenience, `#!py 0` can be used as a shortcut for rounding whole integers. Any values that exceed this
-    specification are ignored and full precision (`#!py 17`) is used.
+    [1, 17] with 17 being the largest precision that is supported by double-precision floating point numbers (15 is the
+    largest stable precision). For convenience, `#!py 0` can be used as a shortcut for rounding whole integers. Any
+    values that exceed this specification are ignored and full precision (`#!py 17`) is used.
 
     This is similar to how floating point numbers actually work, the difference being that the number of significant
     figures can be controlled. Since this will emphasize very small values, which may be well below the resolution that
@@ -89,8 +89,9 @@ most needs. The following modes can be selected via the `rounding` parameter:
     ```
 
     Like `sigfig`, values should be greater than 0 with 17 being the largest precision that is supported by
-    double-precision floating point numbers. For convenience, `#!py 0` can be used as a shortcut for rounding whole
-    integers, and if a negative value is provided, the precision will just default to `#!py 17`.
+    double-precision floating point numbers (15 being the largest stable precision). For convenience, `#!py 0` can be
+    used as a shortcut for rounding whole integers, and if a negative value is provided, the precision will just default
+    to `#!py 17`.
 
     Because this is a marriage between `sigfig` and `decimal`, it scales better as a default. Color spaces with
     reference ranges of smaller magnitude have more decimals of precision than color spaces with reference ranges of
