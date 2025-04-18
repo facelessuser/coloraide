@@ -100,7 +100,7 @@ def round_half_up(n: float, scale: int = 0) -> float:
     if not isinstance(scale, int):
         raise ValueError("'float' object cannot be interpreted as an integer")
 
-    # Generally, Python reports the minimum float is 2.2250738585072014e-308,
+    # Generally, Python reports the minimum float as 2.2250738585072014e-308,
     # but there are outliers as small as 5e-324. `mult` is limited by a scale of 308
     # due to overflow, but we could calculate greater values by splitting the `mult`
     # factor into two smaller factors when the scale exceeds 308. This would allow us
