@@ -70,7 +70,7 @@ class TestMisc(util.ColorAsserts, unittest.TestCase):
 
         self.assertEqual(
             Color('purple').convert('lab').to_string(precision=-1),
-            'lab(29.691524241522878 56.11166698871134 -36.292665410325654)'
+            'lab(29.691524241522878 56.111666988711342 -36.292665410325654)'
         )
 
     def test_percent_bool_list(self):
