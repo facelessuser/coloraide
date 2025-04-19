@@ -9,6 +9,14 @@ import math
 class TestMisc(util.ColorAsserts, unittest.TestCase):
     """Test miscellaneous API features."""
 
+    def test_precision_cases(self):
+        """Test some precision cases."""
+
+        self.assertEqual(
+            Color('srgb', [0.000000000123] * 3).to_string(color=True, precision=11),
+            'color(srgb 0.00000000012 0.00000000012 0.00000000012)'
+        )
+
     def test_coord_precision(self):
         """Test coordinate precision."""
 
@@ -20,9 +28,23 @@ class TestMisc(util.ColorAsserts, unittest.TestCase):
         self.assertEqual(Color('purple').set('alpha', 0.751).alpha(precision=1), 0.8)
 
     def test_get_precision(self):
-        """Test coordinate precision via get."""
+        """Test get precision."""
 
-        self.assertEqual(Color('purple').get('red', precision=3), 0.502)
+        c1 = Color('purple').set('alpha', 0.7512).convert('lab')
+        coords = [c1.get(str(i), precision=3) for i in range(4)]
+        self.assertEqual(coords, [29.7, 56.1, -36.3, 0.751])
+
+        coords = [c1.get(str(i), precision=2, rounding="decimal") for i in range(4)]
+        self.assertEqual(coords, [29.69, 56.11, -36.29, 0.75])
+
+        coords = [c1.get(str(i), precision=2, rounding='sigfig') for i in range(4)]
+        self.assertEqual(coords, [30.0, 56.0, -36.0, 0.75])
+
+        coords = c1.get(['0', '1', '2', '3'], precision=[0, 0, 0, 2])
+        self.assertEqual(coords, [30.0, 56.0, -36.0, 0.75])
+
+        coords = c1.get(['0', '1', '2', '3'], precision=[2, 2, 2, 3], rounding='decimal')
+        self.assertEqual(coords, [29.69, 56.11, -36.29, 0.751])
 
     def test_to_string_alpha_precision(self):
         """Test control of alpha precision."""
@@ -36,6 +58,12 @@ class TestMisc(util.ColorAsserts, unittest.TestCase):
             Color('purple').convert('lab').set('alpha', 0.5234).to_string(precision=[0, 0, 0, 3]),
             'lab(30 56 -36 / 0.523)'
         )
+
+    def test_to_string_bad_value(self):
+        """Test that serializing infinity fails."""
+
+        with self.assertRaises(ValueError):
+            Color('srgb', [float('inf')] * 3).to_string(fit=False)
 
     def test_max_precision(self):
         """Test max precision."""
@@ -129,8 +157,14 @@ class TestMisc(util.ColorAsserts, unittest.TestCase):
 
         self.assertEqual(d, {'space': 'lab', 'coords': [29.7, 56.1, -36.3], 'alpha': 0.751})
 
+        d = c1.to_dict(precision=2, rounding="decimal")
+        self.assertEqual(d, {'alpha': 0.75, 'coords': [29.69, 56.11, -36.29], 'space': 'lab'})
+
         d2 = c1.to_dict(precision=[0, 0, 0, 2])
         self.assertEqual(d2, {'space': 'lab', 'coords': [30.0, 56.0, -36.0], 'alpha': 0.75})
+
+        d = c1.to_dict(precision=[2, 2, 2, 3], rounding='decimal')
+        self.assertEqual(d, {'alpha': 0.751, 'coords': [29.69, 56.11, -36.29], 'space': 'lab'})
 
     def test_dict_input(self):
         """Test dictionary inputs."""

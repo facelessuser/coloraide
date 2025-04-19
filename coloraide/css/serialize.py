@@ -38,6 +38,7 @@ def color_function(
     func: str | None,
     alpha: bool | None,
     precision: int | Sequence[int],
+    rounding: str,
     fit: str | bool | dict[str, Any],
     none: bool,
     percent: bool | Sequence[bool],
@@ -94,6 +95,7 @@ def color_function(
             util.fmt_float(
                 value,
                 util.get_index(precision, idx, obj.PRECISION) if is_precision_list else precision,  # type: ignore[arg-type]
+                rounding,
                 span,
                 offset
             )
@@ -178,6 +180,7 @@ def serialize_css(
     color: bool = False,
     alpha: bool | None = None,
     precision: int | Sequence[int] | None = None,
+    rounding: str | None = None,
     fit: bool | str | dict[str, Any] = True,
     none: bool = False,
     percent: bool | Sequence[bool] = False,
@@ -193,9 +196,12 @@ def serialize_css(
     if precision is None:
         precision = obj.PRECISION
 
+    if rounding is None:
+        rounding = obj.ROUNDING
+
     # Color format
     if color:
-        return color_function(obj, None, alpha, precision, fit, none, percent, False, 1.0)
+        return color_function(obj, None, alpha, precision, rounding, fit, none, percent, False, 1.0)
 
     # CSS color names
     if name:
@@ -209,6 +215,6 @@ def serialize_css(
 
     # Normal CSS named function format
     if func:
-        return color_function(obj, func, alpha, precision, fit, none, percent, legacy, scale)
+        return color_function(obj, func, alpha, precision, rounding, fit, none, percent, legacy, scale)
 
     raise RuntimeError('Could not identify a CSS format to serialize to')  # pragma: no cover

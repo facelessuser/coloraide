@@ -1,7 +1,9 @@
 # Changelog
 
-## 4.x.x
+## 4.6.0
 
+-   **NEW**: Add new `rounding` option to control rounding modes in `to_string()`, `to_dict()`, `coords()`, `alpha()`,
+    and `get()`. New rounding modes are: `sigfig` and `decimal` which are in addition to the default `digits` mode.
 -   **FIX**: Fix typing for inherited colors.
 
 ## 4.5.1

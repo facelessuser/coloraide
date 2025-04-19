@@ -67,7 +67,9 @@ print(d)
 Color(d)
 ```
 
-You can also control the precision of the output values with the `precision` parameter.
+You can also control the precision of your output values with the `precision` parameter. For more information or to
+learn more about more advanced controls of precision, see the sections on [precision](./strings.md#precision) and
+[rounding](./strings.md#rounding.md) which applies to both serialization and coordinate retrieval.
 
 ```py play
 d = Color('purple').to_dict(precision=3)
@@ -75,8 +77,9 @@ print(d)
 Color(d)
 ```
 
-If you need to control channel precision separately for a given channel, you can provide a list of precision where each
-index in the list corresponds to the channel at that index. Omitted channels will assume default precision.
+If you need to control channel precision separately for a given channel, you can provide a list of `precision` and/or
+`decimal` values where each index in the list corresponds to the channel at that index. Omitted channels will assume
+the default precision and `decimal` place rounding respectively.
 
 ```py play
 d = Color('purple').set('alpha', 0.75).convert('lab').to_dict(precision=[0, 0, 0, 3])
@@ -352,7 +355,8 @@ Properties             | Defaults               | Description
 `INTERPOLATE`          | `#!py "oklab"`         | The default color space used for interpolation.
 `INTERPOLATOR`         | `#!py "linear"`        | The default interpolator to use.
 `DELTA_E`              | `#!py "76"`            | The default ∆E algorithm used. This applies to when [`delta_e()`](./distance.md#delta-e) is called without specifying a method or when using color distancing to separate color when using the interpolation method called [`steps`](./interpolation.md#steps).
-`PRECISION`            | `#!py 5`               | The default precision for string outputs.
+`PRECISION`            | `#!py 5`               | The default significant figures to round to.`#!py 0` forces integer rounding and `-1` applies no restriction.
+`DECIMAL`              | `#!py True`            | The default decimal place to round a number to. `#!py True` assumes the same value as the current precision and `#!py False` ignores decimal rounding.
 `CHROMATIC_ADAPTATION` | `#!py "bradford"`      | Chromatic adaptation method used when converting between two color spaces with different white points. See [Chromatic Adaptation](./cat.md) for more information.
 `HARMONY`              | `#!py "oklch"`         | Default color space to use for calculating color harmonies. This should be a cylindrical color space.
 `CONTRAST`             | `#!py "wcag21"`        | Default contrast algorithm.
