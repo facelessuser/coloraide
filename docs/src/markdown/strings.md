@@ -33,10 +33,9 @@ When in the default state, `alpha` will only be shown if the alpha channel has a
 ///
 
 /// note
-Rounding is done with "half up" logic to match CSS recommendations with their color syntax. This seems to match
-JavaScript's rounding logic in their `#!js Math.round()` function as well. Internally, as with most programming
-languages, all calculations use "half even" logic, or bankers rounding, to minimize floating point error. "Half up" is
-only used when serializing or explicitly requesting rounded coordinates through the API.
+Rounding is done with "half up" logic to match CSS recommendations with their color syntax. Internally, as with most
+programming languages, all calculations use "half even" logic, or bankers rounding, to minimize floating point error.
+"Half up" is only used when serializing or explicitly requesting rounded coordinates through the API.
 ///
 
 There are various ways to approach rounding of data. ColorAide implements a few approaches in an attempt accommodate
