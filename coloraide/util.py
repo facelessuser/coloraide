@@ -230,13 +230,18 @@ def fmt_float(f: float, p: int = 0, rounding: str = 'digits', percent: float = 0
 
     # Apply rounding
     f = (f + offset) / (percent * 0.01) if percent else f
-    p = alg._round_location(f, p, rounding)
+    start, p = alg._round_location(f, p, rounding)
     value = alg.round_half_up(f, p)
 
-    # Format the string
-    if p > 17 or p < 1:
+    # Format the string.
+    if p > 17 or p < 1 or (p - start + 1) > 17:
+        # We are either outputing numbers rounded beyond 17 decimal places,
+        # numbers that are whole integers, or a number requested with more than 17 digits.
+        # For any of these, just rely on normal string printing.
         s = str(value).removesuffix('.0')
     else:
+        # For numbers within the double-precision range of values for non-scientific notation,
+        # force non-scientific notation. Really big integers which we allow to be scientific notation.
         s = f"{{:0.{p}f}}".format(value).rstrip('0').rstrip('.')
     return s + '%' if percent else s
 

@@ -114,8 +114,8 @@ def _round_location(
     f: float,
     p: int = 0,
     mode: str = 'digits'
-) -> int:
-    """Get rounding location."""
+) -> tuple[int, int]:
+    """Return the start of the first significant digit and the digit targeted for rounding."""
 
     # Round to number of digits
     if mode == 'digits':
@@ -147,11 +147,12 @@ def _round_location(
         raise ValueError("Unknown rounding mode '{mode}'")
 
     if f == 0 or not math.isfinite(f):
-        return 0
+        return 0, 0
 
     # Round to specified significant figure or fractional digit, which ever is less
-    v = -math.floor(math.log10(abs(f))) + (p - 1)
-    return d if d < v else v
+    v = -math.floor(math.log10(abs(f)))
+    p = v + (p - 1)
+    return v, d if d < p else p
 
 
 def round_to(
@@ -162,7 +163,7 @@ def round_to(
 ) -> float:
     """Round to the specified precision using "half up" rounding by default."""
 
-    p = _round_location(f, p, mode)
+    _, p = _round_location(f, p, mode)
 
     # Return non-finite values without further processing
     if not math.isfinite(f):
