@@ -235,7 +235,7 @@ def fmt_float(f: float, p: int = 0, rounding: str = 'digits', percent: float = 0
 
     # Format the string.
     if p > 17 or p < 1 or (p - start + 1) > 17:
-        # We are either outputing numbers rounded beyond 17 decimal places,
+        # We are either outputting numbers rounded beyond 17 decimal places,
         # numbers that are whole integers, or a number requested with more than 17 digits.
         # For any of these, just rely on normal string printing.
         s = str(value).removesuffix('.0')
