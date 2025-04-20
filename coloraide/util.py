@@ -7,6 +7,7 @@ from .types import Vector, VectorLike
 from typing import Any, Callable, Sequence
 
 DEF_PREC = 5
+DEF_ROUND_MODE = 'digits'
 DEF_FIT_TOLERANCE = 0.000075
 DEF_ALPHA = 1.0
 DEF_MIX = 0.5
@@ -205,31 +206,40 @@ def cmp_coords(c1: VectorLike, c2: VectorLike) -> bool:
         return all(map(lambda a, b: (math.isnan(a) and math.isnan(b)) or a == b, c1, c2))
 
 
-def fmt_float(f: float, p: int = 0, percent: float = 0.0, offset: float = 0.0) -> str:
+def fmt_float(f: float, p: int = 0, rounding: str = 'digits', percent: float = 0.0, offset: float = 0.0) -> str:
     """
     Set float precision and trim precision zeros.
 
-    0: Round to whole integer
-    -1: Full precision
-    <positive number>: precision level
+    -   `p`: Rounding precision.
+
+    -   `rounding`: Specify specific rounding mode.
+
+    -   `percent`: Treat as a percent.
+
+    -   `offset`: Apply an offset (used in conjunction with `percent`).
+
     """
 
+    # Undefined values should be none
     if math.isnan(f):
         return "none"
 
-    value = alg.round_to((f + offset) / (percent * 0.01) if percent else f, p)
-    if p == -1:
-        p = 17  # ~double precision
+    # Infinite values do not get rounded
+    if not math.isfinite(f):
+        raise ValueError(f'Cannot format non-finite number {f}')
 
-    # Calculate actual print decimal precision
-    whole = int(value)
-    if whole:
-        whole = int(math.log10(-whole if whole < 0 else whole)) + 1
-        if p:
-            p = max(p - whole, 0)
+    # Apply rounding
+    f = (f + offset) / (percent * 0.01) if percent else f
+    start, p = alg._round_location(f, p, rounding)
+    value = alg.round_half_up(f, p)
 
-    # Format the string
-    s = '{{:{}{}f}}'.format('' if whole >= p else '.', p).format(value).rstrip('0').rstrip('.')
+    # Format the string.
+    if (p - start + 1) > 17:
+        # If we are outputting numbers beyond 17 digits, just use normal output.
+        s = str(value).removesuffix('.0')
+    else:
+        # Avoid scientific notation for numbers with 17 digits (double-precision number of decimals).
+        s = f"{{:0.{1 if p < 1 else p}f}}".format(value).rstrip('0').rstrip('.')
     return s + '%' if percent else s
 
 

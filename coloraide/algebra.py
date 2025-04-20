@@ -42,6 +42,7 @@ RTOL = 4 * sys.float_info.epsilon
 ATOL = 1e-12
 NaN = math.nan
 INF = math.inf
+MAX_10_EXP = sys.float_info.max_10_exp
 
 # Keeping for backwards compatibility
 prod = math.prod
@@ -99,32 +100,77 @@ def round_half_up(n: float, scale: int = 0) -> float:
     if not isinstance(scale, int):
         raise ValueError("'float' object cannot be interpreted as an integer")
 
+    # Generally, Python reports the minimum float as 2.2250738585072014e-308,
+    # but there are outliers as small as 5e-324. `mult` is limited by a scale of 308
+    # due to overflow, but we could calculate greater values by splitting the `mult`
+    # factor into two smaller factors when the scale exceeds 308. This would allow us
+    # to round out to 324 decimal places for really small values like 5e-324, but
+    # these values simply aren't practical enough to warrant the extra effort.
     mult = 10.0 ** scale
     return math.floor(n * mult + 0.5) / mult
 
 
-def round_to(f: float, p: int = 0, half_up: bool = True) -> float:
-    """Round to the specified precision using "half up" rounding."""
+def _round_location(
+    f: float,
+    p: int = 0,
+    mode: str = 'digits'
+) -> tuple[int, int]:
+    """Return the start of the first significant digit and the digit targeted for rounding."""
 
-    _round = round_half_up if half_up else round  # type: Callable[..., float]
+    # Round to number of digits
+    if mode == 'digits':
+        # Less than zero we assume double precision
+        if p < 0:
+            p = 17
+        d = p
+        # If zero, assume integer rounding
+        if p == 0:
+            p = 17
 
-    # Do no rounding, just return a float with full precision
-    if p == -1:
-        return float(f)
+    # Round to decimal place
+    elif mode == 'decimal':
+        d = p
+        p = MAX_10_EXP
 
-    # Integer rounding
-    if p == 0:
-        return _round(f)
+    # Round of significant digits
+    elif mode == 'sigfig':
+        d = MAX_10_EXP
+        # Less than zero we assume double precision
+        if p < 0 or p > 17:
+            p = 17
+        # If zero, assume integer rounding
+        elif p == 0:
+            p = 17
+            d = 0
 
-    # Ignore infinity
+    else:
+        raise ValueError("Unknown rounding mode '{mode}'")
+
+    if f == 0 or not math.isfinite(f):
+        return 0, 0
+
+    # Round to specified significant figure or fractional digit, which ever is less
+    v = -math.floor(math.log10(abs(f)))
+    p = v + (p - 1)
+    return v, d if d < p else p
+
+
+def round_to(
+    f: float,
+    p: int = 0,
+    mode: str = 'digits',
+    rounding: Callable[[float, int], float]=round_half_up
+) -> float:
+    """Round to the specified precision using "half up" rounding by default."""
+
+    _, p = _round_location(f, p, mode)
+
+    # Return non-finite values without further processing
     if not math.isfinite(f):
         return f
 
-    # Round to the specified precision
-    else:
-        whole = int(f)
-        digits = 0 if whole == 0 else int(math.log10(-whole if whole < 0 else whole)) + 1
-        return _round(whole if digits > p else f, p - digits)
+    # Round to the specified location using the specified rounding function
+    return rounding(f, p)
 
 
 def minmax(value: VectorLike | Iterable[float]) -> tuple[float, float]:

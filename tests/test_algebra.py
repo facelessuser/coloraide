@@ -1114,6 +1114,27 @@ class TestAlgebra(unittest.TestCase):
 
         self.assertEqual(alg.round_to(4.567, 2), 4.6)
 
+    def test_round_sig_figs(self):
+        """Test rounding of significant figures."""
+
+        self.assertEqual(alg.round_to(0.00003456, 2, 'sigfig'), 0.000035)
+        self.assertEqual(alg.round_to(1.00003456, 2, 'sigfig'), 1.0)
+        self.assertEqual(alg.round_to(1.00003456, -1, 'sigfig'), 1.00003456)
+        self.assertEqual(alg.round_to(1.00003456, 0, 'sigfig'), 1.0)
+
+    def test_rounding_to_decimal_place(self):
+        """Test round to specific decimal places."""
+
+        self.assertEqual(alg.round_to(4.567, 2, 'decimal'), 4.57)
+        self.assertEqual(alg.round_to(4.567, 1, 'decimal'), 4.6)
+        self.assertEqual(alg.round_to(14.567, -1, 'decimal'), 10.0)
+
+    def test_bad_rounding(self):
+        """Test bad rounding."""
+
+        with self.assertRaises(ValueError):
+            alg.round_to(3.245, 3, 'bad')
+
     def test_round(self):
         """Test rounding."""
 
@@ -1124,8 +1145,8 @@ class TestAlgebra(unittest.TestCase):
         with self.assertRaises(ValueError):
             alg.round_half_up(3.56, 3.4)
 
-    def test_scale(self):
-        """Test rounding."""
+    def test_rounding_scale(self):
+        """Test rounding scale."""
 
         self.assertEqual(alg.round_half_up(3.345, 1), 3.3)
         self.assertEqual(alg.round_half_up(3.345, 2), 3.35)

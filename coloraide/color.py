@@ -155,6 +155,7 @@ class Color(metaclass=ColorMeta):
     INTERPOLATE_MAP = {}  # type: dict[str, Interpolate[Self]]
     CCT_MAP = {}  # type: dict[str, CCT]
     PRECISION = util.DEF_PREC
+    ROUNDING = util.DEF_ROUND_MODE
     FIT = util.DEF_FIT
     INTERPOLATE = util.DEF_INTERPOLATE
     INTERPOLATOR = util.DEF_INTERPOLATOR
@@ -536,7 +537,8 @@ class Color(metaclass=ColorMeta):
         self,
         *,
         nans: bool = True,
-        precision: int | Sequence[int] | None = None
+        precision: int | Sequence[int] | None = None,
+        rounding: str | None = None
     ) -> Mapping[str, Any]:
         """Return color as a data object."""
 
@@ -547,8 +549,8 @@ class Color(metaclass=ColorMeta):
 
         return {
             'space': self.space(),
-            'coords': self.coords(nans=nans, precision=precision),
-            'alpha': self.alpha(nans=nans, precision=precision_alpha)
+            'coords': self.coords(nans=nans, precision=precision, rounding=rounding),
+            'alpha': self.alpha(nans=nans, precision=precision_alpha, rounding=rounding)
         }
 
     def normalize(self, *, nans: bool = True) -> Self:
@@ -689,7 +691,7 @@ class Color(metaclass=ColorMeta):
 
         return 'color({} {} / {})'.format(
             self._space._serialize()[0],
-            ' '.join([util.fmt_float(coord, util.DEF_PREC) for coord in self[:-1]]),
+            ' '.join([util.fmt_float(coord, util.DEF_PREC, util.DEF_ROUND_MODE) for coord in self[:-1]]),
             util.fmt_float(self[-1], util.DEF_PREC)
         )
 
@@ -1304,7 +1306,8 @@ class Color(metaclass=ColorMeta):
         name: str,
         *,
         nans: bool = True,
-        precision: int | Sequence[int] | None = None
+        precision: int | Sequence[int] | None = None,
+        rounding: str | None = None
     ) -> float:
         ...
 
@@ -1314,18 +1317,23 @@ class Color(metaclass=ColorMeta):
         name: list[str] | tuple[str, ...],
         *,
         nans: bool = True,
-        precision: int | Sequence[int] | None = None
+        precision: int | Sequence[int] | None = None,
+        rounding: str | None = None
     ) -> Vector:
         ...
 
     def get(
-        self, name: str | list[str] | tuple[str, ...],
+        self,
+        name: str | list[str] | tuple[str, ...],
         *,
         nans: bool = True,
-        precision: int | Sequence[int] | None = None
+        precision: int | Sequence[int] | None = None,
+        rounding: str | None = None
     ) -> float | Vector:
         """Get channel."""
 
+        if rounding is None:
+            rounding = self.ROUNDING
         is_plist = precision is not None and not isinstance(precision, int)
 
         # Handle single channel
@@ -1343,8 +1351,16 @@ class Color(metaclass=ColorMeta):
                 v = self[name]
             else:
                 i = self._space.get_channel_index(name)
-                v = self._space.resolve_channel(self._space.get_channel_index(name), self._coords)
-            return v if precision is None else alg.round_to(v, util.get_index(precision, 0) if is_plist else precision)  # type: ignore[arg-type]
+                v = self._space.resolve_channel(i, self._coords)
+
+            if precision is None:
+                return v
+
+            return alg.round_to(
+                v,
+                util.get_index(precision, 0) if is_plist else precision,  # type: ignore[arg-type]
+                rounding
+            )
 
         # Handle list of channels
         else:
@@ -1363,8 +1379,17 @@ class Color(metaclass=ColorMeta):
                 else:
                     i = obj._space.get_channel_index(channel)
                     v = obj._space.resolve_channel(i, obj._coords)
+
+                if precision is None:
+                    values.append(v)
+                    continue
+
                 values.append(
-                    v if precision is None else alg.round_to(v, util.get_index(precision, e) if is_plist else precision)  # type: ignore[arg-type]
+                    alg.round_to(
+                        v,
+                        util.get_index(precision, e) if is_plist else precision,  # type: ignore[arg-type]
+                        rounding
+                    )
                 )
             return values
 
@@ -1427,7 +1452,13 @@ class Color(metaclass=ColorMeta):
 
         return self
 
-    def coords(self, *, nans: bool = True, precision: int | Sequence[int] | None = None) -> Vector:
+    def coords(
+        self,
+        *,
+        nans: bool = True,
+        precision: int | Sequence[int] | None = None,
+        rounding: str | None = None
+    ) -> Vector:
         """Get the color channels and optionally remove undefined values."""
 
         # Full precision
@@ -1439,27 +1470,33 @@ class Color(metaclass=ColorMeta):
                     self._space.resolve_channel(index, self._coords)
                     for index in range(len(self._coords) - 1)
                 ]
-        # Specific precision requested
-        elif isinstance(precision, int):
-            return [
-                alg.round_to(self[index] if nans else self._space.resolve_channel(index, self._coords), precision)
-                for index in range(len(self._coords) - 1)
-            ]
-        # Channel specific list of precision
-        else:
-            return [
-                alg.round_to(
-                    self[index] if nans else self._space.resolve_channel(index, self._coords),
-                    util.get_index(precision, index, self.PRECISION)
-                )
-                for index in range(len(self._coords) - 1)
-            ]
 
-    def alpha(self, *, nans: bool = True, precision: int | None = None) -> float:
+        pint = isinstance(precision, int)
+        if rounding is None:
+            rounding = self.ROUNDING
+
+        return [
+            alg.round_to(
+                self[index] if nans else self._space.resolve_channel(index, self._coords),
+                precision if pint else util.get_index(precision, index, self.PRECISION),  # type: ignore[arg-type]
+                rounding
+            )
+            for index in range(len(self._coords) - 1)
+        ]
+
+    def alpha(
+        self,
+        *,
+        nans: bool = True,
+        precision: int | None = None,
+        rounding: str | None = None
+    ) -> float:
         """Get the alpha channel."""
 
         value = self[-1] if nans else self._space.resolve_channel(-1, self._coords)
-        return value if precision is None else alg.round_to(value, precision)
+        if precision is None:
+            return value
+        return alg.round_to(value, precision, self.ROUNDING if rounding is None else rounding) if precision else value
 
 
 Color.register(
