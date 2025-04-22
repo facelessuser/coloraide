@@ -179,7 +179,7 @@ def cyl_disc(fig, ColorCyl, space, gamut, location, resolution, opacity, edges, 
     # in the center. At lower resolutions, this is more noticeable. To avoid this, interpolate rings very close to zero
     # radius, but not at zero radius. The mesh will still connect all the points near the center, but will leave a small
     # hole at the center which will be too small to see.
-    start, end = 1.0 * factor, 1e-6
+    start, end = 1.0 * factor, 1e-16
 
     # Render the two halves of the disc
     hue_start, hue_end = 0, 360
