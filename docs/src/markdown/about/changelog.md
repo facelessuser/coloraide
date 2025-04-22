@@ -1,6 +1,6 @@
 # Changelog
 
-## 4.6.0
+## 4.6
 
 -   **NEW**: Add new `rounding` option to control rounding modes in `to_string()`, `to_dict()`, `coords()`, `alpha()`,
     and `get()`. New rounding modes are: `sigfig` and `decimal` which are in addition to the default `digits` mode.
@@ -11,7 +11,7 @@
 -   **FIX**: Ensure Jzazbz, JzCzhz, and ICtCp actually use `--jzazbz`, `--jzczhz`, and `--ictcp` by default when
     serialized in the `color()` format.
 
-## 4.5.0
+## 4.5
 
 -   **NEW**: Support change in CSS HDR spec that now specifies Jzazbz, JzCzhz, and ICtCp serialization as using the
     respective named color functions: `jzazbz()`, `jzczhz()`, and `ictcp()`. The `color()` format also use the custom
