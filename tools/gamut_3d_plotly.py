@@ -171,13 +171,15 @@ def cyl_disc(fig, ColorCyl, space, gamut, location, resolution, opacity, edges, 
     gspace = ColorCyl.CS_MAP[gamut]
     factor = gspace.channels[1].high
 
-    zpos = 0.0 if location == 'bottom' else 1.0 * factor
-    # HWB bottom disc will have a single point in the center that is a different colors at different hues. The mesh will
-    # resolve one of them as the center, usually red. This will cause color averaging in the center of the disc to be
-    # reddish for all colors in the center. At lower resolutions, this is more noticeable. To avoid this, interpolate
-    # rings very close to zero radius, but not zero radius. The mesh will still connect all the points near the center,
-    # but will leave a small hole at the center which will be too small to see.
-    start, end = 1.0 * factor, (1e-6 if is_hwbish and location == 'bottom' else 0.0)
+    # Using a lightness of 0 can sometimes cause the bottom not to show with certain resolutions, so use a very
+    # small value instead.
+    zpos = 1e-16 if location == 'bottom' else 1.0 * factor
+    # HWB bottom disc will have a multiple points in the center with different hues. The mesh will resolve one of them
+    # as the center, usually red. This will cause color averaging in the center of the disc to be reddish for all colors
+    # in the center. At lower resolutions, this is more noticeable. To avoid this, interpolate rings very close to zero
+    # radius, but not at zero radius. The mesh will still connect all the points near the center, but will leave a small
+    # hole at the center which will be too small to see.
+    start, end = 1.0 * factor, 1e-6
 
     # Render the two halves of the disc
     hue_start, hue_end = 0, 360
@@ -202,9 +204,8 @@ def cyl_disc(fig, ColorCyl, space, gamut, location, resolution, opacity, edges, 
             c = t1.mix(t2, r / (step - 1), space=gamut, hue='specified')
             hue = c._space.hue_index()
             radius = c._space.radial_index()
-            a, b = alg.polar_to_rect(c[radius], c[hue])
-            u.append(a)
-            v.append(b)
+            u.append(c[radius])
+            v.append(c[hue])
             c.convert(space, norm=False, in_place=True)
 
             # HSL, HSV. and HWB spaces
@@ -327,9 +328,9 @@ def render_space_cyl(fig, space, gamut, resolution, opacity, edges, faces, ecolo
 
     # Interpolate the cylinder from 0 to 360 degrees
     c1 = ColorCyl(gamut_space, [start, 1 * factor, 1 * factor])
-    c2 = ColorCyl(gamut_space, [start, 1 * factor, 0])
+    c2 = ColorCyl(gamut_space, [start, 1 * factor, 1e-16])
     c3 = ColorCyl(gamut_space, [end, 1 * factor, 1 * factor])
-    c4 = ColorCyl(gamut_space, [end, 1 * factor, 0])
+    c4 = ColorCyl(gamut_space, [end, 1 * factor, 1e-16])
     s1 = ColorCyl.steps([c1, c2], steps=resolution, space=gamut_space, hue='specified')
     s2 = ColorCyl.steps([c3, c4], steps=resolution, space=gamut_space, hue='specified')
 
@@ -467,10 +468,6 @@ def plot_gamut_in_space(
         gmap = {}
 
     io.templates.default = 'plotly_dark' if dark else 'plotly'
-
-    # I have no idea why this number causes HSL to lose its bottom
-    if resolution == 50:
-        resolution = 51
 
     if camera is None:
         camera = {'a': 45, 'e': 45, 'r': math.sqrt(1.25 ** 2 + 1.25 ** 2 + 1.25 ** 2)}
