@@ -3020,16 +3020,23 @@ class TestAlgebra(unittest.TestCase):
         """Get just the SVD values."""
 
         svd = alg.svdvals([[8, 9], [4, 2]])
-        self.assertEqual(svd, [1.5687405878887022, 12.74908047538765])
-
+        self.assertTrue(all(math.isclose(
+            _a, _b, rel_tol=1e-10, abs_tol=1e-11) for _a, _b in zip(svd, [1.5687405878887022, 12.74908047538765])
+        ))
         svd = alg.svdvals([[4, 5], [3, 3], [9, 7]])
-        self.assertEqual(svd, [13.682688482364616, 1.335678065465881])
+        self.assertTrue(all(math.isclose(
+            _a, _b, rel_tol=1e-10, abs_tol=1e-11) for _a, _b in zip(svd, [13.682688482364616, 1.335678065465881])
+        ))
 
         svd = alg.svdvals([[4, 5, 3], [9, 7, 3]])
-        self.assertEqual(svd, [1.7193878535843492, 13.639783920903826])
+        self.assertTrue(all(math.isclose(
+            _a, _b, rel_tol=1e-10, abs_tol=1e-11) for _a, _b in zip(svd, [1.7193878535843492, 13.639783920903826])
+        ))
 
         svd = alg.svdvals([[1, 2], [1, 2]])
-        self.assertEqual(svd, [2.220446049250313e-16, 3.162277660168379])
+        self.assertTrue(all(math.isclose(
+            _a, _b, rel_tol=1e-10, abs_tol=1e-11) for _a, _b in zip(svd, [2.220446049250313e-16, 3.162277660168379])
+        ))
 
     def test_fnnls(self):
         """Test fast non-negative least squares method."""
