@@ -38,11 +38,13 @@ from .types import (
 )
 from typing import Callable, Sequence, Iterator, Any, Iterable, overload
 
-RTOL = 4 * sys.float_info.epsilon
+EPS = sys.float_info.epsilon
+RTOL = 4 * EPS
 ATOL = 1e-12
 NaN = math.nan
 INF = math.inf
 MAX_10_EXP = sys.float_info.max_10_exp
+MIN_FLOAT = sys.float_info.min
 
 # Keeping for backwards compatibility
 prod = math.prod
@@ -3765,6 +3767,397 @@ def _back_sub_matrix(a: Matrix, b: Matrix, s: ArrayShape) -> Matrix:
     return b
 
 
+def _householder_reduction_bidiagonal(
+    m: int,
+    n: int,
+    e: Vector,
+    u: Matrix,
+    q: Vector,
+    tol: float
+) -> tuple[float, int, float, float]:
+    """Householder's reduction to bidiagonal form."""
+
+    g = x = y = 0.0
+    l = 0
+
+    for i in range(n):
+        e[i] = g
+        s = 0.0
+        l = i + 1
+
+        for j in range(i, m):
+            s += u[j][i] ** 2
+
+        if s < tol:
+            g = 0.0
+
+        else:
+            f = u[i][i]
+            g = math.sqrt(s)
+            if f >= 0.0:
+                g = -g
+            h = f * g - s
+            u[i][i] = f - g
+
+            for j in range(l, n):
+                s = 0.0
+
+                for k in range(i,m):
+                    s += u[k][i] * u[k][j]
+
+                f = s / h
+
+                for k in range(i, m):
+                    u[k][j] += f * u[k][i]
+
+        q[i] = g
+        s = 0.0
+
+        for j in range(l,n):
+            s += u[i][j] ** 2
+
+        if s < tol:
+            g = 0.0
+
+        else:
+            f = u[i][i + 1]
+
+            g = math.sqrt(s)
+            if f >= 0.0:
+                g = -g
+
+            h = f * g - s
+            u[i][i + 1] = f - g
+
+            for j in range(l, n):
+                e[j] = u[i][j] / h
+
+            for j in range(l, m):
+                s = 0.0
+                for k in range(l, n):
+                    s += u[j][k] * u[i][k]
+
+                for k in range(l, n):
+                    u[j][k] += s * e[k]
+
+        y = abs(q[i]) + abs(e[i])
+
+        if y > x:
+            x = y
+
+    return g, l, x, y
+
+
+def _accumulate_right_transfrom(n: int, g: float, l: int, e: Vector, u: Matrix, v: Matrix) -> float:
+    """Accumulation of right hand transformations."""
+
+    for i in range(n - 1, -1, -1):
+        if g != 0.0:
+            h = g * u[i][i + 1]
+
+            for j in range(l, n):
+                v[j][i] = u[i][j] / h
+
+            for j in range(l, n):
+                s = 0.0
+
+                for k in range(l , n):
+                    s += u[i][k] * v[k][j]
+
+                for k in range(l, n):
+                    v[k][j] += s * v[k][i]
+
+        for j in range(l, n):
+            v[i][j] = 0.0
+            v[j][i] = 0.0
+
+        v[i][i] = 1.0
+        g = e[i]
+        l = i
+
+    return g
+
+
+def _accumulate_left_transform(m: int, n: int, g: float, l: int, u: Matrix, q: Vector) -> float:
+    """Accumulation of left hand transformations."""
+
+    for i in range(n - 1, -1, -1):
+        l = i + 1
+        g = q[i]
+
+        for j in range(l, n):
+            u[i][j] = 0.0
+
+        if g != 0.0:
+            h = u[i][i] * g
+
+            for j in range(l, n):
+                s = 0.0
+
+                for k in range(l, m):
+                    s += u[k][i] * u[k][j]
+
+                f = s / h
+                for k in range(i, m):
+                    u[k][j] +=  f * u[k][i]
+
+            for j in range(i, m):
+                u[j][i] = u[j][i] / g
+
+        else:
+            for j in range(i, m):
+                u[j][i] = 0.0
+
+        u[i][i] += 1.0
+
+    return g
+
+
+def _compute_orthogonal_rotation(a: float, b: float) -> tuple[float, float, float]:
+    """Compute orthogonal rotation avoiding divide by zero."""
+
+    d = math.hypot(a, b)
+    if d != 0:
+        return a / d, b / d, d
+    return 0.0, 1.0, 0.0
+
+
+def _diagonalization_of_bidiagonal(
+    m: int,
+    n: int,
+    g: float,
+    x: float,
+    y: float,
+    e: Vector,
+    u: Matrix,
+    q: Vector,
+    v: Matrix,
+    eps: float
+) -> None:
+    """Diagonalization of the bidiagonal form."""
+
+    l = 0
+    maxiter = 50
+    eps = eps * x
+    for k in range(n - 1, -1, -1):
+        while maxiter:
+
+            # Test f splitting
+            cancel = False
+            for l in range(k, -1, -1):
+                if abs(e[l]) <= eps:
+                    break
+
+                if abs(q[l-1]) <= eps:
+                    cancel = True
+                    break
+
+            if cancel:
+                # Cancellation of e[l] if l>0
+                c = 0.0
+                s = 1.0
+                l1 = l - 1
+
+                for i in range(l, k + 1):
+                    f = s * e[i]
+                    e[i] = c * e[i]
+
+                    if abs(f) <= eps:  # pragma: no cover
+                        break
+
+                    g = q[i]
+                    c, s, h = _compute_orthogonal_rotation(g, -f)
+                    q[i] = h
+                    for j in range(m):
+                        y = u[j][l1]
+                        z = u[j][i]
+                        u[j][l1] = y * c + z * s
+                        u[j][i] = -y * s + z * c
+
+            # Test f convergence
+            z = q[k]
+            if l == k:
+                # Convergence
+                if z < 0.0:
+                    # q[k] is made non-negative
+                    q[k] = -z
+                    for j in range(n):
+                        v[j][k] = -v[j][k]
+                break
+
+            # Shift from bottom 2x2 minor
+            # TODO: Is it possible that h, y, or x will be zero here?
+            # If so, the two f calculations could cause a divide by zero.
+            # If we can find a case, we can decide how to move forward.
+            x = q[l]
+            y = q[k - 1]
+            g = e[k - 1]
+            h = e[k]
+            f = ((y - z) * (y + z) + (g - h) * (g + h)) / (2.0 * h * y)
+            g = math.hypot(f, 1.0)
+            fg = f - g if f < 0 else f + g
+            f = ((x - z) * (x + z) + h * (y / fg - h)) / x
+
+            # Next QR transformation
+            c = s = 1.0
+            for i in range(l + 1, k + 1):
+                g = e[i]
+                y = q[i]
+                h = s * g
+                g = c * g
+                c, s, z = _compute_orthogonal_rotation(f, h)
+                e[i - 1] = z
+                f = x * c + g * s
+                g = -x * s + g * c
+                h = y * s
+                y = y * c
+
+                for j in range(n):
+                    x = v[j][i - 1]
+                    z = v[j][i]
+                    v[j][i - 1] = x * c + z * s
+                    v[j][i] = -x * s + z * c
+
+                c, s, z = _compute_orthogonal_rotation(f, h)
+                q[i-1] = z
+                f = c * g + s * y
+                x = -s * g + c * y
+
+                for j in range(m):
+                    y = u[j][i - 1]
+                    z = u[j][i]
+                    u[j][i-1] = y * c + z * s
+                    u[j][i] = -y * s + z * c
+
+            e[l] = 0.0
+            e[k] = f
+            q[k] = x
+
+            maxiter -= 1
+        else:  # pragma: no cover
+            raise ValueError('Cound not converge on an SVD solution')
+
+
+def _svd(a: MatrixLike, m: int, n: int, full_matrices: bool = True, compute_uv: bool = True) -> Any:
+    """
+    Compute the singular value decomposition of a matrix.
+
+    Handbook Series Linear Algebra
+    Singular Value Decomposition and Least Squares Solutions
+    G. H. Golub and C. Reinsch
+    https://people.duke.edu/~hpgavin/SystemID/References/Golub+Reinsch-NM-1970.pdf
+
+    Some small changes were made to support wide and tall matrices. Additionally,
+    we fixed some cases where divide by zero could occur and confirmed that the
+    solutions still yielded `A = U∑V^T`.
+    """
+
+    eps = EPS
+    tol = MIN_FLOAT / EPS
+
+    u = acopy(a)
+    square = m == n
+    wide = not square and m < n
+    diff = 0
+
+    if wide:
+        u = transpose(u)
+        m, n = n, m
+
+    if full_matrices and not square:
+        diff = m - n
+        for r in u:
+            r.extend([0.0] * diff)
+        n = m
+
+    e = [0.0] * n
+    q = [0.0] * n
+    v = zeros((n, n))
+
+    g, l, x, y = _householder_reduction_bidiagonal(m, n, e, u, q, tol)
+    if compute_uv:
+        g = _accumulate_right_transfrom(n, g, l, e, u, v)
+        g = _accumulate_left_transform(m, n, g, l, u, q)
+    _diagonalization_of_bidiagonal(m, n, g, x, y, e, u, q, v, eps)
+
+    if full_matrices and not square:
+        if compute_uv:
+            v = [r[:-diff] for r in v[:-diff]]
+        q = q[:-diff]
+
+    if compute_uv:
+        if wide:
+            v, u = u, v
+
+    if compute_uv:
+        return u, q, v
+    return q
+
+
+def svd(
+    a: MatrixLike | TensorLike,
+    full_matrices: bool = True,
+    compute_uv: bool = True
+) -> Any:
+    """
+    Compute the singular value decomposition of a matrix.
+
+    This differs from Numpy in that it returns `U, S, V` instead of `U, S, V^T`.
+    """
+
+    s = shape(a)
+    dims = len(s)
+
+    # Ensure we have at least a matrix
+    if dims < 2:
+        raise ValueError('Matrix must be at least 2 dimensional')
+
+    elif dims > 2:
+        last = s[-2:]  # type: ignore[misc]
+        rows = list(_extract_rows(a, s))
+        step = last[-2]
+        m, n = last
+        wide = m < n
+        tall = n < m
+        u = []  # type: Any
+        singular = []  # type: Any
+        v = []  # type: Any
+        for r in range(0, len(rows), step):
+            result = _svd(rows[r:r + step], m, n, full_matrices, compute_uv)
+            if compute_uv:
+                u.append(result[0])
+                singular.append(result[1])
+                v.append(result[2])
+            else:
+                singular.append(result)
+        if wide:
+            if compute_uv:
+                u = reshape(u, s[:-2] + (m, m))  # type: ignore[arg-type, misc]
+                v = reshape(v, s[:-2] + (n if full_matrices else m, n))  # type: ignore[arg-type, misc]
+            singular = reshape(singular, s[:-2] + (m,))  # type: ignore[arg-type, misc]
+        elif tall:
+            if compute_uv:
+                u = reshape(u, s[:-2] + (m, m if full_matrices else n))  # type: ignore[arg-type, misc]
+                v = reshape(v, s[:-2] + (n, n))  # type: ignore[arg-type, misc]
+            singular = reshape(singular, s[:-2] + (n,))  # type: ignore[arg-type, misc]
+        else:
+            if compute_uv:
+                u = reshape(u, s[:-2] + (n, m))  # type: ignore[arg-type, misc]
+                v = reshape(v, s[:-2] + (n, m))  # type: ignore[arg-type, misc]
+            singular = reshape(singular, s[:-2] + (n,))  # type: ignore[arg-type, misc]
+        if compute_uv:
+            return u, singular, v
+        return singular
+
+    return _svd(a, s[0], s[1], full_matrices, compute_uv)  # type: ignore[arg-type]
+
+
+def svdvals(a: MatrixLike | TensorLike) -> Any:
+    """Get the s values from SVD."""
+
+    return svd(a, False, False)
+
+
 @overload
 def solve(a: MatrixLike, b: VectorLike) -> Vector:
     ...
@@ -3968,7 +4361,7 @@ def inv(matrix: MatrixLike | TensorLike) -> Matrix | Tensor:
     dims = len(s)
     last = s[-2:]  # type: ignore[misc]
     if dims < 2 or min(last) != max(last):
-        raise ValueError('Matrix must be a N x N matrix')
+        raise ValueError('Matrix must be at least 2 dimensional')
 
     # Handle dimensions greater than 2 x 2
     elif dims > 2:
@@ -3994,27 +4387,43 @@ def inv(matrix: MatrixLike | TensorLike) -> Matrix | Tensor:
     return _back_sub_matrix(u, _forward_sub_matrix(l, p, s2), s2)
 
 
+@overload
 def pinv(a: MatrixLike) -> Matrix:
-    """
-    Compute the (Moore-Penrose) pseudo-inverse of a matrix.
+    ...
 
-    We currently 'assume' the matrix if full rank. If not, a singular matrix error
-    will be thrown. Such matrices may still be invertible, but they would require
-    a more advanced approach that we do not currently implement.
+
+@overload
+def pinv(a: TensorLike) -> Tensor:
+    ...
+
+
+def pinv(a: MatrixLike | TensorLike) -> Matrix | Tensor:
+    """
+    Compute the (Moore-Penrose) pseudo-inverse of a matrix use SVD.
 
     Negative results can be returned, use `fnnls` for a non-negative solution (if possible).
     """
 
     s = shape(a)
-    if len(s) != 2:
-        raise ValueError('Inputs can only be matrices, vectors or tensors are not allowed')
+    dims = len(s)
 
-    t = transpose(a)
-    if s[0] >= s[1]:
-        p = matmul(inv(matmul(t, a, dims=D2)), t, dims=D2)
-    else:
-        p = matmul(t, inv(matmul(a, t, dims=D2)), dims=D2)
-    return p
+    # Ensure we have at least a matrix
+    if dims < 2:
+        raise ValueError('Matrix must be at least 2 dimensional')
+
+    elif dims > 2:
+        last = s[-2:]  # type: ignore[misc]
+        invert = []
+        rows = list(_extract_rows(a, s))
+        step = last[-2]
+        invert = [pinv(rows[r:r + step]) for r in range(0, len(rows), step)]
+        return reshape(invert, s[:-2] + last)  # type: ignore[no-any-return, misc]
+
+    m = s[0]
+    n = s[1]
+    u, singular, v = _svd(a, m, n, full_matrices=False)  # type: ignore[arg-type]
+    singular = [[1 / x if x > RTOL else x] for x in singular]
+    return matmul(v, multiply(singular, transpose(u), dims=D2), dims=D2)  # type: ignore[no-any-return]
 
 
 @overload
