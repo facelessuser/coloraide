@@ -3916,7 +3916,7 @@ def _accumulate_left_transform(m: int, n: int, g: float, l: int, u: Matrix, q: V
 def _compute_orthogonal_rotation(a: float, b: float) -> tuple[float, float, float]:
     """Compute orthogonal rotation avoiding divide by zero."""
 
-    d = math.hypot(a, b)
+    d = math.sqrt(a ** 2 + b ** 2)
     if d != 0:
         return a / d, b / d, d
     return 0.0, 1.0, 0.0
