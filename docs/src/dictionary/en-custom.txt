@@ -59,6 +59,7 @@ Deregister
 Deregistration
 Deutan
 Deuteranopia
+Diagonalization
 Dichromacy
 Dormont
 Duv
@@ -72,6 +73,7 @@ Fairchild
 Florian
 Formatter
 GMA
+Golub
 Gosset
 Gossett
 Grau
@@ -191,11 +193,13 @@ ROMM
 RYB
 Raphson
 Rasmus
+Reinsch
 SCD
 SDR
 SL
 SMPTE
 SRGB
+SVD
 SVG
 Safdar
 Scalable
@@ -247,6 +251,7 @@ backfill
 backfilled
 barycentric
 bezier
+bidiagonal
 bilinear
 boolean
 booleans
