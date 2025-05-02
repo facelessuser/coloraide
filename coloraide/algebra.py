@@ -4127,15 +4127,15 @@ def svd(
         raise ValueError('Array must be at least 2 dimensional')
 
     elif dims > 2:
-        last = s[-2:]  # type: ignore[misc]
-        first = s[:-2]
+        last = s[-2:]  # type: tuple[int, int] # type: ignore[misc]
+        first = s[:-2]  # type: Shape # type: ignore[misc]
         rows = list(_extract_rows(a, s))
         step = last[-2]
         m, n = last
         if compute_uv:
-            u = zeros(first + (0,))  # type: ignore[arg-type]
-            v = zeros(first + (0,))  # type: ignore[arg-type]
-        sigma = zeros(first + (0,))  # type: ignore[arg-type]
+            u = zeros(first + (0,))  # type: Tensor # type: ignore[arg-type, assignment]
+            v = zeros(first + (0,))  # type: Tensor # type: ignore[arg-type, assignment]
+        sigma = zeros(first + (0,))  # type: Tensor # type: ignore[arg-type, assignment]
         for r, idx in zip(range(0, len(rows), step), ndindex(first)):
             result = _svd(rows[r:r + step], m, n, full_matrices, compute_uv)
             if compute_uv:
@@ -4162,7 +4162,7 @@ def matrix_rank(a: MatrixLike | TensorLike) -> Any:
 
     s = shape(a)
     dims = len(s)
-    last = s[-2:]  # type: ignore[misc]
+    last = s[-2:]  # type: tuple[int, int] # type: ignore[misc]
     rtol = max(last) * EPS
 
     if dims < 2:
@@ -4179,11 +4179,11 @@ def matrix_rank(a: MatrixLike | TensorLike) -> Any:
         return rank
 
     # Stack of matrices
-    first = s[:-2]
+    first = s[:-2]  # type: Shape # type: ignore[misc]
     rows = list(_extract_rows(a, s))
     step = last[-2]
     m, n = last
-    ranks = zeros(first + (0,))  # type: ignore[arg-type]
+    ranks = zeros(first + (0,))  # type: Any # type: ignore[arg-type]
     for r, idx in zip(range(0, len(rows), step), ndindex(first)):
         sigma = _svd(rows[r:r + step], m, n, False, False)
         rank = 0
@@ -4396,16 +4396,16 @@ def inv(matrix: MatrixLike | TensorLike) -> Matrix | Tensor:
     # Ensure we have a square matrix
     s = shape(matrix)
     dims = len(s)
-    last = s[-2:]  # type: ignore[misc]
+    last = s[-2:]  # type: tuple[int, int] # type: ignore[misc]
     if dims < 2 or min(last) != max(last):
         raise ValueError('Matrix must be a N x N matrix')
 
     # Handle dimensions greater than 2 x 2
     elif dims > 2:
-        invert = zeros(s[:-2] + (0,))  # type: ignore[arg-type]
+        invert = zeros(s[:-2] + (0,))  # type: Tensor # type: ignore[arg-type, misc, assignment]
         rows = list(_extract_rows(matrix, s))
         step = last[-2]
-        for r, idx in zip(range(0, len(rows), step), ndindex(s[:-2])):
+        for r, idx in zip(range(0, len(rows), step), ndindex(s[:-2])):  # type: ignore[misc]
             _set_array_index(invert, idx, inv(rows[r:r + step]))
         return invert
 
@@ -4451,11 +4451,11 @@ def pinv(a: MatrixLike | TensorLike) -> Matrix | Tensor:
         raise ValueError('Array must be at least 2 dimensional')
 
     elif dims > 2:
-        last = s[-2:]  # type: ignore[misc]
-        invert = zeros(s[:-2] + (0,))  # type: ignore[arg-type]
+        last = s[-2:]  # type: tuple[int, int] # type: ignore[misc]
+        invert = zeros(s[:-2] + (0,))  # type: Tensor # type: ignore[arg-type, assignment, misc]
         rows = list(_extract_rows(a, s))
         step = last[-2]
-        for r, idx in zip(range(0, len(rows), step), ndindex(s[:-2])):
+        for r, idx in zip(range(0, len(rows), step), ndindex(s[:-2])):  # type: ignore[misc]
             _set_array_index(invert, idx, pinv(rows[r:r + step]))
         return invert
 
