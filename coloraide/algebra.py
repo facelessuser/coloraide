@@ -4110,7 +4110,7 @@ def svd(
 
     # Ensure we have at least a matrix
     if dims < 2:
-        raise ValueError('Matrix must be at least 2 dimensional')
+        raise ValueError('Array must be at least 2 dimensional')
 
     elif dims > 2:
         last = s[-2:]  # type: ignore[misc]
@@ -4120,34 +4120,34 @@ def svd(
         wide = m < n
         tall = n < m
         u = []  # type: Any
-        singular = []  # type: Any
+        sigma = []  # type: Any
         v = []  # type: Any
         for r in range(0, len(rows), step):
             result = _svd(rows[r:r + step], m, n, full_matrices, compute_uv)
             if compute_uv:
                 u.append(result[0])
-                singular.append(result[1])
+                sigma.append(result[1])
                 v.append(result[2])
             else:
-                singular.append(result)
+                sigma.append(result)
         if wide:
             if compute_uv:
                 u = reshape(u, s[:-2] + (m, m))  # type: ignore[arg-type, misc]
                 v = reshape(v, s[:-2] + (n if full_matrices else m, n))  # type: ignore[arg-type, misc]
-            singular = reshape(singular, s[:-2] + (m,))  # type: ignore[arg-type, misc]
+            sigma = reshape(sigma, s[:-2] + (m,))  # type: ignore[arg-type, misc]
         elif tall:
             if compute_uv:
                 u = reshape(u, s[:-2] + (m, m if full_matrices else n))  # type: ignore[arg-type, misc]
                 v = reshape(v, s[:-2] + (n, n))  # type: ignore[arg-type, misc]
-            singular = reshape(singular, s[:-2] + (n,))  # type: ignore[arg-type, misc]
+            sigma = reshape(sigma, s[:-2] + (n,))  # type: ignore[arg-type, misc]
         else:
             if compute_uv:
                 u = reshape(u, s[:-2] + (n, m))  # type: ignore[arg-type, misc]
                 v = reshape(v, s[:-2] + (n, m))  # type: ignore[arg-type, misc]
-            singular = reshape(singular, s[:-2] + (n,))  # type: ignore[arg-type, misc]
+            sigma = reshape(sigma, s[:-2] + (n,))  # type: ignore[arg-type, misc]
         if compute_uv:
-            return u, singular, v
-        return singular
+            return u, sigma, v
+        return sigma
 
     return _svd(a, s[0], s[1], full_matrices, compute_uv)  # type: ignore[arg-type]
 
@@ -4409,7 +4409,7 @@ def pinv(a: MatrixLike | TensorLike) -> Matrix | Tensor:
 
     # Ensure we have at least a matrix
     if dims < 2:
-        raise ValueError('Matrix must be at least 2 dimensional')
+        raise ValueError('Array must be at least 2 dimensional')
 
     elif dims > 2:
         last = s[-2:]  # type: ignore[misc]
@@ -4421,9 +4421,10 @@ def pinv(a: MatrixLike | TensorLike) -> Matrix | Tensor:
 
     m = s[0]
     n = s[1]
-    u, singular, v = _svd(a, m, n, full_matrices=False)  # type: ignore[arg-type]
-    singular = [[1 / x if x > RTOL else x] for x in singular]
-    return matmul(v, multiply(singular, transpose(u), dims=D2), dims=D2)  # type: ignore[no-any-return]
+    u, sigma, v = _svd(a, m, n, full_matrices=False)  # type: ignore[arg-type]
+    tol = max(sigma) * max(m, n) * EPS
+    sigma = [[1 / x if x > tol else x] for x in sigma]
+    return matmul(v, multiply(sigma, transpose(u), dims=D2), dims=D2)  # type: ignore[no-any-return]
 
 
 @overload
