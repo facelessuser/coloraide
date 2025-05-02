@@ -4229,7 +4229,7 @@ def solve(a: MatrixLike | TensorLike, b: ArrayLike) -> Array:
     1. [M, M] and [M] will solve a set of linear equations against a vector
        of dependent variables.
 
-    2. If we have [..., M, M] and [..., M, M] and it we have multiple sets of linear
+    2. If we have [..., M, M] and [..., M, M] and we have multiple sets of linear
        equations it will be treated as multiple [M, M] and [M] cases as described in 1).
 
        If we have only one set of linear equations, it will be treated as a [..., M, M] and
