@@ -3031,6 +3031,26 @@ class TestAlgebra(unittest.TestCase):
         svd = alg.svdvals([[1, 2], [1, 2]])
         self.assertTrue(svd, [2.220446049250313e-16, 3.162277660168379])
 
+    def test_matrix_rank(self):
+        """Test matrix ranks."""
+
+        self.assertEqual(alg.matrix_rank([[4, 5, 3], [9, 7, 3]]), 2)
+        self.assertEqual(alg.matrix_rank([[4, 5], [3, 9], [7, 3]]), 2)
+        self.assertEqual(alg.matrix_rank([[0.0, 0.0], [0.0, 0.0]]), 0)
+        self.assertEqual(alg.matrix_rank([[-896, -896], [-19, -19]]), 1)
+        self.assertEqual(
+            alg.matrix_rank(
+                [[[[8, 9], [4, 2]],
+                  [[6, 2], [7, 1]]],
+                 [[[7, 3], [6, 1]],
+                  [[6, 4], [2, 2]]]]
+            ),
+            [[2, 2], [2, 2]]
+        )
+
+        with self.assertRaises(ValueError):
+            alg.matrix_rank([1, 2, 3])
+
     def test_fnnls(self):
         """Test fast non-negative least squares method."""
 

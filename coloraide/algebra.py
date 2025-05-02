@@ -4158,6 +4158,45 @@ def svdvals(a: MatrixLike | TensorLike) -> Any:
     return svd(a, False, False)
 
 
+def matrix_rank(a: MatrixLike | TensorLike) -> Any:
+    """Calculate the matrix rank."""
+
+    s = shape(a)
+    dims = len(s)
+    last = s[-2:]  # type: ignore[misc]
+    rtol = max(last) * EPS
+
+    if dims < 2:
+        raise ValueError('Array must be at least 2 dimensional')
+
+    # Single matrix
+    if dims == 2:
+        rank = 0
+        sigma = _svd(a, s[0], s[1], False, False)  # type: ignore[arg-type]
+        tol = max(sigma) * rtol
+        for x in sigma:
+            if x > tol:
+                rank += 1
+        return rank
+
+    # Stack of matrices
+    rows = list(_extract_rows(a, s))
+    step = last[-2]
+    m, n = last
+    ranks = []  # type: Any
+    for r in range(0, len(rows), step):
+        sigma = _svd(rows[r:r + step], m, n, False, False)
+        rank = 0
+        tol = max(sigma) * rtol
+        for x in sigma:
+            if x > tol:
+                rank += 1
+        ranks.append(rank)
+    ranks = reshape(ranks, s[:-2])  # type: ignore[misc]
+
+    return ranks
+
+
 @overload
 def solve(a: MatrixLike, b: VectorLike) -> Vector:
     ...
