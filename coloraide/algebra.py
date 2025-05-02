@@ -1238,6 +1238,20 @@ def _extract_cols(m: ArrayLike, s: ArrayShape, depth: int = 0) -> Iterator[Vecto
         yield from [[x[r] for x in m] for r in range(len(m[0]))]  # type: ignore[arg-type, index, misc]
 
 
+def _set_array_index(a: Array, idx: Shape, value: float | Array) -> None:
+    """Set index."""
+
+    temp = a  # type: Any
+    j = len(idx) - 1
+    count = 0
+    for i in idx:
+        if count < j:
+            temp = temp[i]
+            count += 1
+            continue
+        temp[i] = value
+
+
 @overload
 def dot(a: float, b: float, *, dims: DimHints | None = ...) -> float:
     ...
@@ -4114,37 +4128,22 @@ def svd(
 
     elif dims > 2:
         last = s[-2:]  # type: ignore[misc]
+        first = s[:-2]
         rows = list(_extract_rows(a, s))
         step = last[-2]
         m, n = last
-        wide = m < n
-        tall = n < m
-        u = []  # type: Any
-        sigma = []  # type: Any
-        v = []  # type: Any
-        for r in range(0, len(rows), step):
+        if compute_uv:
+            u = zeros(first + (0,))  # type: ignore[arg-type]
+            v = zeros(first + (0,))  # type: ignore[arg-type]
+        sigma = zeros(first + (0,))  # type: ignore[arg-type]
+        for r, idx in zip(range(0, len(rows), step), ndindex(first)):
             result = _svd(rows[r:r + step], m, n, full_matrices, compute_uv)
             if compute_uv:
-                u.append(result[0])
-                sigma.append(result[1])
-                v.append(result[2])
+                _set_array_index(u, idx, result[0])
+                _set_array_index(sigma, idx, result[1])
+                _set_array_index(v, idx, result[2])
             else:
-                sigma.append(result)
-        if wide:
-            if compute_uv:
-                u = reshape(u, s[:-2] + (m, m))  # type: ignore[arg-type, misc]
-                v = reshape(v, s[:-2] + (n if full_matrices else m, n))  # type: ignore[arg-type, misc]
-            sigma = reshape(sigma, s[:-2] + (m,))  # type: ignore[arg-type, misc]
-        elif tall:
-            if compute_uv:
-                u = reshape(u, s[:-2] + (m, m if full_matrices else n))  # type: ignore[arg-type, misc]
-                v = reshape(v, s[:-2] + (n, n))  # type: ignore[arg-type, misc]
-            sigma = reshape(sigma, s[:-2] + (n,))  # type: ignore[arg-type, misc]
-        else:
-            if compute_uv:
-                u = reshape(u, s[:-2] + (n, m))  # type: ignore[arg-type, misc]
-                v = reshape(v, s[:-2] + (n, m))  # type: ignore[arg-type, misc]
-            sigma = reshape(sigma, s[:-2] + (n,))  # type: ignore[arg-type, misc]
+                _set_array_index(sigma, idx, result)
         if compute_uv:
             return u, sigma, v
         return sigma
@@ -4180,20 +4179,19 @@ def matrix_rank(a: MatrixLike | TensorLike) -> Any:
         return rank
 
     # Stack of matrices
+    first = s[:-2]
     rows = list(_extract_rows(a, s))
     step = last[-2]
     m, n = last
-    ranks = []  # type: Any
-    for r in range(0, len(rows), step):
+    ranks = zeros(first + (0,))  # type: ignore[arg-type]
+    for r, idx in zip(range(0, len(rows), step), ndindex(first)):
         sigma = _svd(rows[r:r + step], m, n, False, False)
         rank = 0
         tol = max(sigma) * rtol
         for x in sigma:
             if x > tol:
                 rank += 1
-        ranks.append(rank)
-    ranks = reshape(ranks, s[:-2])  # type: ignore[misc]
-
+        _set_array_index(ranks, idx, rank)
     return ranks
 
 
@@ -4400,15 +4398,16 @@ def inv(matrix: MatrixLike | TensorLike) -> Matrix | Tensor:
     dims = len(s)
     last = s[-2:]  # type: ignore[misc]
     if dims < 2 or min(last) != max(last):
-        raise ValueError('Matrix must be at least 2 dimensional')
+        raise ValueError('Matrix must be a N x N matrix')
 
     # Handle dimensions greater than 2 x 2
     elif dims > 2:
-        invert = []
+        invert = zeros(s[:-2] + (0,))  # type: ignore[arg-type]
         rows = list(_extract_rows(matrix, s))
         step = last[-2]
-        invert = [inv(rows[r:r + step]) for r in range(0, len(rows), step)]
-        return reshape(invert, s)
+        for r, idx in zip(range(0, len(rows), step), ndindex(s[:-2])):
+            _set_array_index(invert, idx, inv(rows[r:r + step]))
+        return invert
 
     # Calculate the LU decomposition.
     size = s[0]
@@ -4424,6 +4423,7 @@ def inv(matrix: MatrixLike | TensorLike) -> Matrix | Tensor:
     # Permutation matrix is the identity matrix, even if shuffled.
     s2 = (size, size)
     return _back_sub_matrix(u, _forward_sub_matrix(l, p, s2), s2)
+
 
 
 @overload
@@ -4452,11 +4452,12 @@ def pinv(a: MatrixLike | TensorLike) -> Matrix | Tensor:
 
     elif dims > 2:
         last = s[-2:]  # type: ignore[misc]
-        invert = []
+        invert = zeros(s[:-2] + (0,))  # type: ignore[arg-type]
         rows = list(_extract_rows(a, s))
         step = last[-2]
-        invert = [pinv(rows[r:r + step]) for r in range(0, len(rows), step)]
-        return reshape(invert, s[:-2] + last)  # type: ignore[no-any-return, misc]
+        for r, idx in zip(range(0, len(rows), step), ndindex(s[:-2])):
+            _set_array_index(invert, idx, pinv(rows[r:r + step]))
+        return invert
 
     m = s[0]
     n = s[1]
