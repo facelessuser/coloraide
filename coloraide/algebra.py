@@ -3631,20 +3631,26 @@ def lu(
     if dims < 2:
         raise ValueError('LU decomposition requires an array larger than a vector')
     elif dims > 2:
-        last = s[-2:]
-        first = s[:-2]
+        last = s[-2:]  # type: tuple[int, int] # type: ignore[assignment]
+        first = s[:-2]  # type: Shape
         rows = list(_extract_rows(matrix, s))
         step = last[-2]
-        results = []
-        zipped = zip(
-            *(
-                lu(rows[r:r + step], permute_l=permute_l, p_indices=p_indices, _shape=last)
-                for r in range(0, len(rows), step)
-            )
-        )
-        for parts in zipped:
-            results.append(reshape(parts, first + shape(parts[0])))   # type: ignore[arg-type]  # noqa: PERF401
-        return tuple(results)
+        l = zeros(first + (0,))  # type: Any # type: ignore[arg-type]
+        u = zeros(first + (0,))  # type: Any # type: ignore[arg-type]
+        if not permute_l:
+            p = zeros(first + (0,))  # type: Any # type: ignore[arg-type]
+        for r, idx in zip(range(0, len(rows), step), ndindex(s[:-2])):
+            result = lu(rows[r:r + step], permute_l=permute_l, p_indices=p_indices, _shape=last)
+            if not permute_l:
+                _set_array_index(p, idx, result[0])
+                _set_array_index(l, idx, result[1])
+                _set_array_index(u, idx, result[2])
+            else:
+                _set_array_index(l, idx, result[0])
+                _set_array_index(u, idx, result[1])
+        if permute_l:
+            return l, u
+        return p, l, u
 
     # Wide or tall matrices
     wide = tall = False
@@ -3667,7 +3673,7 @@ def lu(
 
     # Initialize the triangle matrices along with the permutation matrix.
     if p_indices or permute_l:
-        p = list(range(size))  # type: Any
+        p = list(range(size))
         l = identity(size)
     else:
         p = identity(size)
@@ -3679,9 +3685,9 @@ def lu(
 
         # Partial pivoting: identify the row with the maximal value in the column
         j = i
-        maximum = abs(u[i][i])  # type: ignore[var-annotated, arg-type]
+        maximum = abs(u[i][i])
         for k in range(i + 1, size):
-            a = abs(u[k][i])  # type: ignore[var-annotated, arg-type]
+            a = abs(u[k][i])
             if a > maximum:
                 j = k
                 maximum = a
@@ -3705,9 +3711,9 @@ def lu(
         # We have a pivot point, let's zero out everything above and below
         # the 'l' and 'u' diagonal respectively
         for j in range(i + 1, size):
-            scalar = u[j][i] / u[i][i]  # type: ignore[operator]
+            scalar = u[j][i] / u[i][i]
             for k in range(i, size):
-                u[j][k] += -u[i][k] * scalar  # type: ignore[operator]
+                u[j][k] += -u[i][k] * scalar
                 l[j][k] += l[i][k] * scalar
 
     # Clean up the wide and tall matrices
