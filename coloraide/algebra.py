@@ -3644,10 +3644,10 @@ def lu(
         first = s[:-2]  # type: Shape
         rows = list(_extract_rows(matrix, s))
         step = last[-2]
-        l = zeros(first + (0,))  # type: Any # type: ignore[arg-type]
-        u = zeros(first + (0,))  # type: Any # type: ignore[arg-type]
+        l = zeros(first)  # type: Any # type: ignore[arg-type]
+        u = zeros(first)  # type: Any # type: ignore[arg-type]
         if not permute_l:
-            p = zeros(first + (0,))  # type: Any # type: ignore[arg-type]
+            p = zeros(first)  # type: Any # type: ignore[arg-type]
         for r, idx in zip(range(0, len(rows), step), ndindex(s[:-2])):
             result = lu(rows[r:r + step], permute_l=permute_l, p_indices=p_indices, _shape=last)
             if not permute_l:
@@ -4148,9 +4148,9 @@ def svd(
         step = last[-2]
         m, n = last
         if compute_uv:
-            u = zeros(first + (0,))  # type: Tensor # type: ignore[arg-type, assignment]
-            v = zeros(first + (0,))  # type: Tensor # type: ignore[arg-type, assignment]
-        sigma = zeros(first + (0,))  # type: Tensor # type: ignore[arg-type, assignment]
+            u = zeros(first)  # type: Tensor # type: ignore[arg-type, assignment]
+            v = zeros(first)  # type: Tensor # type: ignore[arg-type, assignment]
+        sigma = zeros(first)  # type: Tensor # type: ignore[arg-type, assignment]
         for r, idx in zip(range(0, len(rows), step), ndindex(first)):
             result = _svd(rows[r:r + step], m, n, full_matrices, compute_uv)
             if compute_uv:
@@ -4198,7 +4198,7 @@ def matrix_rank(a: MatrixLike | TensorLike) -> Any:
     rows = list(_extract_rows(a, s))
     step = last[-2]
     m, n = last
-    ranks = zeros(first + (0,))  # type: Any # type: ignore[arg-type]
+    ranks = zeros(first)  # type: Any # type: ignore[arg-type]
     for r, idx in zip(range(0, len(rows), step), ndindex(first)):
         sigma = _svd(rows[r:r + step], m, n, False, False)
         rank = 0
@@ -4417,7 +4417,7 @@ def inv(matrix: MatrixLike | TensorLike) -> Matrix | Tensor:
 
     # Handle dimensions greater than 2 x 2
     elif dims > 2:
-        invert = zeros(s[:-2] + (0,))  # type: Tensor # type: ignore[arg-type, misc, assignment]
+        invert = zeros(s[:-2])  # type: Tensor # type: ignore[misc, assignment]
         rows = list(_extract_rows(matrix, s))
         step = last[-2]
         for r, idx in zip(range(0, len(rows), step), ndindex(s[:-2])):  # type: ignore[misc]
@@ -4467,7 +4467,7 @@ def pinv(a: MatrixLike | TensorLike) -> Matrix | Tensor:
 
     elif dims > 2:
         last = s[-2:]  # type: tuple[int, int] # type: ignore[misc]
-        invert = zeros(s[:-2] + (0,))  # type: Tensor # type: ignore[arg-type, assignment, misc]
+        invert = zeros(s[:-2])  # type: Tensor # type: ignore[assignment, misc]
         rows = list(_extract_rows(a, s))
         step = last[-2]
         for r, idx in zip(range(0, len(rows), step), ndindex(s[:-2])):  # type: ignore[misc]
