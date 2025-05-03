@@ -32,7 +32,7 @@ import functools
 import itertools as it
 from .deprecate import deprecated
 from .types import (
-    ArrayLike, MatrixLike, FloatShape, VectorShape, MatrixShape, TensorShape, ArrayShape, VectorLike,
+    ArrayLike, MatrixLike, EmptyShape, VectorShape, MatrixShape, TensorShape, ArrayShape, VectorLike,
     TensorLike, Array, Matrix, Tensor, Vector, VectorBool, MatrixBool, TensorBool, MatrixInt, ArrayType, Shape,
     DimHints, SupportsFloatOrInt
 )
@@ -1174,7 +1174,7 @@ def cross(a: ArrayLike, b: ArrayLike) -> Any:
 
         if dims_a == 2:
             # Cross a 2-D matrix and a vector
-            result = [vcross(r, b) for r in a]  # type: ignore[arg-type]
+            result = [vcross(r, b) for r in a]  # type: Any # type: ignore[arg-type]
 
         elif dims_b == 2:
             # Cross a vector and a 2-D matrix
@@ -1182,38 +1182,47 @@ def cross(a: ArrayLike, b: ArrayLike) -> Any:
 
         elif dims_a > 2:
             # Cross an N-D matrix and a vector
-            result = [vcross(r, b) for r in _extract_rows(a, shape_a)]  # type: ignore[arg-type]
+            m = new_shape[-2]
+            rows = _extract_rows(a, shape_a)
+            result = [[vcross(next(rows), b) for _ in range(m)] for _ in range(m)]  # type: ignore[arg-type]
 
         else:
             # Cross a vector and an N-D matrix
-            result = [vcross(a, r) for r in _extract_rows(b, shape_b)]  # type: ignore[arg-type]
+            m = new_shape[-2]
+            rows = _extract_rows(b, shape_b)
+            result = [[vcross(a, next(rows)) for _ in range(m)] for _ in range(m)]  # type: ignore[arg-type]
 
-        return reshape(result, tuple(new_shape))  # type: ignore[arg-type]
+        return result
 
     # Cross an N-D and M-D matrix
     bcast = broadcast(a, b)
     a2 = []
     b2 = []
-    data = []
     count = 1
     size = bcast.shape[-1]
-    for x, y in bcast:
-        a2.append(x)
-        b2.append(y)
-        if count == size:
-            data.append(vcross(a2, b2))
-            a2 = []
-            b2 = []
-            count = 0
-        count += 1
 
     # Adjust shape for the way cross outputs data
     new_shape = list(bcast.shape)
     mdim = max(dims_a, dims_b)
     if mdim > 1 and new_shape[-1] == 2:
         new_shape.pop(-1)
+        _shape = tuple(new_shape)  # type: Shape
+    else:
+        _shape = tuple(new_shape)[:-1]
+    result = zeros(_shape)  # type: ignore[arg-type]
+    idx = ndindex(_shape)
 
-    return reshape(data, tuple(new_shape))  # type: ignore[arg-type]
+    for x, y in bcast:
+        a2.append(x)
+        b2.append(y)
+        if count == size:
+            _set_array_index(result, next(idx), vcross(a2, b2))
+            a2 = []
+            b2 = []
+            count = 0
+        count += 1
+
+    return result
 
 
 def _extract_rows(m: ArrayLike, s: ArrayShape, depth: int = 0) -> Iterator[Vector]:
@@ -2149,7 +2158,7 @@ def broadcast(*arrays: ArrayLike | float) -> Broadcast:
 
 
 @overload
-def broadcast_to(a: ArrayLike | float, s: FloatShape) -> float:
+def broadcast_to(a: ArrayLike | float, s: EmptyShape) -> float:
     ...
 
 
@@ -3080,7 +3089,7 @@ subtract_x3 = vectorize2(
 
 
 @overload
-def full(array_shape: FloatShape, fill_value: float | ArrayLike) -> float:
+def full(array_shape: EmptyShape, fill_value: float | ArrayLike) -> float:
     ...
 
 @overload
@@ -3116,7 +3125,7 @@ def full(array_shape: int | Shape, fill_value: float | ArrayLike) -> Array | flo
 
 
 @overload
-def ones(array_shape: FloatShape) -> float:
+def ones(array_shape: EmptyShape) -> float:
     ...
 
 
@@ -3142,7 +3151,7 @@ def ones(array_shape: int | Shape) -> Array | float:
 
 
 @overload
-def zeros(array_shape: FloatShape) -> float:
+def zeros(array_shape: EmptyShape) -> float:
     ...
 
 @overload
@@ -3318,7 +3327,7 @@ def transpose(array: ArrayLike | float) -> float | Array:
 
 
 @overload
-def reshape(array: ArrayLike | float, new_shape: FloatShape) -> float:
+def reshape(array: ArrayLike | float, new_shape: EmptyShape) -> float:
     ...
 
 
@@ -3425,7 +3434,7 @@ def _shape(a: ArrayLike | float, s: Shape) -> Shape:
 
 
 @overload
-def _quick_shape(a: float) -> FloatShape:
+def _quick_shape(a: float) -> EmptyShape:
     ...
 
 
@@ -3463,7 +3472,7 @@ def _quick_shape(a: ArrayLike | float) -> Shape:
 
 
 @overload
-def shape(a: float) -> FloatShape:
+def shape(a: float) -> EmptyShape:
     ...
 
 
@@ -4329,7 +4338,7 @@ def solve(a: MatrixLike | TensorLike, b: ArrayLike) -> Array:
             bi = [list(bi[i]) for i in p]
             s3 = (size, len(bi[0]))
             x.append(_back_sub_matrix(u, _forward_sub_matrix(l, bi, s3), s3))
-        return reshape(x, s2)
+        return x  # type: ignore[no-any-return]
 
     # Matrices and vectors
     elif sol_v:
@@ -4345,7 +4354,7 @@ def solve(a: MatrixLike | TensorLike, b: ArrayLike) -> Array:
                 raise ValueError('Matrix is singular')
 
             x.append(_back_sub_vector(u, _forward_sub_vector(l, [vi[i] for i in p], size), size))
-        return reshape(x, s2)
+        return x  # type: ignore[no-any-return]
 
     raise ValueError(f"Could not broadcast {s} and {s2}")
 

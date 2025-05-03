@@ -40,13 +40,13 @@ TensorInt = List[List[List[Union[int, Any]]]]
 ArrayInt = Union[MatrixInt, VectorInt, TensorInt]
 
 # General algebra types
-FloatShape = Tuple[()]
+EmptyShape = Tuple[()]
 VectorShape = Tuple[int]
 MatrixShape = Tuple[int, int]
 TensorShape = Tuple[int, int, int, Unpack[Tuple[int, ...]]]
 
 ArrayShape = Tuple[int, ...]
-Shape = Union[FloatShape, ArrayShape]
+Shape = Union[EmptyShape, ArrayShape]
 ShapeLike = Sequence[int]
 DimHints = Tuple[int, int]
 
