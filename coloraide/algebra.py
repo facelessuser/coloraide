@@ -1367,25 +1367,34 @@ def dot(
         if dims_a and dims_b and (dims_a > 2 or dims_b > 2):
             if dims_a == 1:
                 # Dot product of vector and a M-D matrix
-                shape_c = shape_b[:-2] + shape_b[-1:]
-                return reshape([vdot(a, col) for col in _extract_cols(b, shape_b)], shape_c)  # type: ignore[arg-type]
+                shape_c = shape_b[:-2] + shape_b[-1:]  # type: Shape
+                result = zeros(shape_c)  # type: Tensor | Matrix # type: ignore[arg-type, assignment]
+                for col, idx in zip(_extract_cols(b, shape_b), ndindex(shape_c)):  # type: ignore[arg-type]
+                    _set_array_index(result, idx, vdot(a, col))  # type: ignore[arg-type]
+                return result
             elif dims_b == 1:
                 # Dot product of vector and a M-D matrix
                 shape_c = shape_a[:-1]
-                return reshape([vdot(row, b) for row in _extract_rows(a, shape_a)], shape_c)  # type: ignore[arg-type]
+                result = zeros(shape_c)  # type: ignore[arg-type, assignment]
+                for row, idx in zip(_extract_rows(a, shape_a), ndindex(shape_c)):  # type: ignore[arg-type]
+                    _set_array_index(result, idx, vdot(row, b))  # type: ignore[arg-type]
+                return result
             else:
                 # Dot product of N-D and M-D matrices
                 # Resultant size: `dot(xy, yz) = xz` or `dot(nxy, myz) = nxmz`
-
                 cols = list(_extract_cols(b, shape_b))  # type: ignore[arg-type]
-                new_shape = shape_a[:-1] + shape_b[:-2] + shape_b[-1:]  # type: MatrixShape | TensorShape # type: ignore[assignment]
-                return reshape(
-                    [
-                        [sum(multiply(row, col)) for col in cols]
-                        for row in _extract_rows(a, shape_a)  # type: ignore[arg-type]
-                    ],
-                    new_shape
-                )
+                new_shape = shape_a[:-1] + shape_b[:-2] + shape_b[-1:]  # type: Shape
+                result = zeros(new_shape)  # type: ignore[arg-type, assignment]
+                idx = ndindex(new_shape[:-1])  # type: ignore[assignment]
+                n = new_shape[-1]  # type: ignore[misc]
+                for row in _extract_rows(a, shape_a):  # type: ignore[arg-type]
+                    r = [sum(multiply(row, col)) for col in cols]
+                    start = 0
+                    for _ in range(len(r) // n):
+                        end = start + n
+                        _set_array_index(result, next(idx), r[start:end])  # type: ignore[call-overload]
+                        start = end
+                return result
     else:
         dims_a, dims_b = dims
 
@@ -1467,12 +1476,18 @@ def matmul(
         if dims_a and dims_b and (dims_a > 2 or dims_b > 2):
             if dims_a == 1:
                 # Matrix multiply of vector and a M-D matrix
-                shape_c = shape_b[:-2] + shape_b[-1:]
-                return reshape([vdot(a, col) for col in _extract_cols(b, shape_b)], shape_c)  # type: ignore[arg-type]
+                shape_c = shape_b[:-2] + shape_b[-1:]  # type: Shape
+                result = zeros(shape_c)  # type: Tensor | Matrix # type: ignore[arg-type, assignment]
+                for col, idx in zip(_extract_cols(b, shape_b), ndindex(shape_c)):
+                    _set_array_index(result, idx, vdot(a, col))  # type: ignore[arg-type]
+                return result
             elif dims_b == 1:
                 # Matrix multiply of vector and a M-D matrix
                 shape_c = shape_a[:-1]
-                return reshape([vdot(row, b) for row in _extract_rows(a, shape_a)], shape_c)  # type: ignore[arg-type]
+                result = zeros(shape_c)  # type: ignore[arg-type, assignment]
+                for row, idx in zip(_extract_rows(a, shape_a), ndindex(shape_c)):
+                    _set_array_index(result, idx, vdot(row, b))  # type: ignore[arg-type]
+                return result
             elif shape_a[-1] == shape_b[-2]:
                 # Stacks of matrices are broadcast together as if the matrices were elements,
                 # respecting the signature `(n,k),(k,m)->(n,m)`.
@@ -1481,12 +1496,11 @@ def matmul(
                 a = broadcast_to(a, shape_a)  # type: ignore[arg-type, assignment]
                 shape_b = common + shape_b[-2:]
                 b = broadcast_to(b, shape_b)  # type: ignore[arg-type, assignment]
-                m2 = [
-                    matmul(a1, b1, dims=D2)
-                    for a1, b1 in zip(_extract_rows(a, shape_a[:-1]), _extract_rows(b, shape_b[:-1]))
-                ]
-                return reshape(m2, common + (shape_a[-2], shape_b[-1]))  # type: ignore[arg-type]
-
+                result = zeros(common)  # type: ignore[arg-type, assignment]
+                idx = ndindex(common)  # type: ignore[assignment]
+                for a1, b1 in zip(_extract_rows(a, shape_a[:-1]), _extract_rows(b, shape_b[:-1])):
+                    _set_array_index(result, next(idx), matmul(a1, b1, dims=D2))  # type: ignore[call-overload]
+                return result
             raise ValueError(
                 'Incompatible shapes in core dimensions (n?,k),(k,m?)->(n?,m?), {} != {}'.format(
                     shape_a[-1],
