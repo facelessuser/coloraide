@@ -1209,18 +1209,18 @@ def cross(a: ArrayLike, b: ArrayLike) -> Any:
         _shape = tuple(new_shape)  # type: Shape
     else:
         _shape = tuple(new_shape)[:-1]
-    result = zeros(_shape)  # type: ignore[arg-type]
-    idx = ndindex(_shape)
 
-    for x, y in bcast:
-        a2.append(x)
-        b2.append(y)
-        if count == size:
-            _set_array_index(result, next(idx), vcross(a2, b2))
-            a2 = []
-            b2 = []
-            count = 0
-        count += 1
+    result = []
+    with ArrayBuilder(result, _shape) as build:
+        for x, y in bcast:
+            a2.append(x)
+            b2.append(y)
+            if count == size:
+                next(build).append(vcross(a2, b2))
+                a2 = []
+                b2 = []
+                count = 0
+            count += 1
 
     return result
 
@@ -1365,36 +1365,31 @@ def dot(
 
         # Handle matrices of N-D and M-D size
         if dims_a and dims_b and (dims_a > 2 or dims_b > 2):
+            result = []  # type: Matrix | Tensor
             if dims_a == 1:
                 # Dot product of vector and a M-D matrix
-                shape_c = shape_b[:-2] + shape_b[-1:]  # type: Shape
-                result = zeros(shape_c)  # type: Tensor | Matrix # type: ignore[arg-type, assignment]
-                for col, idx in zip(_extract_cols(b, shape_b), ndindex(shape_c)):  # type: ignore[arg-type]
-                    _set_array_index(result, idx, vdot(a, col))  # type: ignore[arg-type]
-                return result
+                with ArrayBuilder(result, shape_b[:-2] + shape_b[-1:]) as build:
+                    for col in _extract_cols(b, shape_b):  # type: ignore[arg-type]
+                        next(build).append(vdot(a, col))  # type: ignore[arg-type]
             elif dims_b == 1:
                 # Dot product of vector and a M-D matrix
-                shape_c = shape_a[:-1]
-                result = zeros(shape_c)  # type: ignore[arg-type, assignment]
-                for row, idx in zip(_extract_rows(a, shape_a), ndindex(shape_c)):  # type: ignore[arg-type]
-                    _set_array_index(result, idx, vdot(row, b))  # type: ignore[arg-type]
-                return result
+                with ArrayBuilder(result, shape_a[:-1]) as build:
+                    for row in _extract_rows(a, shape_a):  # type: ignore[arg-type]
+                        next(build).append(vdot(row, b))  # type: ignore[arg-type]
             else:
                 # Dot product of N-D and M-D matrices
                 # Resultant size: `dot(xy, yz) = xz` or `dot(nxy, myz) = nxmz`
                 cols = list(_extract_cols(b, shape_b))  # type: ignore[arg-type]
-                new_shape = shape_a[:-1] + shape_b[:-2] + shape_b[-1:]  # type: Shape
-                result = zeros(new_shape)  # type: ignore[arg-type, assignment]
-                idx = ndindex(new_shape[:-1])  # type: ignore[assignment]
-                n = new_shape[-1]  # type: ignore[misc]
-                for row in _extract_rows(a, shape_a):  # type: ignore[arg-type]
-                    r = [sum(multiply(row, col)) for col in cols]
-                    start = 0
-                    for _ in range(len(r) // n):
-                        end = start + n
-                        _set_array_index(result, next(idx), r[start:end])  # type: ignore[call-overload]
-                        start = end
-                return result
+                n = shape_b[-1]  # type: ignore[misc]
+                with ArrayBuilder(result, shape_a[:-1] + shape_b[:-2]) as build:
+                    for row in _extract_rows(a, shape_a):  # type: ignore[arg-type]
+                        r = [sum(multiply(row, col)) for col in cols]
+                        start = 0
+                        for _ in range(len(r) // n):
+                            end = start + n
+                            next(build).append(r[start:end])
+                            start = end
+            return result
     else:
         dims_a, dims_b = dims
 
@@ -1474,19 +1469,18 @@ def matmul(
 
         # Handle matrices of N-D and M-D size
         if dims_a and dims_b and (dims_a > 2 or dims_b > 2):
+            result = []  # type: Matrix | Tensor
             if dims_a == 1:
                 # Matrix multiply of vector and a M-D matrix
-                shape_c = shape_b[:-2] + shape_b[-1:]  # type: Shape
-                result = zeros(shape_c)  # type: Tensor | Matrix # type: ignore[arg-type, assignment]
-                for col, idx in zip(_extract_cols(b, shape_b), ndindex(shape_c)):
-                    _set_array_index(result, idx, vdot(a, col))  # type: ignore[arg-type]
+                with ArrayBuilder(result, shape_b[:-2] + shape_b[-1:]) as build:
+                    for col in _extract_cols(b, shape_b):
+                        next(build).append(vdot(a, col))  # type: ignore[arg-type]
                 return result
             elif dims_b == 1:
                 # Matrix multiply of vector and a M-D matrix
-                shape_c = shape_a[:-1]
-                result = zeros(shape_c)  # type: ignore[arg-type, assignment]
-                for row, idx in zip(_extract_rows(a, shape_a), ndindex(shape_c)):
-                    _set_array_index(result, idx, vdot(row, b))  # type: ignore[arg-type]
+                with ArrayBuilder(result, shape_a[:-1]) as build:
+                    for row in _extract_rows(a, shape_a):
+                         next(build).append(vdot(row, b))  # type: ignore[arg-type]
                 return result
             elif shape_a[-1] == shape_b[-2]:
                 # Stacks of matrices are broadcast together as if the matrices were elements,
@@ -1496,10 +1490,9 @@ def matmul(
                 a = broadcast_to(a, shape_a)  # type: ignore[arg-type, assignment]
                 shape_b = common + shape_b[-2:]
                 b = broadcast_to(b, shape_b)  # type: ignore[arg-type, assignment]
-                result = zeros(common)  # type: ignore[arg-type, assignment]
-                idx = ndindex(common)  # type: ignore[assignment]
-                for a1, b1 in zip(_extract_rows(a, shape_a[:-1]), _extract_rows(b, shape_b[:-1])):
-                    _set_array_index(result, next(idx), matmul(a1, b1, dims=D2))  # type: ignore[call-overload]
+                with ArrayBuilder(result, common) as build:
+                    for a1, b1 in it.zip_longest(_extract_rows(a, shape_a[:-1]), _extract_rows(b, shape_b[:-1])):
+                        next(build).append(matmul(a1, b1, dims=D2))
                 return result
             raise ValueError(
                 'Incompatible shapes in core dimensions (n?,k),(k,m?)->(n?,m?), {} != {}'.format(
@@ -2213,8 +2206,15 @@ def broadcast_to(a: ArrayLike | float, s: int | Shape) -> float | Array:
         if d1 != d2 and (d1 != 1 or d1 > d2):
             raise ValueError(f"Cannot broadcast {s_orig} to {_s}")
 
-    m = list(_BroadcastTo(a, tuple(s1), tuple(_s)))
-    return reshape(m, _s) if len(_s) > 1 else m  # type: ignore[arg-type]
+    bcast = _BroadcastTo(a, tuple(s1), tuple(_s))
+    if len(_s) > 1:
+        result = [] # type: Array
+        with ArrayBuilder(result, _s) as build:
+            for data in bcast:
+                next(build).append(data)
+        return result
+
+    return list(bcast)
 
 
 class vectorize:
@@ -2269,22 +2269,23 @@ class vectorize:
         if vinputs:
             # We need to broadcast together the inputs for vectorization.
             # Once vectorized, use the wrapper function to replace each argument
-            # with the vectorized iteration. Reshape the output to match the input shape.
+            # with the vectorized iteration while building up the array.
             bcast = broadcast(*vinputs)
-            m = []
-            for vargs in bcast:
-                # Update arguments with vectorized arguments
-                for e, i in enumerate(indexes):
-                    inputs[i] = vargs[e]
+            new_shape = bcast.shape
+            # Build up the matrix
+            m = []  # type: Any
+            with ArrayBuilder(m, new_shape) as build:
+                for vargs in bcast:
+                    # Update arguments with vectorized arguments
+                    for e, i in enumerate(indexes):
+                        inputs[i] = vargs[e]
 
-                # Update keyword arguments with vectorized keyword argument
-                kwargs.update(zip(keys, vargs[size:]))
+                    # Update keyword arguments with vectorized keyword argument
+                    kwargs.update(zip(keys, vargs[size:]))
 
-                # Call the function with vectorized inputs
-                m.append(self.func(*inputs, **kwargs) if kwargs else self.func(*inputs))
-
-            # Reshape return to match input shape
-            return reshape(m, bcast.shape) if len(bcast.shape) != 1 else m  # type: ignore[arg-type]
+                    # Create the final dimension, writing all the data
+                    next(build).append(self.func(*inputs, **kwargs) if kwargs else self.func(*inputs))
+            return m
 
         # Nothing to vectorize, just run the function with the arguments
         return self.func(*inputs, **kwargs) if kwargs else self.func(*inputs)
@@ -2338,7 +2339,11 @@ class _vectorize1:
             return [[func(c) for c in r] for r in a]  # type: ignore[union-attr]
 
         # Unknown size or larger than 2D (slow)
-        return reshape([func(f) for f in flatiter(a)], shape(a))
+        m = []  # type: Any
+        with ArrayBuilder(m, shape(a)) as build:
+            for f in flatiter(a):
+                next(build).append(func(f))
+        return m
 
 
 class _vectorize2:
@@ -2392,22 +2397,37 @@ class _vectorize2:
 
             # Handle matrices of N-D and M-D size
             if dims_a > 2 or dims_b > 2:
+                m = []  # type: Any
+                # Apply math to two N-D matrices
                 if dims_a == dims_b:
-                    # Apply math to two N-D matrices
-                    return reshape(
-                        [func(x, y) for x, y in zip(flatiter(a), flatiter(b))],
-                        shape_a
-                    )
+                    empty = (not shape_a or 0 in shape_a) and (not shape_b or 0 in shape_b)
+                    if not empty and prod(shape_a) != prod(shape_b):  # pragma: no cover
+                        raise ValueError(f'Shape {shape_a} does not match the data total of {shape_b}')
+                    with ArrayBuilder(m, shape_a) as build:
+                        for x, y in zip(flatiter(a), flatiter(b)):
+                            next(build).append(func(x, y))
+
                 elif not dims_a or not dims_b:
+                    # Apply math to a number and an N-D matrix
                     if not dims_a:
-                        # Apply math to a number and an N-D matrix
-                        return reshape([func(a, x) for x in flatiter(b)], shape_b)
+                        with ArrayBuilder(m, shape_b) as build:
+                            for x in flatiter(b):
+                                next(build).append(func(a, x))
+
                     # Apply math to an N-D matrix and a number
-                    return reshape([func(x, b) for x in flatiter(a)], shape_a)
+                    else:
+                        with ArrayBuilder(m, shape_a) as build:
+                            for x in flatiter(a):
+                                next(build).append(func(x, b))
 
                 # Apply math to an N-D matrix and an M-D matrix by broadcasting to a common shape.
-                bcast = broadcast(a, b)
-                return reshape([func(x, y) for x, y in bcast], bcast.shape)  # type: ignore[arg-type]
+                else:
+                    bcast = broadcast(a, b)
+                    with ArrayBuilder(m, bcast.shape) as build:
+                        for x, y in bcast:
+                            next(build).append(func(x, y))
+
+                return m
         else:
             dims_a, dims_b = dims
 
@@ -2753,15 +2773,15 @@ def linspace(start: ArrayLike | float, stop: ArrayLike | float, num: int = 50, e
         return m1
 
     # To apply over N x M inputs, apply the steps over the broadcasted results (slower)
-    m = []
+    m = []  # type: Tensor
     bcast = broadcast(start, stop)
-    for r in range(num):
-        bcast.reset()
-        for a, b in bcast:
-            m.append(lerp(a, b, r / d if d != 0 else 0.0))
-
-    # Reshape to the expected shape
-    return reshape(m, (num,) + bcast.shape)  # type: ignore[return-value, arg-type]
+    new_shape = (num,) + bcast.shape
+    with ArrayBuilder(m, new_shape) as build:
+        for r in range(num):
+            bcast.reset()
+            for a, b in bcast:
+                next(build).append(lerp(a, b, r / d if d != 0 else 0.0))
+    return m
 
 
 def _isclose(a: float, b: float, *, equal_nan: bool = False, **kwargs: Any) -> bool:
@@ -3127,15 +3147,27 @@ def full(array_shape: int | Shape, fill_value: float | ArrayLike) -> Array | flo
     # Ensure `shape` is a sequence of sizes
     s = (array_shape,) if not isinstance(array_shape, Sequence) else tuple(array_shape)
 
+    # Handle scalar target
+    if not s:
+        if not isinstance(fill_value, Sequence):
+            return fill_value
+        _s = shape(fill_value)
+        if prod(_s) == 1:
+            return ravel(fill_value)[0]
+
     # Normalize `fill_value` to be an array.
-    if not isinstance(fill_value, Sequence):
-        return reshape([fill_value] * prod(s), s)  # type: ignore[arg-type]
+    elif not isinstance(fill_value, Sequence):
+        m = []  # type: Array
+        with ArrayBuilder(m, s) as build:
+            for v in [fill_value] * prod(s):
+                next(build).append(v)
+        return m
 
     # If the shape doesn't fit the data, try and broadcast it.
     # If it does fit, just reshape it.
     if shape(fill_value) != s:
         return broadcast_to(fill_value, s)  # type: ignore[arg-type]
-    return reshape(fill_value, s)  # type: ignore[arg-type]
+    return acopy(fill_value)
 
 
 @overload
@@ -3195,6 +3227,63 @@ def ndindex(*s: Shape) -> Iterator[tuple[int, ...]]:
     yield from it.product(
         *(range(d) for d in (s[0] if not isinstance(s[0], int) and len(s) == 1 else s))  # type: ignore[arg-type]
     )
+
+
+class ArrayBuilder:
+    """Auto drain an iterator."""
+
+    def __init__(self, a: Array, s: Shape) -> None:
+        """Initialize."""
+
+        self.i = self._new_array_builder(a, s)
+
+    def __enter__(self) -> Iterator[Any]:
+        """Enter."""
+
+        return self.i
+
+    def __exit__(self: Any, exc_type: Any, exc_value: Any, traceback: Any) -> None:
+        """Drain the iterator."""
+
+        for _ in self.i:  # pragma: no cover
+            pass
+
+    @staticmethod
+    def _new_array_builder(a: Array, s: Shape) -> Iterator[Any]:
+        """Generate a new array based on the specified size returning each row for appending."""
+
+        dims = len(s)
+        empty = not s or s[-1] == 0
+        for idx in ndindex(s if not empty else (s[:-1] + (1,))):
+            t = a  # type: Any
+            for d in range(dims - 1):
+                if not t:
+                    for _ in range(s[d]):
+                        t.append([])  # noqa: PERF401
+                t = t[idx[d]]
+            if not empty:
+                yield t
+
+
+class MultiArrayBuilder(ArrayBuilder):
+    """Auto drain an iterator."""
+
+    def __init__(self, a: Sequence[Array], s: Sequence[Shape]) -> None:
+        """Initialize."""
+
+        self.mi = [self._new_array_builder(_a, _s) for _a, _s in it.zip_longest(a, s)]
+
+    def __enter__(self) -> list[Iterator[Any]]:  # type: ignore[override]
+        """Enter."""
+
+        return self.mi
+
+    def __exit__(self, exc_type: Any, exc_value: Any, traceback: Any) -> None:
+        """Drain the iterator."""
+
+        for i in self.mi:
+            for _ in i:  # pragma: no cover
+                pass
 
 
 def flatiter(array: float | ArrayLike) -> Iterator[float]:
@@ -3339,7 +3428,6 @@ def transpose(array: ArrayLike | float) -> float | Array:
     return m
 
 
-
 @overload
 def reshape(array: ArrayLike | float, new_shape: EmptyShape) -> float:
     ...
@@ -3394,27 +3482,10 @@ def reshape(array: ArrayLike | float, new_shape: int | Shape) -> float | Array:
 
     # Create the array
     m = []  # type: Array
-
-    # Calculate data sizes
-    dims = len(new_shape)
-
-    # Create an iterator to traverse the data
-    data = flatiter(array) if len(current_shape) > 1 else iter(array)  # type: ignore[arg-type]
-
-    # Build the new array
-    for idx in ndindex(new_shape[:-1] if new_shape and not new_shape[-1] else new_shape):
-        # Navigate to the proper index to start writing data.
-        # If the dimension hasn't been created yet, create it.
-        t = m  # type: Any
-        for d in range(dims - 1):
-            if not t:
-                for _ in range(new_shape[d]):
-                    t.append([])  # noqa: PERF401
-            t = t[idx[d]]
-
-        # Create the final dimension, writing all the data
-        if not empty:
-            t.append(next(data))
+    with ArrayBuilder(m, new_shape) as build:
+        # Create an iterator to traverse the data
+        for data in flatiter(array) if len(current_shape) > 1 else iter(array):  # type: ignore[arg-type]
+            next(build).append(data)
 
     return m
 
@@ -3658,19 +3729,24 @@ def lu(
         first = s[:-2]  # type: Shape
         rows = list(_extract_rows(matrix, s))
         step = last[-2]
-        l = zeros(first)  # type: Any # type: ignore[arg-type]
-        u = zeros(first)  # type: Any # type: ignore[arg-type]
+        l = []  # type: Any
+        u = []  # type: Any
         if not permute_l:
-            p = zeros(first)  # type: Any # type: ignore[arg-type]
-        for r, idx in zip(range(0, len(rows), step), ndindex(s[:-2])):
-            result = lu(rows[r:r + step], permute_l=permute_l, p_indices=p_indices, _shape=last)
-            if not permute_l:
-                _set_array_index(p, idx, result[0])
-                _set_array_index(l, idx, result[1])
-                _set_array_index(u, idx, result[2])
-            else:
-                _set_array_index(l, idx, result[0])
-                _set_array_index(u, idx, result[1])
+            p = []  # type: Any
+            builder = MultiArrayBuilder([p, l, u], [first, first, first])
+        else:
+            builder = MultiArrayBuilder([l, u], [first, first])
+
+        with builder as arrays:
+            for r in range(0, len(rows), step):
+                result = lu(rows[r:r + step], permute_l=permute_l, p_indices=p_indices, _shape=last)
+                if not permute_l:
+                    next(arrays[0]).append(result[0])
+                    next(arrays[1]).append(result[1])
+                    next(arrays[2]).append(result[2])
+                else:
+                    next(arrays[0]).append(result[0])
+                    next(arrays[1]).append(result[1])
         if permute_l:
             return l, u
         return p, l, u
@@ -3678,7 +3754,8 @@ def lu(
     # Wide or tall matrices
     wide = tall = False
     diff = s[0] - s[1]
-    if diff:
+    empty = diff == s[0]
+    if not empty and diff:
         matrix = acopy(matrix)
 
         # Wide
@@ -3695,13 +3772,19 @@ def lu(
                 row.extend([0.0] * diff)  # type: ignore[list-item]
 
     # Initialize the triangle matrices along with the permutation matrix.
-    if p_indices or permute_l:
-        p = list(range(size))
-        l = identity(size)
+    if empty:
+        p = []
+        l = acopy(matrix)
+        u = []
+        size = 0
     else:
-        p = identity(size)
-        l = [list(row) for row in p]
-    u = [list(row) for row in matrix]
+        if p_indices or permute_l:
+            p = list(range(size))
+            l = identity(size)
+        else:
+            p = identity(size)
+            l = [list(row) for row in p]
+        u = [list(row) for row in matrix]
 
     # Create upper and lower triangle in 'u' and 'l'. 'p' tracks the permutation (relative position of rows)
     for i in range(size - 1):
@@ -4161,18 +4244,22 @@ def svd(
         rows = list(_extract_rows(a, s))
         step = last[-2]
         m, n = last
+        sigma = []  # type: Any
         if compute_uv:
-            u = zeros(first)  # type: Tensor # type: ignore[arg-type, assignment]
-            v = zeros(first)  # type: Tensor # type: ignore[arg-type, assignment]
-        sigma = zeros(first)  # type: Tensor # type: ignore[arg-type, assignment]
-        for r, idx in zip(range(0, len(rows), step), ndindex(first)):
-            result = _svd(rows[r:r + step], m, n, full_matrices, compute_uv)
-            if compute_uv:
-                _set_array_index(u, idx, result[0])
-                _set_array_index(sigma, idx, result[1])
-                _set_array_index(v, idx, result[2])
-            else:
-                _set_array_index(sigma, idx, result)
+            u = []  # type: Any
+            v = []  # type: Any
+            builder = MultiArrayBuilder([u, sigma, v], [first, first, first])
+        else:
+            builder = MultiArrayBuilder([sigma], [first])
+        with builder as arrays:
+            for r in range(0, len(rows), step):
+                result = _svd(rows[r:r + step], m, n, full_matrices, compute_uv)
+                if compute_uv:
+                    next(arrays[0]).append(result[0])
+                    next(arrays[1]).append(result[1])
+                    next(arrays[2]).append(result[2])
+                else:
+                    next(arrays[0]).append(result)
         if compute_uv:
             return u, sigma, v
         return sigma
@@ -4212,15 +4299,16 @@ def matrix_rank(a: MatrixLike | TensorLike) -> Any:
     rows = list(_extract_rows(a, s))
     step = last[-2]
     m, n = last
-    ranks = zeros(first)  # type: Any # type: ignore[arg-type]
-    for r, idx in zip(range(0, len(rows), step), ndindex(first)):
-        sigma = _svd(rows[r:r + step], m, n, False, False)
-        rank = 0
-        tol = max(sigma) * rtol
-        for x in sigma:
-            if x > tol:
-                rank += 1
-        _set_array_index(ranks, idx, rank)
+    ranks = []  # type: Any
+    with ArrayBuilder(ranks, first) as build:
+        for r in range(0, len(rows), step):
+            sigma = _svd(rows[r:r + step], m, n, False, False)
+            rank = 0
+            tol = max(sigma) * rtol
+            for x in sigma:
+                if x > tol:
+                    rank += 1
+            next(build).append(rank)
     return ranks
 
 
@@ -4431,11 +4519,12 @@ def inv(matrix: MatrixLike | TensorLike) -> Matrix | Tensor:
 
     # Handle dimensions greater than 2 x 2
     elif dims > 2:
-        invert = zeros(s[:-2])  # type: Tensor # type: ignore[misc, assignment]
-        rows = list(_extract_rows(matrix, s))
+        invert = []  # type: Tensor
         step = last[-2]
-        for r, idx in zip(range(0, len(rows), step), ndindex(s[:-2])):  # type: ignore[misc]
-            _set_array_index(invert, idx, inv(rows[r:r + step]))
+        rows = list(_extract_rows(matrix, s))
+        with ArrayBuilder(invert, s[:-2]) as build:  # type: ignore[misc]
+            for r in range(0, len(rows), step):
+                next(build).append(inv(rows[r:r + step]))
         return invert
 
     # Calculate the LU decomposition.
@@ -4481,11 +4570,12 @@ def pinv(a: MatrixLike | TensorLike) -> Matrix | Tensor:
 
     elif dims > 2:
         last = s[-2:]  # type: tuple[int, int] # type: ignore[misc]
-        invert = zeros(s[:-2])  # type: Tensor # type: ignore[assignment, misc]
+        invert = []  # type: Tensor
         rows = list(_extract_rows(a, s))
         step = last[-2]
-        for r, idx in zip(range(0, len(rows), step), ndindex(s[:-2])):  # type: ignore[misc]
-            _set_array_index(invert, idx, pinv(rows[r:r + step]))
+        with ArrayBuilder(invert, s[:-2]) as build:  # type: ignore[misc]
+            for r in range(0, len(rows), step):
+                next(build).append(pinv(rows[r:r + step]))
         return invert
 
     m = s[0]

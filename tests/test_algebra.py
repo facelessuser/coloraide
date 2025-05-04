@@ -980,6 +980,10 @@ class TestAlgebra(unittest.TestCase):
     def test_full(self):
         """Test full."""
 
+        self.assertEqual(alg.full((), 3), 3)
+
+        self.assertEqual(alg.full((), [3]), 3)
+
         self.assertEqual(
             alg.full((3, 2, 4), 2),
             [[[2, 2, 2, 2],
@@ -2668,6 +2672,8 @@ class TestAlgebra(unittest.TestCase):
         l, u = alg.lu(m, permute_l=True)
         self.assertEqual(m, alg.dot(l, u))
 
+        self.assertEqual(alg.lu([[], []]), ([], [[], []], []))
+
         m = [[[18, 13],
               [2, 11],
               [19, 5]],
@@ -3148,6 +3154,8 @@ class TestAlgebra(unittest.TestCase):
                    [-0.3211225227806299, -0.5492196556250589]]]]
             )
         )
+
+        self.assertEqual(alg.svd([[], []]), ([[1.0, 0.0], [0.0, 1.0]], [], []))
 
         with self.assertRaises(ValueError):
             alg.svd([1, 2, 3])
