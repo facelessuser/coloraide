@@ -1247,20 +1247,6 @@ def _extract_cols(m: ArrayLike, s: ArrayShape, depth: int = 0) -> Iterator[Vecto
         yield from [[x[r] for x in m] for r in range(len(m[0]))]  # type: ignore[arg-type, index, misc]
 
 
-def _set_array_index(a: Array, idx: Shape, value: float | Array) -> None:
-    """Set index."""
-
-    temp = a  # type: Any
-    j = len(idx) - 1
-    count = 0
-    for i in idx:
-        if count < j:
-            temp = temp[i]
-            count += 1
-            continue
-        temp[i] = value
-
-
 @overload
 def dot(a: float, b: float, *, dims: DimHints | None = ...) -> float:
     ...
