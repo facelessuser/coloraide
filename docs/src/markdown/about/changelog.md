@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+-  **ENHANCE**: Performance improvements for various algebraic calculations.
+-  **FIX**: Fix some corner cases with some algebraic calculations.
+
 ## 4.6
 
 -   **NEW**: Add new `rounding` option to control rounding modes in `to_string()`, `to_dict()`, `coords()`, `alpha()`,
