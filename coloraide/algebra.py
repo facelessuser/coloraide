@@ -1225,26 +1225,31 @@ def cross(a: ArrayLike, b: ArrayLike) -> Any:
     return result
 
 
-def _extract_rows(m: ArrayLike, s: ArrayShape, depth: int = 0) -> Iterator[Vector]:
-    """Extract rows from an array."""
+def _extract_rows(m: ArrayLike, s: ArrayShape) -> Iterator[Vector]:
+    """Extract row data from an array."""
 
-    if len(s) > 1 and s[1]:
-        for m1 in m:
-            yield from _extract_rows(m1, s[1:], depth + 1)  # type: ignore[arg-type]
-    else:
+    # Matrix or tensor
+    for idx in ndindex(s[:-1]):
+        t = m  # type: Any
+        for i in idx:
+            t = t[i]
+        yield t
+
+
+def _extract_cols(m: ArrayLike, s: ArrayShape) -> Iterator[Vector]:
+    """Extract column data from an array."""
+
+    # Vector (nothing to do)
+    if len(s) < 2:
         yield m  # type: ignore[misc]
 
-
-def _extract_cols(m: ArrayLike, s: ArrayShape, depth: int = 0) -> Iterator[Vector]:
-    """Extract columns from an array."""
-
-    if len(s) > 2 and s[2]:
-        for m1 in m:
-            yield from _extract_cols(m1, s[1:], depth + 1)  # type: ignore[arg-type]
-    elif not depth:
-        yield m  # type: ignore[misc]
+    # M x N matrix
     else:
-        yield from [[x[r] for x in m] for r in range(len(m[0]))]  # type: ignore[arg-type, index, misc]
+        for idx in ndindex(s[:-2]):
+            t = m  # type: Any
+            for i in idx:
+                t = t[i]
+            yield from [[r[c] for r in t] for c in range(s[-1])]
 
 
 @overload
