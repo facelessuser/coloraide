@@ -4504,7 +4504,6 @@ def inv(matrix: MatrixLike | TensorLike) -> Matrix | Tensor:
     return _back_sub_matrix(u, _forward_sub_matrix(l, p, s2), s2)
 
 
-
 @overload
 def pinv(a: MatrixLike) -> Matrix:
     ...
