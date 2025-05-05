@@ -2,7 +2,7 @@
 
 ## Unreleased
 
--  **ENHANCE**: Switch to deploying with PyPI's "Trusted Publisher". 
+-  **ENHANCE**: Switch to deploying with PyPI's "Trusted Publisher".
 -  **ENHANCE**: Performance improvements for various algebraic calculations.
 -  **FIX**: Fix some corner cases with some algebraic calculations.
 
