@@ -4314,35 +4314,20 @@ def solve(a: MatrixLike, b: TensorLike) -> Tensor:
 
 
 @overload
-def solve(a: TensorLike, b: MatrixLike | TensorLike) -> Tensor | Matrix:
+def solve(a: TensorLike, b: VectorLike) -> Matrix | Tensor:
+    ...
+
+
+@overload
+def solve(a: TensorLike, b: MatrixLike | TensorLike) -> Tensor:
     ...
 
 
 def solve(a: MatrixLike | TensorLike, b: ArrayLike) -> Array:
     """
-    Solve the system of equations.
+    Solve the system of equations for `x` where `ax = b`.
 
-    The return value always matches the shape of 'b' and `a' must be square
-    in the last two dimensions.
-
-    Broadcasting is not quite done in the traditional way.
-
-    1. [M, M] and [M] will solve a set of linear equations against a vector
-       of dependent variables.
-
-    2. If we have [..., M, M] and [..., M, M] and we have multiple sets of linear
-       equations it will be treated as multiple [M, M] and [M] cases as described in 1).
-
-       If we have only one set of linear equations, it will be treated as a [..., M, M] and
-       [..., M, K] case as described in 3).
-
-    3. If we have [..., M, M] and [..., M, K], we will either solve a single set of linear
-       equations against multiple matrices of containing K dependent variable sets.
-
-    4. Lastly, if we have [..., M, M] and [..., M], where we have N vectors that matches N [M, M]
-       equation sets, then we will solve one matrix with one vector.
-
-    Anything else "should" fail, one way or another.
+    Normal broadcasting applies and the behavior matches Numpy 2+.
     """
 
     s = shape(a)
@@ -4386,65 +4371,50 @@ def solve(a: MatrixLike | TensorLike, b: ArrayLike) -> Array:
 
     # More complex, deeply nested cases that require more analyzing
     s2 = shape(b)
-    sol_m = sol_v = False
-    x = []  # type: Any
-
-    # Broadcast the solving
-    if s2[-2] == size:  # type: ignore[misc]
-        if s2[-1] == size:
-            p1 = prod(s)
-            p2 = prod(s2)
-            # One matrix of equations with multiple series of M dependent variable sets (matrix)
-            sol_m = not p2 % p1
-            # Multiple equations sets with a single series of dependent variables per equation set (vectors)
-            sol_v = not sol_m and not p1 % p2
-        elif s2[-2] == size:  # type: ignore[misc]
-            # One matrix of equations with multiple series of K dependent variable sets (matrix)
-            p1 = prod(s[:-1])  # type: ignore[misc]
-            p2 = prod(s2[:-1])  # type: ignore[misc]
-            sol_m = not p2 % p1
-    elif s2[-1] == size:
-        # Multiple equations sets with a single series of dependent variables per equation set (vectors)
-        p1 = prod(s[:-2])  # type: ignore[misc]
-        p2 = prod(s2[:-1])  # type: ignore[misc]
-        sol_v = p1 == p2
-
-    # Matrix and matrices
-    if sol_m:
-        rows_equ = list(_extract_rows(a, s))
-        ma = [rows_equ[r:r + size] for r in range(0, len(rows_equ), size)]
-        rows_sol = list(_extract_rows(b, s2))
-        mb = [rows_sol[r:r + size] for r in range(0, len(rows_sol), size)]
-        ai_shape = s[-2:]  # type: ignore[misc]
-
-        p, l, u = lu(ma[0], p_indices=True, _shape=ai_shape)
-
-        if prod(l[i][i] * u[i][i] for i in range(size)) == 0.0:
-            raise ValueError('Matrix is singular')
-
-        for bi in mb:
-            bi = [list(bi[i]) for i in p]
-            s3 = (size, len(bi[0]))
-            x.append(_back_sub_matrix(u, _forward_sub_matrix(l, bi, s3), s3))
-        return x  # type: ignore[no-any-return]
+    m = []  # type: Any
 
     # Matrices and vectors
-    elif sol_v:
-        rows_equ = list(_extract_rows(a, s))
-        ma = [rows_equ[r:r + size] for r in range(0, len(rows_equ), size)]
-        mv = list(_extract_rows(b, s2))
-        ai_shape = s[-2:]  # type: ignore[misc]
+    if dim1:
+        m_shape = s[-2:]  # type: ignore[misc]
+        base_shape = s[:-2] # type: ignore[misc]
 
-        for ai, vi in zip(ma, mv):
-            p, l, u = lu(ai, p_indices=True, _shape=ai_shape)
+        with ArrayBuilder(m, base_shape) as build:
+            for idx in ndindex(base_shape):
+                ma = a  # type: Any
+                for i in idx:
+                    ma = ma[i]
+
+                p, l, u = lu(ma, p_indices=True, _shape=m_shape)
+
+                if prod(l[i][i] * u[i][i] for i in range(size)) == 0.0:  # pragma: no cover
+                    raise ValueError('Matrix is singular')
+
+                next(build).append(_back_sub_vector(u, _forward_sub_vector(l, [b[i] for i in p], size), size))  # type: ignore[misc]
+        return m  # type: ignore[no-any-return]
+
+    # Matrices and matrices
+    new_shape = _broadcast_shape((s[:-1], s2[:-1]), max(dims - 1, len(s2) - 1))  # type: ignore[misc]
+    base_shape = new_shape[:-1]
+    a = broadcast_to(a, new_shape + s[-1:])  # type: ignore[assignment, arg-type, misc]
+    b = broadcast_to(b, new_shape + s2[-1:])  # type: ignore[assignment, arg-type, misc]
+    with ArrayBuilder(m, base_shape) as build:
+        for idx in ndindex(base_shape):
+            ma = a
+            for i in idx:
+                ma = ma[i]
+            mb = b  # type: Any
+            for i in idx:
+                mb = mb[i]
+
+            p, l, u = lu(ma, p_indices=True, _shape=s[-2:])  # type: ignore[misc]
 
             if prod(l[i][i] * u[i][i] for i in range(size)) == 0.0:
                 raise ValueError('Matrix is singular')
 
-            x.append(_back_sub_vector(u, _forward_sub_vector(l, [vi[i] for i in p], size), size))
-        return x  # type: ignore[no-any-return]
-
-    raise ValueError(f"Could not broadcast {s} and {s2}")
+            bi = [list(mb[i]) for i in p]
+            s3 = (size, len(bi[0]))
+            next(build).append(_back_sub_matrix(u, _forward_sub_matrix(l, bi, s3), s3))
+    return m  # type: ignore[no-any-return]
 
 
 def trace(matrix: Matrix) -> float:
