@@ -4199,8 +4199,10 @@ def _svd(a: MatrixLike, m: int, n: int, full_matrices: bool = True, compute_uv: 
 
     if full_matrices and not square:
         if compute_uv:
-            v = [r[:-diff] for r in v[:-diff]]
-        q = q[:-diff]
+            del v[-diff:]
+            for r in v:
+                del r[-diff:]
+        del q[-diff:]
 
     if compute_uv:
         if wide:
