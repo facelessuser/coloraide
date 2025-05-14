@@ -3,24 +3,19 @@ Math related methods.
 
 Includes various math related functions to aid in color translation and manipulation.
 
-Matrix method APIs are implemented often to mimic the familiar `numpy` library or `scipy`.
+Matrix method APIs are implemented often to mimic the familiar Numpy library or SciPy.
 The API for a given function may look very similar to those found in either of the two
 scientific libraries. Our intent is not implement a full matrix library, but mainly the
 parts that are most useful for what we do with colors. Functions may not have all the
-features as found in the aforementioned libraries, but the API should be similar.
+features as found in the aforementioned libraries, and the returns may may vary in format,
+and it also not guaranteed the algorithms behind the scene are identical, but the API should
+be similar.
 
-We actually really like `numpy`, and have only done this to keep dependencies lightweight
-and available on non C Python based implementations. If we ever decide to switch to `numpy`,
-we should be able to relatively easily as most of our API is modeled after `numpy` or `scipy`.
+We actually really like Numpy and SciPy, and have only done this to keep dependencies lightweight
+and available on non C Python based implementations.
 
-Some liberties are taken here and there. For instance, we are not as fast as `numpy`, so
-we add some shortcuts to things that are used a lot (`dot`, `multiply`, `divide`, etc.).
-In these cases, we provide new input to instruct the operation as to the dimensions of the
-matrix so we don't waste time analyzing the matrix.
-
-There is no requirement that external plugins need to use `algebra`, `numpy` could be
-used as long as the final results are converted to normal types. It is certainly possible
-that we could switch to using `numpy` in a major release in the future.
+There is no requirement that external plugins need to use `algebra` and Numpy and SciPy could
+used as long as the final results are converted to normal types.
 """
 from __future__ import annotations
 import decimal
@@ -76,6 +71,9 @@ DN_DM = None
 
 # Vector used to create a special matrix used in natural splines
 M141 = [1, 4, 1]
+
+# QR decomposition modes
+QR_MODES = {'reduced', 'complete', 'r', 'raw'}
 
 
 ################################
@@ -4231,6 +4229,7 @@ def svd(
     if dims < 2:
         raise ValueError('Array must be at least 2 dimensional')
 
+    # Handle stacked matrix cases
     elif dims > 2:
         last = s[-2:]  # type: tuple[int, int] # type: ignore[misc]
         first = s[:-2]  # type: Shape # type: ignore[misc]
@@ -4264,6 +4263,149 @@ def svdvals(a: MatrixLike | TensorLike) -> Any:
     """Get the s values from SVD."""
 
     return svd(a, False, False)
+
+
+def _qr(a: Matrix, m: int, n: int, mode: str = 'reduced') -> Any:
+    """Perform QR decomposition on a matrix."""
+
+    # Setup configuration flags
+    mode_raw = mode_r = mode_complete = False
+    if mode == 'r':
+        mode_r = True
+        mode_raw = mode_complete = False
+    elif mode == 'complete':
+        mode_complete = True
+        mode_r = mode_raw = False
+    elif mode == 'raw':
+        mode_raw = mode_r = True
+        mode_complete = False
+
+    # Initialize Q and R and make adjustments for wide or tall matrices
+    r = acopy(a)
+    square = m == n
+    empty = not n
+    wide = not square and m < n
+    tall = not wide and not square
+    diff = 0
+    if wide:
+        diff = n - m
+        for _ in range(diff):
+            r.append([0.0] * n)
+    elif tall:
+        diff = m - n
+
+    q = identity(m)
+
+    # Initialize containers for householder reflections and tau values if raw mode
+    if mode_raw:
+        h = []  # type: Any
+        tau = [0.0] * (m if not tall else n)
+
+    for k in range(0, m - 1 if not tall else n):
+        # Calculate the householder reflections
+        norm = math.sqrt(sum([r[i][k] ** 2 for i in range(k, m)]))
+        sig = -sign(r[k][k])
+        u0 = r[k][k] - sig * norm
+        w = [[(r[i][k] / u0) if u0 else 1] for i in range(k, m)]
+        w[0][0] = 1
+        t = (-sig * u0 / norm) if norm else 0
+        wtw = matmul(w, [[x[0] * t for x in w]], dims=D2)
+
+        # Capture householder reflections and tau
+        if mode_raw:
+            h.append(w)
+            tau[k] = t
+
+        # Update R
+        sub_r = [r[i][:] for i in range(k, m)]
+        for count, row in enumerate(matmul(wtw, sub_r, dims=D2), k):
+            # Fill the lower triangle with zeros and update the upper triangle
+            r[count][:] = [r[count][col] - row[col] for col in range(n)]
+
+        if not mode_r:
+            # Update Q
+            sub_q = [row[k:] for row in q]
+            for count, row in enumerate(matmul(sub_q, wtw, dims=D2)):
+                q[count][k:] = [sub_q[count][i] - row[i] for i in range(m - k)]
+
+    # Zero out the lower triangle or fill with the householder reflectors if in raw mode
+    for k in range(0, m - 1 if not tall else n):
+        for j, i in enumerate(range(k + 1, m), 1):
+            r[i][k] = h[k][j][0] if mode_raw else 0.0
+
+    # Trim unnecessary columns and rows
+    if tall and not mode_complete and not empty:
+        for row in q:
+            del row[-diff:]
+        del r[-diff:]
+    elif wide:
+        del r[-diff:]
+
+    # Return H (householder reflections in the lower half of R matrix) and tau values
+    if mode_raw:
+        return r, tau
+
+    # Return either Q and R or just R depending on the mode
+    return r if mode_r else (q, r)
+
+
+def qr(
+    a: MatrixLike | TensorLike,
+    mode: str = 'reduced'
+) -> Any:
+    """
+    QR decomposition using householder reflections.
+
+    https://www.cs.cornell.edu/~bindel/class/cs6210-f09/lec18.pdf
+
+    Generally this provides a similar interface to Numpy with the following modes:
+
+    - "reduced": returns Q, R with dimensions `(…, M, K)`, `(…, K, N)`
+    - "complete": returns Q, R with dimensions `(…, M, M)`, `(…, M, N)`
+    - "r": returns R only with dimensions `(…, K, N)`
+    - "raw": returns h, tau with dimensions `(…, N, M)`, `(…, K,)` where
+      h is the R matrix with the householder reflections in the lower triangle.
+      Unlike Numpy, we do not provide the transposed matrix for Fortran.
+    """
+
+    if mode not in QR_MODES:
+        raise ValueError(f"Mode '{mode}' not recognized")
+
+    s = shape(a)
+    dims = len(s)
+    mode_r = mode == 'r' or mode == 'raw'
+
+    # Ensure we have at least a matrix
+    if dims < 2:
+        raise ValueError('Array must be at least 2 dimensional')
+
+    # Handle stacked matrix cases
+    elif dims > 2:
+        last = s[-2:]  # type: tuple[int, int] # type: ignore[misc]
+        first = s[:-2]  # type: Shape # type: ignore[misc]
+        rows = list(_extract_rows(a, s))
+        step = last[-2]
+        m, n = last
+        r = []  # type: Any
+        if not mode_r:
+            q = []  # type: Any
+            builder = MultiArrayBuilder([q, r], [first, first])
+        else:
+            builder = MultiArrayBuilder([r], [first])
+        with builder as arrays:
+            for ri in range(0, len(rows), step):
+                result = _qr(rows[ri:ri + step], m, n, mode)
+                if not mode_r:
+                    next(arrays[0]).append(result[0])
+                    next(arrays[1]).append(result[1])
+                else:
+                    next(arrays[0]).append(result)
+        if mode_r:
+            return r
+        return q, r
+
+    # Apply QR decomposition on a single matrix
+    return _qr(a, s[0], s[1], mode)  # type: ignore[arg-type]
 
 
 def matrix_rank(a: MatrixLike | TensorLike) -> Any:
