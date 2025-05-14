@@ -4052,9 +4052,9 @@ def _diagonalization_of_bidiagonal(
     """Diagonalization of the bidiagonal form."""
 
     l = 0
-    maxiter = 50
     eps = eps * x
     for k in range(n - 1, -1, -1):
+        maxiter = 50
         while maxiter:
 
             # Test f splitting
@@ -4150,7 +4150,7 @@ def _diagonalization_of_bidiagonal(
 
             maxiter -= 1
         else:  # pragma: no cover
-            raise ValueError('Cound not converge on an SVD solution')
+            raise ValueError('Could not converge on an SVD solution')
 
 
 def _svd(a: MatrixLike, m: int, n: int, full_matrices: bool = True, compute_uv: bool = True) -> Any:
