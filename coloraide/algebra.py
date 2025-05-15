@@ -4220,6 +4220,12 @@ def svd(
     Compute the singular value decomposition of a matrix.
 
     This differs from Numpy in that it returns `U, S, V` instead of `U, S, V^T`.
+
+    There are far more efficient and modern algorithms than what we have implemented here.
+    This approach is not recommended for very large matrices as it will be too slow, While
+    it is sufficient for computing smaller matrices, it is not practical for very large
+    matrices, such as compressing images with thousands of pixels. If you are doing serious
+    computations with very large matrices, Numpy or SciPy should be strongly considered.
     """
 
     s = shape(a)
