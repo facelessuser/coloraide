@@ -1,10 +1,11 @@
 # Changelog
 
-## Unreleased
+## 4.7
 
--  **ENHANCE**: Switch to deploying with PyPI's "Trusted Publisher".
--  **ENHANCE**: Performance improvements for various algebraic calculations.
--  **FIX**: Fix some corner cases with some algebraic calculations.
+-   **NEW**: Officially support Python 3.14.
+-   **ENHANCE**: Switch to deploying with PyPI's "Trusted Publisher".
+-   **ENHANCE**: Performance improvements for various algebraic calculations.
+-   **FIX**: Fix some corner cases with some algebraic calculations.
 
 ## 4.6
 
