@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 4.7
 
 -   **NEW**: Officially support Python 3.14.
 -   **ENHANCE**: Switch to deploying with PyPI's "Trusted Publisher".
