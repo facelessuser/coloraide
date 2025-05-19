@@ -18,6 +18,7 @@ There is no requirement that external plugins need to use `algebra` and Numpy an
 used as long as the final results are converted to normal types.
 """
 from __future__ import annotations
+import builtins
 import decimal
 import sys
 import cmath
@@ -43,8 +44,8 @@ MIN_FLOAT = sys.float_info.min
 
 # Keeping for backwards compatibility
 prod = math.prod
-_all = all
-_any = any
+_all = builtins.all
+_any = builtins.any
 
 # Shortcut for math operations
 # Specify one of these in divide, multiply, dot, etc.
@@ -3753,7 +3754,7 @@ def lu(
             size = s[1]
             wide = True
             for _ in range(diff):
-                matrix.append([0.0] * size)  # type: ignore[list-item]  # noqa: PERF401
+                matrix.append([0.0] * size)  # type: ignore[arg-type]  # noqa: PERF401
         # Tall
         else:
             tall = True
