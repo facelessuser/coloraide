@@ -53,22 +53,28 @@ _any = builtins.any
 # to take.
 #
 # `SC` = scalar, `D1` = 1-D array or vector, `D2` = 2-D
-# matrix, and `DN_DM` means an N-D and M-D matrix.
+# matrix, and DN is N-D matrix, which could be of any size,
+# even greater than 2-D.
 #
 # If just a single specifier is used, it is assumed that
 # the operation is performed against another of the same.
 # `SC` = scalar and a scalar, while `SC_D1` means a scalar
 # and a vector
+#
+# For any combination with an N-D matrix, you can just use ND as
+# we must determine the shape of the N-D matrix anyway in order
+# to process it, so checking the shape cannot be avoided.
 SC = (0, 0)
 D1 = (1, 1)
 D2 = (2, 2)
+DN = (-1, -1)
 SC_D1 = (0, 1)
 SC_D2 = (0, 2)
 D1_SC = (1, 0)
 D1_D2 = (1, 2)
 D2_SC = (2, 0)
 D2_D1 = (2, 1)
-DN_DM = None
+DN_DM = (-1, -1)
 
 # Vector used to create a special matrix used in natural splines
 M141 = [1, 4, 1]
@@ -1252,82 +1258,82 @@ def _extract_cols(m: ArrayLike, s: ArrayShape) -> Iterator[Vector]:
 
 
 @overload
-def dot(a: float, b: float, *, dims: DimHints | None = ...) -> float:
+def dot(a: float, b: float, *, dims: DimHints = ...) -> float:
     ...
 
 
 @overload
-def dot(a: float, b: VectorLike, *, dims: DimHints | None = ...) -> Vector:
+def dot(a: float, b: VectorLike, *, dims: DimHints = ...) -> Vector:
     ...
 
 
 @overload
-def dot(a: VectorLike, b: float, *, dims: DimHints | None = ...) -> Vector:
+def dot(a: VectorLike, b: float, *, dims: DimHints = ...) -> Vector:
     ...
 
 
 @overload
-def dot(a: float, b: MatrixLike, *, dims: DimHints | None = ...) -> Matrix:
+def dot(a: float, b: MatrixLike, *, dims: DimHints = ...) -> Matrix:
     ...
 
 
 @overload
-def dot(a: MatrixLike, b: float, *, dims: DimHints | None = ...) -> Matrix:
+def dot(a: MatrixLike, b: float, *, dims: DimHints = ...) -> Matrix:
     ...
 
 
 @overload
-def dot(a: float, b: TensorLike, *, dims: DimHints | None = ...) -> Tensor:
+def dot(a: float, b: TensorLike, *, dims: DimHints = ...) -> Tensor:
     ...
 
 
 @overload
-def dot(a: TensorLike, b: float, *, dims: DimHints | None = ...) -> Tensor:
+def dot(a: TensorLike, b: float, *, dims: DimHints = ...) -> Tensor:
     ...
 
 
 @overload
-def dot(a: VectorLike, b: VectorLike, *, dims: DimHints | None = ...) -> float:
+def dot(a: VectorLike, b: VectorLike, *, dims: DimHints = ...) -> float:
     ...
 
 
 @overload
-def dot(a: VectorLike, b: MatrixLike, *, dims: DimHints | None = ...) -> Vector:
+def dot(a: VectorLike, b: MatrixLike, *, dims: DimHints = ...) -> Vector:
     ...
 
 
 @overload
-def dot(a: MatrixLike, b: VectorLike, *, dims: DimHints | None = ...) -> Vector:
+def dot(a: MatrixLike, b: VectorLike, *, dims: DimHints = ...) -> Vector:
     ...
 
 
 @overload
-def dot(a: VectorLike, b: TensorLike, *, dims: DimHints | None = ...) -> Tensor | Matrix:
+def dot(a: VectorLike, b: TensorLike, *, dims: DimHints = ...) -> Tensor | Matrix:
     ...
 
 
 @overload
-def dot(a: TensorLike, b: VectorLike, *, dims: DimHints | None = ...) -> Tensor | Matrix:
+def dot(a: TensorLike, b: VectorLike, *, dims: DimHints = ...) -> Tensor | Matrix:
     ...
 
 
 @overload
-def dot(a: MatrixLike, b: MatrixLike, *, dims: DimHints | None = ...) -> Matrix:
+def dot(a: MatrixLike, b: MatrixLike, *, dims: DimHints = ...) -> Matrix:
     ...
 
 
 @overload
-def dot(a: MatrixLike, b: TensorLike, *, dims: DimHints | None = ...) -> Tensor | Matrix:
+def dot(a: MatrixLike, b: TensorLike, *, dims: DimHints = ...) -> Tensor | Matrix:
     ...
 
 
 @overload
-def dot(a: TensorLike, b: MatrixLike, *, dims: DimHints | None = ...) -> Tensor | Matrix:
+def dot(a: TensorLike, b: MatrixLike, *, dims: DimHints = ...) -> Tensor | Matrix:
     ...
 
 
 @overload
-def dot(a: TensorLike, b: TensorLike, *, dims: DimHints | None = ...) -> Tensor:
+def dot(a: TensorLike, b: TensorLike, *, dims: DimHints = ...) -> Tensor:
     ...
 
 
@@ -1335,7 +1341,7 @@ def dot(
     a: float | ArrayLike,
     b: float | ArrayLike,
     *,
-    dims: DimHints | None = None,
+    dims: DimHints = DN,
 ) -> float | Array:
     """
     Perform dot product.
@@ -1347,7 +1353,7 @@ def dot(
     or less will act the same as `matmul`.
     """
 
-    if dims is None or dims[0] > 2 or dims[1] > 2:
+    if dims[0] < 0 or dims[1] < 0 or dims[0] > 2 or dims[1] > 2:
         shape_a = shape(a)  # type: Shape
         shape_b = shape(b)  # type: Shape
         dims_a = len(shape_a)
@@ -1392,47 +1398,47 @@ def dot(
 
 
 @overload
-def matmul(a: VectorLike, b: VectorLike, *, dims: DimHints | None = ...) -> float:
+def matmul(a: VectorLike, b: VectorLike, *, dims: DimHints = ...) -> float:
     ...
 
 
 @overload
-def matmul(a: VectorLike, b: MatrixLike, *, dims: DimHints | None = ...) -> Vector:
+def matmul(a: VectorLike, b: MatrixLike, *, dims: DimHints = ...) -> Vector:
     ...
 
 
 @overload
-def matmul(a: MatrixLike, b: VectorLike, *, dims: DimHints | None = ...) -> Vector:
+def matmul(a: MatrixLike, b: VectorLike, *, dims: DimHints = ...) -> Vector:
     ...
 
 
 @overload
-def matmul(a: VectorLike, b: TensorLike, *, dims: DimHints | None = ...) -> Tensor | Matrix:
+def matmul(a: VectorLike, b: TensorLike, *, dims: DimHints = ...) -> Tensor | Matrix:
     ...
 
 
 @overload
-def matmul(a: TensorLike, b: VectorLike, *, dims: DimHints | None = ...) -> Tensor | Matrix:
+def matmul(a: TensorLike, b: VectorLike, *, dims: DimHints = ...) -> Tensor | Matrix:
     ...
 
 
 @overload
-def matmul(a: MatrixLike, b: MatrixLike, *, dims: DimHints | None = ...) -> Matrix:
+def matmul(a: MatrixLike, b: MatrixLike, *, dims: DimHints = ...) -> Matrix:
     ...
 
 
 @overload
-def matmul(a: MatrixLike, b: TensorLike, *, dims: DimHints | None = ...) -> Tensor | Matrix:
+def matmul(a: MatrixLike, b: TensorLike, *, dims: DimHints = ...) -> Tensor | Matrix:
     ...
 
 
 @overload
-def matmul(a: TensorLike, b: MatrixLike, *, dims: DimHints | None = ...) -> Tensor | Matrix:
+def matmul(a: TensorLike, b: MatrixLike, *, dims: DimHints = ...) -> Tensor | Matrix:
     ...
 
 
 @overload
-def matmul(a: TensorLike, b: TensorLike, *, dims: DimHints | None = ...) -> Tensor:
+def matmul(a: TensorLike, b: TensorLike, *, dims: DimHints = ...) -> Tensor:
     ...
 
 
@@ -1440,7 +1446,7 @@ def matmul(
     a: ArrayLike,
     b: ArrayLike,
     *,
-    dims: DimHints | None = None,
+    dims: DimHints = DN,
 ) -> float | Array:
     """
     Perform matrix multiplication of two arrays.
@@ -1451,7 +1457,7 @@ def matmul(
     This follows `numpy` behavior and is equivalent to the `@` operation.
     """
 
-    if dims is None or dims[0] > 2 or dims[1] > 2:
+    if dims[0] < 0 or dims[1] < 0 or dims[0] > 2 or dims[1] > 2:
         shape_a = shape(a)  # type: ArrayShape
         shape_b = shape(b)  # type: ArrayShape
         dims_a = len(shape_a)
@@ -1518,22 +1524,22 @@ def matmul(
 
 
 @overload
-def matmul_x3(a: VectorLike, b: VectorLike, *, dims: DimHints | None = ...) -> float:
+def matmul_x3(a: VectorLike, b: VectorLike, *, dims: DimHints = ...) -> float:
     ...
 
 
 @overload
-def matmul_x3(a: VectorLike, b: MatrixLike, *, dims: DimHints | None = ...) -> Vector:
+def matmul_x3(a: VectorLike, b: MatrixLike, *, dims: DimHints = ...) -> Vector:
     ...
 
 
 @overload
-def matmul_x3(a: MatrixLike, b: VectorLike, *, dims: DimHints | None = ...) -> Vector:
+def matmul_x3(a: MatrixLike, b: VectorLike, *, dims: DimHints = ...) -> Vector:
     ...
 
 
 @overload
-def matmul_x3(a: MatrixLike, b: MatrixLike, *, dims: DimHints | None = ...) -> Matrix:
+def matmul_x3(a: MatrixLike, b: MatrixLike, *, dims: DimHints = ...) -> Matrix:
     ...
 
 
@@ -1541,7 +1547,7 @@ def matmul_x3(
     a: MatrixLike | VectorLike,
     b: MatrixLike | VectorLike,
     *,
-    dims: DimHints | None = None,
+    dims: DimHints = DN,
 ) -> float | Vector | Matrix:
     """
     An optimized version of `matmul` that the total allowed dimensions to <= 2 and constrains dimensions lengths to 3.
@@ -1553,13 +1559,8 @@ def matmul_x3(
     For more flexibility with array sizes, use `matmul`.
     """
 
-    if dims is None:
-        shape_a = shape(a)
-        shape_b = shape(b)
-        dims_a = len(shape_a)
-        dims_b = len(shape_b)
-    else:
-        dims_a, dims_b = dims
+    dims_a = dims[0] if dims[0] >= 0 else len(shape(a))
+    dims_b = dims[1] if dims[1] >= 0 else len(shape(b))
 
     # Optimize to handle arrays <= 2-D
     if dims_a == 1:
@@ -1624,54 +1625,54 @@ def matmul_x3(
 
 
 @overload
-def dot_x3(a: float, b: float, *, dims: DimHints | None = ...) -> float:
+def dot_x3(a: float, b: float, *, dims: DimHints = ...) -> float:
     ...
 
 
 @overload
-def dot_x3(a: float, b: VectorLike, *, dims: DimHints | None = ...) -> Vector:
+def dot_x3(a: float, b: VectorLike, *, dims: DimHints = ...) -> Vector:
     ...
 
 
 @overload
-def dot_x3(a: VectorLike, b: float, *, dims: DimHints | None = ...) -> Vector:
+def dot_x3(a: VectorLike, b: float, *, dims: DimHints = ...) -> Vector:
     ...
 
 
 @overload
-def dot_x3(a: float, b: MatrixLike, *, dims: DimHints | None = ...) -> Matrix:
+def dot_x3(a: float, b: MatrixLike, *, dims: DimHints = ...) -> Matrix:
     ...
 
 
 @overload
-def dot_x3(a: MatrixLike, b: float, *, dims: DimHints | None = ...) -> Matrix:
+def dot_x3(a: MatrixLike, b: float, *, dims: DimHints = ...) -> Matrix:
     ...
 
 
 @overload
-def dot_x3(a: VectorLike, b: VectorLike, *, dims: DimHints | None = ...) -> float:
+def dot_x3(a: VectorLike, b: VectorLike, *, dims: DimHints = ...) -> float:
     ...
 
 
 @overload
-def dot_x3(a: VectorLike, b: MatrixLike, *, dims: DimHints | None = ...) -> Vector:
+def dot_x3(a: VectorLike, b: MatrixLike, *, dims: DimHints = ...) -> Vector:
     ...
 
 
 @overload
-def dot_x3(a: MatrixLike, b: VectorLike, *, dims: DimHints | None = ...) -> Vector:
+def dot_x3(a: MatrixLike, b: VectorLike, *, dims: DimHints = ...) -> Vector:
     ...
 
 
 @overload
-def dot_x3(a: MatrixLike, b: MatrixLike, *, dims: DimHints | None = ...) -> Matrix:
+def dot_x3(a: MatrixLike, b: MatrixLike, *, dims: DimHints = ...) -> Matrix:
     ...
 
 
 def dot_x3(
     a: MatrixLike | VectorLike | float,
     b: MatrixLike | VectorLike | float,
-    dims: DimHints | None = None
+    dims: DimHints = DN
 ) -> float | Array:
     """
     An optimized version of `dot` that the total allowed dimensions to <= 2 and constrains dimensions lengths to 3.
@@ -1683,13 +1684,8 @@ def dot_x3(
     For more flexibility with array sizes, use `dot`.
     """
 
-    if dims is None:
-        shape_a = shape(a)
-        shape_b = shape(b)
-        dims_a = len(shape_a)
-        dims_b = len(shape_b)
-    else:
-        dims_a, dims_b = dims
+    dims_a = dims[0] if dims[0] >= 0 else len(shape(a))
+    dims_b = dims[1] if dims[1] >= 0 else len(shape(b))
 
     if not dims_a or not dims_b:
         return multiply_x3(a, b, dims=(dims_a, dims_b))
@@ -2305,16 +2301,12 @@ class _vectorize1:
     def __call__(
         self,
         a: ArrayLike | float,
-        dims: DimHints | None = None,
+        dims: DimHints = DN,
         **kwargs: Any
     ) -> Any:
         """Call the vectorized function."""
 
-        if dims and 0 <= dims[0] <= 2:
-            dims_a = dims[0]
-        else:
-            dims_a = len(shape(a))
-
+        dims_a = dims[0] if dims[0] >= 0 else len(shape(a))
         func = (lambda p1, kw=kwargs: self.func(p1, **kw)) if kwargs else self.func  # type: Callable[..., Any]
 
         # Fast paths for scalar, vectors, and 2D matrices
@@ -2372,14 +2364,14 @@ class _vectorize2:
         self,
         a: ArrayLike | float,
         b: ArrayLike | float,
-        dims: DimHints | None = None,
+        dims: DimHints = DN,
         **kwargs: Any
     ) -> Any:
         """Call the vectorized function."""
 
         func = (lambda p1, p2, kw=kwargs: self.func(p1, p2, **kw)) if kwargs else self.func  # type: Callable[..., Any]
 
-        if not dims or dims[0] > 2 or dims[1] > 2:
+        if dims[0] < 0 or dims[1] < 0 or dims[0] > 2 or dims[1] > 2:
             shape_a = shape(a)
             shape_b = shape(b)
             dims_a = len(shape_a)
@@ -2490,16 +2482,12 @@ class _vectorize1_x3:
     def __call__(
         self,
         a: ArrayLike | float,
-        dims: DimHints | None = None,
+        dims: DimHints = DN,
         **kwargs: Any
     ) -> Any:
         """Call the vectorized function."""
 
-        if not dims:
-            shape_a = shape(a)
-            dims_a = len(shape_a)
-        else:
-            dims_a = dims[0]
+        dims_a = dims[0] if dims[0] >= 0 else len(shape(a))
 
         if not (0 <= dims_a <= 2):
             raise ValueError('Inputs cannot exceed 2 dimensions')
@@ -2557,18 +2545,13 @@ class _vectorize2_x3:
         self,
         a: MatrixLike | VectorLike | float,
         b: MatrixLike | VectorLike | float,
-        dims: DimHints | None = None,
+        dims: DimHints = DN,
         **kwargs: Any
     ) -> Any:
         """Call the vectorized function."""
 
-        if not dims:
-            shape_a = shape(a)
-            shape_b = shape(b)
-            dims_a = len(shape_a)
-            dims_b = len(shape_b)
-        else:
-            dims_a, dims_b = dims
+        dims_a = dims[0] if dims[0] >= 0 else len(shape(a))
+        dims_b = dims[1] if dims[1] >= 0 else len(shape(b))
 
         func = (lambda a, b, kw=kwargs: self.func(a, b, **kw)) if kwargs else self.func  # type: Callable[..., float]
 
@@ -2782,22 +2765,22 @@ def _isclose(a: float, b: float, *, equal_nan: bool = False, **kwargs: Any) -> b
 
 
 @overload  # type: ignore[no-overload-impl]
-def isclose(a: float, b: float, *, dims: DimHints | None = ..., **kwargs: Any) -> bool:
+def isclose(a: float, b: float, *, dims: DimHints = ..., **kwargs: Any) -> bool:
     ...
 
 
 @overload
-def isclose(a: VectorLike, b: VectorLike, *, dims: DimHints | None = ..., **kwargs: Any) -> VectorBool:
+def isclose(a: VectorLike, b: VectorLike, *, dims: DimHints = ..., **kwargs: Any) -> VectorBool:
     ...
 
 
 @overload
-def isclose(a: MatrixLike, b: MatrixLike, *, dims: DimHints | None = ..., **kwargs: Any) -> MatrixBool:
+def isclose(a: MatrixLike, b: MatrixLike, *, dims: DimHints = ..., **kwargs: Any) -> MatrixBool:
     ...
 
 
 @overload
-def isclose(a: TensorLike, b: TensorLike, *, dims: DimHints | None = ..., **kwargs: Any) -> TensorBool:
+def isclose(a: TensorLike, b: TensorLike, *, dims: DimHints = ..., **kwargs: Any) -> TensorBool:
     ...
 
 
@@ -2805,22 +2788,22 @@ isclose = vectorize2(_isclose, doc="Test if a value or value(s) in an array are 
 
 
 @overload  # type: ignore[no-overload-impl]
-def isnan(a: float, *, dims: DimHints | None = ..., **kwargs: Any) -> bool:
+def isnan(a: float, *, dims: DimHints = ..., **kwargs: Any) -> bool:
     ...
 
 
 @overload
-def isnan(a: VectorLike, *, dims: DimHints | None = ..., **kwargs: Any) -> VectorBool:
+def isnan(a: VectorLike, *, dims: DimHints = ..., **kwargs: Any) -> VectorBool:
     ...
 
 
 @overload
-def isnan(a: MatrixLike, *, dims: DimHints | None = ..., **kwargs: Any) -> MatrixBool:
+def isnan(a: MatrixLike, *, dims: DimHints = ..., **kwargs: Any) -> MatrixBool:
     ...
 
 
 @overload
-def isnan(a: TensorLike, *, dims: DimHints | None = ..., **kwargs: Any) -> TensorBool:
+def isnan(a: TensorLike, *, dims: DimHints = ..., **kwargs: Any) -> TensorBool:
     ...
 
 
@@ -2834,37 +2817,37 @@ def allclose(a: ArrayType, b: ArrayType, **kwargs: Any) -> bool:
 
 
 @overload  # type: ignore[no-overload-impl]
-def multiply(a: float, b: float, *, dims: DimHints | None = ...) -> float:
+def multiply(a: float, b: float, *, dims: DimHints = ...) -> float:
     ...
 
 
 @overload
-def multiply(a: float | VectorLike, b: VectorLike, *, dims: DimHints | None = ...) -> Vector:
+def multiply(a: float | VectorLike, b: VectorLike, *, dims: DimHints = ...) -> Vector:
     ...
 
 
 @overload
-def multiply(a: VectorLike, b: float | VectorLike, *, dims: DimHints | None = ...) -> Vector:
+def multiply(a: VectorLike, b: float | VectorLike, *, dims: DimHints = ...) -> Vector:
     ...
 
 
 @overload
-def multiply(a: MatrixLike, b: float | VectorLike | MatrixLike, *, dims: DimHints | None = ...) -> Matrix:
+def multiply(a: MatrixLike, b: float | VectorLike | MatrixLike, *, dims: DimHints = ...) -> Matrix:
     ...
 
 
 @overload
-def multiply(a: float | VectorLike | MatrixLike, b: MatrixLike, *, dims: DimHints | None = ...) -> Matrix:
+def multiply(a: float | VectorLike | MatrixLike, b: MatrixLike, *, dims: DimHints = ...) -> Matrix:
     ...
 
 
 @overload
-def multiply(a: TensorLike, b: float | ArrayLike, *, dims: DimHints | None = ...) -> Tensor:
+def multiply(a: TensorLike, b: float | ArrayLike, *, dims: DimHints = ...) -> Tensor:
     ...
 
 
 @overload
-def multiply(a: float | ArrayLike, b: TensorLike, *, dims: DimHints | None = ...) -> Tensor:
+def multiply(a: float | ArrayLike, b: TensorLike, *, dims: DimHints = ...) -> Tensor:
     ...
 
 
@@ -2872,37 +2855,37 @@ multiply = vectorize2(operator.mul, doc="Multiply two arrays or floats.")
 
 
 @overload  # type: ignore[no-overload-impl]
-def divide(a: float, b: float, *, dims: DimHints | None = ...) -> float:
+def divide(a: float, b: float, *, dims: DimHints = ...) -> float:
     ...
 
 
 @overload
-def divide(a: float | VectorLike, b: VectorLike, *, dims: DimHints | None = ...) -> Vector:
+def divide(a: float | VectorLike, b: VectorLike, *, dims: DimHints = ...) -> Vector:
     ...
 
 
 @overload
-def divide(a: VectorLike, b: float | VectorLike, *, dims: DimHints | None = ...) -> Vector:
+def divide(a: VectorLike, b: float | VectorLike, *, dims: DimHints = ...) -> Vector:
     ...
 
 
 @overload
-def divide(a: MatrixLike, b: float | VectorLike | MatrixLike, *, dims: DimHints | None = ...) -> Matrix:
+def divide(a: MatrixLike, b: float | VectorLike | MatrixLike, *, dims: DimHints = ...) -> Matrix:
     ...
 
 
 @overload
-def divide(a: float | VectorLike | MatrixLike, b: MatrixLike, *, dims: DimHints | None = ...) -> Matrix:
+def divide(a: float | VectorLike | MatrixLike, b: MatrixLike, *, dims: DimHints = ...) -> Matrix:
     ...
 
 
 @overload
-def divide(a: TensorLike, b: float | ArrayLike, *, dims: DimHints | None = ...) -> Tensor:
+def divide(a: TensorLike, b: float | ArrayLike, *, dims: DimHints = ...) -> Tensor:
     ...
 
 
 @overload
-def divide(a: float | ArrayLike, b: TensorLike, *, dims: DimHints | None = ...) -> Tensor:
+def divide(a: float | ArrayLike, b: TensorLike, *, dims: DimHints = ...) -> Tensor:
     ...
 
 
@@ -2910,37 +2893,37 @@ divide = vectorize2(operator.truediv, doc="Divide two arrays or floats.")
 
 
 @overload  # type: ignore[no-overload-impl]
-def add(a: float, b: float, *, dims: DimHints | None = ...) -> float:
+def add(a: float, b: float, *, dims: DimHints = ...) -> float:
     ...
 
 
 @overload
-def add(a: float | VectorLike, b: VectorLike, *, dims: DimHints | None = ...) -> Vector:
+def add(a: float | VectorLike, b: VectorLike, *, dims: DimHints = ...) -> Vector:
     ...
 
 
 @overload
-def add(a: VectorLike, b: float | VectorLike, *, dims: DimHints | None = ...) -> Vector:
+def add(a: VectorLike, b: float | VectorLike, *, dims: DimHints = ...) -> Vector:
     ...
 
 
 @overload
-def add(a: MatrixLike, b: float | VectorLike | MatrixLike, *, dims: DimHints | None = ...) -> Matrix:
+def add(a: MatrixLike, b: float | VectorLike | MatrixLike, *, dims: DimHints = ...) -> Matrix:
     ...
 
 
 @overload
-def add(a: float | VectorLike | MatrixLike, b: MatrixLike, *, dims: DimHints | None = ...) -> Matrix:
+def add(a: float | VectorLike | MatrixLike, b: MatrixLike, *, dims: DimHints = ...) -> Matrix:
     ...
 
 
 @overload
-def add(a: TensorLike, b: float | ArrayLike, *, dims: DimHints | None = ...) -> Tensor:
+def add(a: TensorLike, b: float | ArrayLike, *, dims: DimHints = ...) -> Tensor:
     ...
 
 
 @overload
-def add(a: float | ArrayLike, b: TensorLike, *, dims: DimHints | None = ...) -> Tensor:
+def add(a: float | ArrayLike, b: TensorLike, *, dims: DimHints = ...) -> Tensor:
     ...
 
 
@@ -2948,64 +2931,64 @@ add = vectorize2(operator.add, doc="Add two arrays or floats.")
 
 
 @overload  # type: ignore[no-overload-impl]
-def subtract(a: float, b: float, *, dims: DimHints | None = None) -> float:
+def subtract(a: float, b: float, *, dims: DimHints = ...) -> float:
     ...
 
 
 @overload
-def subtract(a: float | VectorLike, b: VectorLike, *, dims: DimHints | None = ...) -> Vector:
+def subtract(a: float | VectorLike, b: VectorLike, *, dims: DimHints = ...) -> Vector:
     ...
 
 
 @overload
-def subtract(a: VectorLike, b: float | VectorLike, *, dims: DimHints | None = ...) -> Vector:
+def subtract(a: VectorLike, b: float | VectorLike, *, dims: DimHints = ...) -> Vector:
     ...
 
 
 @overload
-def subtract(a: MatrixLike, b: float | VectorLike | MatrixLike, *, dims: DimHints | None = ...) -> Matrix:
+def subtract(a: MatrixLike, b: float | VectorLike | MatrixLike, *, dims: DimHints = ...) -> Matrix:
     ...
 
 
 @overload
-def subtract(a: float | VectorLike | MatrixLike, b: MatrixLike, *, dims: DimHints | None = ...) -> Matrix:
+def subtract(a: float | VectorLike | MatrixLike, b: MatrixLike, *, dims: DimHints = ...) -> Matrix:
     ...
 
 
 @overload
-def subtract(a: TensorLike, b: float | ArrayLike, *, dims: DimHints | None = ...) -> Tensor:
+def subtract(a: TensorLike, b: float | ArrayLike, *, dims: DimHints = ...) -> Tensor:
     ...
 
 
 @overload
-def subtract(a: float | ArrayLike, b: TensorLike, *, dims: DimHints | None = ...) -> Tensor:
+def subtract(a: float | ArrayLike, b: TensorLike, *, dims: DimHints = ...) -> Tensor:
     ...
 
 subtract = vectorize2(operator.sub, doc="Subtract two arrays or floats.")
 
 
 @overload  # type: ignore[no-overload-impl]
-def multiply_x3(a: float, b: float, *, dims: DimHints | None = ...) -> float:
+def multiply_x3(a: float, b: float, *, dims: DimHints = ...) -> float:
     ...
 
 
 @overload
-def multiply_x3(a: float | VectorLike, b: VectorLike, *, dims: DimHints | None = ...) -> Vector:
+def multiply_x3(a: float | VectorLike, b: VectorLike, *, dims: DimHints = ...) -> Vector:
     ...
 
 
 @overload
-def multiply_x3(a: VectorLike, b: float | VectorLike, *, dims: DimHints | None = ...) -> Vector:
+def multiply_x3(a: VectorLike, b: float | VectorLike, *, dims: DimHints = ...) -> Vector:
     ...
 
 
 @overload
-def multiply_x3(a: MatrixLike, b: float | VectorLike | MatrixLike, *, dims: DimHints | None = ...) -> Matrix:
+def multiply_x3(a: MatrixLike, b: float | VectorLike | MatrixLike, *, dims: DimHints = ...) -> Matrix:
     ...
 
 
 @overload
-def multiply_x3(a: float | VectorLike | MatrixLike, b: MatrixLike, *, dims: DimHints | None = ...) -> Matrix:
+def multiply_x3(a: float | VectorLike | MatrixLike, b: MatrixLike, *, dims: DimHints = ...) -> Matrix:
     ...
 
 
@@ -3017,27 +3000,27 @@ multiply_x3 = vectorize2(
 
 
 @overload  # type: ignore[no-overload-impl]
-def divide_x3(a: float, b: float, *, dims: DimHints | None = ...) -> float:
+def divide_x3(a: float, b: float, *, dims: DimHints = ...) -> float:
     ...
 
 
 @overload
-def divide_x3(a: float | VectorLike, b: VectorLike, *, dims: DimHints | None = ...) -> Vector:
+def divide_x3(a: float | VectorLike, b: VectorLike, *, dims: DimHints = ...) -> Vector:
     ...
 
 
 @overload
-def divide_x3(a: VectorLike, b: float | VectorLike, *, dims: DimHints | None = ...) -> Vector:
+def divide_x3(a: VectorLike, b: float | VectorLike, *, dims: DimHints = ...) -> Vector:
     ...
 
 
 @overload
-def divide_x3(a: MatrixLike, b: float | VectorLike | MatrixLike, *, dims: DimHints | None = ...) -> Matrix:
+def divide_x3(a: MatrixLike, b: float | VectorLike | MatrixLike, *, dims: DimHints = ...) -> Matrix:
     ...
 
 
 @overload
-def divide_x3(a: float | VectorLike | MatrixLike, b: MatrixLike, *, dims: DimHints | None = ...) -> Matrix:
+def divide_x3(a: float | VectorLike | MatrixLike, b: MatrixLike, *, dims: DimHints = ...) -> Matrix:
     ...
 
 
@@ -3049,27 +3032,27 @@ divide_x3 = vectorize2(
 
 
 @overload  # type: ignore[no-overload-impl]
-def add_x3(a: float, b: float, *, dims: DimHints | None = ...) -> float:
+def add_x3(a: float, b: float, *, dims: DimHints = ...) -> float:
     ...
 
 
 @overload
-def add_x3(a: float | VectorLike, b: VectorLike, *, dims: DimHints | None = ...) -> Vector:
+def add_x3(a: float | VectorLike, b: VectorLike, *, dims: DimHints = ...) -> Vector:
     ...
 
 
 @overload
-def add_x3(a: VectorLike, b: float | VectorLike, *, dims: DimHints | None = ...) -> Vector:
+def add_x3(a: VectorLike, b: float | VectorLike, *, dims: DimHints = ...) -> Vector:
     ...
 
 
 @overload
-def add_x3(a: MatrixLike, b: float | VectorLike | MatrixLike, *, dims: DimHints | None = ...) -> Matrix:
+def add_x3(a: MatrixLike, b: float | VectorLike | MatrixLike, *, dims: DimHints = ...) -> Matrix:
     ...
 
 
 @overload
-def add_x3(a: float | VectorLike | MatrixLike, b: MatrixLike, *, dims: DimHints | None = ...) -> Matrix:
+def add_x3(a: float | VectorLike | MatrixLike, b: MatrixLike, *, dims: DimHints = ...) -> Matrix:
     ...
 
 
@@ -3081,27 +3064,27 @@ add_x3 = vectorize2(
 
 
 @overload  # type: ignore[no-overload-impl]
-def subtract_x3(a: float, b: float, *, dims: DimHints | None = ...) -> float:
+def subtract_x3(a: float, b: float, *, dims: DimHints = ...) -> float:
     ...
 
 
 @overload
-def subtract_x3(a: float | VectorLike, b: VectorLike, *, dims: DimHints | None = ...) -> Vector:
+def subtract_x3(a: float | VectorLike, b: VectorLike, *, dims: DimHints = ...) -> Vector:
     ...
 
 
 @overload
-def subtract_x3(a: VectorLike, b: float | VectorLike, *, dims: DimHints | None = ...) -> Vector:
+def subtract_x3(a: VectorLike, b: float | VectorLike, *, dims: DimHints = ...) -> Vector:
     ...
 
 
 @overload
-def subtract_x3(a: MatrixLike, b: float | VectorLike | MatrixLike, *, dims: DimHints | None = ...) -> Matrix:
+def subtract_x3(a: MatrixLike, b: float | VectorLike | MatrixLike, *, dims: DimHints = ...) -> Matrix:
     ...
 
 
 @overload
-def subtract_x3(a: float | VectorLike | MatrixLike, b: MatrixLike, *, dims: DimHints | None = ...) -> Matrix:
+def subtract_x3(a: float | VectorLike | MatrixLike, b: MatrixLike, *, dims: DimHints = ...) -> Matrix:
     ...
 
 
