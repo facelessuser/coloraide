@@ -2671,27 +2671,27 @@ def vectorize1(pyfunc: Callable[..., Any], doc: str | None = None) -> Callable[.
 
 
 @overload
-def linspace(start: float, stop: float, num: int = 50, endpoint: bool = True) -> Vector:
+def linspace(start: float, stop: float, num: int = ..., endpoint: bool = ...) -> Vector:
     ...
 
 
 @overload
-def linspace(start: VectorLike, stop: VectorLike | float, num: int = 50, endpoint: bool = True) -> Matrix:
+def linspace(start: VectorLike, stop: VectorLike | float, num: int = ..., endpoint: bool = ...) -> Matrix:
     ...
 
 
 @overload
-def linspace(start: VectorLike | float, stop: VectorLike, num: int = 50, endpoint: bool = True) -> Matrix:
+def linspace(start: VectorLike | float, stop: VectorLike, num: int = ..., endpoint: bool = ...) -> Matrix:
     ...
 
 
 @overload
-def linspace(start: MatrixLike, stop: ArrayLike, num: int = 50, endpoint: bool = True) -> Tensor:
+def linspace(start: MatrixLike, stop: ArrayLike, num: int = ..., endpoint: bool = ...) -> Tensor:
     ...
 
 
 @overload
-def linspace(start: ArrayLike, stop: MatrixLike, num: int = 50, endpoint: bool = True) -> Tensor:
+def linspace(start: ArrayLike, stop: MatrixLike, num: int = ..., endpoint: bool = ...) -> Tensor:
     ...
 
 
@@ -3622,12 +3622,12 @@ def identity(size: int) -> Matrix:
 
 
 @overload
-def diag(array: VectorLike, k: int = 0) -> Matrix:
+def diag(array: VectorLike, k: int = ...) -> Matrix:
     ...
 
 
 @overload
-def diag(array: MatrixLike, k: int = 0) -> Vector:
+def diag(array: MatrixLike, k: int = ...) -> Vector:
     ...
 
 

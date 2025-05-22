@@ -1305,9 +1305,9 @@ class Color(metaclass=ColorMeta):
     def get(self,
         name: str,
         *,
-        nans: bool = True,
-        precision: int | Sequence[int] | None = None,
-        rounding: str | None = None
+        nans: bool = ...,
+        precision: int | Sequence[int] | None = ...,
+        rounding: str | None = ...
     ) -> float:
         ...
 
@@ -1316,9 +1316,9 @@ class Color(metaclass=ColorMeta):
         self,
         name: list[str] | tuple[str, ...],
         *,
-        nans: bool = True,
-        precision: int | Sequence[int] | None = None,
-        rounding: str | None = None
+        nans: bool = ...,
+        precision: int | Sequence[int] | None = ...,
+        rounding: str | None = ...
     ) -> Vector:
         ...
 
