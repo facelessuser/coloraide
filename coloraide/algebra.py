@@ -29,8 +29,8 @@ import itertools as it
 from .deprecate import deprecated
 from .types import (
     ArrayLike, MatrixLike, EmptyShape, VectorShape, MatrixShape, TensorShape, ArrayShape, VectorLike,
-    TensorLike, Array, Matrix, Tensor, Vector, VectorBool, MatrixBool, TensorBool, MatrixInt, ArrayType, Shape,
-    DimHints, SupportsFloatOrInt
+    TensorLike, Array, Matrix, Tensor, Vector, VectorBool, MatrixBool, TensorBool, MatrixInt, ArrayType, VectorInt,  # noqa: F401
+    Shape, DimHints, SupportsFloatOrInt
 )
 from typing import Callable, Sequence, Iterator, Any, Iterable, overload
 
@@ -53,7 +53,7 @@ _any = builtins.any
 # to take.
 #
 # `SC` = scalar, `D1` = 1-D array or vector, `D2` = 2-D
-# matrix, and DN is N-D matrix, which could be of any size,
+# matrix, and `DN` is N-D matrix, which could be of any size,
 # even greater than 2-D.
 #
 # If just a single specifier is used, it is assumed that
@@ -5048,3 +5048,203 @@ def fnnls(
     # Return our final result, for better or for worse
     res = math.hypot(*subtract(b, dot(A, x, dims=D2_D1), dims=D1))
     return x, res
+
+
+@overload
+def flip(a: float, axis: int | tuple[int, ...] | None = ...) -> float:
+    ...
+
+
+@overload
+def flip(a: VectorLike, axis: int | tuple[int, ...] | None = ...) -> Vector:
+    ...
+
+
+@overload
+def flip(a: MatrixLike, axis: int | tuple[int, ...] | None = ...) -> Matrix:
+    ...
+
+
+@overload
+def flip(a: TensorLike, axis: int | tuple[int, ...] | None = ...) -> Tensor:
+    ...
+
+
+def flip(a: ArrayLike | float, axis: int | tuple[int, ...] | None = None) -> Array | float:
+    """Flip specified axis/axes."""
+
+    s = shape(a)
+    l = len(s)
+
+    if not s:
+        return a  # type: ignore[return-value]
+
+    # Adjust axes
+    if axis is None:
+        axes = set(range(l))
+    elif isinstance(axis, int):
+        axes = {l + axis if axis < 0 else axis}
+    else:
+        axes = set()
+        for ai in axis:
+            ai = l + ai if ai < 0 else ai
+            if ai in axes:
+                raise ValueError('Repeated axis')
+            axes.add(ai)
+
+    m = acopy(a)  # type: Array  # type: ignore[arg-type]
+    indexes = [-1] * l
+    end = l - 1
+
+    # Check if axes are within bounds
+    for ax in axes:
+        if ax > end:
+            raise ValueError(f'Axis {ax} out of bounds of dimension {l}')
+
+    # Flip the axes
+    for idx in ndindex(s[:-1] + (1,)):  # type: ignore[misc]
+        t = m  # type: Any
+        count = 0
+        for i in idx:
+            if indexes[count] == -1:
+                if count in axes:
+                    t[:] = t[::-1]
+
+            if indexes[count] != i:
+                indexes[count] = i
+                indexes[count + 1:] = [-1] * (end - count)
+            count += 1
+            t = t[i]
+    return m
+
+
+@overload
+def flipud(a: float) -> float:
+    ...
+
+
+@overload
+def flipud(a: VectorLike) -> Vector:
+    ...
+
+
+@overload
+def flipud(a: MatrixLike) -> Matrix:
+    ...
+
+
+@overload
+def flipud(a: TensorLike) -> Tensor:
+    ...
+
+
+def flipud(a: ArrayLike | float) -> Array | float:
+    """Flip axis 0."""
+
+    return flip(a, axis=0)
+
+
+@overload
+def fliplr(a: float) -> float:
+    ...
+
+
+@overload
+def fliplr(a: VectorLike) -> Vector:
+    ...
+
+
+@overload
+def fliplr(a: MatrixLike) -> Matrix:
+    ...
+
+
+@overload
+def fliplr(a: TensorLike) -> Tensor:
+    ...
+
+
+def fliplr(a: ArrayLike | float) -> Array | float:
+    """Flip axis 1."""
+
+    return flip(a, axis=1)
+
+
+@overload
+def roll(a: float, shift: int | tuple[int, ...], axis: int | tuple[int, ...] | None = ...) -> float:
+    ...
+
+
+@overload
+def roll(a: VectorLike, shift: int | tuple[int, ...], axis: int | tuple[int, ...] | None = ...) -> Vector:
+    ...
+
+
+@overload
+def roll(a: MatrixLike, shift: int | tuple[int, ...], axis: int | tuple[int, ...] | None = ...) -> Matrix:
+    ...
+
+
+@overload
+def roll(a: TensorLike, shift: int | tuple[int, ...], axis: int | tuple[int, ...] | None = ...) -> Tensor:
+    ...
+
+
+def roll(
+    a: ArrayLike | float,
+    shift: int | tuple[int, ...],
+    axis: int | tuple[int, ...] | None = None
+) -> Array | float:
+    """Roll specified axis/axes."""
+
+    s = shape(a)
+
+    # Return floats
+    if not s:
+        return a  # type: ignore[return-value]
+
+    # Flatten data when no axis is specified and roll data
+    if axis is None:
+        if not isinstance(shift, int):
+            shift = sum(shift)
+        p = prod(s)
+        sgn = sign(shift)
+        shift = int(shift % (p * sgn)) if p and sgn else 0
+        flat = ravel(a) if len(s) != 1 else list(a)  # type: ignore[arg-type]
+        sh = -shift
+        flat[:] = flat[sh:] + flat[:sh]
+        return reshape(flat, s)
+
+    axes = [axis] if isinstance(axis, int) else axis
+    m = acopy(a)  # type: ignore[arg-type]
+    l = len(s)
+    indexes = [-1] * l
+    end = l - 1
+
+    # Broadcast the shifts and axes
+    new_shift = []  # type: VectorInt
+    new_axes = []  # type: VectorInt
+    for i, j in broadcast(shift, axes):
+        if j < 0:
+            j = l + j
+        sgn = sign(i)
+        new_shift.append(int(i % (s[j] * sgn)) if s[j] and sgn else 0)  # type: ignore[call-overload]
+        new_axes.append(j)  # type: ignore[arg-type]
+
+    # Perform the roll across the specified axes
+    for idx in ndindex(s[:-1] + (1,)):  # type: ignore[misc]
+        t = m  # type: Any
+        count = 0
+        for i in idx:
+            if indexes[count] == -1:
+                for e, ax in enumerate(new_axes):
+                    if count == ax:
+                        sh = -new_shift[e]
+                        t[:] = t[sh:] + t[:sh]
+
+            if indexes[count] != i:
+                indexes[count] = i
+                indexes[count + 1:] = [-1] * (end - count)
+            count += 1
+            t = t[i]
+    return m

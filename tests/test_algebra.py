@@ -3341,7 +3341,6 @@ class TestAlgebra(unittest.TestCase):
         with self.assertRaises(ValueError):
             alg.qr([1, 2, 3])
 
-
     def test_svdvals(self):
         """Get just the SVD values."""
 
@@ -3450,6 +3449,144 @@ class TestAlgebra(unittest.TestCase):
         # 4th+ degree
         with self.assertRaises(ValueError):
             alg.solve_poly([1, 2, 3, 4, 5])
+
+    def test_flip(self):
+        """Test flip."""
+
+        self.assertEqual(alg.flip(3), 3)
+
+        self.assertEqual(alg.flip([1, 2, 3, 4]), [4, 3, 2, 1])
+
+        m = alg.reshape(alg.arange(8), (2,2,2))
+
+        self.assertEqual(
+            alg.flip(m),
+            [[[7, 6],
+              [5, 4]],
+             [[3, 2],
+              [1, 0]]]
+        )
+
+        self.assertEqual(
+            alg.flip(m, 0),
+            [[[4, 5],
+              [6, 7]],
+             [[0, 1],
+              [2, 3]]]
+        )
+
+        self.assertEqual(
+            alg.flip(m, 1),
+            [[[2, 3],
+              [0, 1]],
+             [[6, 7],
+              [4, 5]]]
+        )
+
+        self.assertEqual(
+            alg.flip(m, (2, 0)),
+            [[[5, 4],
+              [7, 6]],
+             [[1, 0],
+              [3, 2]]]
+        )
+
+        with self.assertRaises(ValueError):
+            alg.flip(m, (2, 2))
+
+        with self.assertRaises(ValueError):
+            alg.flip(m, 3)
+
+    def test_flipud(self):
+        """Test flip on axis 0."""
+
+        m = alg.reshape(alg.arange(8), (2,2,2))
+
+        self.assertEqual(
+            alg.flip(m, 0),
+            alg.flipud(m)
+        )
+
+    def test_fliplr(self):
+        """Test flip on axis 1."""
+
+        m = alg.reshape(alg.arange(8), (2,2,2))
+
+        self.assertEqual(
+            alg.flip(m, 1),
+            alg.fliplr(m)
+        )
+
+    def test_roll(self):
+        """Test roll."""
+
+        self.assertEqual(alg.roll(3, 1), 3)
+
+        x = alg.arange(10)
+        self.assertEqual(alg.roll(x, 2), [8, 9, 0, 1, 2, 3, 4, 5, 6, 7])
+        self.assertEqual(alg.roll(x, -2), [2, 3, 4, 5, 6, 7, 8, 9, 0, 1])
+
+        x2 = alg.reshape(x, (2, 5))
+
+        self.assertEqual(
+            alg.roll(x2, (2, 1)),
+            [[7, 8, 9, 0, 1],
+             [2, 3, 4, 5, 6]]
+        )
+
+        self.assertEqual(
+            alg.roll(x2, 1),
+            [[9, 0, 1, 2, 3],
+             [4, 5, 6, 7, 8]]
+        )
+
+        self.assertEqual(
+            alg.roll(x2, -1),
+            [[1, 2, 3, 4, 5],
+             [6, 7, 8, 9, 0]]
+        )
+
+        self.assertEqual(
+            alg.roll(x2, 1, axis=0),
+            [[5, 6, 7, 8, 9],
+             [0, 1, 2, 3, 4]]
+        )
+
+        self.assertEqual(
+            alg.roll(x2, -1, axis=0),
+            [[5, 6, 7, 8, 9],
+             [0, 1, 2, 3, 4]]
+        )
+
+        self.assertEqual(
+            alg.roll(x2, 1, axis=1),
+            [[4, 0, 1, 2, 3],
+             [9, 5, 6, 7, 8]]
+        )
+
+        self.assertEqual(
+            alg.roll(x2, -1, axis=1),
+            [[1, 2, 3, 4, 0],
+             [6, 7, 8, 9, 5]]
+        )
+
+        self.assertEqual(
+            alg.roll(x2, (1, 1), axis=(1, 0)),
+            [[9, 5, 6, 7, 8],
+             [4, 0, 1, 2, 3]]
+        )
+
+        self.assertEqual(
+            alg.roll(x2, (2, 1), axis=(1, 0)),
+            [[8, 9, 5, 6, 7],
+             [3, 4, 0, 1, 2]]
+        )
+
+        self.assertEqual(
+            alg.roll(x2, (2, 1), axis=(-1, 0)),
+            [[8, 9, 5, 6, 7],
+             [3, 4, 0, 1, 2]]
+        )
 
 
 def test_pprint(capsys):
