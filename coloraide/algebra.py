@@ -3201,6 +3201,16 @@ def ndindex(*s: Shape) -> Iterator[tuple[int, ...]]:
     )
 
 
+def ndenumerate(a: ArrayLike | float) -> Iterator[tuple[Shape, Any]]:
+    """Iterate dimensions."""
+
+    for idx in ndindex(shape(a)):
+        t = a  # type: Any
+        for i in idx:
+            t = t[i]
+        yield idx, t
+
+
 class ArrayBuilder:
     """Auto drain an iterator."""
 
@@ -5247,3 +5257,94 @@ def roll(
             count += 1
             t = t[i]
     return m
+
+
+def unique(
+    a: ArrayLike | float,
+    axis: int | None = None,
+    return_index: bool = False,
+    return_inverse: bool = False,
+    return_counts: bool = False
+) -> Any:
+    """Return unique elements."""
+
+    values = []  # type: list[Any]
+    indices = []
+    inverse = []
+    count = []
+    offset = 0
+    track = {}  # type: dict[Any, int]
+    index = 0
+    just_values = not return_index and not return_inverse and not return_counts
+
+    # If no axis, flatten data
+    if axis is None:
+        for e, v in enumerate(flatiter(a)):
+            if v not in track:
+                values.append(v)
+                indices.append(e)
+                inverse.append(e - offset)
+                count.append(1)
+                track[v] = index
+                index += 1
+            else:
+                offset += 1
+                i = track[v]
+                inverse.append(i)
+                count[i] += 1
+
+    # Apply to higher axes
+    else:
+        s = shape(a)
+        l = len(s)
+
+        # Ensure axis in bound
+        if axis > l - 1:
+            raise ValueError(f'Axis {axis} out of bounds of dimension {l}')
+
+        track = {}
+        index = 0
+        # Iterate array
+        for e, idx in enumerate(ndindex(s[:axis + 1])):
+            t = a  # type: Any
+            for i in idx:
+                t = t[i]
+
+            # Convert data into an object we can hash
+            d = []
+            for idx in ndindex(s[axis + 1:]):
+                m = t  # type: Any
+                for i in idx:
+                    m = m[i]
+                d.append(m)
+            dt = tuple(d)
+
+            if dt not in track:
+                values.append(d)
+                indices.append(e)
+                inverse.append(e - offset)
+                count.append(1)
+                track[dt] = index
+                index += 1
+            else:
+                offset += 1
+                i = track[dt]
+                inverse.append(i)
+                count[i] += 1
+
+    # Calculate sorting index
+    sargs = sorted(range(len(values)), key=values.__getitem__)
+
+    # Return sorted values
+    if just_values:
+        return [values[si] for si in sargs]
+
+    # Return sorted values with requested, index, inverse index, and/or count
+    result = [[values[si] for si in sargs]]  # type: Any
+    if return_index:
+        result.append([indices[si] for si in sargs])
+    if return_inverse:
+        result.append([sargs[i] for i in inverse])
+    if return_counts:
+        result.append([count[si] for si in sargs])
+    return tuple(result)

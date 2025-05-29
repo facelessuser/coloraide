@@ -3588,6 +3588,45 @@ class TestAlgebra(unittest.TestCase):
              [3, 4, 0, 1, 2]]
         )
 
+    def test_unique(self):
+        """Test unique."""
+
+        self.assertEqual(alg.unique([1, 1, 2, 2, 3, 3]), [1, 2, 3])
+        self.assertEqual(alg.unique([[1, 1], [2, 3]]), [1, 2, 3])
+        self.assertEqual(
+            alg.unique([[1, 0, 0], [1, 0, 0], [2, 3, 4]], axis=0),
+            [[1, 0, 0], [2, 3, 4]]
+        )
+
+        m = [1, 2, 6, 4, 2, 3, 2]
+        self.assertEqual(
+            alg.unique(m, return_index=True),
+            ([1, 2, 3, 4, 6], [0, 1, 5, 3, 2])
+        )
+        self.assertEqual(
+            alg.unique(m, return_inverse=True),
+            ([1, 2, 3, 4, 6], [0, 1, 4, 3, 1, 2, 1])
+        )
+        self.assertEqual(
+            alg.unique(m, return_counts=True),
+            ([1, 2, 3, 4, 6], [1, 3, 1, 1, 1])
+        )
+
+        with self.assertRaises(ValueError):
+            alg.unique([[1, 0, 0], [1, 0, 0], [2, 3, 4]], axis=2)
+
+    def test_ndenumerate(self):
+        """Test N-D array enumeration."""
+
+        self.assertEqual(
+            list(alg.ndenumerate([[1, 0, 0], [1, 0, 0], [2, 3, 4]])),
+            [
+                ((0, 0), 1), ((0, 1), 0), ((0, 2), 0),
+                ((1, 0), 1),((1, 1), 0), ((1, 2), 0),
+                ((2, 0), 2), ((2, 1), 3), ((2, 2), 4)
+            ]
+        )
+
 
 def test_pprint(capsys):
     """Test matrix print."""
