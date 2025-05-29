@@ -1762,18 +1762,17 @@ def multi_dot(arrays: Sequence[ArrayLike]) -> Any:
     shapes = [shape(a) for a in arrays]
 
     # We need the list mutable if we are going to update the entries
-    if not isinstance(arrays, list):
-        arrays = list(arrays)
+    _arrays = list(arrays) if not isinstance(arrays, list) else arrays  # type: Any
 
     # Row vector
     if len(shapes[0]) == 1:
-        arrays[0] = [arrays[0]]
+        _arrays[0] = [arrays[0]]
         shapes[0] = (1,) + shapes[0]
         is_vector = True
 
     # Column vector
     if len(shapes[-1]) == 1:
-        arrays[-1] = transpose([arrays[-1]])
+        _arrays[-1] = transpose([_arrays[-1]])
         shapes[-1] = shapes[-1] + (1,)
         if is_vector:
             is_scalar = True
@@ -1793,13 +1792,13 @@ def multi_dot(arrays: Sequence[ArrayLike]) -> Any:
         cost1 = pa * shapes[2][0] + pc * shapes[0][0]
         cost2 = pc * shapes[0][1] + pa * shapes[2][1]  # type: ignore[misc]
         if cost1 < cost2:
-            value = dot(dot(arrays[0], arrays[1], dims=D2), arrays[2], dims=D2)
+            value = dot(dot(_arrays[0], _arrays[1], dims=D2), _arrays[2], dims=D2)  # type: Any
         else:
-            value = dot(arrays[0], dot(arrays[1], arrays[2], dims=D2), dims=D2)
+            value = dot(_arrays[0], dot(_arrays[1], _arrays[2], dims=D2), dims=D2)
 
     # Calculate the fastest ordering with dynamic programming using memoization
-    s = _matrix_chain_order([shape(a) for a in arrays])
-    value = _multi_dot(arrays, s, 0, count - 1)
+    s = _matrix_chain_order([shape(a) for a in _arrays])
+    value = _multi_dot(_arrays, s, 0, count - 1)
 
     # `numpy` returns the shape differently depending on if there is a row and/or column vector
     if is_scalar:

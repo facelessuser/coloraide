@@ -221,7 +221,7 @@ class RayTrace(Fit):
         # better if we use that. If the target RGB space is HDR, we need to
         # calculate the bounding box size based on the HDR limit in the linear space.
         sdr = cs.DYNAMIC_RANGE != 'hdr'
-        linear = cs.linear()  # type: ignore[attr-defined]
+        linear = cs.linear()
         if linear and linear in color.CS_MAP:
             if not sdr:
                 bmax = color.new(space, [chan.high for chan in cs.CHANNELS]).convert(linear)[:-1]
