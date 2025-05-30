@@ -454,10 +454,10 @@ Please see [Gamut Mapping in Any Perceptual Space](#gamut-mapping-in-any-percept
 perceptual spaces and how to set your own default.
 ///
 
-ColorAide has developed a chroma reduction technique that employs ray tracing. Its aim is to provide faster chrome
+ColorAide has developed a chroma reduction technique that employs ray tracing. Its aim is to provide faster chroma
 reduction for gamut mapping using constant lightness. This approach specifically targets RGB gamuts, or spaces that can
 be represented with RGB gamuts. Additionally, if ColorAide can detect a linear version of the targeted RGB gamut, that
-version will be used automatically for best results. Currently ColorAide can gamut map all officially supported color
+version will be used automatically for best results. Currently, ColorAide can gamut map all officially supported color
 spaces as they either have an RGB gamut or can be coerced into one.
 
 The ray trace approach works by taking a given color and converting it to a perceptual Lab-ish or LCh-ish color space
@@ -465,7 +465,7 @@ The ray trace approach works by taking a given color and converting it to a perc
 anchor point. Assuming our anchor point is within bounds, a ray is cast from the inside of the cube, from the anchor
 point to the current color. The intersection along this path with the RGB gamut surface is then found.  If the
 achromatic color exceeds the maximum or minimum lightness of the gamut, the respective maximum or minimum achromatic
-color is returned. 
+color is returned.
 
 /// note | Ray Trace Algorithm
 The ray trace algorithm is based on the [slab method](https://en.wikipedia.org/wiki/Slab_method). The intersection that
@@ -476,7 +476,7 @@ end point.
 The intersection of the line and the gamut surface represents an approximation of the most saturated color for that
 lightness and hue, but because the RGB space is not perceptual, the initial approximation is likely to be off because
 decreasing chroma and holding lightness and hue constant in a perceptual space will create a curved path through the
-RGB space. In order to converge on a point as close as possible to the actual most saturated color with the given hue
+RGB space. In order to converge on a point as close as possible to the actual, most saturated color with the given hue
 and lightness, we must refine our result with a few additional iterations.
 
 In order to converge on the actual chroma reduced color we seek, we can take the first intersection we find and correct
@@ -489,9 +489,10 @@ approximation of the color we seek.
 
 ![Ray Trace Gamut Mapping Example](images/raytrace-gma.png)
 
-One final improvement is that during the correction step, where we adjust surface point back onto the chroma reduction
-path, if we find a point below the gamut surface, we can adjust our anchor to be this new point, closer to the gamut
-surface, which in some spaces will help to converge closer to our ideal color than they would without the adjustment.
+One final improvement is that during the correction step, where we adjust the surface point back onto the chroma
+reduction path, if we find a point below the gamut surface, we can adjust our anchor to be this new point, closer to the
+gamut surface, which in some spaces will help to converge closer to our ideal color than they would without the
+adjustment.
 
 ![Ray Trace Gamut Mapping Example](images/raytrace-gma-improve.png)
 
