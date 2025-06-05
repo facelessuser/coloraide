@@ -1145,6 +1145,7 @@ class Color(metaclass=ColorMeta):
     def average(
         cls,
         colors: Iterable[ColorInput],
+        weights: Iterable[float] = (),
         *,
         space: str | None = None,
         out_space: str | None = None,
@@ -1166,6 +1167,7 @@ class Color(metaclass=ColorMeta):
         return average.average(
             cls,
             colors,
+            weights,
             space,
             premultiplied
         ).convert(out_space, in_place=True)

@@ -4,8 +4,8 @@ Color averaging is the process of calculating an average color from a set of oth
 color channel.
 
 Averaging under ColorAide can take as many colors as desired and will return a color that represents the average. This
-is not to be confused with interpolation which employs a different technique, but in certain situations, it can sort of
-function like mixing multiple colors.
+is not to be confused with interpolation which employs a different technique, but can be used as a way to mix multiple
+colors into one color.
 
 ## Rectangular Space Averaging
 

@@ -713,6 +713,87 @@ def plot_interpolation(
     fig.add_trace(trace)
 
 
+def plot_interpolation_multi(
+    fig,
+    space,
+    interp_colors,
+    interp_space,
+    interp_method,
+    hue,
+    carryfoward,
+    powerless,
+    extrapolate,
+    steps,
+    gmap,
+    simulate_alpha,
+    interp_gmap
+):
+    """Plot interpolations."""
+
+    if not interp_colors:
+        return
+
+    parts = interp_colors.split(':')
+
+    colors = parts[0].split(';')
+    if len(parts) == 2:
+        weights = [float(i.strip()) for i in parts[1].split(',')]
+    else:
+        weights = []
+
+    color = Color.average(
+        colors,
+        weights,
+        space=interp_space
+    )
+
+    target = Color.CS_MAP[space]
+    flags = {
+        'is_cyl': target.is_polar(),
+        'is_labish': isinstance(target, Labish),
+        'is_lchish': isinstance(target, LChish),
+        'is_hslish': isinstance(target, HSLish),
+        'is_hwbish': isinstance(target, HWBish),
+        'is_hsvish': isinstance(target, HSVish)
+    }
+
+    for s in colors:
+        x = []
+        y = []
+        z = []
+        cmap = []
+        c = Color(s).convert(space, in_place=True)
+        if interp_gmap:
+            c.fit('srgb', **gmap)
+        store_coords(c, x, y, z, flags)
+        c.convert('srgb', in_place=True)
+        c.fit(**gmap)
+        if simulate_alpha:
+            cmap.append(Color.layer([c, 'white'], space='srgb').to_string(hex=True))
+        else:
+           cmap.append(c.to_string(comma=True, alpha=False))
+
+        c = Color(color).convert(space, in_place=True)
+        if interp_gmap:
+            c.fit('srgb', **gmap)
+        store_coords(c, x, y, z, flags)
+        c.convert('srgb', in_place=True)
+        c.fit(**gmap)
+        if simulate_alpha:
+            cmap.append(Color.layer([c, 'white'], space='srgb').to_string(hex=True))
+        else:
+            cmap.append(c.to_string(comma=True, alpha=False))
+
+        trace = go.Scatter3d(
+            x=x, y=y, z=z,
+            marker={'size': [8, 16], 'color': cmap, 'opacity': 1},
+            line={'color': cmap[0]},
+            showlegend=False
+        )
+
+        fig.add_trace(trace)
+
+
 def main():
     """Main."""
 
@@ -756,6 +837,7 @@ def main():
     )
 
     # Interpolation visualization
+    parser.add_argument('--interp-multi-colors', default='', help="Interpolation between multiple colors.")
     parser.add_argument('--interp-colors', default='', help='Interpolation colors separated by semicolons.')
     parser.add_argument('--interp-method', default='linear', help="Interplation method to use: linear, bezier, etc.")
     parser.add_argument('--interp-space', default='oklab', help="Interpolation space.")
@@ -849,6 +931,22 @@ def main():
         fig,
         args.space,
         args.interp_colors,
+        args.interp_space,
+        args.interp_method,
+        args.hue,
+        args.carryfoward,
+        args.powerless,
+        args.extrapolate,
+        args.steps,
+        gmap,
+        args.interp_alpha,
+        args.interp_gmap
+    )
+
+    plot_interpolation_multi(
+        fig,
+        args.space,
+        args.interp_multi_colors,
         args.interp_space,
         args.interp_method,
         args.hue,
