@@ -159,7 +159,6 @@ class Interpolator(Generic[AnyColor], metaclass=ABCMeta):
             coords.extend([colors[-1][:], colors[-1][:]])
             stops[0] = 0.0
             stops[1] = 1.0
-            hue = 'shorter'
 
         return Linear().interpolator(
             coordinates=coords,
