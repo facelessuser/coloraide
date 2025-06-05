@@ -1042,8 +1042,6 @@ class Color(metaclass=ColorMeta):
         if domain is not None:
             interpolate_args['domain'] = interpolate.normalize_domain(domain)
 
-        if not self._is_color(color) and not isinstance(color, (str, Mapping)):
-            raise TypeError(f"Unexpected type '{type(color)}'")
         mixed = self.interpolate([self, color], **interpolate_args)(percent)  # type: Self
         return self._hotswap(mixed) if in_place else mixed
 

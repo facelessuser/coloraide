@@ -227,12 +227,6 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
         with self.assertRaises(TypeError):
             Color('red').mix(1)
 
-    def test_mix_input_piecewise(self):
-        """Test mix with piecewise."""
-
-        with self.assertRaises(TypeError):
-            Color('red').mix(stop('blue', 0.0), 0.5, space="srgb")
-
     def test_mix_space(self):
         """Test color mix in different space."""
 
