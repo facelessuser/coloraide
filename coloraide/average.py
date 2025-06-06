@@ -34,13 +34,14 @@ def average(
     channels = cs.channels
     chan_count = len(channels)
     alpha_index = chan_count - 1
-    sums = [0.0] * (chan_count + 1)
-    totals = [0.0] * (chan_count + 1)
+    avgs = [0.0] * chan_count
+    counts = [0] * chan_count
     sin = 0.0
     cos = 0.0
+    wavg = 0.0
 
     # Sum channel values
-    i = -1
+    count = 0
     for c, w in it.zip_longest(colors, weights):
         if c is None:
             raise ValueError('Not enough colors provided to satisfy number of weights')
@@ -57,58 +58,57 @@ def average(
         if math.isnan(alpha):
             alpha = 1.0
         walpha = alpha * w
+        count += 1
+        wavg += (w - wavg) / count
         i = 0
-        totals[-1] += 1
-        sums[-1] += w
         for coord in coords:
             # No need to average an undefined value or color components if alpha is zero
             is_alpha = i == alpha_index
             if not math.isnan(coord) and (premultiplied or alpha or is_alpha):
-                totals[i] += 1
-                # Tally weight alongside alpha
+                counts[i] += 1
+                n = counts[i]
                 if i == hue_index:
                     rad = math.radians(coord)
                     if premultiplied:
-                        sin += math.sin(rad) * walpha
-                        cos += math.cos(rad) * walpha
+                        sin += ((math.sin(rad) * walpha) - sin) / n
+                        cos += ((math.cos(rad) * walpha) - cos) / n
                     else:
-                        sin += math.sin(rad) * w
-                        cos += math.cos(rad) * w
+                        sin += ((math.sin(rad) * w) - sin) / n
+                        cos += ((math.cos(rad) * w) - cos) / n
                 else:
-                    sums[i] += (coord * walpha) if premultiplied and not is_alpha else (coord * w)
+                    avgs[i] += (((coord * walpha) if premultiplied and not is_alpha else (coord * w)) - avgs[i]) / n
             i += 1
 
-    if i == -1:
+    if not count:
         raise ValueError('At least one color must be provided in order to average colors')
 
     # Get the mean
-    w_factor = math.nan if not totals[-1] else sums[-1] / totals[-1]
-    sums[-2] = alpha = math.nan if not totals[-2] else (sums[-2] / (totals[-2] * w_factor))
+    w_factor = math.nan if not wavg else wavg
+    avgs[-1] = alpha = math.nan if not counts[-1] else avgs[-1] / w_factor
     if math.isnan(alpha):
         alpha = 1.0
     walpha = alpha * w_factor
 
     for i in range(chan_count - 1):
-        total = totals[i]
-        if not total or not alpha:
-            sums[i] = math.nan
+        if not counts[i] or not alpha:
+            avgs[i] = math.nan
         elif i == hue_index:
             if premultiplied:
-                sin /= total * walpha
-                cos /= total * walpha
+                sin /= walpha
+                cos /= walpha
             else:
-                sin /= total * w_factor
-                cos /= total * w_factor
+                sin /= w_factor
+                cos /= w_factor
             if abs(sin) < util.ACHROMATIC_THRESHOLD_SM and abs(cos) < util.ACHROMATIC_THRESHOLD_SM:
-                sums[i] = math.nan
+                avgs[i] = math.nan
             else:
                 avg_theta = math.degrees(math.atan2(sin, cos))
-                sums[i] = (avg_theta + 360) if avg_theta < 0 else avg_theta
+                avgs[i] = (avg_theta + 360) if avg_theta < 0 else avg_theta
         else:
-            sums[i] /= (total * walpha) if premultiplied else (total * w_factor)
+            avgs[i] /= walpha if premultiplied else w_factor
 
     # Create the color and if polar and there is no defined hue, force an achromatic state.
-    color = obj.update(space, sums[:-2], sums[-2])
+    color = obj.update(space, avgs[:-1], avgs[-1])
     if cs.is_polar():
         if is_hwb and math.isnan(color[hue_index]):
             w, b = cs.indexes()[1:]  # type: ignore[attr-defined]
