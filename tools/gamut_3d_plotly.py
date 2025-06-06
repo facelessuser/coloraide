@@ -713,38 +713,32 @@ def plot_interpolation(
     fig.add_trace(trace)
 
 
-def plot_interpolation_multi(
+def plot_average(
     fig,
     space,
-    interp_colors,
-    interp_space,
-    interp_method,
-    hue,
-    carryfoward,
-    powerless,
-    extrapolate,
-    steps,
+    avg_colors,
+    avg_space,
     gmap,
     simulate_alpha,
-    interp_gmap
+    avg_gmap
 ):
     """Plot interpolations."""
 
-    if not interp_colors:
+    if not avg_colors:
         return
 
-    parts = interp_colors.split(':')
+    parts = avg_colors.split(':')
 
     colors = parts[0].split(';')
     if len(parts) == 2:
         weights = [float(i.strip()) for i in parts[1].split(',')]
     else:
-        weights = []
+        weights = None
 
     color = Color.average(
         colors,
         weights,
-        space=interp_space
+        space=avg_space
     )
 
     target = Color.CS_MAP[space]
@@ -762,8 +756,8 @@ def plot_interpolation_multi(
         y = []
         z = []
         cmap = []
-        c = Color(s).convert(space, in_place=True)
-        if interp_gmap:
+        c = Color(s).convert(space, in_place=True).normalize(nans=False)
+        if avg_gmap:
             c.fit('srgb', **gmap)
         store_coords(c, x, y, z, flags)
         c.convert('srgb', in_place=True)
@@ -773,8 +767,8 @@ def plot_interpolation_multi(
         else:
            cmap.append(c.to_string(comma=True, alpha=False))
 
-        c = Color(color).convert(space, in_place=True)
-        if interp_gmap:
+        c = Color(color).convert(space, in_place=True).normalize(nans=False)
+        if avg_gmap:
             c.fit('srgb', **gmap)
         store_coords(c, x, y, z, flags)
         c.convert('srgb', in_place=True)
@@ -787,7 +781,7 @@ def plot_interpolation_multi(
         trace = go.Scatter3d(
             x=x, y=y, z=z,
             marker={'size': [8, 16], 'color': cmap, 'opacity': 1},
-            line={'color': cmap[0]},
+            line={'color': cmap[0], 'width': 3},
             showlegend=False
         )
 
@@ -837,15 +831,15 @@ def main():
     )
 
     # Interpolation visualization
-    parser.add_argument('--interp-multi-colors', default='', help="Interpolation between multiple colors.")
+    parser.add_argument('--avg-colors', default='', help="Colors that should be averaged together.")
     parser.add_argument('--interp-colors', default='', help='Interpolation colors separated by semicolons.')
     parser.add_argument('--interp-method', default='linear', help="Interplation method to use: linear, bezier, etc.")
-    parser.add_argument('--interp-space', default='oklab', help="Interpolation space.")
+    parser.add_argument('--interp-space', default='oklab', help="Interpolation/averaging space.")
     parser.add_argument(
-        '--interp-alpha', action='store_true', help="Simulate interpolation opacity by overlaying on white"
+        '--interp-alpha', action='store_true', help="Simulate interpolation/averaging opacity by overlaying on white."
     )
     parser.add_argument(
-        '--interp-gmap', action='store_true', help="Force plotted interpolation results to be gamut mapped."
+        '--interp-gmap', action='store_true', help="Force plotted interpolation/averaging results to be gamut mapped."
     )
     parser.add_argument('--hue', default='shorter', help="Hue interpolation handling.")
     parser.add_argument('--extrapolate', action='store_true', help='Extrapolate values.')
@@ -943,17 +937,11 @@ def main():
         args.interp_gmap
     )
 
-    plot_interpolation_multi(
+    plot_average(
         fig,
         args.space,
-        args.interp_multi_colors,
+        args.avg_colors,
         args.interp_space,
-        args.interp_method,
-        args.hue,
-        args.carryfoward,
-        args.powerless,
-        args.extrapolate,
-        args.steps,
         gmap,
         args.interp_alpha,
         args.interp_gmap
