@@ -1145,7 +1145,7 @@ class Color(metaclass=ColorMeta):
     def average(
         cls,
         colors: Iterable[ColorInput],
-        weights: Iterable[float] = (),
+        weights: Iterable[float] | None = None,
         *,
         space: str | None = None,
         out_space: str | None = None,

@@ -1,17 +1,23 @@
 """Average colors together."""
 from __future__ import annotations
 import math
-import itertools as it
 from . import util
 from .spaces import HWBish
 from .types import ColorInput, AnyColor
 from typing import Iterable
 
 
+def _iter_colors(colors: Iterable[ColorInput]) -> Iterable[tuple[ColorInput, float]]:
+    """Iterate colors and return weights."""
+
+    for c in colors:
+        yield c, 1.0
+
+
 def average(
     color_cls: type[AnyColor],
     colors: Iterable[ColorInput],
-    weights: Iterable[float],
+    weights: Iterable[float] | None,
     space: str,
     premultiplied: bool = True
 ) -> AnyColor:
@@ -39,16 +45,18 @@ def average(
     sin = 0.0
     cos = 0.0
     wavg = 0.0
+    no_weights = weights is None
+    if no_weights:
+        weights = ()
 
     # Sum channel values
     count = 0
-    for c, w in it.zip_longest(colors, weights):
-        if c is None:
-            raise ValueError('Not enough colors provided to satisfy number of weights')
-        if w is None:
-            w = 1.0
-        else:
+    for c, w in (_iter_colors(colors) if no_weights else zip(colors, weights)):  # type: ignore[arg-type]
+
+        # Clamp negative weights
+        if not no_weights:
             w = max(0.0, w)
+
         obj.update(c)
         # If cylindrical color is achromatic, ensure hue is undefined
         if hue_index >= 0 and not math.isnan(obj[hue_index]) and obj.is_achromatic():
