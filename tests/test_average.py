@@ -167,3 +167,35 @@ class TestAverage(util.ColorAsserts, unittest.TestCase):
         a = Color.average(['color(srgb 1 none 0)', 'color(srgb 0.1 none 0.3)', 'color(srgb 0.7 none 0)'], space='srgb')
         self.assertColorEqual(a, Color('rgb(153 none 25.5)'))
         self.assertTrue(math.isnan(a[1]))
+
+    def test_weighted_colors(self):
+        """Test weighted colors."""
+
+        a = Color.average(['red', 'green', 'yellow', 'blue'], space='srgb')
+        a = self.assertColorEqual(a, Color('color(srgb 0.5 0.37549 0.25 / 1)'))
+        a = Color.average(['red', 'green', 'yellow', 'blue'], [1, 1, 1, 0], space='srgb')
+        a = self.assertColorEqual(a, Color('rgb(170 127.67 0)'))
+        a = Color.average(['red', 'green', 'yellow', 'blue'], [1, 4, 2, 3], space='srgb')
+        a = self.assertColorEqual(a, Color('rgb(76.5 102.2 76.5)'))
+
+    def test_weighted_polar_colors(self):
+        """Test weighted colors."""
+
+        a = Color.average(['red', 'orange', 'white'], space='hsl')
+        a = self.assertColorEqual(a, Color('hsl(19.412 66.667% 66.667%)'))
+        a = Color.average(['red', 'orange', 'white'], [1, 1, 4], space='hsl')
+        a = self.assertColorEqual(a, Color('hsl(19.412 33.333% 83.333%)'))
+
+    def test_weighted_colors_mismatch(self):
+        """Test weighted colors."""
+
+        a = Color.average(['red', 'green', 'yellow', 'blue'], [1, 4, 2], space='srgb')
+        a = self.assertColorEqual(a, Color('rgb(69.545 92.909 92.727)'))
+        a = Color.average(['red', 'green', 'yellow', 'blue'], [1, 4, 2, 3, 5, 6], space='srgb')
+        a = self.assertColorEqual(a, Color('rgb(76.5 102.2 76.5)'))
+
+    def test_weighted_negative(self):
+        """Test weighted with negative weights."""
+
+        a = Color.average(['red', 'green', 'yellow', 'blue'], [1, 1, 1, -1], space='srgb')
+        a = self.assertColorEqual(a, Color('rgb(170 127.67 0)'))
