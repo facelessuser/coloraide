@@ -324,8 +324,7 @@ gulp.task("mkdocs:build", () => {
   return new Promise((resolve, reject) => {
     const cmdParts = (`${config.mkdocsCmd} build`).split(/ +/)
     const cmd = cmdParts[0]
-    const cmdArgs = cmdParts.slice(1, cmdParts.length - 1)
-
+    const cmdArgs = cmdParts.slice(1, cmdParts.length)
     const proc = childProcess.spawnSync(cmd, cmdArgs)
     if (proc.status)
       reject(proc.stderr.toString())

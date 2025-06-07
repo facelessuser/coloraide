@@ -7,8 +7,8 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "build": "node_modules/.bin/gulp -f gulpfile.babel.mjs build --compress --lint --buildmkdocs --revision --sourcemaps",
-    "compile": "node_modules/.bin/gulp -f gulpfile.babel.mjs build --compress --buildmkdocs --revision --sourcemaps",
+    "build": "node_modules/.bin/gulp -f gulpfile.babel.mjs build --compress --lint --revision --sourcemaps",
+    "compile": "node_modules/.bin/gulp -f gulpfile.babel.mjs build --compress --revision --sourcemaps",
     "clean_all": "node_modules/.bin/gulp -f gulpfile.babel.mjs clean",
     "serve": "node_modules/.bin/gulp -f gulpfile.babel.mjs serve",
     "lint": "node_modules/.bin/gulp -f gulpfile.babel.mjs lint"
