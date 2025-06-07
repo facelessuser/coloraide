@@ -207,3 +207,11 @@ class TestAverage(util.ColorAsserts, unittest.TestCase):
         self.assertColorEqual(a, Color('color(srgb none none none / 0)'), none=True)
         a = Color.average(['#ff000000', '#00ff0000', '#ffff0000', '#0000ff00'], space='hsl')
         self.assertColorEqual(a, Color('hsl(none none none / 0)'), none=True)
+
+    def test_all_zero_weight(self):
+        """Test result when all colors have a weight of zero."""
+
+        a = Color.average(['#ff0000', '#00ff00', '#ffff00', '#0000ff'], [0.0] * 4, space='srgb')
+        self.assertColorEqual(a, Color('color(srgb none none none / none)'), none=True)
+        a = Color.average(['#ff0000', '#00ff00', '#ffff00', '#0000ff'], [0.0] * 4, space='hsl')
+        self.assertColorEqual(a, Color('hsl(none none none / none)'), none=True)
