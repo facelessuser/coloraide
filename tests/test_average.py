@@ -172,30 +172,38 @@ class TestAverage(util.ColorAsserts, unittest.TestCase):
         """Test weighted colors."""
 
         a = Color.average(['red', 'green', 'yellow', 'blue'], space='srgb')
-        a = self.assertColorEqual(a, Color('color(srgb 0.5 0.37549 0.25 / 1)'))
+        self.assertColorEqual(a, Color('color(srgb 0.5 0.37549 0.25 / 1)'))
         a = Color.average(['red', 'green', 'yellow', 'blue'], [1, 1, 1, 0], space='srgb')
-        a = self.assertColorEqual(a, Color('rgb(170 127.67 0)'))
+        self.assertColorEqual(a, Color('rgb(170 127.67 0)'))
         a = Color.average(['red', 'green', 'yellow', 'blue'], [1, 4, 2, 3], space='srgb')
-        a = self.assertColorEqual(a, Color('rgb(76.5 102.2 76.5)'))
+        self.assertColorEqual(a, Color('rgb(76.5 102.2 76.5)'))
 
     def test_weighted_polar_colors(self):
         """Test weighted colors."""
 
         a = Color.average(['red', 'orange', 'white'], space='hsl')
-        a = self.assertColorEqual(a, Color('hsl(19.412 66.667% 66.667%)'))
+        self.assertColorEqual(a, Color('hsl(19.412 66.667% 66.667%)'))
         a = Color.average(['red', 'orange', 'white'], [1, 1, 4], space='hsl')
-        a = self.assertColorEqual(a, Color('hsl(19.412 33.333% 83.333%)'))
+        self.assertColorEqual(a, Color('hsl(19.412 33.333% 83.333%)'))
 
     def test_weighted_colors_mismatch(self):
         """Test weighted colors."""
 
         a = Color.average(['red', 'green', 'yellow', 'blue'], [1, 4, 2], space='srgb')
-        a = self.assertColorEqual(a, Color('rgb(69.545 92.909 92.727)'))
+        self.assertColorEqual(a, Color('rgb(69.545 92.909 92.727)'))
         a = Color.average(['red', 'green', 'yellow', 'blue'], [1, 4, 2, 3, 5, 6], space='srgb')
-        a = self.assertColorEqual(a, Color('rgb(76.5 102.2 76.5)'))
+        self.assertColorEqual(a, Color('rgb(76.5 102.2 76.5)'))
 
     def test_weighted_negative(self):
         """Test weighted with negative weights."""
 
         a = Color.average(['red', 'green', 'yellow', 'blue'], [1, 1, 1, -1], space='srgb')
-        a = self.assertColorEqual(a, Color('rgb(170 127.67 0)'))
+        self.assertColorEqual(a, Color('rgb(170 127.67 0)'))
+
+    def test_all_transparent(self):
+        """Test result when all colors are transparent."""
+
+        a = Color.average(['#ff000000', '#00ff0000', '#ffff0000', '#0000ff00'], space='srgb')
+        self.assertColorEqual(a, Color('color(srgb none none none / 0)'), none=True)
+        a = Color.average(['#ff000000', '#00ff0000', '#ffff0000', '#0000ff00'], space='hsl')
+        self.assertColorEqual(a, Color('hsl(none none none / 0)'), none=True)

@@ -111,30 +111,29 @@ def average(
     if not count:
         raise ValueError('At least one color must be provided in order to average colors')
 
-    # Undo premultiplication and weighting to get the final color
-    w_factor = math.nan if not wavg else wavg
-    avgs[-1] = alpha = math.nan if not counts[-1] else avgs[-1] / w_factor
+    # Undo premultiplication and weighting to get the final color.
+    # Adjust a channel to be undefined if all values in channel were undefined or if it is an achromatic hue channel.
+    if not wavg:
+        wavg = math.nan
+    avgs[-1] = alpha = math.nan if not counts[-1] else avgs[-1] / wavg
     if math.isnan(alpha):
         alpha = 1.0
-    walpha = alpha * w_factor
+    factor = (alpha * wavg) if premultiplied else wavg
 
     for i in range(chan_count - 1):
         if not counts[i] or not alpha:
             avgs[i] = math.nan
         elif i == hue_index:
-            if premultiplied:
-                sin /= walpha
-                cos /= walpha
-            else:
-                sin /= w_factor
-                cos /= w_factor
+            sin /= factor
+            cos /= factor
+            # Combine polar parts into a degree
             if abs(sin) < util.ACHROMATIC_THRESHOLD_SM and abs(cos) < util.ACHROMATIC_THRESHOLD_SM:
                 avgs[i] = math.nan
             else:
                 avg_theta = math.degrees(math.atan2(sin, cos))
                 avgs[i] = (avg_theta + 360) if avg_theta < 0 else avg_theta
         else:
-            avgs[i] /= walpha if premultiplied else w_factor
+            avgs[i] /= factor
 
     # Create the color. If polar and there is no defined hue, force an achromatic state.
     color = obj.update(space, avgs[:-1], avgs[-1])
