@@ -6,21 +6,23 @@ and averaging each channel independently. Additionally, by default, transparency
 premultiplication which weights the colors such that more opaque colors have a greater significance in the mixing vs
 more translucent colors.
 
-![Average RGB](images/avg-rgb.png)
-
-
 Averaging under ColorAide can take as many colors as desired and will return a color that represents the average. This
-is not to be confused with interpolation which employs a different technique. One thing that sets it apart from
-interpolation is that when performing the operation, the order of the colors does not matter and will yield the same
-results even the colors are shuffled.
+approach to mixing is not to be confused with interpolation which employs a different technique. One thing that sets it
+apart from interpolation is that when performing the operation, the order of the colors does not matter and will yield
+the same results even if the colors are shuffled.
 
 Averaging can be used as a way to mix multiple colors into one color or simply determine what the overall average color
 is from a set of colors. Results are subject to the geometry of the color space in which the average is performed.
 
 ## Rectangular Space Averaging
 
-ColorAide, by default, averages in the rectangular Linear sRGB color spaces. If desired, other color spaces can be used.
-Results will vary due to the geometry of the color space being used.
+ColorAide, by default, averages colors in the rectangular Linear sRGB color spaces. For most, averaging in rectangular
+spaces would most likely be the common approach.
+
+![Average RGB](images/avg-rgb.png)
+
+While linear sRGB is the default color space when averaging, other color spaces can be used. Results will vary due to
+the geometry of the color space being used.
 
 ```py play
 Color.average(['red', 'blue'])
@@ -37,10 +39,14 @@ Color.average(['red', 'yellow', 'orange', 'green'])
 ## Cylindrical Space Averaging
 
 ColorAide can also average colors in cylindrical spaces. When applying averaging in a cylindrical space, hues will be
-averaged taking the circular mean. Due the difference in approach, colors can be quite different.
+averaged taking the circular mean. Due the difference in approach, color averaging in a cylindrical space can be quite
+different.
+
+![Average HSL](images/avg-hsl.png)
+
+To perform averaging in a cylindrical/polar space, simply specify the space when averaging.
 
 ```py play
-Color.average(['purple', 'green', 'blue'])
 Color.average(['purple', 'green', 'blue'], space='hsl')
 ```
 
