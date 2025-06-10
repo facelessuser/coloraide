@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+-   **ENHANCE**: Speed up conversion some by ensuring chromatic adaptation is only executed when absolutely needed.
+
 ## 4.7
 
 -   **NEW**: Officially support Python 3.14.
