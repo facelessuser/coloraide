@@ -84,6 +84,9 @@ def get_convert_chain(
 
             # Do we need to chromatically adapt towards XYZ D65?
             adapt = base_space.NAME == ABSOLUTE_BASE
+            if adapt:
+                if current.WHITE == base_space.WHITE:
+                    adapt = False
 
             # Add conversion chain entry
             chain.append((current, base_space, 0, adapt))
@@ -108,13 +111,18 @@ def get_convert_chain(
         # Do we need to chromatically adapt away from XYZ D65?
         adapt = current.NAME == ABSOLUTE_BASE
 
-        # Moving away from XYZ D65, convert towards are desired target
+        # Moving away from XYZ D65, convert towards our desired target
         for index in range(start, -1, -1):
             base_space = current
             current = from_color[index]
 
+            if adapt:
+                if current.WHITE == base_space.WHITE:
+                    adapt = False
+
             # Add the conversion chain entry
             chain.append((base_space, current, 1, adapt))
+            adapt = False
 
     return chain
 
