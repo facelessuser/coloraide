@@ -250,10 +250,9 @@ class Color(metaclass=ColorMeta):
 
             # Parse a color space name and coordinates
             if data is not None:
-                s = color
-                space_class = cls.CS_MAP.get(s)
+                space_class = cls.CS_MAP.get(color)
                 if not space_class:
-                    raise ValueError(f"'{s}' is not a registered color space")
+                    raise ValueError(f"'{color}' is not a registered color space")
                 num_channels = len(space_class.CHANNELS)
                 num_data = len(data)
                 if num_data < num_channels:
