@@ -5,7 +5,8 @@ Currently only shows non polar interpolation.
 """
 import sys
 import os
-import matplotlib.pyplot as plt
+import plotly.graph_objects as go
+import plotly.io as io
 import argparse
 import math
 
@@ -52,7 +53,6 @@ def main():
     parser.add_argument('--yaxis', '-y', help="The channel to plot on Y axis 'name:min:max'.")
     parser.add_argument('--resolution', '-r', default="800", help="How densely to render the figure.")
     parser.add_argument('--no-border', '-b', action="store_true", help='Draw no border around the graphed content.')
-    parser.add_argument('--dark', action="store_true", help="Use dark theme.")
     parser.add_argument('--dpi', default=200, type=int, help="DPI of image.")
     parser.add_argument('--output', '-o', default='', help='Output file.')
 
@@ -74,7 +74,7 @@ def main():
     else:
         title = args.title
 
-    plot_slice(
+    fig = plot_slice(
         args.space,
         args.constant,
         args.xaxis,
@@ -83,7 +83,6 @@ def main():
         resolution=int(args.resolution),
         title=title,
         subtitle=args.subtitle,
-        dark=args.dark,
         polar=True,
         border=not args.no_border
     )
@@ -95,12 +94,12 @@ def main():
     name1 = c1._space.CHANNEL_ALIASES.get(name1, name1)
     index1 = c1._space.get_channel_index(name1)
     name2 = c1._space.CHANNEL_ALIASES.get(name2, name2)
-    hue_index = -1
 
+    is_polar = False
     if c1._space.is_polar():
         index = c1._space.hue_index()
         if index == index1:
-            hue_index = index
+            is_polar = True
 
     xs = []
     ys = []
@@ -119,30 +118,55 @@ def main():
         offset, factor = 1, 3
     for r in range(101):
         c = i((r * factor / 100) - offset)
-        xs.append(c.get(name1) if hue_index == -1 else math.radians(c.get(name1)))
+        xs.append(c.get(name1))
         ys.append(c.get(name2))
 
     xs, ys = get_spline(xs, ys, len(xs) * 3)
 
-    plt.plot(
-        xs,
-        ys,
-        color='black',
-        marker="",
-        linewidth=1.5,
-        markersize=2,
-        antialiased=True
-    )
+    if is_polar:
+        fig.add_traces(data=go.Scatterpolar(
+            theta=xs,
+            r=ys,
+            mode="lines",
+            line={'color': '#000000', 'width': 4},
+            showlegend=False
+        ))
+    else:
+        fig.add_traces(data=go.Scatter(
+            x=xs,
+            y=ys,
+            mode="lines",
+            line={'color': '#000000', 'width': 4},
+            showlegend=False
+        ))
 
     for c in colors:
-        plt.scatter(
-            c.get(name1) if hue_index == -1 else math.radians(c.get(name1, nans=False)),
-            c.get(name2),
-            marker="o",
-            color=c.convert('srgb').to_string(hex=True),
-            edgecolor='black',
-            zorder=100
-        )
+        if is_polar:
+            fig.add_traces(data=go.Scatterpolar(
+                theta=[c.get(name1, nans=False)],
+                r=[c.get(name2)],
+                mode="markers",
+                marker={
+                    'color': c.convert('srgb').to_string(hex=True),
+                    'size': 12,
+                    'line': {'width': 2},
+                    'opacity': 1
+                },
+                showlegend=False
+            ))
+        else:
+            fig.add_traces(data=go.Scatter(
+                x=[c.get(name1)],
+                y=[c.get(name2)],
+                mode="markers",
+                marker={
+                    'color': c.convert('srgb').to_string(hex=True),
+                    'size': 12,
+                    'line': {'width': 2},
+                    'opacity': 1
+                },
+                showlegend=False
+            ))
 
     if args.position is not None:
         cp = Color.interpolate(
@@ -154,21 +178,45 @@ def main():
             carryforward=args.carryforward,
             hue=args.hue
         )(float(args.position))
-        plt.scatter(
-            cp.get(name1) if hue_index == -1 else math.radians(cp.get(name1, nans=False)),
-            cp.get(name2),
-            marker="o",
-            color=cp.convert('srgb').to_string(hex=True),
-            edgecolor='black',
-            s=64,
-            zorder=100
-        )
+        if is_polar:
+            fig.add_traces(data=go.Scatterpolar(
+                theta=[cp.get(name1, nans=False)],
+                r=[cp.get(name2)],
+                mode="markers",
+                marker={
+                    'color': c.convert('srgb').to_string(hex=True),
+                    'size': 12,
+                    'line': {'width': 2},
+                    'opacity': 1.5
+                },
+                showlegend=False
+            ))
+        else:
+            fig.add_traces(data=go.Scatter(
+                x=[cp.get(name1)],
+                y=[cp.get(name2)],
+                mode="markers",
+                marker={
+                    'color': c.convert('srgb').to_string(hex=True),
+                    'size': 12,
+                    'line': {'width': 2},
+                    'opacity': 1
+                },
+                showlegend=False
+            ))
 
     if args.output:
-        plt.savefig(args.output, dpi=args.dpi)
+        filetype = os.path.splitext(args.output)[1].lstrip('.').lower()
+        if filetype == 'html':
+            with open(args.output, 'w') as f:
+                f.write(io.to_html(fig))
+        elif filetype == 'json':
+            io.write_json(fig, args.output)
+        else:
+            with open(args.output, 'wb') as f:
+                f.write(fig.to_image(format=filetype))
     else:
-        plt.gcf().set_dpi(args.dpi)
-        plt.show()
+        fig.show()
 
 
 if __name__ == "__main__":

@@ -1,7 +1,8 @@
 """Model gamut mapping."""
 import sys
 import os
-import matplotlib.pyplot as plt
+import plotly.graph_objects as go
+import plotly.io as io
 import argparse
 import math
 import json
@@ -35,7 +36,6 @@ def main():
     parser.add_argument('--no-border', '-b', action="store_true", help='Draw no border around the graphed content.')
     parser.add_argument('--resolution', '-r', default="800", help="How densely to render the figure.")
     parser.add_argument('--clip-space', '-p', default='lch', help="LCh space to show clipping in.")
-    parser.add_argument('--dark', action="store_true", help="Use dark theme.")
     parser.add_argument('--dpi', default=200, type=int, help="DPI of image.")
     parser.add_argument('--output', '-o', default='', help='Output file.')
     parser.add_argument('--title', '-t', default='', help='Title.')
@@ -123,7 +123,7 @@ def main():
         start.append(mapcolor)
         end.append(mapcolor2)
 
-    plot_slice(
+    fig = plot_slice(
         space,
         constant,
         xaxis,
@@ -133,58 +133,69 @@ def main():
         resolution=int(args.resolution),
         title=title,
         subtitle=subtitle,
-        dark=args.dark,
         border=not args.no_border
     )
 
     for i in range(count):
         mapcolor = start[i]
         mapcolor2 = end[i]
-        plt.plot(
-            [mapcolor2[x], mapcolor[x]],
-            [mapcolor2[y], mapcolor[y]],
-            color='#aaaaaa',
-            marker="",
-            linewidth=1.5,
-            markersize=2,
-            antialiased=True
-        )
+
+        fig.add_traces(data=go.Scatter(
+            x=[mapcolor2[x], mapcolor[x]],
+            y=[mapcolor2[y], mapcolor[y]],
+            mode="lines",
+            line={'color': '#aaaaaa', 'width': 2},
+            showlegend=False
+        ))
 
         if adaptive is not None:
-            plt.plot(
-                [mapcolor2[x], 0],
-                [mapcolor2[y], alg.lerp(mapcolor2[y], mapcolor[y], alg.ilerp(mapcolor2[x], mapcolor[x], 0))],
-                color='#aaaaaa88',
-                marker="",
-                linewidth=1.5,
-                markersize=2,
-                antialiased=True
-            )
+            fig.add_traces(data=go.Scatter(
+                x=[mapcolor2[x], 0],
+                y=[mapcolor2[y], alg.lerp(mapcolor2[y], mapcolor[y], alg.ilerp(mapcolor2[x], mapcolor[x], 0))],
+                mode="lines",
+                line={'color': '#aaaaaa', 'width': 2},
+                showlegend=False
+            ))
 
-        plt.scatter(
-            mapcolor[x],
-            mapcolor[y],
-            marker="o",
-            color=mapcolor2.convert('srgb').to_string(hex=True, fit=gmap),
-            edgecolor='black',
-            zorder=100
-        )
+        fig.add_traces(data=go.Scatter(
+            x=[mapcolor[x]],
+            y=[mapcolor[y]],
+            mode="markers",
+            marker={
+                'color': mapcolor2.convert('srgb').to_string(hex=True, fit=gmap),
+                'size': 12,
+                'line': {'width': 1},
+                'opacity': 1
+            },
+            showlegend=False
+        ))
 
         if args.show_end_pt:
-            plt.scatter(
-                mapcolor2[x],
-                mapcolor2[y],
-                marker="o",
-                color=mapcolor2.convert('srgb').to_string(hex=True, fit=gmap),
-                edgecolor='black',
-                zorder=100
-            )
+            fig.add_traces(data=go.Scatter(
+                x=[mapcolor2[x]],
+                y=[mapcolor2[y]],
+                mode="markers",
+                marker={
+                    'color': mapcolor2.convert('srgb').to_string(hex=True, fit=gmap),
+                    'size': 12,
+                    'line': {'width': 1},
+                    'opacity': 1
+                },
+                showlegend=False
+            ))
 
     if args.output:
-        plt.savefig(args.output, dpi=args.dpi)
+        filetype = os.path.splitext(args.output)[1].lstrip('.').lower()
+        if filetype == 'html':
+            with open(args.output, 'w') as f:
+                f.write(io.to_html(fig))
+        elif filetype == 'json':
+            io.write_json(fig, args.output)
+        else:
+            with open(args.output, 'wb') as f:
+                f.write(fig.to_image(format=filetype))
     else:
-        plt.gcf().set_dpi(args.dpi)
-        plt.show()
+        fig.show()
 
 
 if __name__ == "__main__":

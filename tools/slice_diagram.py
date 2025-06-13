@@ -8,7 +8,8 @@ from -0.5 to 0.5.
 
 The constant channel is given in the form `name:value` where value is the constant value for the channel.
 """
-import matplotlib.pyplot as plt
+import plotly.graph_objects as go
+import plotly.io as io
 import argparse
 import sys
 import os
@@ -48,7 +49,6 @@ def plot_slice(
     channel2,
     gamut='srgb',
     resolution=500,
-    dark=False,
     title="",
     subtitle='',
     polar=False,
@@ -62,15 +62,14 @@ def plot_slice(
     if gmap is None:
         gmap = {}
 
+    default_color = 'black'
     res = resolution
-    if not dark:
-        plt.style.use('seaborn-v0_8-darkgrid')
-        default_color = 'black'
-    else:
-        plt.style.use('dark_background')
-        default_color = 'white'
 
-    figure = plt.figure()
+    fig = go.Figure(
+        layout={
+            'title': title,
+        }
+    )
 
     # Create a color object based on the specified space.
     c = Color(space, [])
@@ -101,12 +100,14 @@ def plot_slice(
     index2 = c._space.get_channel_index(name2)
     hue_index = -1
 
-    kwargs = {}
+    # kwargs = {}
+    is_polar = False
     if polar and c._space.is_polar():
-        kwargs['projection'] = 'polar'
+        # kwargs['projection'] = 'polar'
         index = c._space.hue_index()
         if index == index1:
             hue_index = index
+            is_polar = True
 
     # Arrays for data points to plot
     c_map = []
@@ -213,16 +214,9 @@ def plot_slice(
                         edge_map_y[c2] = [mn, mx]
 
                 # Save the points
-                xaxis.append(c1)
+                xaxis.append(math.degrees(c1) if hue_index != -1 else c1)
                 yaxis.append(c2)
                 c_map.append(r.convert('srgb').to_string(hex=True, fit=gmap))
-
-    # Create axes
-    ax = plt.axes(
-        xlabel=f'{name1}: {fmt_float(c1_mn, 5)} - {fmt_float(c1_mx, 5)}',
-        ylabel=f'{name2}: {fmt_float(c2_mn, 5)} - {fmt_float(c2_mx, 5)}',
-        **kwargs
-    )
 
     # Create titles
     if not title:
@@ -230,25 +224,35 @@ def plot_slice(
             space, name1, name2, ' '.join([f'{chan[0]} = {fmt_float(chan[1], 5)}' for chan in chan_constants])
         )
 
-    plt.suptitle(title)
     if subtitle:
-        if hue_index == -1:
-            ax.set_title(subtitle, fontdict={'fontsize': 8})
-        else:
-            ax.set_title(subtitle, fontdict={'fontsize': 8}, pad=2)
+        title += f'<br><sup>{subtitle}</sup>'
 
-    # Set aspect
-    ax.set_aspect('auto' if hue_index == -1 else 'equal')
-    figure.add_axes(ax)
-
-    # Fill colors
-    plt.scatter(
-        xaxis,
-        yaxis,
-        marker="o",
-        color=c_map,
-        s=2
+    fig = go.Figure(
+        layout={
+            'title': title,
+            'xaxis_title': {'text': f'{name1}: {fmt_float(c1_mn, 5)} - {fmt_float(c1_mx, 5)}'},
+            'yaxis_title': {'text': f'{name2}: {fmt_float(c2_mn, 5)} - {fmt_float(c2_mx, 5)}'},
+            'polar': {'radialaxis': {'showline': False, 'layer': 'below traces'}}
+        }
     )
+
+    if not is_polar:
+        fig.add_traces(data=go.Scatter(
+            x=xaxis,
+            y=yaxis,
+            mode='markers',
+            marker={'color': c_map, 'size': 8, 'symbol': 'circle'},
+            showlegend=False
+        ))
+
+    else:
+        fig.add_traces(data=go.Scatterpolar(
+            theta=xaxis,
+            r=yaxis,
+            mode='markers',
+            marker={'color': c_map, 'size': 8, 'symbol': 'circle'},
+            showlegend=False
+        ))
 
     if border:
         # Create a border from the X axis perspective
@@ -299,7 +303,24 @@ def plot_slice(
             ex, ey = zip(*edge_x)
 
         # Plot the edge border
-        plt.plot(ex, ey, color=default_color, marker="", linewidth=2, markersize=0, antialiased=True)
+        if not is_polar:
+            fig.add_traces(data=go.Scatter(
+                x=ex,
+                y=ey,
+                mode="lines",
+                line={'color': default_color, 'width': 2},
+                showlegend=False
+            ))
+        else:
+            fig.add_traces(data=go.Scatterpolar(
+                theta=[math.degrees(i) for i in ex],
+                r=ey,
+                mode='markers',
+                line={'color': default_color, 'width': 2},
+                showlegend=False
+            ))
+
+    return fig
 
 
 def main():
@@ -321,7 +342,6 @@ def main():
         '--sub-title', default='', help="Provide a subtitle, if none is provided, will show contant channel."
     )
     parser.add_argument('--no-border', '-b', action="store_true", help='Draw no border around the graphed content.')
-    parser.add_argument('--dark', action="store_true", help="Use dark theme.")
     parser.add_argument('--dpi', default=200, type=int, help="DPI of image.")
     parser.add_argument('--output', '-o', default='', help='Output file.')
     parser.add_argument('--gmap', '-G', default='lch-chroma', help='Gamut mapping approach (default is lch-chroma).')
@@ -345,7 +365,7 @@ def main():
     gmap = {'method': args.gmap}
     gmap.update(json.loads(args.gmap_options))
 
-    plot_slice(
+    fig = plot_slice(
         args.space,
         args.constant,
         args.xaxis,
@@ -355,7 +375,6 @@ def main():
         resolution=int(args.resolution),
         title=args.title,
         subtitle=args.sub_title,
-        dark=args.dark,
         polar=args.polar,
         border=not args.no_border,
         pointer=args.pointer,
@@ -363,10 +382,17 @@ def main():
     )
 
     if args.output:
-        plt.savefig(args.output, dpi=args.dpi)
+        filetype = os.path.splitext(args.output)[1].lstrip('.').lower()
+        if filetype == 'html':
+            with open(args.output, 'w') as f:
+                f.write(io.to_html(fig))
+        elif filetype == 'json':
+            io.write_json(fig, args.output)
+        else:
+            with open(args.output, 'wb') as f:
+                f.write(fig.to_image(format=filetype))
     else:
-        plt.gcf().set_dpi(args.dpi)
-        plt.show()
+        fig.show()
 
 
 if __name__ == "__main__":
