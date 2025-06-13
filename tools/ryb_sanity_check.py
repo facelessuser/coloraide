@@ -64,7 +64,7 @@ def main():
     """Main."""
 
     parser = argparse.ArgumentParser(
-        prog='ryb_sanity_check.py', description='Ensure we have minimal accuracy for RYB conversion.'
+        prog='ryb_sanity_check.py', description='Ensure we have sufficient accuracy for RYB conversion.'
     )
     # Flag arguments
     parser.add_argument(
