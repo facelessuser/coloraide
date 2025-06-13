@@ -8,7 +8,6 @@ import os
 import plotly.graph_objects as go
 import plotly.io as io
 import argparse
-import math
 
 sys.path.insert(0, os.getcwd())
 
