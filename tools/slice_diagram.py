@@ -100,10 +100,8 @@ def plot_slice(
     index2 = c._space.get_channel_index(name2)
     hue_index = -1
 
-    # kwargs = {}
     is_polar = False
     if polar and c._space.is_polar():
-        # kwargs['projection'] = 'polar'
         index = c._space.hue_index()
         if index == index1:
             hue_index = index
