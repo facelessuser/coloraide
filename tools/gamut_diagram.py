@@ -158,7 +158,8 @@ def main():
                 y=[mapcolor2[y], alg.lerp(mapcolor2[y], mapcolor[y], alg.ilerp(mapcolor2[x], mapcolor[x], 0))],
                 mode="lines",
                 line={'color': '#aaaaaa', 'width': 2},
-                showlegend=False
+                showlegend=False,
+                opacity=0.5
             ))
 
         fig.add_traces(data=go.Scatter(
@@ -168,7 +169,7 @@ def main():
             marker={
                 'color': mapcolor2.convert('srgb').to_string(hex=True, fit=gmap),
                 'size': 12,
-                'line': {'width': 1},
+                'line': {'width': 2},
                 'opacity': 1
             },
             showlegend=False
@@ -182,7 +183,7 @@ def main():
                 marker={
                     'color': mapcolor2.convert('srgb').to_string(hex=True, fit=gmap),
                     'size': 12,
-                    'line': {'width': 1},
+                    'line': {'width': 2},
                     'opacity': 1
                 },
                 showlegend=False
