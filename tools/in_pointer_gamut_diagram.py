@@ -5,10 +5,10 @@ If a color is given, plot it against the gamut instead of random points.
 """
 import sys
 import os
-import math
 import random
 import argparse
-import matplotlib.pyplot as plt
+import plotly.graph_objects as go
+import plotly.io as io
 
 sys.path.insert(0, os.getcwd())
 
@@ -44,19 +44,14 @@ class Color(ColorAll):
 Color.register([LabPointer(), LChPointer()])
 
 
-def plot_pointer_gamut(target, space_gamut, fit, title, dark=False):
+def plot_pointer_gamut(target, space_gamut, fit, title, height, width):
     """
     Plot the Pointer gamut and random points inside and outside the gamut.
 
     If a color is given, plot it against the gamut instead of random points.
     """
 
-    if not dark:
-        plt.style.use('seaborn-v0_8-darkgrid')
-        default_color = 'black'
-    else:
-        plt.style.use('dark_background')
-        default_color = 'white'
+    default_color = 'black'
 
     lightness = random.uniform(15, 90)
     colors = []
@@ -79,39 +74,36 @@ def plot_pointer_gamut(target, space_gamut, fit, title, dark=False):
     chroma = [alg.lerp(row[li], row[li + 1], lf) for row in gamut.pointer.LCH_POINTER]
     chroma.append(chroma[0])
 
-    figure = plt.figure()
-
-    ax = plt.axes(
-        xlabel='hue',
-        ylabel='chroma',
-        projection='polar'
-    )
-
-    ax.set_aspect('equal')
-    figure.add_axes(ax)
-
+    suptitle = ''
     if not title:
-        plt.suptitle(f'Pointer Gamut: LCh SC at Lightness {round(lightness, 2)}')
+        suptitle = f'Pointer Gamut: LCh SC at Lightness {round(lightness, 2)}'
     if target:
         if len(colors) > 1:
             space = original.space()
-            ax.set_title(
-                f'Color: {colors[0].convert(space).to_string()} -> {colors[1].convert(space).to_string()}',
-                fontdict={'fontsize': 8},
-                pad=2
-            )
+            title = f'Color: {colors[0].convert(space).to_string()} -> {colors[1].convert(space).to_string()}'
         else:
-            ax.set_title(f'Color: {colors[0].to_string()}', fontdict={'fontsize': 8}, pad=2)
+            title = f'Color: {colors[0].to_string()}'
+        if suptitle:
+            title = f"{suptitle}<br><sup>{title}</sup>"
 
-    plt.plot(
-        [math.radians(hue) for hue in gamut.pointer.LCH_H] + [0.0],
-        chroma,
-        color=default_color,
-        marker="",
-        linewidth=1.5,
-        markersize=2,
-        antialiased=True
+    fig = go.Figure(
+        layout={
+            'title': title,
+            'xaxis_title': {'text': 'hue'},
+            'yaxis_title': {'text': 'chroma'},
+            'polar': {'radialaxis': {'showline': False, 'layer': 'below traces'}},
+            'height': height,
+            'width': width
+        }
     )
+
+    fig.add_traces(data=go.Scatterpolar(
+        theta=gamut.pointer.LCH_H + [0.0],
+        r=chroma,
+        mode="lines",
+        line={'color': default_color, 'width': 2},
+        showlegend=False
+    ))
 
     inside = []
     outside = []
@@ -119,32 +111,42 @@ def plot_pointer_gamut(target, space_gamut, fit, title, dark=False):
     for color in colors:
         c, h = color[1:-1]
         if color.in_pointer_gamut():
-            inside.append([c, math.radians(h)])
+            inside.append([c, h])
         else:
-            outside.append([c, math.radians(h)])
+            outside.append([c, h])
 
     if inside:
         y, x = zip(*inside)
-        plt.scatter(
-            x,
-            y,
-            marker="o",
-            color=default_color,
-            edgecolor=default_color,
-            s=16,
-            zorder=100
-        )
+        fig.add_traces(data=go.Scatterpolar(
+            theta=x,
+            r=y,
+            mode="markers",
+            marker={
+                'color': default_color,
+                'size': 12,
+                'line': {'color': default_color, 'width': 2},
+                'opacity': 1
+            },
+            showlegend=False
+        ))
 
     if outside:
         y, x = zip(*outside)
-        plt.scatter(
-            x,
-            y,
-            marker="x",
-            color=default_color,
-            s=16,
-            zorder=100
-        )
+        fig.add_traces(data=go.Scatterpolar(
+            theta=x,
+            r=y,
+            mode="markers",
+            marker={
+                'color': default_color,
+                'size': 12,
+                'line': {'color': default_color, 'width': 2},
+                'symbol': 'x',
+                'opacity': 1
+            },
+            showlegend=False
+        ))
+
+    return fig
 
 
 def main():
@@ -162,25 +164,34 @@ def main():
         help="Color to test against the Pointer gamut, single colors will show the original and fitted color."
     )
     parser.add_argument('--title', '-t', default='', help="Provide a title for the diagram.")
-    parser.add_argument('--dark', action="store_true", help="Use dark theme.")
     parser.add_argument('--dpi', default=200, type=int, help="DPI of image.")
     parser.add_argument('--output', '-o', default='', help='Output file.')
+    parser.add_argument('--height', '-H', type=int, default=600, help="Height")
+    parser.add_argument('--width', '-W', type=int, default=800, help="Width")
 
     args = parser.parse_args()
 
-    plot_pointer_gamut(
+    fig = plot_pointer_gamut(
         args.color,
         args.gamut,
         args.fit,
         args.title,
-        dark=args.dark
+        args.height,
+        args.width
     )
 
     if args.output:
-        plt.savefig(args.output, dpi=args.dpi)
+        filetype = os.path.splitext(args.output)[1].lstrip('.').lower()
+        if filetype == 'html':
+            with open(args.output, 'w') as f:
+                f.write(io.to_html(fig))
+        elif filetype == 'json':
+            io.write_json(fig, args.output)
+        else:
+            with open(args.output, 'wb') as f:
+                f.write(fig.to_image(format=filetype))
     else:
-        plt.gcf().set_dpi(args.dpi)
-        plt.show()
+        fig.show()
 
 
 if __name__ == "__main__":
