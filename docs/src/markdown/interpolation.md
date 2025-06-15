@@ -79,7 +79,7 @@ Normally, two colors with defined hues will have a shorter and longer arc length
 ![Shorter Hue](images/hue-shorter.png)
 
 ```py play
-Color.interpolate(['red', 'blue'], space='hsl', hue='shorter')
+Color.interpolate(['hsl(0 75% 50%)', 'hsl(240 75% 50%)'], space='hsl', hue='shorter')
 ```
 ///
 
@@ -87,7 +87,7 @@ Color.interpolate(['red', 'blue'], space='hsl', hue='shorter')
 ![Longer Hue](images/hue-longer.png)
 
 ```py play
-Color.interpolate(['red', 'blue'], space='hsl', hue='longer')
+Color.interpolate(['hsl(0 75% 50%)', 'hsl(240 75% 50%)'], space='hsl', hue='longer')
 ```
 ///
 

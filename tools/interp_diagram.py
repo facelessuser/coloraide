@@ -127,7 +127,7 @@ def main():
             theta=xs,
             r=ys,
             mode="lines",
-            line={'color': '#000000', 'width': 4},
+            line={'color': '#000000', 'width': 2},
             showlegend=False
         ))
     else:
@@ -135,7 +135,7 @@ def main():
             x=xs,
             y=ys,
             mode="lines",
-            line={'color': '#000000', 'width': 4},
+            line={'color': '#000000', 'width': 2},
             showlegend=False
         ))
 
@@ -148,7 +148,7 @@ def main():
                 marker={
                     'color': c.convert('srgb').to_string(hex=True),
                     'size': 12,
-                    'line': {'width': 2},
+                    'line': {'color': 'black', 'width': 2},
                     'opacity': 1
                 },
                 showlegend=False
@@ -161,7 +161,7 @@ def main():
                 marker={
                     'color': c.convert('srgb').to_string(hex=True),
                     'size': 12,
-                    'line': {'width': 2},
+                    'line': {'color': 'black', 'width': 2},
                     'opacity': 1
                 },
                 showlegend=False
@@ -183,7 +183,7 @@ def main():
                 r=[cp.get(name2)],
                 mode="markers",
                 marker={
-                    'color': c.convert('srgb').to_string(hex=True),
+                    'color': cp.convert('srgb').to_string(hex=True),
                     'size': 12,
                     'line': {'width': 2},
                     'opacity': 1.5
@@ -196,8 +196,8 @@ def main():
                 y=[cp.get(name2)],
                 mode="markers",
                 marker={
-                    'color': c.convert('srgb').to_string(hex=True),
-                    'size': 12,
+                    'color': cp.convert('srgb').to_string(hex=True),
+                    'size': 14,
                     'line': {'width': 2},
                     'opacity': 1
                 },

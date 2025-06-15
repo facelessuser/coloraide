@@ -239,7 +239,7 @@ def plot_slice(
             x=xaxis,
             y=yaxis,
             mode='markers',
-            marker={'color': c_map, 'size': 8, 'symbol': 'circle'},
+            marker={'color': c_map, 'size': 4, 'symbol': 'circle'},
             showlegend=False
         ))
 
@@ -248,7 +248,7 @@ def plot_slice(
             theta=xaxis,
             r=yaxis,
             mode='markers',
-            marker={'color': c_map, 'size': 8, 'symbol': 'circle'},
+            marker={'color': c_map, 'size': 4, 'symbol': 'circle'},
             showlegend=False
         ))
 
