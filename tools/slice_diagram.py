@@ -353,10 +353,6 @@ def main():
         '--jnd', type=float, default=-1.0,
         help="Set the JND for MINDE approaches. If set to -1, default JND is used."
     )
-    parser.add_argument(
-        '--traces', type=int, default=3,
-        help="Set the number of ray trace passes for ray trace approaches. Default is 3."
-    )
 
     args = parser.parse_args()
 
