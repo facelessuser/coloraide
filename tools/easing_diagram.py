@@ -3,7 +3,8 @@ import argparse
 import sys
 import os
 import re
-import matplotlib.pyplot as plt
+import plotly.graph_objects as go
+import plotly.io as io
 
 sys.path.insert(0, os.getcwd())
 
@@ -28,6 +29,8 @@ def main():
     parser.add_argument('--title', '-T', default='', help="Provide a title for the diagram.")
     parser.add_argument('--dpi', default=200, type=int, help="DPI of image.")
     parser.add_argument('--output', '-o', default='', help='Output file.')
+    parser.add_argument('--height', '-H', type=int, default=800, help="Height")
+    parser.add_argument('--width', '-W', type=int, default=800, help="Width")
     args = parser.parse_args()
 
     m = RE_BEZIER.match(args.easing.strip())
@@ -49,26 +52,26 @@ def main():
         xs.append(x)
         ys.append(ease(x))
 
-    plt.style.use('seaborn-v0_8-darkgrid')
     default_color = 'black'
-
-    figure = plt.figure()
-
-    # Create axes
-    ax = plt.axes(
-        xlabel='Time',
-        ylabel='Progression'
-    )
-
-    ax.set_aspect('equal')
 
     # Create titles
     title = args.title
     if not title:
         title = function
-    ax.set_title(title)
 
-    figure.add_axes(ax)
+    fig = go.Figure(
+        layout={
+            'title': title,
+            'xaxis_title': {'text': 'Time'},
+            'yaxis_title': {'text': 'Progression'},
+            'yaxis_scaleanchor': "x",
+            'xaxis_scaleanchor': "y",
+            'yaxis_scaleratio': 1,
+            'xaxis_scaleratio': 1,
+            'height': args.height,
+            'width': args.width
+        }
+    )
 
     p0 = [0, 0]
     p3 = [1, 1]
@@ -79,59 +82,52 @@ def main():
         p1 = ease.keywords['p1']
         p2 = ease.keywords['p2']
 
-    plt.plot(
-        xs,
-        ys,
-        color=default_color,
-        marker="",
-        linewidth=1.5,
-        markersize=2,
-        antialiased=True
-    )
+    fig.add_traces(data=go.Scatter(
+        x=xs,
+        y=ys,
+        mode="lines",
+        line={'color': default_color, 'width': 4},
+        showlegend=False
+    ))
 
-    plt.plot(
-        [p0[0], p1[0]],
-        [p0[1], p1[1]],
-        '--',
-        color='teal',
-        marker="",
-        linewidth=1.5,
-        markersize=2,
-        antialiased=True
-    )
+    fig.add_traces(data=go.Scatter(
+        x=[p0[0], p3[0]],
+        y=[p0[1], p3[1]],
+        mode="markers",
+        marker={'color': default_color, 'size': 12, 'symbol': 'circle'},
+        showlegend=False
+    ))
 
-    plt.plot(
-        [p2[0], p3[0]],
-        [p2[1], p3[1]],
-        '--',
-        color='teal',
-        marker="",
-        linewidth=1.5,
-        markersize=2,
-        antialiased=True
-    )
+    fig.add_traces(data=go.Scatter(
+        x=[p0[0], p1[0]],
+        y=[p0[1], p1[1]],
+        mode="markers+lines",
+        marker={'color': 'teal', 'size': 12, 'symbol': 'circle'},
+        line={'color': 'teal', 'width': 4, 'dash': 'dash'},
+        showlegend=False
+    ))
 
-    plt.scatter(
-        [p0[0], p3[0]],
-        [p0[1], p3[1]],
-        marker='o',
-        color='black',
-        zorder=2
-    )
-
-    plt.scatter(
-        [p1[0], p2[0]],
-        [p1[1], p2[1]],
-        marker='o',
-        color='teal',
-        zorder=2
-    )
+    fig.add_traces(data=go.Scatter(
+        x=[p2[0], p3[0]],
+        y=[p2[1], p3[1]],
+        mode="markers+lines",
+        marker={'color': 'teal', 'size': 12, 'symbol': 'circle'},
+        line={'color': 'teal', 'width': 4, 'dash': 'dash'},
+        showlegend=False
+    ))
 
     if args.output:
-        plt.savefig(args.output, dpi=args.dpi)
+        filetype = os.path.splitext(args.output)[1].lstrip('.').lower()
+        if filetype == 'html':
+            with open(args.output, 'w') as f:
+                f.write(io.to_html(fig))
+        elif filetype == 'json':
+            io.write_json(fig, args.output)
+        else:
+            with open(args.output, 'wb') as f:
+                f.write(fig.to_image(format=filetype))
     else:
-        plt.gcf().set_dpi(args.dpi)
-        plt.show()
+        fig.show()
 
 
 if __name__ == "__main__":
