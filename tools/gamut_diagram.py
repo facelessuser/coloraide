@@ -42,6 +42,8 @@ def main():
     parser.add_argument(
         '--show-end-pt', '-s', action='store_true', help="Show the end point of gamut mapping with color preview."
     )
+    parser.add_argument('--height', '-H', type=int, default=600, help="Height")
+    parser.add_argument('--width', '-W', type=int, default=800, help="Width")
     args = parser.parse_args()
 
     method = args.method
@@ -133,7 +135,9 @@ def main():
         resolution=int(args.resolution),
         title=title,
         subtitle=subtitle,
-        border=not args.no_border
+        border=not args.no_border,
+        height=args.height,
+        width=args.width
     )
 
     for i in range(count):

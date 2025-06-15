@@ -37,7 +37,7 @@ def main():
     parser.add_argument('--extrapolate', '-e', action='store_true', help='Extrapolate values.')
     parser.add_argument('--powerless', '-P', action='store_true', help="Treat achromatic hues as powerless.")
     parser.add_argument('--carryforward', '-f', action='store_true', help="Carry forward undefined channels.")
-    parser.add_argument('--hue', '-H', default='shorter', help="Hue interpolation method.")
+    parser.add_argument('--hue', '-u', default='shorter', help="Hue interpolation method.")
     parser.add_argument('--title', '-T', default='', help="Provide a title for the diagram.")
     parser.add_argument('--subtitle', '-t', default='', help="Provide a subtitle for the diagram.")
     parser.add_argument(
@@ -54,6 +54,8 @@ def main():
     parser.add_argument('--no-border', '-b', action="store_true", help='Draw no border around the graphed content.')
     parser.add_argument('--dpi', default=200, type=int, help="DPI of image.")
     parser.add_argument('--output', '-o', default='', help='Output file.')
+    parser.add_argument('--height', '-H', type=int, default=600, help="Height")
+    parser.add_argument('--width', '-W', type=int, default=800, help="Width")
 
     args = parser.parse_args()
 
@@ -83,7 +85,9 @@ def main():
         title=title,
         subtitle=args.subtitle,
         polar=True,
-        border=not args.no_border
+        border=not args.no_border,
+        height=args.height,
+        width=args.width
     )
 
     # Get the actual indexes of the specified channels

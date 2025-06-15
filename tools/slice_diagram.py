@@ -55,7 +55,9 @@ def plot_slice(
     border=False,
     pointer=False,
     gmap=None,
-    allow_oog=False
+    allow_oog=False,
+    height=600,
+    width=800
 ):
     """Plot a slice."""
 
@@ -230,7 +232,9 @@ def plot_slice(
             'title': title,
             'xaxis_title': {'text': f'{name1}: {fmt_float(c1_mn, 5)} - {fmt_float(c1_mx, 5)}'},
             'yaxis_title': {'text': f'{name2}: {fmt_float(c2_mn, 5)} - {fmt_float(c2_mx, 5)}'},
-            'polar': {'radialaxis': {'showline': False, 'layer': 'below traces'}}
+            'polar': {'radialaxis': {'showline': False, 'layer': 'below traces'}},
+            'height': height,
+            'width': width
         }
     )
 
@@ -353,6 +357,8 @@ def main():
         '--jnd', type=float, default=-1.0,
         help="Set the JND for MINDE approaches. If set to -1, default JND is used."
     )
+    parser.add_argument('--height', '-H', type=int, default=600, help="Height")
+    parser.add_argument('--width', '-W', type=int, default=800, help="Width")
 
     args = parser.parse_args()
 
@@ -372,7 +378,9 @@ def main():
         polar=args.polar,
         border=not args.no_border,
         pointer=args.pointer,
-        allow_oog=args.allow_oog
+        allow_oog=args.allow_oog,
+        height=args.height,
+        width=args.width
     )
 
     if args.output:
