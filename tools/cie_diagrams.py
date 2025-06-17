@@ -1,9 +1,8 @@
 """CIE diagram generator."""
 import itertools
-import matplotlib.path as mpltpath
-import matplotlib.pyplot as plt
+import plotly.graph_objects as go
+import plotly.io as io
 import argparse
-import matplotlib.patheffects as path_effects
 import sys
 import copy
 import os
@@ -184,9 +183,62 @@ def get_spectral_locus_labels(locus, waves, distance, opt):
         rotate = math.degrees(math.atan2(y0 - y, x0 - x)) % 360
         if rotate > 150:
             rotate += 180
+            rotate %= 360
 
-        annotations.append([wave, (x, y), (x0, y0), rotate])
+        annotations.append([wave, (x, y), (x0, y0), 0 - rotate])
     return annotations
+
+
+class Polygon2D:
+    """2D Polygon."""
+
+    def __init__(self, x, y):
+        """Initialize polygon."""
+
+        self.x = list(x)
+        self.y = list(y)
+        self.xmin = min(self.x)
+        self.xmax = max(self.x)
+        self.ymin = min(self.y)
+        self.ymax = max(self.y)
+        self.length = len(x)
+
+    def contains(self, p):
+        """
+        Test if point is within polygon using winding number algorithm.
+
+        A bounding box is precalculated to test against before testing any ray crossings.
+
+        This algorithm is generally defined by Dan Sunday via:
+        https://web.archive.org/web/20130126163405/http://geomalgorithms.com/a03-_inclusion.html
+
+        Copyright 2000 softSurfer, 2012 Dan Sunday
+        This code may be freely used and modified for any purpose
+        providing that this copyright notice is included with it.
+        SoftSurfer makes no warranty for this code, and cannot be held
+        liable for any real or imagined damage resulting from its use.
+        Users of this code must verify correctness for their application.
+
+        """
+
+        px, py = p
+        # If point is outside the the bounding box, it is not in the 2D polygon.
+        if px > self.xmax or px < self.xmin or py > self.ymax or py < self.ymin:
+            return False
+
+        winding = 0
+        for i in range(1, self.length):
+            # Get the previous and and current vertex
+            j = i - 1
+            ax, ay = self.x[j], self.y[j]
+            bx, by = self.x[i], self.y[i]
+
+            if ay <= py:
+                if by > py and ((bx - ax) * (py - ay) - (px - ax) * (by - ay)) > 0:
+                    winding += 1
+            elif by <= py and ((bx - ax) * (py - ay) - (px - ax) * (by - ay)) < 0:
+                winding -= 1
+        return winding != 0
 
 
 class DiagramOptions:
@@ -199,7 +251,7 @@ class DiagramOptions:
     - Handle some diagram colors specific to themes.
     """
 
-    def __init__(self, mode="1931", observer='2deg', theme="light", title=""):
+    def __init__(self, mode="1931", observer='2deg', title=""):
         """Initialize."""
 
         self.observer = cmfs.CIE_1931_2DEG
@@ -235,6 +287,7 @@ class DiagramOptions:
                 self.title = "CIE 1931 Chromaticy Diagram - 2˚ Degree Standard Observer"
             else:
                 self.title = "CIE 1931 Chromaticy Diagram - 10˚ Degree Standard Observer"
+            self.label_distance = 0.04
         elif mode == "1976":
             self.spectral_locus_labels = labels_1960
             self.axis_labels = ("CIE u'", "CIE v'")
@@ -242,6 +295,7 @@ class DiagramOptions:
                 self.title = "CIE 1976 UCS Chromaticity Diagram - 2˚ Degree Standard Observer"
             else:
                 self.title = "CIE 1976 UCS Chromaticity Diagram - 10˚ Degree Standard Observer"
+            self.label_distance = 0.04
         elif mode == '1960':
             self.spectral_locus_labels = labels_1960
             self.axis_labels = ('CIE u', 'CIE v')
@@ -249,6 +303,7 @@ class DiagramOptions:
                 self.title = "CIE 1960 UCS Chromaticity Diagram - 2˚ Degree Standard Observer"
             else:
                 self.title = "CIE 1960 UCS Chromaticity Diagram - 10˚ Degree Standard Observer"
+            self.label_distance = 0.02
         else:
             self.spectral_locus_labels = labels_1960
             self.axis_labels = self.viewed_chromaticity_names
@@ -256,48 +311,40 @@ class DiagramOptions:
                 self.title = f"CIE {mode} Chromaticity Diagram - 2˚ Degree Standard Observer"
             else:
                 self.title = f"CIE {mode} Diagram - 10˚ Degree Standard Observer"
+            self.label_distance = 0.04
 
         self.cct = 'ohno-2013'
 
         if title:
             self.title = title
 
-        if theme == 'light':
-            plt.style.use('seaborn-v0_8-darkgrid')
-            self.default_color = "#00000088"
-            self.default_colorized_color = "#333333"
-            self.locus_label_color = "#00000088"
-            self.locus_point_color = "#00000088"
-            self.locus_line_color = "#33333388"
-        elif theme == 'dark':
-            plt.style.use('dark_background')
-            self.default_color = "#ffffff"
-            self.default_colorized_color = "#333333"
-            self.locus_label_color = "#ffffff88"
-            self.locus_point_color = "#ffffff"
-            self.locus_line_color = "#cccccc88"
+        self.default_color = "#000000"
+        self.default_colorized_color = "#333333"
+        self.locus_label_color = "#000000"
+        self.locus_point_color = "#000000"
+        self.locus_line_color = "#333333"
 
 
 def cie_diagram(
     mode="1931", observer="2deg", colorize=True, opacity=1, rgb_spaces=None,
-    white_points=None, theme='light', title='', show_labels=True, axis=True,
-    show_legend=True, black_body=False, isotherms=False, cct=None, pointer=False
+    white_points=None, title='', show_labels=True, axis=True,
+    show_legend=True, black_body=False, isotherms=False, cct=None, pointer=False,
+    height=600, width=800
 ):
     """CIE diagram."""
 
-    opt = DiagramOptions(theme=theme, mode=mode, observer=observer, title=title)
-    figure = plt.figure()
-    ax = plt.axes(
-        xlabel=opt.axis_labels[0],
-        ylabel=opt.axis_labels[1]
+    opt = DiagramOptions(mode=mode, observer=observer, title=title)
+
+    fig = go.Figure(
+        layout={
+            'title': opt.title,
+            'xaxis_title': {'text': opt.axis_labels[0]},
+            'yaxis_title': {'text': opt.axis_labels[1]},
+            'xaxis_scaleanchor': "y",
+            'height': height,
+            'width': width
+        }
     )
-    ax.set_aspect('equal')
-    if axis is False:
-        plt.axis('off')
-    figure.add_axes(ax)
-    plt.title(opt.title)
-    if show_labels:
-        plt.margins(0.15)
 
     if isotherms:
         black_body = True
@@ -323,13 +370,13 @@ def cie_diagram(
             ys.append(y)
 
     spectral_locus = SpectralLocus(xs, ys, wavelength)
-    annotations = get_spectral_locus_labels(spectral_locus, opt.spectral_locus_labels, 0.04, opt)
+    annotations = get_spectral_locus_labels(spectral_locus, opt.spectral_locus_labels, opt.label_distance, opt)
 
-    xs, ys = spectral_locus.steps(len(xs) * 3)
+    xs, ys = spectral_locus.steps(len(xs) * 2)
 
     # Draw the bottom purple line
     interp = alg.interpolate([[xs[-1], ys[-1]], [xs[0], ys[0]]])
-    xi, yi = zip(*[interp(i / 100) for i in range(1, 101)])
+    xi, yi = zip(*[interp(i / 50) for i in range(1, 51)])
     xs.extend(xi)
     ys.extend(yi)
 
@@ -354,7 +401,7 @@ def cie_diagram(
                 x, y = Color.convert_chromaticity('xy-1931', opt.chromaticity, pt[:-1])[:-1]
                 if sx:
                     interp = alg.interpolate([[sx[-1], sy[-1]], [x, y]])
-                    _sx, _sy = zip(*[interp(i / 100) for i in range(1, 101)])
+                    _sx, _sy = zip(*[interp(i / 50) for i in range(1, 51)])
                     sx.extend(_sx)
                     sy.extend(_sy)
                     xy.extend([convert_chromaticity((a, b), opt) for a, b in zip(_sx, _sy)])
@@ -370,7 +417,7 @@ def cie_diagram(
                     sy,
                     color,
                     label,
-                    mpltpath.Path(list(zip(sx, sy))),
+                    Polygon2D(sx, sy),
                     _x,
                     _y
                 )
@@ -384,11 +431,11 @@ def cie_diagram(
             green = temp.mutate(space, [0, 1, 0]).split_chromaticity(opt.chromaticity)
             blue = temp.mutate(space, [0, 0, 1]).split_chromaticity(opt.chromaticity)
             interp = alg.interpolate([red[:-1], green[:-1]])
-            sxy = [interp(i / 100) for i in range(101)]
+            sxy = [interp(i / 50) for i in range(51)]
             interp = alg.interpolate([green[:-1], blue[:-1]])
-            sxy.extend([interp(i / 100) for i in range(1, 101)])
+            sxy.extend([interp(i / 50) for i in range(1, 51)])
             interp = alg.interpolate([blue[:-1], red[:-1]])
-            sxy.extend([interp(i / 100) for i in range(1, 101)])
+            sxy.extend([interp(i / 50) for i in range(1, 51)])
             sx, sy = zip(*sxy)
             xy = list(zip(*[convert_chromaticity((a, b), opt) for a, b in zip(sx, sy)]))
             spaces.append(
@@ -397,7 +444,7 @@ def cie_diagram(
                     sy,
                     color,
                     space,
-                    mpltpath.Path(list(zip(sx, sy))),
+                    Polygon2D(sx, sy),
                     xy[0],
                     xy[1]
                 )
@@ -405,27 +452,46 @@ def cie_diagram(
 
     # Generate fill colors for inside the spectral locus
     if colorize:
-        [plt.fill(s[5], s[6], '#888888') for s in spaces]
-
         px = []
         py = []
         c = []
-        path = mpltpath.Path(list(zip(xs, ys)))
-        for r in itertools.product(
-            (x / RESOLUTION for x in range(0, RESOLUTION + 1)),
-            (x / RESOLUTION for x in range(0, RESOLUTION + 1))
-        ):
-            if path.contains_point(r):
-                o = 0.01 if spaces else opacity
-                if spaces:
-                    for s in spaces:
-                        if s[4].contains_point(r):
-                            o = 1
-                            break
+        cx = []
+        cy = []
+        cc = []
+        poly = Polygon2D(xs, ys)
+        min_range_x = float('inf')
+        min_range_y = float('inf')
+        max_range_x = float('-inf')
+        max_range_y = float('-inf')
+        for s in spaces:
+            if s[4].xmin < min_range_x:
+                min_range_x = s[4].xmin
+            if s[4].xmax > max_range_x:
+                max_range_x = s[4].xmax
+            if s[4].ymin < min_range_y:
+                min_range_y = s[4].ymin
+            if s[4].ymax > max_range_y:
+                max_range_y = s[4].ymax
 
+        for r in itertools.product(
+            alg.linspace(min(0, min_range_x), max(1, max_range_x), RESOLUTION, endpoint=True),
+            alg.linspace(min(0, min_range_y), max(1, max_range_y), RESOLUTION, endpoint=True)
+        ):
+            in_space = False
+            if spaces:
+                for s in spaces:
+                    if s[4].contains(r):
+                        in_space = True
+                        break
+
+            if poly.contains(r):
                 xy = convert_chromaticity(r, opt)
-                px.append(xy[0])
-                py.append(xy[1])
+                if in_space:
+                    cx.append(xy[0])
+                    cy.append(xy[1])
+                else:
+                    px.append(xy[0])
+                    py.append(xy[1])
 
                 srgb = Color.chromaticity(
                     'srgb',
@@ -434,29 +500,48 @@ def cie_diagram(
                     scale=True,
                     scale_space='rec2020-linear',
                     white=opt.white
-                ).set('alpha', o)
-                c.append(srgb.convert('srgb').to_string(hex=True, fit="clip"))
+                )
+                if in_space:
+                    cc.append(srgb.convert('srgb').to_string(hex=True, fit="clip"))
+                else:
+                    c.append(srgb.convert('srgb').to_string(hex=True, fit="clip"))
+            elif in_space:
+                xy = convert_chromaticity(r, opt)
+                cx.append(xy[0])
+                cy.append(xy[1])
+                cc.append('#888888')
 
-        plt.scatter(
-            px, py,
-            edgecolors=None,
-            c=c,
-            s=1
-        )
+        # Visible spectrum fill
+        fig.add_traces(data=go.Scatter(
+            x=px,
+            y=py,
+            mode='markers',
+            marker={'color': c, 'size': 2, 'symbol': 'circle'},
+            showlegend=False,
+            opacity=0.3 if spaces else opacity
+        ))
+
+        # Color space fill
+        if cc:
+            fig.add_traces(data=go.Scatter(
+                x=cx,
+                y=cy,
+                mode='markers',
+                marker={'color': cc, 'size': 2, 'symbol': 'circle'},
+                showlegend=False
+            ))
 
     for i in range(len(xs)):
         xs[i], ys[i] = convert_chromaticity((xs[i], ys[i]), opt)
 
-    # Plot spectral locus and label it
-    plt.plot(
-        xs,
-        ys,
-        color=opt.locus_line_color if colorize else opt.default_color,
-        marker="",
-        linewidth=1.5,
-        markersize=2,
-        antialiased=True
-    )
+    fig.add_traces(data=go.Scatter(
+        x=xs,
+        y=ys,
+        mode='lines',
+        line={'color': opt.locus_line_color if colorize else opt.default_color, 'width': 2},
+        showlegend=False,
+        opacity=0.5
+    ))
 
     if show_labels:
         # Label points
@@ -465,39 +550,50 @@ def cie_diagram(
         for annotate in annotations:
             lx.append(annotate[1][0])
             ly.append(annotate[1][1])
-            plt.annotate(
-                f'{annotate[0]:d}',
-                annotate[2],
-                size=8,
-                color=opt.locus_label_color,
-                rotation=annotate[3],
-                rotation_mode="anchor",
-                ha='center'
+            fig.add_annotation(
+                text=f'{annotate[0]:d}',
+                x=annotate[2][0],
+                y=annotate[2][1],
+                textangle=annotate[3],
+                standoff=0,
+                showarrow=False,
+                align='center',
+                opacity=0.75
             )
 
-        plt.scatter(
-            lx,
-            ly,
-            marker=".",
-            color=opt.locus_point_color if not colorize else opt.default_color,
-            zorder=100
-        )
+        fig.add_traces(data=go.Scatter(
+            x=lx,
+            y=ly,
+            mode='markers',
+            marker={
+                'color': opt.locus_point_color if not colorize else opt.default_color,
+                'size': 4,
+                'symbol': 'circle'
+            },
+            opacity=0.75,
+            showlegend=False
+        ))
 
     # Plot the RGB triangles
     for item in spaces:
-        plt.plot(
-            item[5],
-            item[6],
-            marker='o',
-            color=item[2],
-            label=item[3],
-            linewidth=2,
-            markersize=0,
-            path_effects=[
-                path_effects.SimpleLineShadow(alpha=0.2, offset=(1, -1)),
-                path_effects.Normal()
-            ]
-        )
+        # Shadow effect
+        fig.add_traces(data=go.Scatter(
+            x=[i + 0.0012 for i in item[5]],
+            y=[i - 0.0012 for i in item[6]],
+            mode='lines',
+            line={'color': opt.locus_line_color, 'width': 3},
+            opacity=0.3,
+            showlegend=False
+        ))
+        fig.add_traces(data=go.Scatter(
+            x=item[5],
+            y=item[6],
+            mode='lines',
+            name=item[3],
+            line={'color': item[2], 'width': 2},
+            opacity=1,
+            showlegend=show_legend
+        ))
 
     # Add any specified white points.
     if white_points:
@@ -510,22 +606,29 @@ def cie_diagram(
             xy = convert_chromaticity(Color.convert_chromaticity('xy-1931', opt.chromaticity, w)[:-1], opt)
             wx.append(xy[0])
             wy.append(xy[1])
-        plt.scatter(
-            wx,
-            wy,
-            marker=".",
-            color=opt.default_colorized_color if colorize else opt.default_color
-        )
+        fig.add_traces(data=go.Scatter(
+            x=wx,
+            y=wy,
+            mode='markers',
+            marker={
+                'color': opt.default_colorized_color if colorize else opt.default_color,
+                'size': 4,
+                'symbol': 'circle'
+            },
+            opacity=0.75,
+            showlegend=False
+        ))
         for pt, a in zip(zip(wx, wy), annot):
-            plt.annotate(
-                a,
-                pt,
-                size=8,
-                color=opt.default_colorized_color if colorize else opt.default_color,
-                textcoords="offset points",
-                xytext=(15, -3),
-                ha='center',
-                zorder=100
+            fig.add_annotation(
+                text=a,
+                x=pt[0],
+                y=pt[1],
+                xshift=15,
+                yshift=-3,
+                standoff=0,
+                showarrow=False,
+                align="center",
+                opacity=0.75
             )
 
     # Add any specified CCT points.
@@ -540,20 +643,26 @@ def cie_diagram(
             annot.append(f'({round(bu, 4)}, {round(bv, 4)})')
             bx.append(bu)
             by.append(bv)
-        plt.scatter(
-            bx,
-            by,
-            marker=".",
-            color=opt.default_colorized_color if colorize else opt.default_color,
-            s=16,
-            zorder=100
-        )
+        fig.add_traces(data=go.Scatter(
+            x=bx,
+            y=by,
+            mode='markers',
+            marker={
+                'color': opt.default_colorized_color if colorize else opt.default_color,
+                'size': 4,
+                'symbol': 'circle'
+            },
+            opacity=0.75,
+            showlegend=False
+        ))
         for pt, a in zip(zip(bx, by), annot):
-            plt.annotate(
-                a,
-                pt,
-                size=8,
-                color=opt.default_colorized_color if colorize else opt.default_color
+            fig.add_annotation(
+                text=a,
+                x=pt[0],
+                y=pt[1],
+                showarrow=False,
+                opacity=0.75,
+                yshift=10
             )
 
     # Show the black body (Planckian locus) curve
@@ -581,49 +690,48 @@ def cie_diagram(
 
                 bottom = kelvin < 4000
                 label = f'{kelvin}K' if kelvin != 100000 else '∞'
-                rotate = math.degrees(math.atan2(duvy[-1] - duvy[0], duvx[-1] - duvx[0]))
-                label_offset = alg.polar_to_rect(2, rotate + 90)
+                rotate = 0 - (math.degrees(math.atan2(duvy[-1] - duvy[0], duvx[-1] - duvx[0])) % 360)
                 offset = duv_range[0 if bottom else 1] / 2
                 c = Color.blackbody('xyz-d65', kelvin, offset, scale=False, method=opt.cct)
                 bu, bv = c.split_chromaticity(opt.chromaticity, white=opt.white)[:-1]
-                ha = 'right' if bottom else 'left'
 
-                plt.annotate(
-                    label,
-                    convert_chromaticity([bu, bv], opt),
-                    size=6,
-                    color=opt.default_colorized_color if colorize else opt.default_color,
-                    rotation=rotate,
-                    rotation_mode="anchor",
-                    textcoords="offset points",
-                    xytext=label_offset,
-                    ha=ha
+                ax, ay = convert_chromaticity([bu, bv], opt)
+                vert = [0, 0] if kelvin == 100000 else alg.polar_to_rect(-20 if bottom else 10, 0 - rotate)
+                horz = alg.polar_to_rect(6, 0 - rotate + 90)
+                label_offset = [vert[0] + horz[0], vert[1] + horz[1]]
+                fig.add_annotation(
+                    text=label,
+                    x=ax,
+                    y=ay,
+                    xshift=label_offset[0],
+                    yshift=label_offset[1],
+                    font={'size': 10},
+                    textangle=rotate,
+                    standoff=0,
+                    showarrow=False
                 )
 
                 duvx, duvy = list(zip(*[convert_chromaticity((bu, bv), opt) for bu, bv in zip(duvx, duvy)]))
-                plt.plot(
-                    duvx,
-                    duvy,
-                    color=opt.default_colorized_color if colorize else opt.default_color,
-                    marker="",
-                    linewidth=1,
-                    markersize=0,
-                    antialiased=True
-                )
-        uaxis, vaxis = get_spline(uaxis, vaxis, len(uaxis) * 4)
-        plt.plot(
-            uaxis,
-            vaxis,
-            color=opt.default_colorized_color if colorize else opt.default_color,
-            marker="",
-            linewidth=1,
-            markersize=0,
-            antialiased=True
-        )
+                fig.add_traces(data=go.Scatter(
+                    x=duvx,
+                    y=duvy,
+                    mode='lines',
+                    line={'color': opt.default_colorized_color if colorize else opt.default_color, 'width': 2},
+                    showlegend=False,
+                    opacity=0.5
+                ))
 
-    # We current only add labels when drawing RGB triangles
-    if (rgb_spaces or pointer) and show_legend:
-        ax.legend(bbox_to_anchor=(1.05, 1.0), loc='upper left')
+        uaxis, vaxis = get_spline(uaxis, vaxis, len(uaxis) * 3)
+        fig.add_traces(data=go.Scatter(
+            x=uaxis,
+            y=vaxis,
+            mode='lines',
+            line={'color': opt.default_colorized_color if colorize else opt.default_color, 'width': 2},
+            showlegend=False,
+            opacity=0.5
+        ))
+
+    return fig
 
 
 def main():
@@ -641,27 +749,25 @@ def main():
     )
     parser.add_argument('--rgb', '-r', action='append', help="An RGB space to show on diagram: 'space:color'.")
     parser.add_argument('--title', '-t', default='', help="Override title with your own.")
-    parser.add_argument('--transparent', '-p', action="store_true", help="Export with transparent background.")
     parser.add_argument('--no-axis', '-x', action="store_true", help="Disable display axis.")
     parser.add_argument('--no-legend', '-g', action="store_true", help="Disable legend.")
     parser.add_argument('--no-labels', '-l', action='store_true', help="Disable showing wavelength labels.")
     parser.add_argument('--no-background', '-b', action='store_true', help="Disable diagram color background.")
     parser.add_argument('--no-alpha', '-a', action='store_true', help="Disable diagram transparent background.")
-    parser.add_argument('--dark', action="store_true", help="Use dark theme.")
     parser.add_argument('--black-body', '-k', action='store_true', help="Draw the black body curve (WIP).")
     parser.add_argument('--isotherms', '-i', action='store_true', help="Show isotherms.")
-    parser.add_argument('--dpi', default=200, type=int, help="DPI of image.")
     parser.add_argument('--output', '-o', default='', help='Output file.')
+    parser.add_argument('--height', '-H', type=int, default=600, help="Height")
+    parser.add_argument('--width', '-W', type=int, default=800, help="Width")
     args = parser.parse_args()
 
-    cie_diagram(
+    fig = cie_diagram(
         mode=args.diagram,
         observer=args.cmfs,
-        theme='light' if not args.dark else 'dark',
         white_points=args.white_point,
         rgb_spaces=[r.split(':') for r in args.rgb] if args.rgb is not None else None,
         colorize=not args.no_background,
-        opacity=0.3 if not args.no_alpha else 1.0,
+        opacity=0.7 if not args.no_alpha else 1.0,
         show_labels=not args.no_labels,
         show_legend=not args.no_legend,
         axis=not args.no_axis,
@@ -669,14 +775,23 @@ def main():
         black_body=args.black_body,
         isotherms=args.isotherms,
         cct=args.cct,
-        pointer=args.pointer
+        pointer=args.pointer,
+        height=args.height,
+        width=args.width
     )
 
     if args.output:
-        plt.savefig(args.output, bbox_inches='tight', transparent=args.transparent, dpi=args.dpi)
+        filetype = os.path.splitext(args.output)[1].lstrip('.').lower()
+        if filetype == 'html':
+            with open(args.output, 'w') as f:
+                f.write(io.to_html(fig))
+        elif filetype == 'json':
+            io.write_json(fig, args.output)
+        else:
+            with open(args.output, 'wb') as f:
+                f.write(fig.to_image(format=filetype))
     else:
-        plt.gcf().set_dpi(args.dpi)
-        plt.show()
+        fig.show()
 
 
 if __name__ == "__main__":

@@ -354,6 +354,7 @@ sRGB
 seperable
 severities
 smoothstep
+softSurfer
 subclassed
 subclasses
 subclassing
