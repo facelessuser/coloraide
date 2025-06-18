@@ -280,6 +280,7 @@ class DiagramOptions:
                 self.chromaticity = ('xy-1931')
             self.viewed_chromaticity = self.chromaticity
 
+        self.mode = mode
         if mode == "1931":
             self.spectral_locus_labels = labels_1931
             self.axis_labels = ('CIE x', 'CIE y')
@@ -295,7 +296,7 @@ class DiagramOptions:
                 self.title = "CIE 1976 UCS Chromaticity Diagram - 2˚ Degree Standard Observer"
             else:
                 self.title = "CIE 1976 UCS Chromaticity Diagram - 10˚ Degree Standard Observer"
-            self.label_distance = 0.04
+            self.label_distance = 0.03
         elif mode == '1960':
             self.spectral_locus_labels = labels_1960
             self.axis_labels = ('CIE u', 'CIE v')
@@ -311,7 +312,7 @@ class DiagramOptions:
                 self.title = f"CIE {mode} Chromaticity Diagram - 2˚ Degree Standard Observer"
             else:
                 self.title = f"CIE {mode} Diagram - 10˚ Degree Standard Observer"
-            self.label_distance = 0.04
+            self.label_distance = 0.05
 
         self.cct = 'ohno-2013'
 
@@ -328,7 +329,7 @@ class DiagramOptions:
 def cie_diagram(
     mode="1931", observer="2deg", colorize=True, opacity=1, rgb_spaces=None,
     white_points=None, title='', show_labels=True, axis=True,
-    show_legend=True, black_body=False, isotherms=False, cct=None, pointer=False,
+    show_legend=True, overlay_legend=True, black_body=False, isotherms=False, cct=None, pointer=False,
     height=600, width=800
 ):
     """CIE diagram."""
@@ -555,6 +556,7 @@ def cie_diagram(
                 x=annotate[2][0],
                 y=annotate[2][1],
                 textangle=annotate[3],
+                font={'size': 14},
                 standoff=0,
                 showarrow=False,
                 align='center',
@@ -567,7 +569,7 @@ def cie_diagram(
             mode='markers',
             marker={
                 'color': opt.locus_point_color if not colorize else opt.default_color,
-                'size': 4,
+                'size': 6,
                 'symbol': 'circle'
             },
             opacity=0.75,
@@ -581,7 +583,7 @@ def cie_diagram(
             x=[i + 0.0012 for i in item[5]],
             y=[i - 0.0012 for i in item[6]],
             mode='lines',
-            line={'color': opt.locus_line_color, 'width': 3},
+            line={'color': opt.locus_line_color, 'width': 5},
             opacity=0.3,
             showlegend=False
         ))
@@ -590,7 +592,7 @@ def cie_diagram(
             y=item[6],
             mode='lines',
             name=item[3],
-            line={'color': item[2], 'width': 2},
+            line={'color': item[2], 'width': 4},
             opacity=1,
             showlegend=show_legend
         ))
@@ -612,7 +614,7 @@ def cie_diagram(
             mode='markers',
             marker={
                 'color': opt.default_colorized_color if colorize else opt.default_color,
-                'size': 4,
+                'size': 6,
                 'symbol': 'circle'
             },
             opacity=0.75,
@@ -623,8 +625,9 @@ def cie_diagram(
                 text=a,
                 x=pt[0],
                 y=pt[1],
-                xshift=15,
+                xshift=20,
                 yshift=-3,
+                font={'size': 14},
                 standoff=0,
                 showarrow=False,
                 align="center",
@@ -649,7 +652,7 @@ def cie_diagram(
             mode='markers',
             marker={
                 'color': opt.default_colorized_color if colorize else opt.default_color,
-                'size': 4,
+                'size': 6,
                 'symbol': 'circle'
             },
             opacity=0.75,
@@ -660,9 +663,10 @@ def cie_diagram(
                 text=a,
                 x=pt[0],
                 y=pt[1],
+                font={'size': 14},
                 showarrow=False,
                 opacity=0.75,
-                yshift=10
+                yshift=14
             )
 
     # Show the black body (Planckian locus) curve
@@ -696,7 +700,7 @@ def cie_diagram(
                 bu, bv = c.split_chromaticity(opt.chromaticity, white=opt.white)[:-1]
 
                 ax, ay = convert_chromaticity([bu, bv], opt)
-                vert = [0, 0] if kelvin == 100000 else alg.polar_to_rect(-20 if bottom else 10, 0 - rotate)
+                vert = [0, 0] if kelvin == 100000 else alg.polar_to_rect(-20 if bottom else 15, 0 - rotate)
                 horz = alg.polar_to_rect(6, 0 - rotate + 90)
                 label_offset = [vert[0] + horz[0], vert[1] + horz[1]]
                 fig.add_annotation(
@@ -705,7 +709,7 @@ def cie_diagram(
                     y=ay,
                     xshift=label_offset[0],
                     yshift=label_offset[1],
-                    font={'size': 10},
+                    font={'size': 12},
                     textangle=rotate,
                     standoff=0,
                     showarrow=False
@@ -730,6 +734,9 @@ def cie_diagram(
             showlegend=False,
             opacity=0.5
         ))
+
+    if overlay_legend and show_legend:
+        fig.update_layout(legend=dict(x=1, bgcolor='rgba(0,0,0,0)', xanchor='right', yanchor='top'))
 
     return fig
 
@@ -756,6 +763,7 @@ def main():
     parser.add_argument('--no-alpha', '-a', action='store_true', help="Disable diagram transparent background.")
     parser.add_argument('--black-body', '-k', action='store_true', help="Draw the black body curve (WIP).")
     parser.add_argument('--isotherms', '-i', action='store_true', help="Show isotherms.")
+    parser.add_argument('--overlay-legend', '-L', action='store_true', help="Overlay legend on plot.")
     parser.add_argument('--output', '-o', default='', help='Output file.')
     parser.add_argument('--height', '-H', type=int, default=600, help="Height")
     parser.add_argument('--width', '-W', type=int, default=800, help="Width")
@@ -767,9 +775,10 @@ def main():
         white_points=args.white_point,
         rgb_spaces=[r.split(':') for r in args.rgb] if args.rgb is not None else None,
         colorize=not args.no_background,
-        opacity=0.7 if not args.no_alpha else 1.0,
+        opacity=0.8 if not args.no_alpha else 1.0,
         show_labels=not args.no_labels,
         show_legend=not args.no_legend,
+        overlay_legend=args.overlay_legend,
         axis=not args.no_axis,
         title=args.title,
         black_body=args.black_body,
