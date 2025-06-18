@@ -1,8 +1,9 @@
 # Changelog
 
-## Unreleased
+## 4.7.1
 
--   **ENHANCE**: Speed up conversion some by ensuring chromatic adaptation is only executed when absolutely needed.
+-   **FIX**: Fix an issue where chromatic adaptation was being initiated when it wasn't needed. While conversion results
+    were unaffected by this behavior, it did contribute to additional overhead, slowing conversions in some cases.
 
 ## 4.7
 

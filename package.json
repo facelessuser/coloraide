@@ -33,7 +33,7 @@
     "babel-core": "^7.0.0-bridge.0",
     "css-mqpacker": "^7.0.0",
     "del": "^8.0.0",
-    "eslint": "^9.28.0",
+    "eslint": "^9.29.0",
     "fast-glob": "^3.3.3",
     "gulp": "^5.0.1",
     "gulp-concat": "^2.6.1",
@@ -64,7 +64,7 @@
     "stylelint-config-standard": "^38.0.0",
     "stylelint-order": "^7.0.0",
     "stylelint-scss": "^6.12.1",
-    "terser": "^5.42.0",
+    "terser": "^5.43.0",
     "vinyl-paths": "^5.0.0",
     "yargs": "^18.0.0"
   }
