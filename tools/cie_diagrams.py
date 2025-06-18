@@ -736,7 +736,7 @@ def cie_diagram(
         ))
 
     if overlay_legend and show_legend:
-        fig.update_layout(legend=dict(x=1, bgcolor='rgba(0,0,0,0)', xanchor='right', yanchor='top'))
+        fig.update_layout(legend={'x': 1, 'bgcolor': 'rgba(0,0,0,0)', 'xanchor': 'right', 'yanchor': 'top'})
 
     return fig
 
