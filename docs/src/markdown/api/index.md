@@ -1030,6 +1030,7 @@ Return
 def average(
     cls,
     colors: Iterable[ColorInput],
+    weights: Iterable[float] | None = None,
     *,
     space: str | None = None,
     out_space: str | None = None,
@@ -1051,6 +1052,7 @@ Parameters
     Parameters       | Defaults    | Description
     ---------------- | ------------| -----------
     `colors`         |             | An iterable of color strings, [`Color`](#color) objects, and/or dictionaries representing a color.
+    `weights`        | `#!py None` | An iterable of floats representing weights for the given `colors`.
     `space`          | `#!py None` | An optional string to specify what color space the colors should be averaged in. If none is provided, Oklab is assumed.
     `out_space`      | `#!py None` | Color space that the new color should be in. If `#!py None`, the return color will be in the same color space as specified via `space`.
     `premultiplied`  | `#!py True` | Specify whether colors should be premultiplied during the averaging process.
