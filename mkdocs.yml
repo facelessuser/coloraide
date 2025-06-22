@@ -315,13 +315,13 @@ markdown_extensions:
 
 extra_css:
   - assets/coloraide-extras/extra-71ac3701da.css
-  - https://cdn.jsdelivr.net/npm/ace-builds@1.39.0/css/ace.css
+  - https://cdn.jsdelivr.net/npm/ace-builds@1.43.0/css/ace.css
 extra_javascript:
-  - https://cdn.jsdelivr.net/npm/ace-builds@1.39.0/src-min-noconflict/ace.js
-  - https://cdn.jsdelivr.net/npm/mermaid@11.5.0/dist/mermaid.min.js
-  - playground-config-d7e0ce4b.js
-  - https://cdn.jsdelivr.net/pyodide/v0.27.3/full/pyodide.js
-  - assets/coloraide-extras/extra-notebook-Y8kapbnM.js
+  - https://cdn.jsdelivr.net/npm/ace-builds@1.43.0/src-min-noconflict/ace.js
+  - https://cdn.jsdelivr.net/npm/mermaid@11.7.0/dist/mermaid.min.js
+  - playground-config-1a46ff13.js
+  - https://cdn.jsdelivr.net/pyodide/v0.27.7/full/pyodide.js
+  - assets/coloraide-extras/extra-notebook-DQMNiD5r.js
 
 extra:
   social:

@@ -409,7 +409,7 @@
         <div>Copyright &copy; 2020 - 2025 <a href="https://github.com/facelessuser">Isaac Muse</a></div>
       </footer>
     </div>
-  <script src="https://cdn.jsdelivr.net/pyodide/v0.27.3/full/pyodide.js"></script>
+  <script src="https://cdn.jsdelivr.net/pyodide/v0.27.7/full/pyodide.js"></script>
   <script>
 
 (() => {
@@ -744,7 +744,7 @@ for e, i in enumerate(Color.steps([cmin, c], steps=21, space='${space}', hue='sp
         busyTarget = document.getElementById('color-display')
         showBusy(busyTarget, 'Loading ColorAide...')
         pyodide = await loadPyodide({
-          indexURL: "https://cdn.jsdelivr.net/pyodide/v0.27.3/full/",
+          indexURL: "https://cdn.jsdelivr.net/pyodide/v0.27.7/full/",
           fullStdLib: false
         })
 
