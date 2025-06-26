@@ -1,5 +1,10 @@
 # Changelog
 
+## 4.7.2
+
+-   **FIX**: When a `Color` instance is passed as an input to the `Color` constructor, use a more reliable check to
+    ensure the color instance is of a compatible color space.
+
 ## 4.7.1
 
 -   **FIX**: Fix an issue where chromatic adaptation was being initiated when it wasn't needed. While conversion results

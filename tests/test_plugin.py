@@ -118,6 +118,27 @@ class TestCustom(util.ColorAsserts, unittest.TestCase):
         Custom.register(lab_d65.LabD65())
         self.assertEqual(Custom('red').convert('lab-d65').to_string(), expected)
 
+    def test_incompatible_spaces(self):
+        """
+        Test two incompatible spaces.
+
+        Just because a color space shares the same name, doesn't mean it is compatible.
+        A color space must be of the exact same type to be considered compatible.
+        """
+
+        srgb = type(Color.CS_MAP['srgb'])
+
+        class sRGB2(srgb):
+            pass
+
+        class Custom(Color):
+            pass
+
+        Custom.register(sRGB2(), overwrite=True)
+
+        with self.assertRaises(ValueError):
+            Color(Custom('red'))
+
     def test_plugin_registration_delta_e(self):
         """Test plugin registration of `DeltaE`."""
 

@@ -272,9 +272,10 @@ class Color(metaclass=ColorMeta):
 
         # Handle a color instance
         elif isinstance(color, Color):
-            space_class = cls.CS_MAP.get(color.space())
-            if not space_class:
-                raise ValueError(f"'{color.space()}' is not a registered color space")
+            cs = color._space
+            space_class = cls.CS_MAP.get(cs.NAME)
+            if not space_class or type(cs) is not type(space_class):
+                raise ValueError(f"{type(cs)} is not a registered color space within {cls}")
             obj = space_class, color[:]
 
         # Handle a color dictionary
@@ -282,7 +283,7 @@ class Color(metaclass=ColorMeta):
             obj = cls._parse(color['space'], color['coords'], color.get('alpha', 1.0))
 
         else:
-            raise TypeError(f"'{type(color)}' is an unrecognized type")
+            raise TypeError(f"{type(color)} is an unrecognized type")
 
         return obj
 
