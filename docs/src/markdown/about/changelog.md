@@ -3,6 +3,8 @@
 ## 4.7.2
 
 -   **ENHANCE**: Improve performance of color harmony generation.
+-   **ENHANCE**: Improve performance of gamut mapping using the `raytrace` approach when a color must be coerced to an
+    RGB space.
 -   **FIX**: When a `Color` instance is passed as an input to the `Color` constructor, use a more reliable check to
     ensure the color instance is of a compatible color space.
 

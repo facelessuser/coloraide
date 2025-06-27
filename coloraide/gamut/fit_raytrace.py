@@ -5,6 +5,7 @@ This employs a faster approach than bisecting to reduce chroma.
 """
 from __future__ import annotations
 import math
+from functools import lru_cache
 from .. import algebra as alg
 from ..gamut import Fit
 from ..spaces import Space, RGBish, HSLish, HSVish, HWBish
@@ -55,7 +56,8 @@ def srgb_to_hwb(coords: Vector) -> Vector:  # pragma: no cover
     return hsv_to_hwb(srgb_to_hsv(coords))
 
 
-def coerce_to_rgb(OrigColor: type[Color], cs: Space) -> tuple[Any, str]:
+@lru_cache(maxsize=20, typed=True)
+def coerce_to_rgb(cs: Space) -> Space:
     """
     Coerce an HSL, HSV, or HWB color space to RGB to allow us to ray trace the gamut.
 
@@ -118,12 +120,7 @@ def coerce_to_rgb(OrigColor: type[Color], cs: Space) -> tuple[Any, str]:
             coords = to_(coords)
             return coords
 
-    class ColorRGB(OrigColor):  # type: ignore[valid-type, misc]
-        """Custom color."""
-
-    ColorRGB.register(RGB())
-
-    return ColorRGB, RGB.NAME
+    return RGB()
 
 
 def raytrace_box(
@@ -210,18 +207,16 @@ class RayTrace(Fit):
 
         # Requires an RGB-ish space, preferably a linear space.
         # Coerce RGB cylinders with no defined RGB space to RGB
-        coerced = None
+        coerced = False
         if not isinstance(cs, RGBish):
-            coerced = color
-            Color_, space = coerce_to_rgb(type(color), cs)
-            cs = Color_.CS_MAP[space]
-            color = Color_(color)
+            coerced = True
+            cs = coerce_to_rgb(cs)
 
         # If there is a linear version of the RGB space, results will be
         # better if we use that. If the target RGB space is HDR, we need to
         # calculate the bounding box size based on the HDR limit in the linear space.
         sdr = cs.DYNAMIC_RANGE != 'hdr'
-        linear = cs.linear()
+        linear = cs.linear()  # type: ignore[attr-defined]
         if linear and linear in color.CS_MAP:
             if not sdr:
                 bmax = color.new(space, [chan.high for chan in cs.CHANNELS]).convert(linear)[:-1]
@@ -262,7 +257,8 @@ class RayTrace(Fit):
         # causing a more sizeable delta between the max and min value in the
         # achromatic RGB color. To compensate for such deviations, take the
         # average value of the RGB components and use that as the achromatic point.
-        anchor = [sum(achroma.convert(space)[:-1]) / 3] * 3
+        anchor = achroma.convert(space)[:-1]
+        anchor = [sum(cs.from_base(anchor) if coerced else anchor) / 3] * 3
 
         # Return white or black if the achromatic version is not within the RGB cube.
         # HDR colors currently use the RGB maximum lightness. We do not currently
@@ -270,9 +266,10 @@ class RayTrace(Fit):
         bmx = bmax[0]
         point = anchor[0]
         if point >= bmx:
-            color.update(space, bmax, mapcolor[-1])
+            color.update(space, cs.to_base(bmax) if coerced else bmax, mapcolor[-1])
         elif point <= 0:
-            color.update(space, [0.0, 0.0, 0.0], mapcolor[-1])
+            black = [0.0, 0.0, 0.0]
+            color.update(space, cs.to_base(black) if coerced else black, mapcolor[-1])
         else:
             # Create a ray from our current color to the color with zero chroma.
             # Trace the line to the RGB cube finding the intersection.
@@ -323,7 +320,7 @@ class RayTrace(Fit):
                     mapcolor.convert(space, in_place=True)
 
                 coords = mapcolor[:-1]
-                intersection = raytrace_box(anchor, coords, bmax=bmax)
+                intersection = raytrace_box(anchor, cs.from_base(coords) if coerced else coords, bmax=bmax)
 
                 # Adjust anchor point closer to surface to improve results for some spaces.
                 # Don't move point too close to the surface to avoid corner cases with some spaces.
@@ -332,13 +329,16 @@ class RayTrace(Fit):
 
                 # Update color with the intersection point on the RGB surface.
                 if intersection:
-                    mapcolor[:-1] = intersection
+                    mapcolor[:-1] = cs.to_base(intersection) if coerced else intersection
                     continue
                 break  # pragma: no cover
 
             # Remove noise from floating point conversion.
-            color.update(space, [alg.clamp(x, 0.0, bmx) for x in mapcolor[:-1]], mapcolor[-1])
-
-        # If we have coerced a space to RGB, update the original
-        if coerced:
-            coerced.update(color)
+            if coerced:
+                color.update(
+                    space,
+                    cs.to_base([alg.clamp(x, 0.0, bmx) for x in cs.from_base(mapcolor[:-1])]),
+                    mapcolor[-1]
+                )
+            else:
+                color.update(space, [alg.clamp(x, 0.0, bmx) for x in mapcolor[:-1]], mapcolor[-1])
