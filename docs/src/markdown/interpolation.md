@@ -348,12 +348,6 @@ Color.discrete(['blue', 'green', 'yellow', 'orange', 'red'], padding=[0.25, 0])
 As `discrete()` is built on [`steps()`](#steps), it can take all the same arguments. Check out [`steps()`](#steps) to
 learn more.
 
-/// warning | Discrete and Longer Hue Arcs
-Due to the way interpolation with "longer" hue arcs work, it is impossible to combine discrete interpolation and
-"longer" hue arcs when interpolating in polar spaces. All other hue modes should work fine, but it is recommended
-to not use "longer" when using "discrete".
-///
-
 ## Hue Interpolation
 
 In interpolation, hues are handled special allowing us to control the way in which hues are evaluated. By default, the
