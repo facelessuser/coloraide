@@ -14,18 +14,21 @@ TEMPLATE = 'sRGB Gamut Plotted in {} Color Space'
 def plot_model(name, title, filename, gamut='srgb', elev=45, azim=-60.0):
     """Generate the models."""
 
+    width = 800
+    height = 800
+
     print(f'===> Generating {name} model...')
     fig = diagrams.plot_gamut_in_space(
         name,
         gamut=gamut,
         title=title,
         resolution=200,
-        size=(800, 800),
+        size=(width, height),
         camera={'a': azim, 'e': elev, 'r': 2.5}
     )
 
     with open(os.path.join(LOCATION, filename), 'wb') as f:
-        f.write(fig.to_image(format='png'))
+        f.write(fig.to_image(format='png', width=width, height=height))
     del fig
     print('[complete]')
 

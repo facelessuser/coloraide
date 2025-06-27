@@ -442,6 +442,6 @@ if __name__ == "__main__":
                 io.write_json(fig, args.output)
             else:
                 with open(args.output, 'wb') as f:
-                    f.write(fig.to_image(format=filetype))
+                    f.write(fig.to_image(format=filetype, width=args.width, height=args.height))
         else:
-            fig.show()
+            fig.show('browser')
