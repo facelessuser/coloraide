@@ -69,6 +69,11 @@
           padding-bottom: 6em;
         }
 
+        #model > .plot-container {
+            width: unset !important;
+            height: unset !important;
+        }
+
         #color-space {
           font-size: 1rem;
           padding: 1rem 0;
@@ -191,8 +196,8 @@
   <div>Copyright &copy; 2020 - 2025 <a href="https://github.com/facelessuser">Isaac Muse</a></div>
 </footer>
 </div>
-<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
-<script src="https://cdn.jsdelivr.net/pyodide/v0.27.3/full/pyodide.js"></script>
+<script src="https://cdn.plot.ly/plotly-3.0.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/pyodide/v0.27.7/full/pyodide.js"></script>
 <script id="init" type="text/python">
 from coloraide.everything import ColorAll as Color
 from coloraide.spaces import Regular
@@ -994,7 +999,7 @@ let busyTarget = null
 let colorSpaces = null
 let colorGamuts = null
 let lastModel = null
-let package = 'coloraide-4.7.1-py3-none-any.whl'
+let package = 'coloraide-4.7.2-py3-none-any.whl'
 const defaultSpace = 'lab'
 const defaultGamut = 'srgb'
 const exceptions = new Set(['hwb', 'ryb', 'ryb-biased'])
@@ -1139,7 +1144,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   busyTarget = document.getElementsByTagName('body')[0]
   showBusy(busyTarget, 'Setting up Environment...')
   pyodide = await loadPyodide({
-    indexURL: "https://cdn.jsdelivr.net/pyodide/v0.27.3/full/",
+    indexURL: "https://cdn.jsdelivr.net/pyodide/v0.27.7/full/",
     fullStdLib: false
   })
 
@@ -1147,7 +1152,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   await pyodide.loadPackage([
     'numpy',
     'scipy',
-    'https://files.pythonhosted.org/packages/e5/ae/580600f441f6fc05218bd6c9d5794f4aef072a7d9093b291f1c50a9db8bc/plotly-5.24.1-py3-none-any.whl',
+    'https://files.pythonhosted.org/packages/ed/20/f2b7ac96a91cc5f70d81320adad24cc41bf52013508d649b1481db225780/plotly-6.2.0-py3-none-any.whl',
+    'narwhals',
     package])
 
   // Set background color
