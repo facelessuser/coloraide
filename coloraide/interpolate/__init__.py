@@ -154,7 +154,6 @@ class Interpolator(Generic[AnyColor], metaclass=ABCMeta):
             coords.extend([step1, step2])
             count += 2
 
-        hue = self.hue
         if total == 1:
             coords.extend([colors[-1][:], colors[-1][:]])
             stops[0] = 0.0
@@ -173,7 +172,7 @@ class Interpolator(Generic[AnyColor], metaclass=ABCMeta):
             extrapolate=self.extrapolate,
             domain=[],
             padding=None,
-            hue = hue
+            hue = 'shorter'
         )
 
     def out_space(self, space: str) -> None:
