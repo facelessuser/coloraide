@@ -2,6 +2,7 @@
 
 ## 4.7.2
 
+-   **ENHANCE**: Improve performance of color harmony generation.
 -   **FIX**: When a `Color` instance is passed as an input to the `Color` constructor, use a more reliable check to
     ensure the color instance is of a compatible color space.
 

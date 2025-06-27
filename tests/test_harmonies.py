@@ -94,6 +94,14 @@ class TestHarmonies(util.ColorAssertsPyTest):
                 {}
             ),
             (
+                'gray',
+                'complement',
+                ['rgb(128 128 128)',
+                 'rgb(128 128 128)'],
+                'srgb',
+                {}
+            ),
+            (
                 'red',
                 'split',
                 ['rgb(255 0 0)',
