@@ -41,11 +41,13 @@ def get_cylinder(color: Color) -> tuple[Vector, int]:
         return [values[idx[0]], c, h if not achromatic else alg.NaN], 2
 
     if isinstance(cs, Regular):
-        idx = cs.indexes()  # type: ignore[attr-defined]
         values = color[:-1]
-        return srgb_to_hsl([values[0] if not achromatic else alg.NaN, values[1], values[2]]), 0
+        hsl = srgb_to_hsl(color[:-1])
+        if achromatic:
+            hsl[0] = alg.NaN
+        return hsl, 0
 
-    raise ValueError(f'Unsupported color space type {space}')
+    raise ValueError(f'Unsupported color space type {space}')  # pragma: no cover
 
 
 def from_cylinder(color: AnyColor, coords: Vector) -> AnyColor:
@@ -70,14 +72,9 @@ def from_cylinder(color: AnyColor, coords: Vector) -> AnyColor:
         if math.isnan(coords[0]):
             coords[0] = 0
         rgb = hsl_to_srgb(coords)
-        idx = cs.indexes()  # type: ignore[attr-defined]
-        values = [0.0] * 3
-        values[idx[0]] = rgb[0]
-        values[idx[1]] = rgb[1]
-        values[idx[2]] = rgb[2]
         return color.new(space, rgb, color[-1])
 
-    raise ValueError(f'Unsupported color space type {space}')
+    raise ValueError(f'Unsupported color space type {space}')  # pragma: no cover
 
 
 class Harmony(metaclass=ABCMeta):
