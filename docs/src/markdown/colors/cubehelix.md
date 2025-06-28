@@ -137,8 +137,8 @@ rotation
 hue
 
 -   Named "hue" in the paper, this option actually controls how saturated the color of all hues are. If this parameter
-    is zero, the color palette is purely grayscale. The "hue" parameter is applied to saturation component of both the
-    start and end color after dividing it by 2.
+    is zero, the color scheme is purely grayscale. The "hue" parameter is applied to the saturation component of both
+    the start and end color after dividing it by 2.
 
     $$
     saturation = hue / 2
