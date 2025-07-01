@@ -14,12 +14,11 @@ try:
     from coloraide_extras.everything import ColorAll as Color
 except ImportError:
     from coloraide.everything import ColorAll as Color
-from coloraide.spaces import HSLish, HSVish, HWBish, Labish, LChish, Regular  # noqa: E402
+from coloraide.spaces import HSLish, HSVish, HWBish, Labish, LChish  # noqa: E402
 from coloraide import algebra as alg  # noqa: E402
 from coloraide.spaces.hsl import hsl_to_srgb, srgb_to_hsl  # noqa: E402
 
 FORCE_OWN_GAMUT = {'ryb', 'ryb-biased'}
-CYL_GAMUT = {'hpluv', 'okhsl', 'okhsv'}
 
 
 def get_face_color(cmap, simplex):
@@ -118,7 +117,9 @@ def create3d(fig, x, y, z, tri, cmap, edges, faces, ecolor, fcolor, opacity):
             j=j,
             k=k,
             vertexcolor=cmap if not faces else None,
-            facecolor=[get_face_color(cmap, t) if not fcolor else fcolor for t in tri.simplices] if faces else None
+            facecolor=[get_face_color(cmap, t) if not fcolor else fcolor for t in tri.simplices] if faces else None,
+            flatshading = True,
+            lighting = {"vertexnormalsepsilon": 0, "facenormalsepsilon": 0}
         )
         mesh.update(hoverinfo='skip')
         mesh.update(opacity=opacity)
@@ -162,21 +163,13 @@ def cyl_disc(fig, ColorCyl, space, gamut, location, resolution, opacity, edges, 
     Expectation is either a HSL, HSV, or HSB style cylinder.
     """
 
-    gspace = ColorCyl.CS_MAP[gamut]
-    factor = gspace.channels[1].high
+    cs = ColorCyl.CS_MAP[gamut]
+    factor = cs.channels[1].high
 
     # Using a lightness of 0 can sometimes cause the bottom not to show with certain resolutions, so use a very
     # small value instead.
     zpos = 1e-16 if location == 'bottom' else 1.0 * factor
-    # HWB bottom disc will have a multiple points in the center with different hues. The mesh will resolve one of them
-    # as the center, usually red. This will cause color averaging in the center of the disc to be reddish for all colors
-    # in the center. At lower resolutions, this is more noticeable. To avoid this, interpolate rings very close to zero
-    # radius, but not at zero radius. The mesh will still connect all the points near the center, but will leave a small
-    # hole at the center which will be too small to see.
-    start, end = 1.0 * factor, 1e-16
 
-    # Render the two halves of the disc
-    hue_start, hue_end = 0, 360
     x = []
     y = []
     z = []
@@ -185,17 +178,20 @@ def cyl_disc(fig, ColorCyl, space, gamut, location, resolution, opacity, edges, 
     cmap = []
 
     # Interpolate a circle on the outer edge
-    c1 = ColorCyl(gamut, [hue_start, start, zpos])
-    c2 = ColorCyl(gamut, [hue_end, start, zpos])
-    chan_name = str(c1._space.channels[1])
-    s1 = ColorCyl.steps([c1, c2], steps=resolution, space=gamut, hue='specified')
-    s2 = [t.clone().set(chan_name, end) for t in s1]
+    s1 = ColorCyl.steps(
+        [ColorCyl(gamut, [hue, 1 * factor, 1 * zpos]) for hue in alg.linspace(0, 360, 2, endpoint=True)],
+        steps=max(7, (resolution // 6) * 6 + 1),
+        space=gamut,
+        hue='specified'
+    )
+    s2 = ColorCyl(gamut, [alg.NaN, 1e-16, alg.NaN])
 
     # Interpolate concentric circles to the center of the disc
-    step = int(resolution / 2) if flags['is_hwbish'] or (location == 'top' and space in CYL_GAMUT) else 2
+    step = int(resolution / 2) if flags['is_hwbish'] or flags['is_hsvish'] else 2
     for r in range(step):
-        for t1, t2 in zip(s1, s2):
-            c = t1.mix(t2, r / (step - 1), space=gamut, hue='specified')
+        for t1 in s1:
+            s2['hue'] = t1['hue']
+            c = t1.mix(s2, r / (step - 1), space=gamut, hue='specified')
             hue = c._space.hue_index()
             radius = c._space.radial_index()
             u.append(c[radius])
@@ -262,13 +258,7 @@ def store_coords(c, x, y, z, flags):
 
 
 def render_space_cyl(fig, space, gamut, resolution, opacity, edges, faces, ecolor, fcolor, gmap):
-    """
-    Renders the color space using an RGB cylinder that is then mapped to the given space.
-
-    Ideally used to represent cylindrical spaces and will align the lightness equivalent
-    as the Z axis. Lab-ish colors are performed in the mode as they are essentially cylindrical
-    with the chroma and hue converted to Cartesian a and b.
-    """
+    """Renders the color space using an HSL cylinder that is then mapped to the given space."""
 
     target = Color.CS_MAP[space]
     flags = {
@@ -282,22 +272,22 @@ def render_space_cyl(fig, space, gamut, resolution, opacity, edges, faces, ecolo
 
     # Determine the gamut mapping space to use.
     # Some spaces cannot be generalized (HWB and HPLuv for instance).
-    if flags['is_hwbish'] or space in FORCE_OWN_GAMUT:
+    if flags['is_hwbish']:
         ColorCyl = Color
         gspace = space
-    elif gamut in CYL_GAMUT:
+    elif Color.CS_MAP[gamut].is_polar():
         ColorCyl = Color
         gspace = gamut
     else:
-        ColorCyl = create_custom_hsl(gamut)
-        gspace = f'-hsl-{gamut}'
+        _gamut = space if space in FORCE_OWN_GAMUT else gamut
+        ColorCyl = create_custom_hsl(_gamut)
+        gspace = f'-hsl-{_gamut}'
     cs = ColorCyl.CS_MAP[gspace]
 
     # Adjust scaling factor if the mapping space requires it
     factor = cs.channels[1].high
 
     # Render the two halves of the cylinder
-    start, end = 0, 360
     u = []
     v = []
     x = []
@@ -305,17 +295,26 @@ def render_space_cyl(fig, space, gamut, resolution, opacity, edges, faces, ecolo
     z = []
     cmap = []
 
-    # Interpolate the cylinder from 0 to 360 degrees
-    c1 = ColorCyl(gspace, [start, 1 * factor, 1 * factor])
-    c2 = ColorCyl(gspace, [start, 1 * factor, 1e-16])
-    c3 = ColorCyl(gspace, [end, 1 * factor, 1 * factor])
-    c4 = ColorCyl(gspace, [end, 1 * factor, 1e-16])
-    s1 = ColorCyl.steps([c1, c2], steps=resolution, space=gspace, hue='specified')
-    s2 = ColorCyl.steps([c3, c4], steps=resolution, space=gspace, hue='specified')
+    # Interpolate the cylinder from 0 to 360 degrees.
+    # Include, at the very least, 6 evenly spaced hues, and at higher resolutions
+    # will include a multiple that will include the same 6 key points.
+    # In HSL, this will cover all the corners of the RGB space.
+    s1 = ColorCyl.steps(
+        [ColorCyl(gspace, [hue, 1 * factor, 1 * factor]) for hue in alg.linspace(0, 360, 2, endpoint=True)],
+        steps=max(7, (resolution // 6) * 6 + 1),
+        space=gspace,
+        hue='specified'
+    )
+    # A generic color at the bottom of the space which we can rotate for
+    # interpolation by changing the hue.
+    s2 = ColorCyl(gspace, [alg.NaN, 1 * factor, 1e-16])
 
     # Create a 3D mesh by interpolating ring at each lightness down the cylinder side.
-    for t1, t2 in zip(s1, s2):
-        for c in ColorCyl.steps([t1, t2], steps=resolution, space=gspace, hue='specified'):
+    # Include at least 3 points of lightness: lightest, darkest, and mid, which in
+    # HSL is the most colorful colors.
+    for color in s1:
+        s2['hue'] = color['hue']
+        for c in ColorCyl.steps([color, s2], steps=max(3, (resolution // 2) * 2 + 1), space=gspace, hue='specified'):
             u.append(c[2])
             v.append(c['hue'])
             c.convert(space, norm=False, in_place=True)
@@ -337,95 +336,9 @@ def render_space_cyl(fig, space, gamut, resolution, opacity, edges, faces, ecolo
     create3d(fig, x, y, z, tri, cmap, edges, faces, ecolor, fcolor, opacity)
 
     # Generate tops for spaces that do not normally get tops automatically.
-    if flags['is_hwbish'] or space in CYL_GAMUT:
+    if flags['is_hwbish'] or (flags['is_cyl'] and not flags['is_lchish']):
         cyl_disc(fig, ColorCyl, space, gspace, 'top', resolution, opacity, edges, faces, ecolor, fcolor, gmap, flags)
     cyl_disc(fig, ColorCyl, space, gspace, 'bottom', resolution, opacity, edges, faces, ecolor, fcolor, gmap, flags)
-
-    return fig
-
-
-def render_rect_face(fig, colorrgb, s1, s2, dim, space, gamut, resolution, opacity, edges, faces, ecolor, fcolor, gmap):
-    """Render the RGB rectangular face."""
-
-    target = Color.CS_MAP[space]
-    flags = {
-        'is_cyl': target.is_polar(),
-        'is_labish': isinstance(target, Labish),
-        'is_lchish': isinstance(target, LChish),
-        'is_hslish': isinstance(target, HSLish),
-        'is_hwbish': isinstance(target, HWBish),
-        'is_hsvish': isinstance(target, HSVish)
-    }
-
-    x = []
-    y = []
-    z = []
-    X = []
-    Y = []
-    Z = []
-    cmap = []
-
-    # Render an RGB face by taking two interpolated sides and interpolating the points across the face
-    for c1, c2 in zip(s1, s2):
-        for t in colorrgb.steps([c1, c2], steps=int(resolution / 4), space=gamut):
-            x.append(t[0])
-            y.append(t[1])
-            z.append(t[2])
-            t.convert(space, norm=False, in_place=True)
-
-            store_coords(t, X, Y, Z, flags)
-
-            # Fit colors to output gamut
-            s = t.convert('srgb')
-            if not s.in_gamut():
-                s.fit(**gmap)
-            else:
-                s.clip()
-            cmap.append(s.to_string(hex=True))
-
-    # Calculate triangles
-    tri = Delaunay(list(zip(locals().get(dim[0]), locals().get(dim[1]))))
-    create3d(fig, X, Y, Z, tri, cmap, edges, faces, ecolor, fcolor, opacity)
-
-
-def render_space_rect(fig, space, gamut, res, opacity, edges, faces, ecolor, fcolor, gmap):
-    """Render rectangular space."""
-
-    if space in FORCE_OWN_GAMUT:
-        gamut = space
-
-    cs = Color.CS_MAP[gamut]
-    if isinstance(cs, HSLish):
-        colorrgb = create_custom_rgb(gamut)
-        gamut = f'-rgb-{gamut}'
-    else:
-        colorrgb = Color
-
-    # Six corners of the RGB cube
-    ck = colorrgb(gamut, [0, 0, 0])
-    cw = colorrgb(gamut, [1, 1, 1])
-    cr = colorrgb(gamut, [1, 0, 0])
-    cg = colorrgb(gamut, [0, 1, 0])
-    cb = colorrgb(gamut, [0, 0, 1])
-    cy = colorrgb(gamut, [1, 1, 0])
-    cc = colorrgb(gamut, [0, 1, 1])
-    cm = colorrgb(gamut, [1, 0, 1])
-
-    # Interpolate two sides of a given face and interpolate the rest
-    s1 = colorrgb.steps([cy, cw], steps=res, space=gamut)
-    s2 = colorrgb.steps([cg, cc], steps=res, space=gamut)
-    s3 = colorrgb.steps([cr, cm], steps=res, space=gamut)
-    s4 = colorrgb.steps([ck, cb], steps=res, space=gamut)
-    render_rect_face(fig, colorrgb, s1, s2, ('x', 'z'), space, gamut, res, opacity, edges, faces, ecolor, fcolor, gmap)
-    render_rect_face(fig, colorrgb, s1, s3, ('y', 'z'), space, gamut, res, opacity, edges, faces, ecolor, fcolor, gmap)
-    render_rect_face(fig, colorrgb, s3, s4, ('x', 'z'), space, gamut, res, opacity, edges, faces, ecolor, fcolor, gmap)
-    render_rect_face(fig, colorrgb, s4, s2, ('y', 'z'), space, gamut, res, opacity, edges, faces, ecolor, fcolor, gmap)
-    s1 = colorrgb.steps([cb, cc], steps=res, space=gamut)
-    s2 = colorrgb.steps([cm, cw], steps=res, space=gamut)
-    render_rect_face(fig, colorrgb, s1, s2, ('x', 'y'), space, gamut, res, opacity, edges, faces, ecolor, fcolor, gmap)
-    s1 = colorrgb.steps([ck, cg], steps=res, space=gamut)
-    s2 = colorrgb.steps([cr, cy], steps=res, space=gamut)
-    render_rect_face(fig, colorrgb, s1, s2, ('x', 'y'), space, gamut, res, opacity, edges, faces, ecolor, fcolor, gmap)
 
     return fig
 
@@ -474,7 +387,6 @@ def plot_gamut_in_space(
         return None
 
     names = target.CHANNELS
-    is_regular = isinstance(target, Regular)
     is_cyl = target.is_polar()
     is_labish = isinstance(target, Labish)
     is_lchish = isinstance(target, LChish)
@@ -534,14 +446,7 @@ def plot_gamut_in_space(
     fig = go.Figure(layout=layout)
 
     edgecolor = Color(edge_color).convert('srgb').to_string(hex=True, fit=gmap) if edge_color else None
-
-    target = Color.CS_MAP[space]
-    if is_regular:
-        # Use a rectangular space for RGB-ish spaces to give a sharper cube
-        return render_space_rect(fig, space, gamut, resolution, opacity, edges, faces, edgecolor, face_color, gmap)
-    else:
-        # Render the space plot using a cylindrical space as the gamut space
-        return render_space_cyl(fig, space, gamut, resolution, opacity, edges, faces, edgecolor, face_color, gmap)
+    return render_space_cyl(fig, space, gamut, resolution, opacity, edges, faces, edgecolor, face_color, gmap)
 
 
 def plot_gamut_frames(fig, space, gamut_wires, gmap):
@@ -574,15 +479,7 @@ def plot_gamut_frames(fig, space, gamut_wires, gmap):
                 if p1.lower() != 'true':
                     ecolor = Color(p1).convert('srgb').to_string(hex=True, fit=gmap)
             opacity = float(p2)
-
-        target = Color.CS_MAP[space]
-        is_regular = isinstance(target, Regular)
-        if is_regular:
-            # Use a rectangular space for RGB-ish spaces to give a sharper cube
-            render_space_rect(fig, space, gamut, res, opacity, edges, faces, ecolor, fcolor, gmap)
-        else:
-            # Render the space plot using a cylindrical space as the gamut space
-            render_space_cyl(fig, space, gamut, res, opacity, edges, faces, ecolor, fcolor, gmap)
+        render_space_cyl(fig, space, gamut, res, opacity, edges, faces, ecolor, fcolor, gmap)
 
 
 def plot_colors(fig, space, gamut, gmap_colors, colors, gmap):
