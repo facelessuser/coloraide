@@ -16,7 +16,6 @@ except ImportError:
     from coloraide.everything import ColorAll as Color
 from coloraide.spaces import HSLish, HSVish, HWBish, Labish, LChish  # noqa: E402
 from coloraide import algebra as alg  # noqa: E402
-from coloraide.spaces.hsl import hsl_to_srgb, srgb_to_hsl  # noqa: E402
 
 FORCE_OWN_GAMUT = {'ryb', 'ryb-biased'}
 
