@@ -257,62 +257,6 @@ def create_custom_hsl(gamut):
     return ColorCyl
 
 
-def create_custom_rgb(gamut):
-    """
-    Create a custom color RGB space from an HSL like color space.
-
-    This allows us to handle something like HPLuv as a gamut when rendering rectangular color spaces.
-
-    Will likely only work for some color spaces.
-    """
-
-    cs = Color.CS_MAP[gamut]
-
-    class RGB(type(Color.CS_MAP['srgb-linear'])):
-        """Custom RGB class."""
-
-        NAME = '-rgb-{}'.format(gamut)
-        BASE = gamut
-        GAMUT_CHECK = gamut
-        CLIP_SPACE = None
-        WHITE = cs.WHITE
-        DYAMIC_RANGE = cs.DYNAMIC_RANGE
-        INDEXES = cs.indexes()
-        SCALE_SAT = cs.CHANNELS[INDEXES[1]].high
-        SCALE_LIGHT = cs.CHANNELS[INDEXES[1]].high
-
-        def to_base(self, coords):  # noqa: N804 # Faulty lint error
-            """Convert from RGB to HSL."""
-
-            coords = srgb_to_hsl(coords)
-            if self.SCALE_SAT != 1:
-                coords[1] *= self.SCALE_SAT
-            if self.SCALE_LIGHT != 1:
-                coords[2] *= self.SCALE_LIGHT
-            ordered = [0.0, 0.0, 0.0]
-            for e, c in enumerate(coords):
-                ordered[self.INDEXES[e]] = c
-            return ordered
-
-        def from_base(self, coords):  # noqa: N804 # Faulty lint error
-            """Convert from HSL to RGB."""
-
-            coords = [coords[i] for i in self.INDEXES]
-            if self.SCALE_SAT != 1:
-                coords[1] /= self.SCALE_SAT
-            if self.SCALE_LIGHT != 1:
-                coords[2] /= self.SCALE_LIGHT
-            coords = hsl_to_srgb(coords)
-            return coords
-
-    class ColorRGB(Color):
-        """Custom color."""
-
-    ColorRGB.register(RGB())
-
-    return ColorRGB
-
-
 def create3d(fig, x, y, z, tri, cmap, edges, faces, ecolor, fcolor, opacity):
     """Create the 3D renders."""
 
