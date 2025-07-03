@@ -23,10 +23,7 @@ FORCE_OWN_GAMUT = {'ryb', 'ryb-biased'}
 def get_face_color(cmap, simplex, filters):
     """Get best color."""
 
-    c = Color.average([cmap[simplex[0]], cmap[simplex[1]], cmap[simplex[2]]], space='srgb')
-    if filters:
-        c.filter(filters[0], **filters[1], in_place=True, out_space=c.space())
-    return c.to_string(hex=True)
+    return Color.average([cmap[simplex[0]], cmap[simplex[1]], cmap[simplex[2]]], space='srgb').to_string(hex=True)
 
 
 def create_custom_hsl(gamut):
@@ -171,7 +168,7 @@ def cyl_disc(
                 s.clip()
 
             if filters:
-                s.filter(filters[0], **filters[1], in_place=True, out_space=s.space())
+                s.filter(filters[0], **filters[1], in_place=True, out_space=s.space()).clip()
 
             cmap.append(s.to_string(hex=True))
 
@@ -295,7 +292,7 @@ def render_space_cyl(fig, space, gamut, resolution, opacity, edges, faces, ecolo
                 s.clip()
 
             if filters:
-                s.filter(filters[0], **filters[1], in_place=True, out_space=s.space())
+                s.filter(filters[0], **filters[1], in_place=True, out_space=s.space()).clip()
 
             cmap.append(s.to_string(hex=True))
 
@@ -419,18 +416,18 @@ def plot_gamut_in_space(
         edges = config.get('edges', False)
         ecolor = None
         if isinstance(edges, str):
-            c = Color(edges).convert('srgb')
+            c = Color(edges).convert('srgb').fit(**gmap)
             if filters:
-                c.filter(filters[0], **filters[1], in_place=True, out_space=c.space())
-            ecolor = c.to_string(hex=True, fit=gmap)
+                c.filter(filters[0], **filters[1], in_place=True, out_space=c.space()).clip()
+            ecolor = c.to_string(hex=True)
             edges = True
         faces = config.get('faces', False)
         fcolor = ''
         if isinstance(faces, str):
-            c = Color(faces).convert('srgb')
+            c = Color(faces).convert('srgb').fit(**gmap)
             if filters:
-                c.filter(filters[0], **filters[1], in_place=True, out_space=c.space())
-            fcolor = c.to_string(hex=True, fit=gmap)
+                c.filter(filters[0], **filters[1], in_place=True, out_space=c.space()).clip()
+            fcolor = c.to_string(hex=True)
             faces = True
 
         render_space_cyl(fig, space, gamut, resolution, opacity, edges, faces, ecolor, fcolor, gmap, filters)
@@ -469,16 +466,16 @@ def plot_colors(fig, space, gamut, gmap_colors, colors, gmap, filters=()):
             for c in ([c1, c2] if i < l else [c1]):
                 store_coords(c, x, y, z, flags)
 
-            c2.convert('srgb', in_place=True)
+            c2.convert('srgb', in_place=True).fit(**gmap)
             if filters:
-                c2.filter(filters[0], **filters[1], in_place=True, out_space=c2.space())
+                c2.filter(filters[0], **filters[1], in_place=True, out_space=c2.space()).clip()
 
             fig.add_trace(
                 go.Scatter3d(
                     x=x, y=y, z=z,
                     line={'color': 'black', 'width': 2},
                     marker={
-                        'color': c2.to_string(hex=True, fit=gmap),
+                        'color': c2.to_string(hex=True),
                         'size': [16, 0],
                         'opacity': 1,
                         'line': {'width': 2}
@@ -527,10 +524,9 @@ def plot_interpolation(
         if interp_gmap:
             c.fit('srgb', **gmap)
         store_coords(c, x, y, z, flags)
-        c.convert('srgb', in_place=True)
-        c.fit(**gmap)
+        c.convert('srgb', in_place=True).fit(**gmap)
         if filters:
-            c.filter(filters[0], **filters[1], in_place=True, out_space=c.space())
+            c.filter(filters[0], **filters[1], in_place=True, out_space=c.space()).clip()
         if simulate_alpha:
             cmap.append(Color.layer([c, 'white'], space='srgb').to_string(hex=True))
         else:
@@ -594,10 +590,9 @@ def plot_average(
         if avg_gmap:
             c.fit('srgb', **gmap)
         store_coords(c, x, y, z, flags)
-        c.convert('srgb', in_place=True)
+        c.convert('srgb', in_place=True).fit(**gmap)
         if filters:
-            c.filter(filters[0], **filters[1], in_place=True, out_space=c.space())
-        c.fit(**gmap)
+            c.filter(filters[0], **filters[1], in_place=True, out_space=c.space()).clip()
         if simulate_alpha:
             cmap.append(Color.layer([c, 'white'], space='srgb').to_string(hex=True))
         else:
@@ -607,10 +602,9 @@ def plot_average(
         if avg_gmap:
             c.fit('srgb', **gmap)
         store_coords(c, x, y, z, flags)
-        c.convert('srgb', in_place=True)
-        c.fit(**gmap)
+        c.convert('srgb', in_place=True).fit(**gmap)
         if filters:
-            c.filter(filters[0], **filters[1], in_place=True, out_space=c.space())
+            c.filter(filters[0], **filters[1], in_place=True, out_space=c.space()).clip()
         if simulate_alpha:
             cmap.append(Color.layer([c, 'white'], space='srgb').to_string(hex=True))
         else:
