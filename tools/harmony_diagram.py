@@ -5,6 +5,7 @@ import argparse
 import bisect
 import plotly.graph_objects as go
 import plotly.io as io
+import json
 
 sys.path.insert(0, os.getcwd())
 
@@ -108,8 +109,7 @@ def plot_slice(
     gamut='srgb',
     gmap=None,
     res=500,
-    scatter_size=16,
-    pspace=None
+    scatter_size=16
 ):
     """Plot a slice."""
 
@@ -121,8 +121,12 @@ def plot_slice(
         hue, chroma, lightness = cs.names()
     else:
         lightness, chroma, hue = cs.names()
-    if pspace is None:
-        pspace = cs.NAME
+
+    if gmap is None:
+        gmap = {'method': 'raytrace'}
+
+    if 'pspace' not in gmap:
+        gmap['pspace'] = cs.NAME
 
     # Interpolate between each x axis color along the y axis
     cmap = []
@@ -133,7 +137,7 @@ def plot_slice(
         custom[hue] = h
         custom[lightness] = constant
         custom[chroma] = max_chroma
-        custom.fit(gamut, method=gmap, pspace=pspace)
+        custom.fit(gamut, **gmap)
         mx = custom[chroma]
         chromas = []
         for c in alg.linspace(0, mx, res):
@@ -141,7 +145,7 @@ def plot_slice(
             custom[chroma] = c
             theta.append(h)
             chromas.append(c)
-            cmap.append(custom.convert('srgb').to_string(hex=True, fit=gmap, pspace=pspace))
+            cmap.append(custom.convert('srgb').to_string(hex=True, **gmap))
         maximums.append((h, mx))
         r.extend([alg.zdiv(ci, mx) for ci in chromas])
 
@@ -167,7 +171,7 @@ def main():
     parser.add_argument('--gamut', '-g', default="srgb", help='Gamut to evaluate the color in (default is sRGB).')
     parser.add_argument('--pspace', '-p', help="Specific perceptual space to gamut map in.")
     parser.add_argument('--map-colors', '-m', action='store_true', help="Gamut map colors to be within the gamut.")
-    parser.add_argument('--gamut-map-method', '-f', default="raytrace", help="Gamut mapping space.")
+    parser.add_argument('--gmap', '-f', default="raytrace", help="Gamut mapping space.")
     parser.add_argument('--title', '-t', default='', help="Provide a title for the diagram.")
     parser.add_argument('--resolution', '-r', type=int, default=500, help="How densely to render the figure.")
     parser.add_argument('--scatter-size', '-S', type=int, default=4, help="Define scatter plot size.")
@@ -216,7 +220,10 @@ def main():
         }
     )
 
-    gmap = args.gamut_map_method
+    parts = [p.strip() if not e else json.loads(p) for e, p in enumerate(args.gmap.split(':', 1))]
+    gmap = {'method': parts[0]}
+    if len(parts) == 2:
+        gmap.update(parts[1])
 
     maximums = plot_slice(
         fig,
@@ -227,8 +234,7 @@ def main():
         gamut=args.gamut,
         gmap=gmap,
         res=args.resolution,
-        scatter_size=int(args.scatter_size),
-        pspace=args.pspace if args.pspace else None
+        scatter_size=int(args.scatter_size)
     )
 
     if args.harmony:

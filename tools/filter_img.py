@@ -101,14 +101,15 @@ def main():
     parser.add_argument('--amount', '-a', type=float, help='Amount to filter the image.')
     parser.add_argument('--cvd-approach', '-c', help='CVD approach to use.')
     parser.add_argument('--space', '-s', default='srgb-linear', help='Color space to filter in.')
-    parser.add_argument('--gamut-map', '-g', default="clip", help="Specify GMA method to use (default simple clipping)")
-    parser.add_argument('--gamut-options', '-G', default="{}", help="Define gamut mapping options.")
+    parser.add_argument('--gmap', '-g', default="clip", help="Specify GMA method to use (default simple clipping)")
 
     args = parser.parse_args()
 
     global GMAP
-    GMAP = {'method': args.gamut_map}
-    GMAP.update(json.loads(args.gamut_options))
+    parts = [p.strip() if not e else json.loads(p) for e, p in enumerate(args.gmap.split(':', 1))]
+    GMAP = {'method': parts[0]}
+    if len(parts) == 2:
+        GMAP.update(parts[1])
 
     process_image(
         args.input,

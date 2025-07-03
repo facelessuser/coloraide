@@ -5,6 +5,7 @@ import time
 import argparse
 import sys
 import os
+import json
 
 # We want to load ColorAide from the working directory to pick up the version under development
 sys.path.insert(0, os.getcwd())
@@ -13,6 +14,8 @@ try:
     from coloraide_extras.everything import ColorAll as Color
 except ImportError:
     from coloraide.everything import ColorAll as Color
+
+GMAP = {}
 
 
 def printt(t):
@@ -60,10 +63,10 @@ def apply_compositing(background, blend, operator, pixels, fit, space):
     if background != 'transparent':
         result = Color.layer([result, background]).clip()
 
-    return tuple(int(x * 255) for x in result.fit(method=fit)[:4])
+    return tuple(int(x * 255) for x in result.fit(**GMAP)[:4])
 
 
-def process_image(imgs, bg, output, blend, porter_duff, fit, space):
+def process_image(imgs, bg, output, blend, porter_duff, space):
     """Process the image applying the requested blend mode and compositing operator."""
 
     images = []
@@ -95,7 +98,7 @@ def process_image(imgs, bg, output, blend, porter_duff, fit, space):
     print('> 0%', end='\r')
     for i in range(x):
         for j in range(y):
-            pixels[0][i, j] = apply_compositing(bg, blend, porter_duff, tuple([p[i, j] for p in pixels]), fit, space)
+            pixels[0][i, j] = apply_compositing(bg, blend, porter_duff, tuple([p[i, j] for p in pixels]), space)
         print(f'> {int((i * j) * factor)}%', end="\r")
     print('> 100%')
     t = time.perf_counter_ns() - start
@@ -120,8 +123,14 @@ def main():
         default='transparent',
         help="Background color. Blended in source-over in isolation."
     )
-    parser.add_argument('--gamut-map', '-g', default="clip", help="Specify GMA method to use (default simple clipping)")
+    parser.add_argument('--gmap', '-g', default="clip", help="Specify GMA method to use (default simple clipping)")
     args = parser.parse_args()
+
+    global GMAP
+    parts = [p.strip() if not e else json.loads(p) for e, p in enumerate(args.gmap.split(':', 1))]
+    GMAP = {'method': parts[0]}
+    if len(parts) == 2:
+        GMAP.update(parts[1])
 
     process_image(
         args.image,
@@ -129,7 +138,6 @@ def main():
         args.output,
         args.blend,
         args.porter_duff,
-        args.gamut_map,
         args.space
     )
 
