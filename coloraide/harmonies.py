@@ -271,7 +271,7 @@ class SplitComplementary(Harmony):
         clone[h_idx] = adjust_hue(clone[h_idx], 210)
         colors.append(from_cylinder(color, clone))
         coords[h_idx] = adjust_hue(coords[h_idx], -210)
-        colors.append(from_cylinder(color, coords))
+        colors.insert(0, from_cylinder(color, coords))
         return colors
 
 
@@ -291,7 +291,7 @@ class Analogous(Harmony):
         clone[h_idx] = adjust_hue(clone[h_idx], 30)
         colors.append(from_cylinder(color, clone))
         coords[h_idx] = adjust_hue(coords[h_idx], -30)
-        colors.append(from_cylinder(color, coords))
+        colors.insert(0, from_cylinder(color, coords))
         return colors
 
 

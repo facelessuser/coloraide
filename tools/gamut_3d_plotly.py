@@ -542,6 +542,73 @@ def plot_interpolation(
     fig.add_trace(trace)
 
 
+def plot_harmony(
+    fig,
+    space,
+    harmony,
+    gmap,
+    simulate_alpha,
+    harmony_gmap,
+    filters=()
+):
+    """Plot color harmony."""
+
+    if not harmony:
+        return
+
+    hcolor, options = harmony
+    if 'space' not in options:
+        options['space'] = space
+    options['out_space'] = space
+
+    colors = Color(hcolor).harmony(**options)
+
+    target = Color.CS_MAP[space]
+    flags = {
+        'is_cyl': target.is_polar(),
+        'is_labish': isinstance(target, Labish),
+        'is_lchish': isinstance(target, LChish),
+        'is_hslish': isinstance(target, HSLish),
+        'is_hwbish': isinstance(target, HWBish),
+        'is_hsvish': isinstance(target, HSVish)
+    }
+
+    cmap = []
+    x = []
+    y = []
+    z = []
+    for s in colors:
+        c = s.normalize(nans=False)
+        if harmony_gmap:
+            c.fit('srgb', **gmap)
+        store_coords(c, x, y, z, flags)
+        c.convert('srgb', in_place=True).fit(**gmap)
+        if filters:
+            c.filter(filters[0], **filters[1], in_place=True, out_space=c.space()).clip()
+        if simulate_alpha:
+            cmap.append(Color.layer([c, 'white'], space='srgb').to_string(hex=True))
+        else:
+           cmap.append(c.to_string(comma=True, alpha=False))
+
+    if options['name'] in ('wheel', 'rectangle', 'square', 'triad', 'split'):
+        x.append(x[0])
+        y.append(y[0])
+        z.append(z[0])
+        cmap.append(cmap[0])
+        size = ([8] * (len(x) - 1)) + [0]
+    else:
+        size = [8] * len(x)
+
+    trace = go.Scatter3d(
+        x=x, y=y, z=z,
+        marker={'size': size, 'color': cmap, 'opacity': 1},
+        line={'color': 'black', 'width': 3},
+        showlegend=False
+    )
+
+    fig.add_trace(trace)
+
+
 def plot_average(
     fig,
     space,
@@ -677,10 +744,22 @@ def main():
         )
     )
     parser.add_argument(
-        '--mix-alpha', action='store_true', help="Simulate interpolation/averaging opacity by overlaying on white."
+        '--harmony',
+        default='{}',
+        help=(
+            "Harmony configuration: 'color:harmony'. Harmony can be followed by an optional JSON containing options: "
+            "'color:harmony: {}'"
+        )
     )
     parser.add_argument(
-        '--mix-gmap', action='store_true', help="Force plotted interpolation/averaging results to be gamut mapped."
+        '--mix-alpha',
+        action='store_true',
+        help="Simulate interpolation/averaging/harmony opacity by overlaying on white."
+    )
+    parser.add_argument(
+        '--mix-gmap',
+        action='store_true',
+        help="Force plotted interpolation/averaging/harmony results to be gamut mapped."
     )
 
     parser.add_argument(
@@ -779,6 +858,25 @@ def main():
         args.space,
         args.avg_colors,
         avg_options,
+        gmap,
+        args.mix_alpha,
+        args.mix_gmap,
+        filters
+    )
+
+    parts = [p.strip() if e < 2 else json.loads(p) for e, p in enumerate(args.harmony.split(':', 2))]
+    harmony_config = []
+    if parts:
+        hcolor = parts[0]
+        harmony = {'name': parts[1]}
+        if len(parts) == 3:
+            harmony.update(parts[2])
+        harmony_config = [hcolor, harmony]
+
+    plot_harmony(
+        fig,
+        args.space,
+        harmony_config,
         gmap,
         args.mix_alpha,
         args.mix_gmap,
