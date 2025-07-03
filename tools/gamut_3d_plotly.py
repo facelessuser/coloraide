@@ -288,15 +288,9 @@ def render_space_cyl(fig, space, gamut, resolution, opacity, edges, faces, ecolo
 
 def plot_gamut_in_space(
     space,
-    gamut,
+    gamuts,
     title="",
     dark=False,
-    resolution=200,
-    opacity=1.0,
-    edges=False,
-    faces=False,
-    edge_color='#333333',
-    face_color='',
     gmap=None,
     size=(800, 800),
     camera=None,
@@ -388,41 +382,23 @@ def plot_gamut_in_space(
     # Create figure to store the plot
     fig = go.Figure(layout=layout)
 
-    edgecolor = Color(edge_color).convert('srgb').to_string(hex=True, fit=gmap) if edge_color else None
-    return render_space_cyl(fig, space, gamut, resolution, opacity, edges, faces, edgecolor, face_color, gmap)
-
-
-def plot_gamut_frames(fig, space, gamut_wires, gmap):
-    """Plot gamut wire frames."""
-
-    if not gamut_wires:
-        return
-
-    wires = gamut_wires.split(';') if gamut_wires else []
-    for wire in wires:
-        gamut, color, res = wire.split(':')
-        res = max(8, int(res))
-        if res == 50:
-            res = 51
-
-        opacity = 0.2
+    for gamut, config in gamuts.items():
+        opacity = config.get('opacity', 1)
+        resolution = config.get('resolution', 200)
+        edges = config.get('edges', False)
         ecolor = None
-        edges = False
-        faces = False
+        if isinstance(edges, str):
+            ecolor = Color(edges).convert('srgb').to_string(hex=True, fit=gmap)
+            edges = True
+        faces = config.get('faces', False)
         fcolor = ''
-        if color.startswith('edge('):
-            parts = [c.strip() for c in color[5:-1].split(',')]
-            if len(parts) == 1:
-                p1 = parts[0]
-                p2 = '0.2'
-            else:
-                p1, p2 = parts
-            if p1.lower() != 'false':
-                edges = True
-                if p1.lower() != 'true':
-                    ecolor = Color(p1).convert('srgb').to_string(hex=True, fit=gmap)
-            opacity = float(p2)
-        render_space_cyl(fig, space, gamut, res, opacity, edges, faces, ecolor, fcolor, gmap)
+        if isinstance(faces, str):
+            fcolor = Color(faces).convert('srgb').to_string(hex=True, fit=gmap)
+            faces = True
+
+        render_space_cyl(fig, space, gamut, resolution, opacity, edges, faces, ecolor, fcolor, gmap)
+
+    return fig
 
 
 def plot_colors(fig, space, gamut, gmap_colors, colors, gmap):
@@ -475,13 +451,7 @@ def plot_interpolation(
     fig,
     space,
     interp_colors,
-    interp_space,
     interp_method,
-    hue,
-    carryfoward,
-    powerless,
-    extrapolate,
-    steps,
     gmap,
     simulate_alpha,
     interp_gmap
@@ -493,13 +463,7 @@ def plot_interpolation(
 
     colors = Color.steps(
         interp_colors.split(';'),
-        space=interp_space,
-        steps=steps,
-        hue=hue,
-        carryfoward=carryfoward,
-        powerless=powerless,
-        extrapolate=extrapolate,
-        method=interp_method
+        **interp_method
     )
 
     target = Color.CS_MAP[space]
@@ -542,7 +506,7 @@ def plot_average(
     fig,
     space,
     avg_colors,
-    avg_space,
+    avg_options,
     gmap,
     simulate_alpha,
     avg_gmap
@@ -563,7 +527,7 @@ def plot_average(
     color = Color.average(
         colors,
         weights,
-        space=avg_space
+        space=avg_options['space']
     )
 
     target = Color.CS_MAP[space]
@@ -623,32 +587,23 @@ def main():
     parser.add_argument(
         '--gamut',
         '-g',
-        default='srgb',
+        action='append',
+        default=[],
         help=(
-            'Gamut space to render space in. Gamut space must be bounded and must have channels in the range [0, 1].'
-            'As only a shell is rendered for the gamut, the target space should be less than or equal to the size of '
-            'the target gamut or there will be areas that do not render. Cylindrical spaces based specifically off '
-            'an RGB gamut, such as HSL being based on sRGB, will only be done under the related gamut and will ignore '
-            'this option.'
+            "Gamut space to render space in. Can be followed by a JSON config in the form 'space:{}' to set `edges`,"
+            '`faces`, `opacity`, or `resolution`. `edges` and `faces` can be a boolean to disable or enable them or '
+            'color to configure them all as a specific color.'
         )
     )
     parser.add_argument(
-        '--gamut-shell',
-        default='',
+        '--gmap',
+        default='raytrace',
         help=(
-            'Gamut shells are specified in the form gamut:edge(bool | color, int):resolution. Each shell should be '
-            'separated by a semicolon. The first parameter of the edge function can be `true` to turn on edges, '
-            '`false` to turn off edges, or a color to set the edges to one color. The next parameter sets the opacity, '
-            'of the surface (not the edges), the default being 0.2 if opacity is omitted.'
+            "Gamut mapping algorithm. To set additional options, follow the algorithm with with a JSON string and "
+            "containing the parameters in the form of 'algorithm:{}'."
         )
     )
-    parser.add_argument('--gmap', default='raytrace', help="Gamut mapping algorithm.")
     parser.add_argument('--gmap-colors', default='', help='Color(s) to gamut map, separated by semicolons.')
-    parser.add_argument(
-        '--gmap-options',
-        default='{}',
-        help='Options to pass to the gamut mapping method (JSON string).'
-    )
     parser.add_argument(
         '--colors',
         default='',
@@ -656,45 +611,37 @@ def main():
     )
 
     # Interpolation visualization
-    parser.add_argument('--avg-colors', default='', help="Colors that should be averaged together.")
+    parser.add_argument(
+        '--avg-colors',
+        default='',
+        help="Colors that should be averaged together separated by semicolons."
+    )
+    parser.add_argument(
+        '--average-options',
+        default='{}',
+        help=(
+            "Averaging configuration (JSON string)."
+        )
+    )
+
     parser.add_argument('--interp-colors', default='', help='Interpolation colors separated by semicolons.')
-    parser.add_argument('--interp-method', default='linear', help="Interplation method to use: linear, bezier, etc.")
-    parser.add_argument('--interp-space', default='oklab', help="Interpolation/averaging space.")
     parser.add_argument(
-        '--interp-alpha', action='store_true', help="Simulate interpolation/averaging opacity by overlaying on white."
+        '--interp-method',
+        default='linear',
+        help=(
+            "Interpolation configuration. Interpolation method followed by an optional JSON containing options: "
+            "'method: {}'"
+        )
     )
     parser.add_argument(
-        '--interp-gmap', action='store_true', help="Force plotted interpolation/averaging results to be gamut mapped."
+        '--mix-alpha', action='store_true', help="Simulate interpolation/averaging opacity by overlaying on white."
     )
-    parser.add_argument('--hue', default='shorter', help="Hue interpolation handling.")
-    parser.add_argument('--extrapolate', action='store_true', help='Extrapolate values.')
-    parser.add_argument('--powerless', action='store_true', help="Treat achromatic hues as powerless.")
-    parser.add_argument('--carryfoward', action='store_true', help="Carry forward undefined channels.")
-    parser.add_argument('--steps', type=int, default=100, help="Interpolation steps.")
+    parser.add_argument(
+        '--mix-gmap', action='store_true', help="Force plotted interpolation/averaging results to be gamut mapped."
+    )
 
     # Graphical and plotting options
     parser.add_argument('--title', '-t', default='', help="Provide a title for the diagram.")
-    parser.add_argument('--opacity', default=1.0, type=float, help="opacity")
-    parser.add_argument(
-        '--resolution', '-r',
-        default="200",
-        help=(
-            "How densely to render the figure. Some spaces need higher resolution to flesh out certain areas, "
-            "but it comes at the cost of speed. Minimum is 60, default is 200."
-        )
-    )
-    parser.add_argument('--edges', '-e', action="store_true", help="Plot edges.")
-    parser.add_argument('--faces', '-f', action="store_true", help="Colorize faces for a low-res poly look.")
-    parser.add_argument(
-        '--edge-color',
-        default="",
-        help="Edge color. If no color is specified, edges will be based on vertices."
-    )
-    parser.add_argument(
-        '--face-color',
-        default="",
-        help="Face color. If no color is specified, faces will be calculated as the average of the vertices."
-    )
     parser.add_argument('--dark', action="store_true", help="Use dark theme.")
     parser.add_argument('--output', '-o', default='', help='Output file.')
     parser.add_argument('--height', '-H', type=int, default=800, help="Height")
@@ -718,23 +665,28 @@ def main():
 
     args = parser.parse_args()
 
-    aspect = {k: float(v) for k, v in zip(['x', 'y', 'z'], args.aspect_ratio.split(':'))}
-    res = max(8, int(args.resolution))
-    gmap = {'method': args.gmap}
-    gmap.update(json.loads(args.gmap_options))
+    gamuts = {}
+    first = None
+    for gamut in args.gamut:
+        parts = [p.strip() if not e else json.loads(p) for e, p in enumerate(gamut.split(':', 1))]
+        gamuts[parts[0]] = {} if len(parts) == 1 else parts[1]
+        first = parts[0]
+    if first is None:
+        first = 'srgb'
+        gamuts['srgb'] = {}
 
-    # Plot the color space
+    aspect = {k: float(v) for k, v in zip(['x', 'y', 'z'], args.aspect_ratio.split(':'))}
+    parts = [p.strip() if not e else json.loads(p) for e, p in enumerate(args.gmap.split(':', 1))]
+    gmap = {'method': parts[0]}
+    if len(parts) == 2:
+        gmap.update(json.loads(parts[1]))
+
+    # Plot the color space(s)
     fig = plot_gamut_in_space(
         args.space,
-        args.gamut,
+        gamuts,
         title=args.title,
         dark=args.dark,
-        resolution=res,
-        opacity=args.opacity,
-        edges=args.edges,
-        faces=args.faces,
-        edge_color=args.edge_color,
-        face_color=args.face_color,
         gmap=gmap,
         size=(args.width, args.height),
         camera={'a': args.azimuth, 'e': args.elevation, 'r': args.distance},
@@ -742,38 +694,36 @@ def main():
         projection=args.projection
     )
 
-    # Plot additional gamut frames
-    plot_gamut_frames(fig, args.space, args.gamut_shell, gmap)
+    parts = [p.strip() if not e else json.loads(p) for e, p in enumerate(args.interp_method.split(':', 1))]
+    interp = {'method': parts[0], 'hue': 'shorter', 'steps': 100}
+    if len(parts) == 2:
+        interp.update(json.loads(parts[1]))
 
     # Plot interpolation
     plot_interpolation(
         fig,
         args.space,
         args.interp_colors,
-        args.interp_space,
-        args.interp_method,
-        args.hue,
-        args.carryfoward,
-        args.powerless,
-        args.extrapolate,
-        args.steps,
+        interp,
         gmap,
-        args.interp_alpha,
-        args.interp_gmap
+        args.mix_alpha,
+        args.mix_gmap
     )
 
+    avg_options = {"space": "srgb-linear"}
+    avg_options.update(json.loads(args.average_options))
     plot_average(
         fig,
         args.space,
         args.avg_colors,
-        args.interp_space,
+        avg_options,
         gmap,
-        args.interp_alpha,
-        args.interp_gmap
+        args.mix_alpha,
+        args.mix_gmap
     )
 
     # Plot gamut mapping examples
-    plot_colors(fig, args.space, args.gamut, args.gmap_colors, args.colors, gmap)
+    plot_colors(fig, args.space, first, args.gmap_colors, args.colors, gmap)
 
     # Show or save the data as an image, etc.
     if fig:

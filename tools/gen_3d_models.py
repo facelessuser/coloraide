@@ -20,9 +20,8 @@ def plot_model(name, title, filename, gamut='srgb', elev=45, azim=-60.0):
     print(f'===> Generating {name} model...')
     fig = diagrams.plot_gamut_in_space(
         name,
-        gamut=gamut,
+        gamuts={gamut: {}},
         title=title,
-        resolution=200,
         size=(width, height),
         camera={'a': azim, 'e': elev, 'r': 2.5}
     )
