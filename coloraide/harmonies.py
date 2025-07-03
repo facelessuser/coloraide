@@ -288,9 +288,9 @@ class Analogous(Harmony):
         # Adjusts hue and convert to the final color
         colors = [from_cylinder(color, coords)]
         clone = coords[:]
-        clone[h_idx] = adjust_hue(clone[h_idx], 30)
+        clone[h_idx] = adjust_hue(clone[h_idx], -30)
         colors.append(from_cylinder(color, clone))
-        coords[h_idx] = adjust_hue(coords[h_idx], -30)
+        coords[h_idx] = adjust_hue(coords[h_idx], 30)
         colors.insert(0, from_cylinder(color, coords))
         return colors
 

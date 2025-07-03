@@ -113,9 +113,9 @@ class TestHarmonies(util.ColorAssertsPyTest):
             (
                 'red',
                 'analogous',
-                ['rgb(245.33 -9.3968 132.34)',
+                ['rgb(239.47 70.306 -85.526)',
                  'rgb(255 0 0)',
-                 'rgb(239.47 70.306 -85.526)'],
+                 'rgb(245.33 -9.3968 132.34)'],
                 None,
                 {}
             ),
@@ -195,9 +195,9 @@ class TestHarmonies(util.ColorAssertsPyTest):
             (
                 'red',
                 'analogous',
-                ['rgb(245.33 -9.3968 132.34)',
+                ['rgb(239.47 70.306 -85.526)',
                  'rgb(255 0 0)',
-                 'rgb(239.47 70.306 -85.526)'],
+                 'rgb(245.33 -9.3968 132.34)'],
                 'oklab',
                 {}
             ),
