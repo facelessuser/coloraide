@@ -199,7 +199,7 @@ def main():
     c_value = c1[lightness]
 
     if not args.title:
-        title = f"Color Harmony '{args.harmony}'' in Color Space '{args.space}' in Gamut '{args.gamut}'"
+        title = f"Color Harmony '{args.harmony}' in Color Space '{args.space}' in Gamut '{args.gamut}'"
     else:
         title = args.title
 

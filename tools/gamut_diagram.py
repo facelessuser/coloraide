@@ -26,10 +26,9 @@ def main():
         '--color', '-c',
         help="Colors to gamut map separated with semicolons. If multiple colors are used, colors must use the same hue."
     )
-    parser.add_argument('--method', '-m', default='lch-chroma', help="Gamut map method")
     parser.add_argument(
-        '--gmap-options',
-        default='{}',
+        '--gmap',
+        default='lch-chroma:{}',
         help='Options to pass to the gamut mapping method (JSON string).'
     )
     parser.add_argument('--gamut', '-g', default="srgb", help='Gamut to evaluate the color in (default is sRGB).')
@@ -46,9 +45,11 @@ def main():
     parser.add_argument('--width', '-W', type=int, default=800, help="Width")
     args = parser.parse_args()
 
-    method = args.method
-    gmap = {'method': args.method}
-    gmap.update(json.loads(args.gmap_options))
+    parts = [p.strip() if not e else json.loads(p) for e, p in enumerate(args.gmap.split(':', 1))]
+    method = parts[0]
+    gmap = {'method': method}
+    if len(parts) == 2:
+        gmap.update(parts[1])
     adaptive = gmap.get('adaptive', None)
 
     pspace = ''

@@ -679,7 +679,7 @@ def main():
     parts = [p.strip() if not e else json.loads(p) for e, p in enumerate(args.gmap.split(':', 1))]
     gmap = {'method': parts[0]}
     if len(parts) == 2:
-        gmap.update(json.loads(parts[1]))
+        gmap.update(parts[1])
 
     # Plot the color space(s)
     fig = plot_gamut_in_space(

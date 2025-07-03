@@ -346,10 +346,9 @@ def main():
     parser.add_argument('--no-border', '-b', action="store_true", help='Draw no border around the graphed content.')
     parser.add_argument('--dpi', default=200, type=int, help="DPI of image.")
     parser.add_argument('--output', '-o', default='', help='Output file.')
-    parser.add_argument('--gmap', '-G', default='lch-chroma', help='Gamut mapping approach (default is lch-chroma).')
     parser.add_argument(
-        '--gmap-options',
-        default='{}',
+        '--gmap',
+        default='lch-chroma:{}',
         help='Options to pass to the gamut mapping method (JSON string).'
     )
     parser.add_argument('--allow-oog', '-a', action='store_true', help="Allow out of gamut.")
@@ -362,8 +361,10 @@ def main():
 
     args = parser.parse_args()
 
-    gmap = {'method': args.gmap}
-    gmap.update(json.loads(args.gmap_options))
+    parts = [p.strip() if not e else json.loads(p) for e, p in enumerate(args.gmap.split(':', 1))]
+    gmap = {'method': parts[0]}
+    if len(parts) == 2:
+        gmap.update(parts[1])
 
     fig = plot_slice(
         args.space,

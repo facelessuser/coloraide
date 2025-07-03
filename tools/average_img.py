@@ -90,12 +90,13 @@ def main():
     parser.add_argument('--out-space', '-o', default='srgb', help='Color space to average in.')
     parser.add_argument('--premultiplied', '-p', action='store_true', help="Premultiply values.")
     parser.add_argument('--no-resize', '-r', action='store_true', help="Disable resizing of image.")
-    parser.add_argument('--gamut-map', '-g', default="clip", help="Specify GMA method to use (default is clip).")
-    parser.add_argument('--gamut-options', '-G', default="{}", help="Define gamut mapping options.")
+    parser.add_argument('--gmap', '-g', default="clip", help="Specify GMA method to use (default is clip).")
     args = parser.parse_args()
 
-    gmap = {'method': args.gamut_map}
-    gmap.update(json.loads(args.gamut_options))
+    parts = [p.strip() if not e else json.loads(p) for e, p in enumerate(args.gmap.split(':', 1))]
+    gmap = {'method': parts[0]}
+    if len(parts) == 2:
+        gmap.update(parts[1])
 
     print(
         Color.average(

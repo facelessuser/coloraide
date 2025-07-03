@@ -190,9 +190,11 @@ def simulate_raytrace_gamut_mapping(args):
     points = []
     color = Color(args.gamut_color)
 
-    options = json.loads(args.gmap_options)
-    pspace = options.get('pspace', 'lch-d65')
-    adaptive = options.get('adaptive', 0.0)
+    gmap = json.loads(args.gmap)
+    gmap = {'method': 'raytrace'}
+
+    pspace = gmap.get('pspace', 'oklch')
+    adaptive = gmap.get('adaptive', 0.0)
 
     polar = color.CS_MAP[pspace].is_polar()
     space = args.gamut_rgb
@@ -346,17 +348,11 @@ def simulate_raytrace_gamut_mapping(args):
         )
         i += 3
 
-    gmap = {'method': 'raytrace'}
-    gmap.update(options)
-
     # Plot the color space
     fig = plt3d.plot_gamut_in_space(
         space,
-        args.gamut_rgb,
+        {args.gamut_rgb: {'opacity': 0.2, 'resolution': 100}},
         title=args.title,
-        resolution=100,
-        opacity=0.3,
-        edges=False,
         gmap=gmap,
         size=(args.width, args.height)
     )
@@ -413,7 +409,7 @@ if __name__ == "__main__":
         '--gamut-interp', action='store_true', help="Show interpolation of color along constant lightness and hue."
     )
     parser.add_argument(
-        '--gmap-options',
+        '--gmap',
         default='{}',
         help='Options to pass to the gamut mapping method (JSON string).'
     )
