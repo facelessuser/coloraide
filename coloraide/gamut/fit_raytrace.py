@@ -32,16 +32,21 @@ def project_onto(a: Vector, b: Vector, o: Vector) -> Vector:
 
     # Create vector from points
     ox, oy, oz = o
-    vec_oa = [a[0] - ox, a[1] - oy, a[2] - oz]
-    vec_ob = [b[0] - ox, b[1] - oy, b[2] - oz]
+    va1 = a[0] - ox
+    va2 = a[1] - oy
+    va3 = a[2] - oz
+    vb1 = b[0] - ox
+    vb2 = b[1] - oy
+    vb3 = b[2] - oz
+
     # Project `vec_oa` onto `vec_ob` and convert back to a point
-    r = alg.matmul_x3(vec_oa, vec_ob, dims=alg.D1) / alg.matmul_x3(vec_ob, vec_ob, dims=alg.D1)
+    r = (va1 * vb1 + va2 * vb2 + va3 * vb3) / (vb1 * vb1 + vb2 * vb2 + vb3 * vb3)
     # Some spaces may project something that exceeds the range of our target vector.
     if r > 1.0:
         r = 1.0
     elif r < 0.0:  # pragma: no cover
         r = 0.0
-    return [vec_ob[0] * r + ox, vec_ob[1] * r + oy, vec_ob[2] * r + oz]
+    return [vb1 * r + ox, vb2 * r + oy, vb3 * r + oz]
 
 
 def hwb_to_srgb(coords: Vector) -> Vector:  # pragma: no cover
@@ -185,7 +190,7 @@ class RayTrace(Fit):
     """Gamut mapping by using ray tracing."""
 
     NAME = "raytrace"
-    PSPACE = "oklch"
+    PSPACE = "oklab"
 
     def fit(
         self,
@@ -200,7 +205,6 @@ class RayTrace(Fit):
 
         if pspace is None:
             pspace = self.PSPACE
-        polar = color.CS_MAP[pspace].is_polar()
 
         cs = color.CS_MAP[space]
         bmax = [1.0, 1.0, 1.0]
@@ -224,21 +228,15 @@ class RayTrace(Fit):
 
         orig = color.space()
         mapcolor = color.convert(pspace, norm=False) if orig != pspace else color.clone().normalize(nans=False)
+        polar = mapcolor._space.is_polar()
         achroma = mapcolor.clone()
 
         # Different perceptual spaces may have components in different orders, account for this
         if polar:
             l, c, h = achroma._space.indexes()  # type: ignore[attr-defined]
-            light = mapcolor[l]
-            chroma = mapcolor[c]
-            hue = mapcolor[h]
-            ab = alg.polar_to_rect(chroma, hue)
             achroma[c] = 0
         else:
             l, a, b = mapcolor._space.indexes()  # type: ignore[attr-defined]
-            light = mapcolor[l]
-            ab = (mapcolor[a], mapcolor[b])
-            chroma, hue = alg.rect_to_polar(*ab)
             achroma[a] = 0
             achroma[b] = 0
 
@@ -247,10 +245,14 @@ class RayTrace(Fit):
         # chroma by the max lightness to get lightness between 0 and 1.
         if adaptive:
             max_light = color.new(space, [1.0, 1.0, 1.0]).convert(pspace)[l]
-            alight = adaptive_hue_independent(light / max_light, max(chroma, 0) / max_light, adaptive) * max_light
+            alight = adaptive_hue_independent(
+                mapcolor[l] / max_light,
+                max(mapcolor[c] if polar else alg.rect_to_polar(mapcolor[a], mapcolor[b])[0], 0) / max_light,
+                adaptive
+            ) * max_light
             achroma[l] = alight
         else:
-            alight = light
+            alight = mapcolor[l]
 
         # Some perceptual spaces, such as CAM16 or HCT, may compensate for adapting
         # luminance which may give an achromatic that is not quite achromatic,
@@ -271,16 +273,13 @@ class RayTrace(Fit):
             black = [0.0, 0.0, 0.0]
             color.update(space, cs.to_base(black) if coerced else black, mapcolor[-1])
         else:
-            # Create a ray from our current color to the color with zero chroma.
+            # Create a ray from our current color to the anchor.
             # Trace the line to the RGB cube finding the intersection.
             # In between iterations, correct the L and H and then cast a ray
             # to the new corrected color finding the intersection again.
+            start = mapcolor[:-1]
+            end = achroma[:-1]
             mapcolor.convert(space, in_place=True)
-
-            if adaptive:
-                # Interpolation path
-                start = [light, *ab]
-                end = [alight, 0.0, 0.0]
 
             # Threshold for anchor adjustment
             low = 1e-6
@@ -288,35 +287,9 @@ class RayTrace(Fit):
 
             for i in range(4):
                 if i:
-                    mapcolor.convert(pspace, in_place=True, norm=False)
-
-                    # Correct the point onto the desired interpolation path
-                    if adaptive:
-                        if polar:
-                            mapcolor[l], a_, b_ = project_onto(
-                                [mapcolor[l], *alg.polar_to_rect(mapcolor[c], mapcolor[h])],
-                                start,
-                                end
-                            )
-                            mapcolor[c], mapcolor[h] = alg.rect_to_polar(a_,b_)
-                        else:
-                            mapcolor[l], mapcolor[a], mapcolor[b] = project_onto(
-                                [mapcolor[l], mapcolor[a], mapcolor[b]],
-                                start,
-                                end
-                            )
-
-                    # Simple correction for constant lightness
-                    else:
-                        mapcolor[l] = alight
-                        if polar:
-                            mapcolor[h] = hue
-                        else:
-                            mapcolor[a], mapcolor[b] = alg.polar_to_rect(
-                                alg.rect_to_polar(mapcolor[a], mapcolor[b])[0],
-                                hue
-                            )
-
+                    # Project the point onto the desired interpolation path
+                    coords = mapcolor.convert(pspace, in_place=True, norm=False)[:-1]
+                    mapcolor[:-1] = project_onto(coords, start, end)
                     mapcolor.convert(space, in_place=True)
 
                 coords = mapcolor[:-1]

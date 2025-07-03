@@ -447,8 +447,8 @@ Color.register([HCT(), DEHCT(), HCTChroma()])
 /// warning | Experimental Gamut Mapping
 ///
 
-/// New | New in 4.0
-The default perceptual space is now OkLCh.
+/// New | New in 4.8
+The default perceptual space is now Oklab.
 
 Please see [Gamut Mapping in Any Perceptual Space](#gamut-mapping-in-any-perceptual-space) to learn how to use different
 perceptual spaces and how to set your own default.
@@ -461,11 +461,10 @@ version will be used automatically for best results. Currently, ColorAide can ga
 spaces as they either have an RGB gamut or can be coerced into one.
 
 The ray trace approach works by taking a given color and converting it to a perceptual Lab-ish or LCh-ish color space
-(the default being OkLCh) and then calculates the achromatic version of the color (chroma set to zero) which will be our
-anchor point. Assuming our anchor point is within bounds, a ray is cast from the inside of the cube, from the anchor
-point to the current color. The intersection along this path with the RGB gamut surface is then found.  If the
-achromatic color exceeds the maximum or minimum lightness of the gamut, the respective maximum or minimum achromatic
-color is returned.
+(the default being Oklab) and then calculates the achromatic version of the color which will be our anchor point.
+Assuming our anchor point is within bounds, a ray is cast from the inside of the cube, from the anchor point to the
+current color. The intersection along this path with the RGB gamut surface is then found.  If the achromatic color
+exceeds the maximum or minimum lightness of the gamut, the respective maximum or minimum achromatic color is returned.
 
 /// note | Ray Trace Algorithm
 The ray trace algorithm is based on the [slab method](https://en.wikipedia.org/wiki/Slab_method). The intersection that

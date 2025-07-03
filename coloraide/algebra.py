@@ -253,18 +253,14 @@ def spow(base: float, exp: float) -> float:
 def rect_to_polar(a: float, b: float) -> tuple[float, float]:
     """Take rectangular coordinates and make them polar."""
 
-    c = math.sqrt(a ** 2 + b ** 2)
-    h = math.degrees(math.atan2(b, a)) % 360
-    return c, h
+    return math.sqrt(a * a + b * b), math.degrees(math.atan2(b, a)) % 360
 
 
 def polar_to_rect(c: float, h: float) -> tuple[float, float]:
     """Take rectangular coordinates and make them polar."""
 
     r = math.radians(h)
-    a = c * math.cos(r)
-    b = c * math.sin(r)
-    return a, b
+    return c * math.cos(r), c * math.sin(r)
 
 
 def solve_bisect(

@@ -1,5 +1,10 @@
 # Changelog
 
+## 4.8
+
+-   **NEW**: Ray trace gamut mapping uses true vector projection for better results and uses Oklab as the default
+    instead of OkLCh as using Oklab is a little faster.
+
 ## 4.7.2
 
 -   **ENHANCE**: Improve performance of color harmony generation.
