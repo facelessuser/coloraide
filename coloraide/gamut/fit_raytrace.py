@@ -292,8 +292,8 @@ class RayTrace(Fit):
                     mapcolor[:-1] = project_onto(coords, start, end)
                     mapcolor.convert(space, in_place=True)
 
-                coords = mapcolor[:-1]
-                intersection = raytrace_box(anchor, cs.from_base(coords) if coerced else coords, bmax=bmax)
+                coords = cs.from_base(mapcolor[:-1]) if coerced else mapcolor[:-1]
+                intersection = raytrace_box(anchor, coords, bmax=bmax)
 
                 # Adjust anchor point closer to surface to improve results for some spaces.
                 # Don't move point too close to the surface to avoid corner cases with some spaces.

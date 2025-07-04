@@ -10,7 +10,6 @@ sys.path.insert(0, os.getcwd())
 
 import tools.gamut_3d_plotly as plt3d  # noqa: E402
 from coloraide.gamut.fit_raytrace import raytrace_box, project_onto  # noqa: E402
-from coloraide.gamut.tools import adaptive_hue_independent  # noqa: E402
 from coloraide.gamut import fit_raytrace as fit  # noqa: E402
 from coloraide.everything import ColorAll as Color  # noqa: E402
 from coloraide import algebra as alg  # noqa: E402
@@ -191,12 +190,11 @@ def simulate_raytrace_gamut_mapping(args):
     color = Color(args.gamut_color)
 
     gmap = json.loads(args.gmap)
-    gmap = {'method': 'raytrace'}
+    gmap['method'] = 'raytrace'
 
-    pspace = gmap.get('pspace', 'oklch')
+    pspace = gmap.get('pspace', 'oklab')
     adaptive = gmap.get('adaptive', 0.0)
 
-    polar = color.CS_MAP[pspace].is_polar()
     space = args.gamut_rgb
 
     cs = color.CS_MAP[space]
@@ -204,12 +202,10 @@ def simulate_raytrace_gamut_mapping(args):
 
     # Requires an RGB-ish space, preferably a linear space.
     # Coerce RGB cylinders with no defined RGB space to RGB
-    coerced = None
+    coerced = False
     if not isinstance(cs, fit.RGBish):
-        coerced = color
-        Color_, space = fit.coerce_to_rgb(type(color), cs)
-        cs = Color_.CS_MAP[space]
-        color = Color_(color)
+        coerced = True
+        cs = fit.coerce_to_rgb(cs)
 
     # If there is a non-linear version of the RGB space, results will be
     # better if we use that. If the target RGB space is HDR, we need to
@@ -223,49 +219,58 @@ def simulate_raytrace_gamut_mapping(args):
 
     orig = color.space()
     mapcolor = color.convert(pspace, norm=False) if orig != pspace else color.clone().normalize(nans=False)
+    polar = color.CS_MAP[pspace].is_polar()
     achroma = mapcolor.clone()
     first = mapcolor.clone()
+
     if polar:
-        l, c, h = mapcolor._space.indexes()  # type: ignore[attr-defined]
-        light = mapcolor[l]
-        chroma = mapcolor[c]
-        hue = mapcolor[h]
-        ab = alg.polar_to_rect(chroma, hue)
+        l, c, h = mapcolor._space.indexes()
         achroma[c] = 0
     else:
-        l, a, b = mapcolor._space.indexes()  # type: ignore[attr-defined]
-        ab = [mapcolor[a], mapcolor[b]]
-        light = mapcolor[l]
-        chroma, hue = alg.rect_to_polar(*ab)
+        l, a, b = mapcolor._space.indexes()
         achroma[a] = 0
         achroma[b] = 0
 
     if adaptive:
         max_light = color.new(space, [1.0, 1.0, 1.0]).convert(pspace)[l]
-        alight = adaptive_hue_independent(light / max_light, max(chroma, 0) / max_light, adaptive) * max_light
+        alight = fit.adaptive_hue_independent(
+            mapcolor[l] / max_light,
+            max(mapcolor[c] if polar else alg.rect_to_polar(mapcolor[a], mapcolor[b])[0], 0) / max_light,
+            adaptive
+        ) * max_light
         achroma[l] = alight
     else:
-        alight = light
+        alight = mapcolor[l]
 
-    achromatic = [sum(achroma.clone().convert(space, in_place=True)[:-1]) / 3] * 3
+    # Some perceptual spaces, such as CAM16 or HCT, may compensate for adapting
+    # luminance which may give an achromatic that is not quite achromatic,
+    # causing a more sizeable delta between the max and min value in the
+    # achromatic RGB color. To compensate for such deviations, take the
+    # average value of the RGB components and use that as the achromatic point.
+    anchor = achroma.convert(space)[:-1]
+    anchor = [sum(cs.from_base(anchor) if coerced else anchor) / 3] * 3
 
     # Return white or black if the achromatic version is not within the RGB cube.
     bmx = bmax[0]
-    point = achromatic[0]
+    point = anchor[0]
     if point >= bmx:
-        color.update(space, bmax, mapcolor[-1])
+        color.update(space, cs.to_base(bmax) if coerced else bmax, mapcolor[-1])
         points.append(first.convert(space)[:-1])
         points.append(color.convert(space)[:-1])
-        points.append(achromatic)
+        points.append(anchor)
     elif point <= 0:
-        color.update(space, [0.0, 0.0, 0.0], mapcolor[-1])
+        black = [0.0, 0.0, 0.0]
+        color.update(space, cs.to_base(black) if coerced else black, mapcolor[-1])
         points.append(first.convert(space)[:-1])
         points.append(color.convert(space)[:-1])
-        points.append(achromatic)
+        points.append(anchor)
     else:
         print('Initial:', mapcolor)
         print('Anchor:', achroma.convert(pspace), '\n----')
-        gamutcolor = mapcolor.convert(space)
+
+        start = mapcolor[:-1]
+        end = achroma[:-1]
+        mapcolor.convert(space, in_place=True)
 
         # Threshold for anchor adjustment
         low = 1e-6
@@ -277,61 +282,41 @@ def simulate_raytrace_gamut_mapping(args):
         # through the new corrected color finding the intersection again.
         for i in range(4):
             if i:
-                gamutcolor.convert(pspace, in_place=True, norm=False)
-                print('Uncorrected:', gamutcolor)
+                mapcolor.convert(pspace, in_place=True, norm=False)
+                print('Uncorrected:', mapcolor)
 
-                if adaptive:
-                    # Correct the point onto the desired interpolation path
-                    if polar:
-                        gamutcolor[l], a_, b_ = project_onto(
-                            [gamutcolor[l], *alg.polar_to_rect(gamutcolor[c], gamutcolor[h])],
-                            [light, *ab],
-                            [alight, 0.0, 0.0]
-                        )
-                        gamutcolor[c], gamutcolor[h] = alg.rect_to_polar(a_,b_)
-                    else:
-                        gamutcolor[l], gamutcolor[a], gamutcolor[b] = project_onto(
-                            [gamutcolor[l], gamutcolor[a], gamutcolor[b]],
-                            [light, *ab],
-                            [alight, 0.0, 0.0]
-                        )
+                coords = mapcolor.convert(pspace, in_place=True, norm=False)[:-1]
+                mapcolor[:-1] = project_onto(coords, start, end)
+                mapcolor.convert(space, in_place=True)
 
-                else:
-                    # Correct lightness and hue
-                    gamutcolor[l] = alight
-                    if polar:
-                        gamutcolor[h] = hue
-                    else:
-                        gamutcolor[a], gamutcolor[b] = alg.polar_to_rect(
-                            alg.rect_to_polar(gamutcolor[a], gamutcolor[b])[0],
-                            hue
-                        )
+                print('Corrected:', mapcolor, mapcolor.convert('lchuv'))
+                mapcolor.convert(space, in_place=True)
+                print('Corrected RGB:', mapcolor, '\n----')
 
-                print('Corrected:', gamutcolor)
-                gamutcolor.convert(space, in_place=True)
-                print('Corrected RGB:', gamutcolor, '\n----')
-
-            coords = gamutcolor[:-1]
-            intersection = raytrace_box(achromatic, coords, bmax=bmax)
+            coords = cs.from_base(mapcolor[:-1]) if coerced else mapcolor[:-1]
+            intersection = raytrace_box(anchor, coords, bmax=bmax)
 
             if i and all(low < x < high for x in coords):
-                achromatic = coords
+                anchor = coords
 
             if intersection:
-                points.append(gamutcolor[:-1])
+                points.append(mapcolor[:-1])
                 points.append(intersection)
-                points.append(achromatic)
-                gamutcolor[:-1] = intersection
+                points.append(anchor)
+                mapcolor[:-1] = cs.to_base(intersection) if coerced else intersection
                 continue
-            break  # pragma: no cover
+            break
 
-        print('Final:', gamutcolor.convert(pspace, norm=False))
-        color.update(space, [alg.clamp(x, 0.0, bmx) for x in gamutcolor[:-1]])
+        print('Final:', mapcolor.convert(pspace, norm=False))
+        if coerced:
+            color.update(
+                space,
+                cs.to_base([alg.clamp(x, 0.0, bmx) for x in cs.from_base(mapcolor[:-1])]),
+                mapcolor[-1]
+            )
+        else:
+            color.update(space, [alg.clamp(x, 0.0, bmx) for x in mapcolor[:-1]], mapcolor[-1])
         print('Clipped RGB:', color.convert(space))
-
-    # If we have coerced a space to RGB, update the original
-    if coerced:
-        coerced.update(color)
 
     x, y, z = zip(*points)
     data = []
