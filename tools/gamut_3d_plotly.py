@@ -745,7 +745,7 @@ def main():
     )
     parser.add_argument(
         '--harmony',
-        default='{}',
+        default='',
         help=(
             "Harmony configuration: 'color:harmony'. Harmony can be followed by an optional JSON containing options: "
             "'color:harmony: {}'"
@@ -864,7 +864,7 @@ def main():
         filters
     )
 
-    parts = [p.strip() if e < 2 else json.loads(p) for e, p in enumerate(args.harmony.split(':', 2))]
+    parts = [p.strip() if e < 2 else json.loads(p) for e, p in enumerate(args.harmony.split(':', 2)) if p]
     harmony_config = []
     if parts:
         hcolor = parts[0]
