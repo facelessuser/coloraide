@@ -61,6 +61,20 @@ def srgb_to_hwb(coords: Vector) -> Vector:  # pragma: no cover
     return hsv_to_hwb(srgb_to_hsv(coords))
 
 
+def to_rect(coords, c, h):
+    """Polar to rectangular."""
+
+    coords[c], coords[h] = alg.polar_to_rect(coords[c], coords[h])
+    return coords
+
+
+def to_polar(coords, c, h):
+    """Rectangular to rectangular."""
+
+    coords[c], coords[h] = alg.rect_to_polar(coords[c], coords[h])
+    return coords
+
+
 @lru_cache(maxsize=20, typed=True)
 def coerce_to_rgb(cs: Space) -> Space:
     """
@@ -277,8 +291,13 @@ class RayTrace(Fit):
             # Trace the line to the RGB cube finding the intersection.
             # In between iterations, correct the L and H and then cast a ray
             # to the new corrected color finding the intersection again.
-            start = mapcolor[:-1]
-            end = achroma[:-1]
+            if polar:
+                start = to_rect(mapcolor[:-1], c, h)
+                end = to_rect(achroma[:-1], c, h)
+            else:
+                start = mapcolor[:-1]
+                end = achroma[:-1]
+
             mapcolor.convert(space, in_place=True)
 
             # Threshold for anchor adjustment
@@ -289,7 +308,10 @@ class RayTrace(Fit):
                 if i:
                     # Project the point onto the desired interpolation path
                     coords = mapcolor.convert(pspace, in_place=True, norm=False)[:-1]
-                    mapcolor[:-1] = project_onto(coords, start, end)
+                    if polar:
+                        mapcolor[:-1] = to_polar(project_onto(to_rect(coords, c, h), start, end), c, h)
+                    else:
+                        mapcolor[:-1] = project_onto(coords, start, end)
                     mapcolor.convert(space, in_place=True)
 
                 coords = cs.from_base(mapcolor[:-1]) if coerced else mapcolor[:-1]
