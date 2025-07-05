@@ -214,8 +214,12 @@ def simulate_raytrace_gamut_mapping(args):
         print('Initial:', mapcolor)
         print('Anchor:', achroma.convert(pspace), '\n----')
 
-        start = mapcolor[:-1]
-        end = achroma[:-1]
+        if polar:
+            start = fit.to_rect(mapcolor[:-1], c, h)
+            end = fit.to_rect(achroma[:-1], c, h)
+        else:
+            start = mapcolor[:-1]
+            end = achroma[:-1]
         mapcolor.convert(space, in_place=True)
 
         # Threshold for anchor adjustment
@@ -231,9 +235,11 @@ def simulate_raytrace_gamut_mapping(args):
                 mapcolor.convert(pspace, in_place=True, norm=False)
                 print('Uncorrected:', mapcolor)
 
-                coords = mapcolor.convert(pspace, in_place=True, norm=False)[:-1]
-                mapcolor[:-1] = project_onto(coords, start, end)
-                mapcolor.convert(space, in_place=True)
+                coords = mapcolor[:-1]
+                if polar:
+                    mapcolor[:-1] = fit.to_polar(project_onto(fit.to_rect(coords, c, h), start, end), c, h)
+                else:
+                    mapcolor[:-1] = project_onto(coords, start, end)
 
                 print('Corrected:', mapcolor)
                 mapcolor.convert(space, in_place=True)
