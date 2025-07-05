@@ -2,9 +2,9 @@
 
 ## 4.8
 
--   **NEW**: Ray trace gamut mapping uses true vector projection for better results and uses Oklab as the default
-    instead of OkLCh as using Oklab is a little faster.
--   **FIX**: Analogous and split complementary harmony should position the seed color between the other returned colors.
+-   **NEW**: Ray trace gamut mapping uses vector projection when correcting colors for better results and uses Oklab as
+    the default instead of OkLCh as using Oklab is a little faster.
+-   **FIX**: Analogous and split complementary harmony results ordered in a more logical configuration.
 
 ## 4.7.2
 
