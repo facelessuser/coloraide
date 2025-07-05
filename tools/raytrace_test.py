@@ -13,54 +13,6 @@ from coloraide.gamut.fit_raytrace import raytrace_box, project_onto  # noqa: E40
 from coloraide.gamut import fit_raytrace as fit  # noqa: E402
 from coloraide.everything import ColorAll as Color  # noqa: E402
 from coloraide import algebra as alg  # noqa: E402
-from coloraide.spaces.lch import LCh  # noqa: E402
-
-
-class _LCh(LCh):
-    """Custom LCh."""
-
-    INDEXES = [0, 1, 2]
-
-    def to_base(self, coords):
-        """Convert to the base."""
-
-        ordered = [0.0, 0.0, 0.0]
-        for e, c in enumerate(super().to_base(coords)):
-            ordered[self.INDEXES[e]] = c
-        return ordered
-
-    def from_base(self, coords):
-        """Convert from the base."""
-
-        return super().from_base([coords[i] for i in self.INDEXES])
-
-
-def coerce_to_lch(space):
-    """Coerce Lab to LCh."""
-
-    cs = Color.CS_MAP[space]
-    name = cs.NAME
-
-    class CustomLCh(_LCh):
-        NAME = '-cylinder'
-        SERIALIZE = ('-cylinder',)
-        BASE = name
-        WHITE = cs.WHITE
-        DYAMIC_RANGE = cs.DYNAMIC_RANGE
-        INDEXES = cs.indexes()
-        ORIG_SPACE = cs
-
-        def is_achromatic(self, coords) -> bool | None:
-            """Check if space is achromatic."""
-
-            return self.ORIG_SPACE.is_achromatic(self.to_base(coords))
-
-    class ColorCyl(Color):
-        """Custom color."""
-
-    ColorCyl.register(CustomLCh())
-
-    return ColorCyl
 
 
 def plot_interpolation(
@@ -82,13 +34,7 @@ def plot_interpolation(
     if not interp_colors:
         return
 
-    if not Color.CS_MAP[interp_space].is_polar():
-        Color_ = coerce_to_lch(interp_space)
-        interp_space = '-cylinder'
-    else:
-        Color_ = Color
-
-    colors = Color_.steps(
+    colors = Color.steps(
         interp_colors.split(';'),
         space=interp_space,
         steps=steps,
@@ -289,7 +235,7 @@ def simulate_raytrace_gamut_mapping(args):
                 mapcolor[:-1] = project_onto(coords, start, end)
                 mapcolor.convert(space, in_place=True)
 
-                print('Corrected:', mapcolor, mapcolor.convert('lchuv'))
+                print('Corrected:', mapcolor)
                 mapcolor.convert(space, in_place=True)
                 print('Corrected RGB:', mapcolor, '\n----')
 
