@@ -61,14 +61,14 @@ def srgb_to_hwb(coords: Vector) -> Vector:  # pragma: no cover
     return hsv_to_hwb(srgb_to_hsv(coords))
 
 
-def to_rect(coords, c, h):
+def to_rect(coords: Vector, c:int, h: int) -> Vector:
     """Polar to rectangular."""
 
     coords[c], coords[h] = alg.polar_to_rect(coords[c], coords[h])
     return coords
 
 
-def to_polar(coords, c, h):
+def to_polar(coords: Vector, c:int, h: int) -> Vector:
     """Rectangular to rectangular."""
 
     coords[c], coords[h] = alg.rect_to_polar(coords[c], coords[h])
