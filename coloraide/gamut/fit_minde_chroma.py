@@ -66,9 +66,9 @@ class MINDEChroma(Fit):
         mapcolor = color.convert(pspace, norm=False) if orig != pspace else color.clone().normalize(nans=False)
         gamutcolor = color.convert(space, norm=False) if orig != space else color.clone().normalize(nans=False)
         if polar:
-            l, c, h = mapcolor._space.indexes()  # type: ignore[attr-defined]
+            l, c, h = mapcolor._space.indexes()
         else:
-            l, a, b = mapcolor._space.indexes()  # type: ignore[attr-defined]
+            l, a, b = mapcolor._space.indexes()
         lightness = mapcolor[l]
         sdr = gamutcolor._space.DYNAMIC_RANGE == 'sdr'
         if jnd is None:

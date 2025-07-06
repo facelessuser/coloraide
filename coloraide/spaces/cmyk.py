@@ -13,35 +13,28 @@ from .. import algebra as alg
 import math
 
 
-def srgb_to_cmyk(rgb: Vector) -> Vector:
+def srgb_to_cmyk(cmy: Vector) -> Vector:
     """Convert sRGB to CMYK."""
 
-    k = 1.0 - max(rgb)
-    c = m = y = 0.0
-    if k != 1:
-        r, g, b = rgb
-        c = (1.0 - r - k) / (1.0 - k)
-        m = (1.0 - g - k) / (1.0 - k)
-        y = (1.0 - b - k) / (1.0 - k)
-
-    return [c, m, y, k]
+    k = min(cmy)
+    if k == 1:
+        return [0.0, 0.0, 0.0, k]
+    cmyk = [(v - k) / (1.0 - k) for v in cmy]
+    cmyk.append(k)
+    return cmyk
 
 
 def cmyk_to_srgb(cmyk: Vector) -> Vector:
     """Convert CMYK to sRGB."""
 
-    c, m, y, k = cmyk
-    return [
-        1.0 - min(1.0, c * (1.0 - k) + k),
-        1.0 - min(1.0, m * (1.0 - k) + k),
-        1.0 - min(1.0, y * (1.0 - k) + k)
-    ]
+    k = cmyk[-1]
+    return [v * (1.0 - k) + k for v in cmyk[:-1]]
 
 
 class CMYK(Space):
     """The CMYK color class."""
 
-    BASE = "srgb"
+    BASE = "cmy"
     NAME = "cmyk"
     SERIALIZE = ("--cmyk",)  # type: tuple[str, ...]
     CHANNELS = (
@@ -58,6 +51,8 @@ class CMYK(Space):
     }
     WHITE = WHITES['2deg']['D65']
     SUBTRACTIVE = True
+    GAMUT_CHECK = 'cmy'
+    CLIP_SPACE = 'cmyk'
 
     def is_achromatic(self, coords: Vector) -> bool:
         """Test if color is achromatic."""

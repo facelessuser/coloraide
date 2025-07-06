@@ -141,7 +141,7 @@ def average(
     color = obj.update(space, avgs[:-1], avgs[-1])
     if cs.is_polar():
         if is_hwb and math.isnan(color[hue_index]):
-            w, b = cs.indexes()[1:]  # type: ignore[attr-defined]
+            w, b = cs.indexes()[1:]
             if color[w] + color[b] < 1:
                 color[w] = 1 - color[b]
         elif math.isnan(color[hue_index]) and not math.isnan(color[cs.radial_index()]):  # type: ignore[attr-defined]

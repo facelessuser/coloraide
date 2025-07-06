@@ -7,8 +7,15 @@
 -   **NEW**: Add new `Luminant` mixin for color spaces which allows for internally targeting spaces that expose a
     lightness component.
 -   **NEW**: Separate `RGBish` mixin from `Regular` as not all RGB-ish spaces have regular ranges between [0, 1].
-    Reclassify ACEScc and ACEScct as RGB-ish, but not "regular" spaces.
+-   **NEW**: Reclassify ACEScc and ACEScct as RGB-ish that are non-regular.
+-   **NEW**: CMYK now uses CMY as the base conversion space.
+-   **NEW**: Every space now expose a `linear()`, `indexes()`, and `names()` opposed to just a select few.
+-   **NEW**: `raytrace` gamut mapping will not successfully operate on `Regular` color spaces as well as `RGBish`.
+-   **NEW**: Spaces can now declare if they are "subtractive" via a `SUBTRACTIVE` class attribute.
+-   **FIX**: `raytrace` gamut mapping method will not fail when CMY, CMYK, and RYB are the target gamut, though it is
+    still recommend to use `minde-chroma` or `clip` with RYB for best results.
 -   **FIX**: Analogous and split complementary harmony results ordered in a more logical configuration.
+-   **FIX**: Fix an issue with some HDR spaces in ray trace gamut mapping.
 
 ## 4.7.2
 

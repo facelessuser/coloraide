@@ -14,7 +14,6 @@ if TYPE_CHECKING:  # pragma: no cover
 class Luminant:
     """A space that contains luminance or luminance-like component."""
 
-    channels: tuple[Channel, ...]
     get_channel_index: Callable[[str], int]
 
     def lightness_name(self) -> str:
@@ -29,16 +28,12 @@ class Luminant:
 
 
 class Regular:
-    """Regular 3D color space usually with a range between 0 - 1."""
-
-    channels: tuple[Channel, ...]
-    get_channel_index: Callable[[str], int]
+    """Rectangular 3D color space usually with a range between 0 - 1."""
 
 
 class Cylindrical:
     """Cylindrical space."""
 
-    channels: tuple[Channel, ...]
     get_channel_index: Callable[[str], int]
 
     def radial_name(self) -> str:
@@ -65,51 +60,13 @@ class Cylindrical:
 class RGBish:
     """RGB-ish space."""
 
-    channels: tuple[Channel, ...]
-    get_channel_index: Callable[[str], int]
-
-    def names(self) -> tuple[Channel, ...]:
-        """Return RGB-ish names in order R G B."""
-
-        return self.channels[:-1]
-
-    def indexes(self) -> list[int]:
-        """Return the index of RGB-ish channels."""
-
-        return [self.get_channel_index(name) for name in self.names()]
-
-    def linear(self) -> str:
-        """Will return the name of the space which is the linear version of itself (if available)."""
-
-        return ''
-
 
 class HSLish(Luminant, Cylindrical):
     """HSL-ish space."""
 
-    def names(self) -> tuple[Channel, ...]:
-        """Return HSL-ish names in order H S L."""
-
-        return self.channels[:-1]
-
-    def indexes(self) -> list[int]:
-        """Return the index of HSL-ish channels."""
-
-        return [self.get_channel_index(name) for name in self.names()]
-
 
 class HSVish(Luminant, Cylindrical):
     """HSV-ish space."""
-
-    def names(self) -> tuple[Channel, ...]:
-        """Return HSV-ish names in order H S V."""
-
-        return self.channels[:-1]
-
-    def indexes(self) -> list[int]:
-        """Return the index of HSV-ish channels."""
-
-        return [self.get_channel_index(name) for name in self.names()]
 
 
 class HWBish(Cylindrical):
@@ -120,29 +77,9 @@ class HWBish(Cylindrical):
 
         return "w"
 
-    def names(self) -> tuple[Channel, ...]:
-        """Return HWB-ish names in order H W B."""
-
-        return self.channels[:-1]
-
-    def indexes(self) -> list[int]:
-        """Return the index of HWB-ish channels."""
-
-        return [self.get_channel_index(name) for name in self.names()]
-
 
 class Labish(Luminant):
     """Lab-ish color spaces."""
-
-    def names(self) -> tuple[Channel, ...]:
-        """Return Lab-ish names in the order L a b."""
-
-        return self.channels[:-1]
-
-    def indexes(self) -> list[int]:
-        """Return the index of the Lab-ish channels."""
-
-        return [self.get_channel_index(name) for name in self.names()]
 
 
 class LChish(Luminant, Cylindrical):
@@ -152,16 +89,6 @@ class LChish(Luminant, Cylindrical):
         """Radial name."""
 
         return "c"
-
-    def names(self) -> tuple[Channel, ...]:
-        """Return LCh-ish names in the order L c h."""
-
-        return self.channels[:-1]
-
-    def indexes(self) -> list[int]:
-        """Return the index of the Lab-ish channels."""
-
-        return [self.get_channel_index(name) for name in self.names()]
 
 
 alpha_channel = Channel('alpha', 0.0, 1.0, bound=True, limit=(0.0, 1.0))
@@ -228,10 +155,25 @@ class Space(Plugin, metaclass=SpaceMeta):
         self._percents = ([True] * (len(self.channels) - 1)) + [False]
         self._polar = isinstance(self, Cylindrical)
 
+    def names(self) -> tuple[Channel, ...]:
+        """Returns component names in a logical order specific to their color space type."""
+
+        return self.channels[:-1]
+
+    def indexes(self) -> list[int]:
+        """Returns component indexes in a logical order specific to their color space type."""
+
+        return [self.get_channel_index(name) for name in self.names()]
+
     def is_polar(self) -> bool:
         """Return if the space is polar."""
 
         return self._polar
+
+    def linear(self) -> str:
+        """Will return the name of the space which is the linear version of itself (if available)."""
+
+        return ''
 
     def get_channel_index(self, name: str) -> int:
         """Get channel index."""

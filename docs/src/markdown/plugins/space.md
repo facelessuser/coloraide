@@ -121,6 +121,9 @@ class XYZD65(Space):
     # What is the color space's dynamic range
     DYNAMIC_RANGE = 'sdr'
 
+    # Is the space subtractive
+    SUBTRACTIVE = False
+
     ############################
     # To and from conversion functions that transform the color to and from the `BASE` color.
     ############################
@@ -280,9 +283,8 @@ If the channel requires more advanced handling, you can override `resolve_channe
 
 ## Mix-ins
 
-ColorAide provides some various mixins for some common color space types. It should be noted that all cylindrical type
-color mixins are derived from `Cylindrical`. `Regular` is used for normal, 3 channel color spaces _usually_ with ranges
-of [0, 1], CMY and sRGB as examples.
+ColorAide provides some various mixins for some common color space types. Depending on the space, it may include one or
+more of the following mixins.
 
 /// tab | Cylindrical
 ```py
@@ -292,7 +294,7 @@ class Cylindrical:
     def radial_name(self) -> str:
         """Radial name."""
 
-        return ""
+        return "s"
 
     def hue_name(self) -> str:
         """Hue channel name."""
@@ -302,7 +304,7 @@ class Cylindrical:
     def hue_index(self) -> int:
         """Get hue index."""
 
-        return cast('Space', self).get_channel_index(self.hue_name())
+        return self.get_channel_index(self.hue_name())
 
     def radial_index(self) -> int:
         """Get radial index."""
@@ -314,7 +316,24 @@ class Cylindrical:
 /// tab | Regular
 ```py
 class Regular:
-    """Regular, 3 channel color space usually with range of [0, 1].
+    """Rectangular, 3 channel color space usually with range of [0, 1]."""
+```
+///
+
+/// tab | Luminant
+```py
+class Luminant:
+    """A space that contains luminance or luminance-like component."""
+
+    def lightness_name(self) -> str:
+        """Lightness name."""
+
+        return "l"
+
+    def lightness_index(self) -> int:
+        """Get lightness index."""
+
+        return self.get_channel_index(self.lightness_name())
 ```
 ///
 
@@ -322,60 +341,20 @@ class Regular:
 ```py
 class RGBish(Regular):
     """RGB-ish space."""
-
-    def names(self) -> tuple[str, ...]:
-        """Return RGB-ish names in order R G B."""
-
-        return self.channels[:-1]
-
-    def indexes(self) -> list[int]:
-        """Return the index of RGB-ish channels."""
-
-        return [self.get_channel_index(name) for name in self.names()]
 ```
 ///
 
 /// tab | HSLish
 ```py
-class HSLish(Cylindrical):
+class HSLish(Luminant, Cylindrical):
     """HSL-ish space."""
-
-    def radial_name(self) -> str:
-        """Radial name."""
-
-        return "s"
-
-    def names(self) -> tuple[str, ...]:
-        """Return HSL-ish names in order H S L."""
-
-        return self.channels[:-1]
-
-    def indexes(self) -> list[int]:
-        """Return the index of HSL-ish channels."""
-
-        return [self.get_channel_index(name) for name in self.names()]
 ```
 ///
 
 /// tab | HSVish
 ```py
-class HSVish(Cylindrical):
+class HSVish(Luminant, Cylindrical):
     """HSV-ish space."""
-
-    def radial_name(self) -> str:
-        """Radial name."""
-
-        return "s"
-
-    def names(self) -> tuple[str, ...]:
-        """Return HSV-ish names in order H S V."""
-
-        return self.channels[:-1]
-
-    def indexes(self) -> list[int]:
-        """Return the index of HSV-ish channels."""
-
-        return [self.get_channel_index(name) for name in self.names()]
 ```
 ///
 
@@ -389,55 +368,25 @@ class HWBish(Cylindrical):
         """Radial name."""
 
         return "w"
-
-    def names(self) -> tuple[str, ...]:
-        """Return HWB-ish names in order H W B."""
-
-        return self.channels[:-1]
-
-    def indexes(self) -> list[int]:
-        """Return the index of HWB-ish channels."""
-
-        return [self.get_channel_index(name) for name in self.names()]
 ```
 ///
 
 /// tab | Labish
 ```py
-class Labish:
+class Labish(Luminant):
     """Lab-ish color spaces."""
-
-    def names(self) -> tuple[str, ...]:
-        """Return Lab-ish names in the order L a b."""
-
-        return self.channels[:-1]
-
-    def indexes(self) -> list[int]:
-        """Return the index of the Lab-ish channels."""
-
-        return [self.get_channel_index(name) for name in self.names()]
 ```
 ///
 
 /// tab | LChish
 ```py
-class LChish(Cylindrical):
+class LChish(Luminant, Cylindrical):
     """LCh-ish color spaces."""
 
     def radial_name(self) -> str:
         """Radial name."""
 
         return "c"
-
-    def names(self) -> tuple[str, ...]:
-        """Return LCh-ish names in the order L c h."""
-
-        return self.channels[:-1]
-
-    def indexes(self) -> list[int]:
-        """Return the index of the Lab-ish channels."""
-
-        return [self.get_channel_index(name) for name in self.names()]
 ```
 ///
 

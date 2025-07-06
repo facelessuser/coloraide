@@ -6,9 +6,11 @@ This employs a faster approach than bisecting to reduce chroma.
 from __future__ import annotations
 import math
 from functools import lru_cache
+from .. import util
 from .. import algebra as alg
 from ..gamut import Fit
-from ..spaces import Space, RGBish, HSLish, HSVish, HWBish
+from ..cat import WHITES
+from ..spaces import RGBish, Regular, Space, HSLish, HSVish, HWBish
 from ..spaces.hsl import hsl_to_srgb, srgb_to_hsl
 from ..spaces.hsv import hsv_to_srgb, srgb_to_hsv
 from ..spaces.hwb import hwb_to_hsv, hsv_to_hwb
@@ -19,6 +21,8 @@ from typing import Callable, Any, TYPE_CHECKING  # noqa: F401
 
 if TYPE_CHECKING:  #pragma: no cover
     from ..color import Color
+
+WHITE = util.xy_to_xyz(WHITES['2deg']['D65'])
 
 
 def project_onto(a: Vector, b: Vector, o: Vector) -> Vector:
@@ -110,7 +114,7 @@ def coerce_to_rgb(cs: Space) -> Space:
         CLIP_SPACE = None
         WHITE = cs.WHITE
         DYAMIC_RANGE = cs.DYNAMIC_RANGE
-        INDEXES = cs.indexes()  # type: ignore[attr-defined]
+        INDEXES = cs.indexes()
         # Scale saturation and lightness (or HWB whiteness and blackness)
         SCALE_SAT = cs.CHANNELS[INDEXES[1]].high
         SCALE_LIGHT = cs.CHANNELS[INDEXES[1]].high
@@ -219,25 +223,23 @@ class RayTrace(Fit):
 
         if pspace is None:
             pspace = self.PSPACE
-
         cs = color.CS_MAP[space]
-        bmax = [1.0, 1.0, 1.0]
 
-        # Requires an RGB-ish space, preferably a linear space.
+        # Requires an RGB-ish or Regular space, preferably a linear space.
         # Coerce RGB cylinders with no defined RGB space to RGB
         coerced = False
-        if not isinstance(cs, RGBish):
+        if not isinstance(cs, (Regular, RGBish)):
             coerced = True
             cs = coerce_to_rgb(cs)
 
-        # If there is a linear version of the RGB space, results will be
-        # better if we use that. If the target RGB space is HDR, we need to
-        # calculate the bounding box size based on the HDR limit in the linear space.
-        sdr = cs.DYNAMIC_RANGE != 'hdr'
-        linear = cs.linear()  # type: ignore[attr-defined]
+        # Get the maximum cube size, usually `[1.0, 1.0, 1.0]`
+        bmax = [chan.high for chan in cs.CHANNELS]
+
+        # If there is a linear version of the RGB space, results will be better if we use that.
+        # Recalculate the bounding box relative to the linear version.
+        linear = cs.linear()
         if linear and linear in color.CS_MAP:
-            if not sdr:
-                bmax = color.new(space, [chan.high for chan in cs.CHANNELS]).convert(linear)[:-1]
+            bmax = color.new(space, bmax).convert(linear, in_place=True)[:-1]
             space = linear
 
         orig = color.space()
@@ -245,12 +247,12 @@ class RayTrace(Fit):
         polar = mapcolor._space.is_polar()
         achroma = mapcolor.clone()
 
-        # Different perceptual spaces may have components in different orders, account for this
+        # Different perceptual spaces may have components in different orders so capture their indexes
         if polar:
-            l, c, h = achroma._space.indexes()  # type: ignore[attr-defined]
+            l, c, h = achroma._space.indexes()
             achroma[c] = 0
         else:
-            l, a, b = mapcolor._space.indexes()  # type: ignore[attr-defined]
+            l, a, b = mapcolor._space.indexes()
             achroma[a] = 0
             achroma[b] = 0
 
@@ -258,7 +260,7 @@ class RayTrace(Fit):
         # anchor point relative to the hue independent mid point. Scale lightness and
         # chroma by the max lightness to get lightness between 0 and 1.
         if adaptive:
-            max_light = color.new(space, [1.0, 1.0, 1.0]).convert(pspace)[l]
+            max_light = color.new('xyz-d65', WHITE).convert(pspace, in_place=True)[l]
             alight = adaptive_hue_independent(
                 mapcolor[l] / max_light,
                 max(mapcolor[c] if polar else alg.rect_to_polar(mapcolor[a], mapcolor[b])[0], 0) / max_light,
@@ -284,8 +286,8 @@ class RayTrace(Fit):
         if point >= bmx:
             color.update(space, cs.to_base(bmax) if coerced else bmax, mapcolor[-1])
         elif point <= 0:
-            black = [0.0, 0.0, 0.0]
-            color.update(space, cs.to_base(black) if coerced else black, mapcolor[-1])
+            bmin = [0.0, 0.0, 0.0]
+            color.update(space, cs.to_base(bmin) if coerced else bmin, mapcolor[-1])
         else:
             # Create a ray from our current color to the anchor.
             # Trace the line to the RGB cube finding the intersection.
