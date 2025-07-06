@@ -327,6 +327,16 @@ class HellwigJMh(LCh):
         Channel("h", 0.0, 360.0, flags=FLG_ANGLE)
     )
 
+    def lightness_name(self) -> str:
+        """Get lightness name."""
+
+        return "j"
+
+    def radial_name(self) -> str:
+        """Get radial name."""
+
+        return "m"
+
     def normalize(self, coords: Vector) -> Vector:
         """Normalize."""
 

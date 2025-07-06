@@ -135,6 +135,11 @@ class HPLuv(HSL):
 
         return abs(coords[1]) < self.achromatic_threshold or coords[2] > (100 - 1e-7) or coords[2] < 1e-08
 
+    def radial_name(self) -> str:
+        """Radial name."""
+
+        return "p"
+
     def to_base(self, coords: Vector) -> Vector:
         """To LChuv from HPLuv."""
 
@@ -144,8 +149,3 @@ class HPLuv(HSL):
         """From LChuv to HPLuv."""
 
         return luv_to_hpluv(coords)
-
-    def radial_name(self) -> str:
-        """Radial name."""
-
-        return "p"

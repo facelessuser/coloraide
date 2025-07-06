@@ -4,6 +4,10 @@
 
 -   **NEW**: Ray trace gamut mapping uses vector projection when correcting colors for better results and uses Oklab as
     the default instead of OkLCh as using Oklab is a little faster.
+-   **NEW**: Add new `Luminant` mixin for color spaces which allows for internally targeting spaces that expose a
+    lightness component.
+-   **NEW**: Separate `RGBish` mixin from `Regular` as not all RGB-ish spaces have regular ranges between [0, 1].
+    Reclassify ACEScc and ACEScct as RGB-ish, but not "regular" spaces.
 -   **FIX**: Analogous and split complementary harmony results ordered in a more logical configuration.
 
 ## 4.7.2

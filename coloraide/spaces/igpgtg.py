@@ -77,6 +77,11 @@ class IgPgTg(IPT):
     }
     WHITE = WHITES['2deg']['D65']
 
+    def lightness_name(self) -> str:
+        """Get lightness name."""
+
+        return "ig"
+
     def to_base(self, coords: Vector) -> Vector:
         """To XYZ."""
 

@@ -187,6 +187,11 @@ class HCT(LCh):
         Channel("t", 0.0, 100.0)
     )
 
+    def lightness_name(self) -> str:
+        """Get lightness name."""
+
+        return "t"
+
     def normalize(self, coords: Vector) -> Vector:
         """Normalize."""
 

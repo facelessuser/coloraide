@@ -2,7 +2,7 @@
 from __future__ import annotations
 from .. import util
 from ..cat import WHITES
-from ..spaces import RGBish, Space
+from ..spaces import RGBish, Regular, Space
 from ..channels import Channel
 from .. import algebra as alg
 from ..types import Vector
@@ -38,7 +38,7 @@ def xyz_to_lin_srgb(xyz: Vector) -> Vector:
     return alg.matmul_x3(XYZ_TO_RGB, xyz, dims=alg.D2_D1)
 
 
-class sRGBLinear(RGBish, Space):
+class sRGBLinear(RGBish, Regular, Space):
     """sRGB linear."""
 
     BASE = 'xyz-d65'

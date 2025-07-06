@@ -85,6 +85,11 @@ class HSI(HSV):
     GAMUT_CHECK = "srgb"
     CLIP_SPACE = None
 
+    def lightness_name(self) -> str:
+        """Get lightness name."""
+
+        return "i"
+
     def to_base(self, coords: Vector) -> Vector:
         """To sRGB from HSI."""
 

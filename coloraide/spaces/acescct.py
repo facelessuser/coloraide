@@ -6,9 +6,8 @@ https://www.oscars.org/science-technology/aces/aces-documentation
 from __future__ import annotations
 import math
 from ..channels import Channel
-from ..spaces.srgb_linear import sRGBLinear
 from ..types import Vector
-from .acescc import CC_MAX
+from .acescc import CC_MAX, ACEScc
 
 CCT_MIN = 0.0729055341958355
 CCT_MAX = CC_MAX
@@ -45,7 +44,7 @@ def acescg_to_acescct(acescg: Vector) -> Vector:
     return acescc
 
 
-class ACEScct(sRGBLinear):
+class ACEScct(ACEScc):
     """The ACEScct color class."""
 
     BASE = "acescg"

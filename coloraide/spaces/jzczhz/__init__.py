@@ -35,6 +35,11 @@ class JzCzhz(LCh):
         Channel("hz", 0.0, 360.0, flags=FLG_ANGLE)
     )
 
+    def lightness_name(self) -> str:
+        """Get lightness name."""
+
+        return "jz"
+
     def hue_name(self) -> str:
         """Hue name."""
 

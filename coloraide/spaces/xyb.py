@@ -95,6 +95,11 @@ class XYB(Lab):
         channels = self.channels
         return channels[1], channels[0], channels[2]
 
+    def lightness_name(self) -> str:
+        """Get lightness name."""
+
+        return "y"
+
     def to_base(self, coords: Vector) -> Vector:
         """To XYB from base."""
 

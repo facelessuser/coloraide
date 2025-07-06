@@ -203,7 +203,7 @@ from coloraide.everything import ColorAll as Color
 from coloraide.spaces import Regular
 import json
 ignore = {'prismatic', 'cmyk'}
-ignore_gamut = {'acescct', 'acescc', 'xyz-d50', 'xyz-d65'}
+ignore_gamut = {'xyz-d50', 'xyz-d65'}
 add_gamuts = {'hpluv',}
 options = {'spaces': [], 'gamuts': []}
 for key, value in sorted(Color.CS_MAP.items()):

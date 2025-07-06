@@ -115,6 +115,7 @@ class RYB(Regular, Space):
     RYB_CUBE = GOSSET_CHEN_CUBE
     RYB_CUBE_T = alg.transpose(RYB_CUBE)
     BIASED = False
+    SUBTRACTIVE = True
 
     def is_achromatic(self, coords: Vector) -> bool:
         """

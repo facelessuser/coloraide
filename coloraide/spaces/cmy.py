@@ -38,6 +38,7 @@ class CMY(Regular, Space):
         "yellow": 'y'
     }
     WHITE = WHITES['2deg']['D65']
+    SUBTRACTIVE = True
 
     def is_achromatic(self, coords: Vector) -> bool:
         """Test if color is achromatic."""

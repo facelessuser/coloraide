@@ -72,6 +72,11 @@ class IPT(Lab):
     # IPT uses XYZ of [0.9504, 1.0, 1.0889] which yields chromaticity points ~(0.3127035830618893, 0.32902313032606195)
     WHITE = tuple(util.xyz_to_xyY([0.9504, 1.0, 1.0889])[:-1])  # type: ignore[assignment]
 
+    def lightness_name(self) -> str:
+        """Get lightness name."""
+
+        return "i"
+
     def to_base(self, coords: Vector) -> Vector:
         """To XYZ."""
 

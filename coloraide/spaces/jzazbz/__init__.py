@@ -141,6 +141,11 @@ class Jzazbz(Lab):
     WHITE = WHITES['2deg']['D65']
     DYNAMIC_RANGE = 'hdr'
 
+    def lightness_name(self) -> str:
+        """Get lightness name."""
+
+        return "jz"
+
     def to_base(self, coords: Vector) -> Vector:
         """To XYZ from Jzazbz."""
 

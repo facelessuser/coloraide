@@ -104,6 +104,11 @@ class ICtCp(Lab):
     WHITE = WHITES['2deg']['D65']
     DYNAMIC_RANGE = 'hdr'
 
+    def lightness_name(self) -> str:
+        """Get lightness name."""
+
+        return "i"
+
     def to_base(self, coords: Vector) -> Vector:
         """To XYZ from ICtCp."""
 

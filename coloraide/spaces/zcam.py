@@ -441,6 +441,11 @@ class ZCAMJMh(LCh):
 
         return "mz"
 
+    def lightness_name(self) -> str:
+        """Get lightness name."""
+
+        return "jz"
+
     def to_base(self, coords: Vector) -> Vector:
         """From ZCAM JMh to XYZ."""
 

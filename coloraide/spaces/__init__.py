@@ -11,6 +11,23 @@ if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
 
 
+class Luminant:
+    """A space that contains luminance or luminance-like component."""
+
+    channels: tuple[Channel, ...]
+    get_channel_index: Callable[[str], int]
+
+    def lightness_name(self) -> str:
+        """Lightness name."""
+
+        return "l"
+
+    def lightness_index(self) -> int:
+        """Get lightness index."""
+
+        return self.get_channel_index(self.lightness_name())
+
+
 class Regular:
     """Regular 3D color space usually with a range between 0 - 1."""
 
@@ -23,8 +40,6 @@ class Cylindrical:
 
     channels: tuple[Channel, ...]
     get_channel_index: Callable[[str], int]
-    get_hue_name: Callable[[], str]
-    get_radial_name: Callable[[], str]
 
     def radial_name(self) -> str:
         """Radial name."""
@@ -47,8 +62,11 @@ class Cylindrical:
         return self.get_channel_index(self.radial_name())
 
 
-class RGBish(Regular):
+class RGBish:
     """RGB-ish space."""
+
+    channels: tuple[Channel, ...]
+    get_channel_index: Callable[[str], int]
 
     def names(self) -> tuple[Channel, ...]:
         """Return RGB-ish names in order R G B."""
@@ -66,7 +84,7 @@ class RGBish(Regular):
         return ''
 
 
-class HSLish(Cylindrical):
+class HSLish(Luminant, Cylindrical):
     """HSL-ish space."""
 
     def names(self) -> tuple[Channel, ...]:
@@ -80,7 +98,7 @@ class HSLish(Cylindrical):
         return [self.get_channel_index(name) for name in self.names()]
 
 
-class HSVish(Cylindrical):
+class HSVish(Luminant, Cylindrical):
     """HSV-ish space."""
 
     def names(self) -> tuple[Channel, ...]:
@@ -113,11 +131,8 @@ class HWBish(Cylindrical):
         return [self.get_channel_index(name) for name in self.names()]
 
 
-class Labish:
+class Labish(Luminant):
     """Lab-ish color spaces."""
-
-    channels: tuple[Channel, ...]
-    get_channel_index: Callable[[str], int]
 
     def names(self) -> tuple[Channel, ...]:
         """Return Lab-ish names in the order L a b."""
@@ -130,7 +145,7 @@ class Labish:
         return [self.get_channel_index(name) for name in self.names()]
 
 
-class LChish(Cylindrical):
+class LChish(Luminant, Cylindrical):
     """LCh-ish color spaces."""
 
     def radial_name(self) -> str:
@@ -201,6 +216,8 @@ class Space(Plugin, metaclass=SpaceMeta):
     WHITE = (0.0, 0.0)
     # What is the color space's dynamic range
     DYNAMIC_RANGE = 'sdr'
+    # Is the space subtractive
+    SUBTRACTIVE = False
 
     def __init__(self, **kwargs: Any) -> None:
         """Initialize."""

@@ -8,7 +8,7 @@ https://studylib.net/doc/14656976/the-prismatic-color-space-for-rgb-computations
 """
 from __future__ import annotations
 from .. import util
-from ..spaces import Space
+from ..spaces import Space, Luminant
 from ..channels import Channel
 from ..cat import WHITES
 from ..types import Vector
@@ -33,7 +33,7 @@ def lrgb_to_srgb(lrgb: Vector) -> Vector:
     return [(l * c) / mx for c in rgb] if mx != 0 else [0, 0, 0]
 
 
-class Prismatic(Space):
+class Prismatic(Luminant, Space):
     """The Prismatic color class."""
 
     BASE = "srgb"

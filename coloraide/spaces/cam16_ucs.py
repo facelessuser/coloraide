@@ -100,6 +100,11 @@ class CAM16UCS(Lab):
     # Use the same environment as CAM16JMh
     ENV = CAM16JMh.ENV
 
+    def lightness_name(self) -> str:
+        """Get lightness name."""
+
+        return "j"
+
     def is_achromatic(self, coords: Vector) -> bool:
         """Check if color is achromatic."""
 

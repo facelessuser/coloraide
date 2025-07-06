@@ -86,6 +86,11 @@ class HSV(HSVish, Space):
         order = alg.order(round(self.channels[self.indexes()[2]].high, 5))
         self.achromatic_threshold = (1 * 10.0 ** order) / 1_000_000
 
+    def lightness_name(self) -> str:
+        """Get lightness name."""
+
+        return "v"
+
     def normalize(self, coords: Vector) -> Vector:
         """Normalize coordinates."""
 
