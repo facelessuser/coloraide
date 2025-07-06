@@ -726,7 +726,7 @@ more, not less, chroma in all situations.
 ///
 
 /// note
-The current algorithms we use to determine anchor points relative to a lightness focal point is described in the
+The current algorithms we use to determine anchor points relative to a lightness focal point as described in the
 following article by the author of Oklab:
 
 - [Hue independent](https://bottosson.github.io/posts/gamutclipping/#adaptive-%2C-hue-independent).
