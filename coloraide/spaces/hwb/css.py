@@ -23,13 +23,10 @@ class HWB(base.HWB):
         fit: bool | str | dict[str, Any] = True,
         none: bool = False,
         color: bool = False,
-        percent: bool | Sequence[bool] | None = None,
+        percent: bool | Sequence[bool] = False,
         **kwargs: Any
     ) -> str:
         """Convert to CSS."""
-
-        if percent is None:
-            percent = False
 
         return serialize.serialize_css(
             parent,

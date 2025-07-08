@@ -23,17 +23,17 @@ class HSL(base.HSL):
         fit: bool | str | dict[str, Any] = True,
         none: bool = False,
         color: bool = False,
-        percent: bool | Sequence[bool] | None = None,
+        percent: bool | Sequence[bool] = False,
         comma: bool = False,
         **kwargs: Any
     ) -> str:
         """Convert to CSS."""
 
-        if (percent is None or isinstance(percent, bool)) and comma:
-            percent = True
-
-        elif comma:
-            percent = [False, True, True, *percent[3:4]]
+        if comma:
+            if isinstance(percent, bool):
+                percent = True
+            else:
+                percent = [False, True, True, *percent[3:4]]
 
         return serialize.serialize_css(
             parent,
