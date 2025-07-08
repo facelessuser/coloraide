@@ -12,8 +12,7 @@
 -   **NEW**: Every space now expose a `linear()`, `indexes()`, and `names()` opposed to just a select few.
 -   **NEW**: `raytrace` gamut mapping will not successfully operate on `Regular` color spaces as well as `RGBish`.
 -   **NEW**: Spaces can now declare if they are "subtractive" via a `SUBTRACTIVE` class attribute.
--   **FIX**: `raytrace` gamut mapping method will not fail when CMY, CMYK, and RYB are the target gamut, though it is
-    still recommend to use `minde-chroma` or `clip` with RYB for best results.
+-   **FIX**: `raytrace` gamut mapping method will not fail when CMY, CMYK, and RYB are the target gamut.
 -   **FIX**: Analogous and split complementary harmony results ordered in a more logical configuration.
 -   **FIX**: Fix an issue with some HDR spaces in ray trace gamut mapping.
 
