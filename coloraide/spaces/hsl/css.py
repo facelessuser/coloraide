@@ -29,14 +29,9 @@ class HSL(base.HSL):
     ) -> str:
         """Convert to CSS."""
 
-        if percent is None:
-            if not color:
-                percent = True
-            else:
-                percent = False
-        elif isinstance(percent, bool):
-            if comma:
-                percent = True
+        if (percent is None or isinstance(percent, bool)) and comma:
+            percent = True
+
         elif comma:
             percent = [False, True, True, *percent[3:4]]
 

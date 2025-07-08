@@ -29,7 +29,7 @@ class HWB(base.HWB):
         """Convert to CSS."""
 
         if percent is None:
-            percent = False if color else True
+            percent = False
 
         return serialize.serialize_css(
             parent,

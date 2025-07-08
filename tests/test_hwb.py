@@ -57,19 +57,19 @@ class TestHWBSerialize(util.ColorAssertsPyTest):
 
     COLORS = [
         # Test hex no options
-        ('hwb(270 30% 50%)', {}, 'hwb(270 30% 50%)'),
+        ('hwb(270 30% 50%)', {}, 'hwb(270 30 50)'),
         # Test alpha
-        ('hwb(270 30% 50% / 0.5)', {}, 'hwb(270 30% 50% / 0.5)'),
-        ('hwb(270 30% 50%)', {'alpha': True}, 'hwb(270 30% 50% / 1)'),
-        ('hwb(270 30% 50% / 0.5)', {'alpha': False}, 'hwb(270 30% 50%)'),
+        ('hwb(270 30% 50% / 0.5)', {}, 'hwb(270 30 50 / 0.5)'),
+        ('hwb(270 30% 50%)', {'alpha': True}, 'hwb(270 30 50 / 1)'),
+        ('hwb(270 30% 50% / 0.5)', {'alpha': False}, 'hwb(270 30 50)'),
         # Test percent
-        ('hwb(270 30% 75% / 50%)', {'percent': False}, 'hwb(270 30 75 / 0.5)'),
+        ('hwb(270 30% 75% / 50%)', {'percent': True}, 'hwb(270 30% 75% / 0.5)'),
         # Test None
-        ('hwb(none 30% 50%)', {}, 'hwb(0 30% 50%)'),
-        ('hwb(none 30% 50%)', {'none': True}, 'hwb(none 30% 50%)'),
+        ('hwb(none 30% 50%)', {}, 'hwb(0 30 50)'),
+        ('hwb(none 30% 50%)', {'none': True}, 'hwb(none 30 50)'),
         # Test fit
-        ('hwb(20 0% -55%)', {}, 'hwb(18.749 76.608% 0%)'),
-        ('hwb(20 0% -55%)', {'fit': False}, 'hwb(20 0% -55%)'),
+        ('hwb(20 0% -55%)', {}, 'hwb(18.749 76.608 0)'),
+        ('hwb(20 0% -55%)', {'fit': False}, 'hwb(20 0 -55)'),
         # Test color
         ('hwb(none 30% 50% / 0.5)', {'color': True}, 'color(--hwb 0 0.3 0.5 / 0.5)'),
         ('hwb(none 30% 50%)', {'color': True, 'none': True}, 'color(--hwb none 0.3 0.5)'),

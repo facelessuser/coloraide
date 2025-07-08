@@ -1,7 +1,10 @@
 # Changelog
 
-## 4.8
+## 5.0
 
+-   **NEW**: CSS no longer requires HSL and HWB to return percentage form during serialization when using the non-legacy
+    (no comma) syntax. For consistency, HSL and HWB will only return percentage form with non-legacy serialization  when
+    `percent` is `True`. This matches all other color spaces in ColorAide.
 -   **NEW**: Ray trace gamut mapping uses vector projection when correcting colors for better results and uses Oklab as
     the default instead of OkLCh as using Oklab is a little faster.
 -   **NEW**: Add new `Luminant` mixin for color spaces which allows for internally targeting spaces that expose a
@@ -12,6 +15,7 @@
 -   **NEW**: Every space now expose a `linear()`, `indexes()`, and `names()` opposed to just a select few.
 -   **NEW**: `raytrace` gamut mapping will not successfully operate on `Regular` color spaces as well as `RGBish`.
 -   **NEW**: CMYK now uses CMY as the base conversion space.
+-   **NEW**: Remove deprecated
 -   **FIX**: Ensure CMYK can round trip with wide gamut colors.
 -   **FIX**: `raytrace` gamut mapping method will not fail when CMY, CMYK, and RYB are the target gamut.
 -   **FIX**: Analogous and split complementary harmony results ordered in a more logical configuration.

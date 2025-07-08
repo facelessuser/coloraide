@@ -13,7 +13,7 @@ class TestAverage(util.ColorAsserts, unittest.TestCase):
 
         self.assertEqual(
             Color.average(['hsl(30 0 100)', 'color(srgb 0 0 1)'], space='hsl').to_string(),
-            'hsl(240 50% 75%)'
+            'hsl(240 50 75)'
         )
 
     def test_no_colors(self):

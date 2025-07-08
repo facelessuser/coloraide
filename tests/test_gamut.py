@@ -13,7 +13,7 @@ class TestGamut(util.ColorAsserts, unittest.TestCase):
     def test_hue_clipping(self):
         """Test hue clipping."""
 
-        self.assertEqual(Color('hsl(-120 50% 75% / 1)').clip().to_string(), 'hsl(240 50% 75%)')
+        self.assertEqual(Color('hsl(-120 50% 75% / 1)').clip().to_string(), 'hsl(240 50 75)')
 
     def test_in_gamut(self):
         """Test in gamut check."""
