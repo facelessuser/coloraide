@@ -38,7 +38,7 @@ class HSL(base.HSL):
             if comma:
                 percent = True
         elif comma:
-            percent = [False, True, True] + list(percent[3:4])
+            percent = [False, True, True, *percent[3:4]]
 
         return serialize.serialize_css(
             parent,

@@ -256,7 +256,7 @@ class Color(metaclass=ColorMeta):
                 num_channels = len(space_class.CHANNELS)
                 num_data = len(data)
                 if num_data < num_channels:
-                    data = list(data) + [math.nan] * (num_channels - num_data)
+                    data = [*data, *[math.nan] * (num_channels - num_data)]
                 coords = [alg.clamp(float(v), *c.limit) for c, v in zipl(space_class.CHANNELS, data)]
                 coords.append(alg.clamp(float(alpha), *space_class.channels[-1].limit))
                 obj = space_class, coords
@@ -860,7 +860,7 @@ class Color(metaclass=ColorMeta):
 
         # Return if already in desired form
         if cspace1 == cspace2:
-            return list(coords) + [1] if l == 2 else list(coords)
+            return [*coords, 1] if l == 2 else list(coords)
 
         # If starting space is XYZ, then convert to xy
         if cspace1 == 'xyz':
@@ -891,7 +891,7 @@ class Color(metaclass=ColorMeta):
         if target == 'xyz':
             return util.xy_to_xyz(pair, Y)
 
-        return list(pair) + [Y]
+        return [*pair, Y]
 
     @classmethod
     def chromatic_adaptation(
