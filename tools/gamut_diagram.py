@@ -86,7 +86,7 @@ def main():
         x = 'c'
         y = 't'
     else:
-        raise ValueError(f'"{gmap['method']}" is an unsupported gamut mapping algorithm')
+        raise ValueError(f"\"{gmap['method']}\" is an unsupported gamut mapping algorithm")
 
     title = ''
     if args.title:
