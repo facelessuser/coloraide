@@ -69,7 +69,6 @@ class oRGB(Lab):
     NAME = "orgb"
     SERIALIZE = ("--orgb",)
     WHITE = WHITES['2deg']['D65']
-    EXTENDED_RANGE = True
     CHANNELS = (
         Channel("l", 0.0, 1.0, bound=True),
         Channel("cyb", -1.0, 1.0, bound=True, flags=FLG_MIRROR_PERCENT),

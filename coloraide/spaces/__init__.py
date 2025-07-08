@@ -28,7 +28,13 @@ class Luminant:
 
 
 class Regular:
-    """Rectangular 3D color space usually with a range between 0 - 1."""
+    """
+    Rectangular is similar to an RGB color space, but whose components have different meanings.
+
+    Space follows the usual convention of a range starting from 0 and usually ending at 1.
+
+    Examples: CMY, RYB, etc.
+    """
 
 
 class Cylindrical:
@@ -133,12 +139,6 @@ class Space(Plugin, metaclass=SpaceMeta):
     # This is used in cases like HSL where the `GAMUT_CHECK` space is sRGB, but we want to clip in HSL as it
     # is still reasonable and faster.
     CLIP_SPACE = None  # type: str | None
-    # When set to `True`, this denotes that the color space has the ability to represent out of gamut in colors in an
-    # extended range. When interpolation is done, if colors are interpolated in a smaller gamut than the colors being
-    # interpolated, the colors will usually be gamut mapped, but if the interpolation space happens to support extended
-    # ranges, then the colors will not be gamut mapped even if their gamut is larger than the target interpolation
-    # space.
-    EXTENDED_RANGE = False
     # White point
     WHITE = (0.0, 0.0)
     # What is the color space's dynamic range

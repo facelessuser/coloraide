@@ -48,7 +48,6 @@ class sRGB(sRGBLinear):
     BASE = "srgb-linear"
     NAME = "srgb"
     SERIALIZE = ("srgb",)
-    EXTENDED_RANGE = True
 
     def linear(self) -> str:
         """Return linear version of the RGB (if available)."""
