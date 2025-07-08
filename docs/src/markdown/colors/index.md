@@ -48,7 +48,7 @@ flowchart LR
             srgb --- hsv
                hsv --- hwb
             srgb --- cmy
-            srgb --- cmyk
+                cmy --- cmyk
             srgb --- ryb
             srgb --- xyb
             srgb --- cubehelix
