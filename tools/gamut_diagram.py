@@ -86,16 +86,16 @@ def main():
         x = 'c'
         y = 't'
     else:
-        raise ValueError(f'"{args.method}" is an unsupported gamut mapping algorithm')
+        raise ValueError(f'"{gmap['method']}" is an unsupported gamut mapping algorithm')
 
     title = ''
     if args.title:
         title = args.title
-    elif args.method == 'clip':
+    elif gmap['method'] == 'clip':
         title = f'Clipping shown in {t_space}'
-    elif args.method.endswith('-chroma'):
+    elif gmap['method'].endswith('-chroma'):
         title = f'MINDE and Chroma Reduction in {t_space}'
-    elif args.method.endswith('raytrace') or args.method.startswith('raytrace'):
+    elif gmap['method'].endswith('raytrace') or args.method.startswith('raytrace'):
         title = f'Ray Tracing Chroma Reduction in {t_space}'
 
     colors = args.color.split(';')
