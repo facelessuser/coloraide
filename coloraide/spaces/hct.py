@@ -128,11 +128,9 @@ def hct_to_xyz(coords: Vector, env: Environment) -> Vector:
         # `dx` fraction is flipped so we can multiply by the derivative instead of divide
         j -= f0 * alg.zdiv(j, 2 * xyz[1])
 
-        # If J is zero, the next round will yield zero
-        # If values are too close, we'll be better off using bisect
+        # If J is zero, the next round will yield zero, so quit
         if j == 0 or abs(prev - j) < epsilon:  # pragma: no cover
             break
-
 
     # We could not acquire the precision we desired, return our closest attempt.
     xyz[:] = cam_to_xyz(J=best, C=c, h=h, env=env)
