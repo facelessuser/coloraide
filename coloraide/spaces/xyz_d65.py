@@ -1,7 +1,7 @@
 """XYZ D65 class."""
 from __future__ import annotations
 import math
-from ..spaces import Space, RGBish, Regular
+from ..spaces import Space, RGBish
 from ..cat import WHITES
 from ..channels import Channel
 from .. import util
@@ -9,7 +9,7 @@ from .. import algebra as alg
 from ..types import Vector
 
 
-class XYZD65(RGBish, Regular, Space):
+class XYZD65(RGBish, Space):
     """XYZ D65 class."""
 
     BASE = "xyz-d65"

@@ -14,7 +14,7 @@ try:
 except ImportError:
     from coloraide.everything import ColorAll as Color
 from coloraide.util import fmt_float  # noqa: E402
-from coloraide.spaces import LChish, Regular, Labish, HSLish, HSVish  # noqa: E402
+from coloraide.spaces import LChish, Prism, Labish, HSLish, HSVish  # noqa: E402
 from coloraide.spaces.hsl import HSL  # noqa: E402
 from coloraide.spaces.lch import LCh  # noqa: E402
 from coloraide import algebra as alg  # noqa: E402
@@ -45,17 +45,31 @@ class _HSL(HSL):
     INDEXES = [0, 1, 2]
 
     def to_base(self, coords):
-        """Convert to the base."""
+        """Convert from RGB to HSL."""
 
+        # Convert from HSL back to its original space
+        coords = super().to_base(coords)
+        # Scale and offset the values back to the origin space's configuration
+        coords[0] = coords[0] * (self.SCALE_1 - self.OFFSET_1) + self.OFFSET_1
+        coords[1] = coords[1] * (self.SCALE_2 - self.OFFSET_2) + self.OFFSET_2
+        coords[2] = coords[2] * (self.SCALE_3 - self.OFFSET_3) + self.OFFSET_3
         ordered = [0.0, 0.0, 0.0]
-        for e, c in enumerate(super().to_base(coords)):
+        # Consistently order a given color spaces points based on its type
+        for e, c in enumerate(coords):
             ordered[self.INDEXES[e]] = c
         return ordered
 
     def from_base(self, coords):
-        """Convert from the base."""
+        """Convert from HSL to RGB."""
 
-        return super().from_base([coords[i] for i in self.INDEXES])
+        # Undo order a given color spaces points based on its type
+        coords = [coords[i] for i in self.INDEXES]
+        # Scale and offset the values such that channels are between 0 - 1
+        coords[0] = (coords[0] - self.OFFSET_1) / (self.SCALE_1 - self.OFFSET_1)
+        coords[1] = (coords[1] - self.OFFSET_2) / (self.SCALE_2 - self.OFFSET_2)
+        coords[2] = (coords[2] - self.OFFSET_3) / (self.SCALE_3 - self.OFFSET_3)
+        # Convert to HSL
+        return super().from_base(coords)
 
 
 def get_cylinder(color, space):
@@ -79,7 +93,7 @@ def get_cylinder(color, space):
 
         return ColorCyl
 
-    if isinstance(cs, Regular):
+    if isinstance(cs, Prism):
 
         class CustomHSL(_HSL):
             NAME = '-custom-cylinder'
@@ -88,7 +102,16 @@ def get_cylinder(color, space):
             GAMUT_CHECK = cs.NAME
             WHITE = cs.WHITE
             DYAMIC_RANGE = cs.DYNAMIC_RANGE
-            INDEXES = cs.indexes() if hasattr(cs, 'indexes') else [0, 1, 2]
+            INDEXES = cs.indexes()
+
+            # Scale channels as needed
+            OFFSET_1 = cs.CHANNELS[INDEXES[0]].low
+            OFFSET_2 = cs.CHANNELS[INDEXES[1]].low
+            OFFSET_3 = cs.CHANNELS[INDEXES[2]].low
+
+            SCALE_1 = cs.CHANNELS[INDEXES[0]].high
+            SCALE_2 = cs.CHANNELS[INDEXES[1]].high
+            SCALE_3 = cs.CHANNELS[INDEXES[2]].high
 
         class ColorCyl(color):
             """Custom color."""

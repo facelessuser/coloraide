@@ -9,14 +9,13 @@
     the default instead of OkLCh as using Oklab is a little faster.
 -   **NEW**: Add new `Luminant` mixin for color spaces which allows for internally targeting spaces that expose a
     lightness component.
--   **NEW**: Separate `RGBish` mixin from `Regular` as not all RGB-ish spaces have regular ranges between [0, 1].
+-   **NEW**: Rename `Regular` space mixin as `Prism` for a more apt description. `Regular` is still available but
+    deprecated.
 -   **NEW**: Spaces can now declare if they are "subtractive" via a `SUBTRACTIVE` class attribute.
--   **NEW**: Reclassify ACEScc and ACEScct as RGB-ish that are non-regular.
--   **NEW**: Every space now expose a `linear()`, `indexes()`, and `names()` opposed to just a select few.
--   **NEW**: `raytrace` gamut mapping will not successfully operate on `Regular` color spaces as well as `RGBish`.
--   **NEW**: CMYK now uses CMY as the base conversion space.
--   **NEW**: Remove deprecated
--   **FIX**: Ensure CMYK can round trip with wide gamut colors.
+-   **NEW**: Every space now exposes a `linear()`, `indexes()`, and `names()` opposed to just a select few.
+-   **NEW**: `raytrace` gamut mapping will now successfully operate on `Prism` color spaces (formerly `Regular`) as well
+    as `RGBish`.
+-   **NEW**: CMYK now uses CMY as the base conversion space and ensures round trip with wide gamut colors.
 -   **FIX**: `raytrace` gamut mapping method will not fail when CMY, CMYK, and RYB are the target gamut.
 -   **FIX**: Analogous and split complementary harmony results ordered in a more logical configuration.
 -   **FIX**: Fix an issue with some HDR spaces in ray trace gamut mapping.

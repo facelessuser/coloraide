@@ -4,37 +4,34 @@ from abc import ABCMeta, abstractmethod
 from ..channels import Channel
 from ..css import serialize
 from ..types import VectorLike, Vector, Plugin
+from .. import deprecate
 from typing import Any, TYPE_CHECKING, Callable, Sequence
 import math
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
 
-
-class Luminant:
-    """A space that contains luminance or luminance-like component."""
-
-    get_channel_index: Callable[[str], int]
-
-    def lightness_name(self) -> str:
-        """Lightness name."""
-
-        return "l"
-
-    def lightness_index(self) -> int:
-        """Get lightness index."""
-
-        return self.get_channel_index(self.lightness_name())
+__deprecated__ = {
+    "Regular": "Prism"
+}
 
 
-class Regular:
-    """
-    Rectangular is similar to an RGB color space, but whose components have different meanings.
+def __getattr__(name: str) -> Any:
+    """Warn for deprecated attributes."""
 
-    Space follows the usual convention of a range starting from 0 and usually ending at 1.
+    deprecated = __deprecated__.get(name)
+    if deprecated:
+        deprecate.warn_deprecated(f"'{name}' is deprecated. Use '{deprecated}' instead.", stacklevel=3)
+        return globals()[deprecated]
+    raise AttributeError(f"module '{__name__}' has no attribute '{name}'")
 
-    Examples: CMY, RYB, etc.
-    """
+
+class Prism:
+    """Prism is a 3D rectangular prism."""
+
+
+class RGBish(Prism):
+    """RGB-ish space."""
 
 
 class Cylindrical:
@@ -63,8 +60,20 @@ class Cylindrical:
         return self.get_channel_index(self.radial_name())
 
 
-class RGBish:
-    """RGB-ish space."""
+class Luminant:
+    """A space that contains luminance or luminance-like component."""
+
+    get_channel_index: Callable[[str], int]
+
+    def lightness_name(self) -> str:
+        """Lightness name."""
+
+        return "l"
+
+    def lightness_index(self) -> int:
+        """Get lightness index."""
+
+        return self.get_channel_index(self.lightness_name())
 
 
 class HSLish(Luminant, Cylindrical):

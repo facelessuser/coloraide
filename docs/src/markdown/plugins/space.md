@@ -313,10 +313,10 @@ class Cylindrical:
 ```
 ///
 
-/// tab | Regular
+/// tab | Prism
 ```py
-class Regular:
-    """Rectangular, 3 channel color space usually with range of [0, 1]."""
+class Prism:
+    """Prism is a 3D rectangular prism."""
 ```
 ///
 
@@ -339,7 +339,7 @@ class Luminant:
 
 /// tab | RGBish
 ```py
-class RGBish(Regular):
+class RGBish(Prism):
     """RGB-ish space."""
 ```
 ///
