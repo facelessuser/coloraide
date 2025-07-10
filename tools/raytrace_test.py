@@ -9,7 +9,6 @@ import json
 sys.path.insert(0, os.getcwd())
 
 import tools.gamut_3d_plotly as plt3d  # noqa: E402
-from coloraide.gamut.fit_raytrace import raytrace_box, project_onto  # noqa: E402
 from coloraide.gamut import fit_raytrace as fit  # noqa: E402
 from coloraide.everything import ColorAll as Color  # noqa: E402
 from coloraide import algebra as alg  # noqa: E402
@@ -88,7 +87,7 @@ def raytrace(args):
 
     for ray in args.ray:
         start, end = ([float(v.strip()) for v in c.split(',')] for c in [r.strip()[1:-1] for r in ray.split('->')])
-        intersect = raytrace_box(start, end, bmin=bmin, bmax=bmax)
+        intersect = fit.raytrace_box(start, end, bmin=bmin, bmax=bmax)
         px, py, pz = zip(start, end) if not intersect else zip(start, intersect, end)
         data.append(
             go.Scatter3d(
@@ -138,7 +137,7 @@ def simulate_raytrace_gamut_mapping(args):
     gmap = json.loads(args.gmap)
     gmap['method'] = 'raytrace'
 
-    pspace = gmap.get('pspace', 'oklab')
+    pspace = gmap.get('pspace', 'oklch')
     adaptive = gmap.get('adaptive', 0.0)
 
     space = args.gamut_rgb
@@ -180,11 +179,11 @@ def simulate_raytrace_gamut_mapping(args):
 
     if polar:
         l, c, h = mapcolor._space.indexes()
-        achroma[c] = 0
+        achroma[c] = 0.0
     else:
         l, a, b = mapcolor._space.indexes()
-        achroma[a] = 0
-        achroma[b] = 0
+        achroma[a] = 0.0
+        achroma[b] = 0.0
 
     if adaptive:
         max_light = color.new('xyz-d65', fit.WHITE).convert(pspace, in_place=True)[l]
@@ -201,7 +200,7 @@ def simulate_raytrace_gamut_mapping(args):
     # # luminance which may give an achromatic that is not quite achromatic.
     # # Project the lightness point back onto to the gamut's achromatic line.
     anchor = cs.from_base(achroma.convert(space)[:-1]) if coerced else achroma.convert(space)[:-1]
-    anchor = project_onto(anchor, bmax, bmin)
+    anchor = fit.project_onto(anchor, bmax, bmin)
 
     # Return white or black if the achromatic version is not within the RGB cube.
     if anchor == bmax:
@@ -219,11 +218,13 @@ def simulate_raytrace_gamut_mapping(args):
         print('Anchor:', achroma.convert(pspace), '\n----')
 
         if polar:
-            start = fit.to_rect(mapcolor[:-1], c, h)
-            end = fit.to_rect(achroma[:-1], c, h)
-        else:
             start = mapcolor[:-1]
             end = achroma[:-1]
+        else:
+            start = fit.to_polar(mapcolor[:-1], a, b)
+            end = fit.to_polar(achroma[:-1], a, b)
+            end[b] = start[b]
+
         mapcolor.convert(space, in_place=True)
 
         offset = 1e-6
@@ -246,7 +247,7 @@ def simulate_raytrace_gamut_mapping(args):
 
             coords = cs.from_base(mapcolor[:-1]) if coerced else mapcolor[:-1]
             print('-->', anchor, coords)
-            intersection = raytrace_box(anchor, coords, bmin=bmin, bmax=bmax)
+            intersection = fit.raytrace_box(anchor, coords, bmin=bmin, bmax=bmax)
             print('===', intersection)
             if i and all((bmin[r] + offset) < coords[r] < (bmax[r] - offset) for r in range(3)):
                 anchor = coords

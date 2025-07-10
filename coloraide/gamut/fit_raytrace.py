@@ -213,7 +213,7 @@ class RayTrace(Fit):
     """Gamut mapping by using ray tracing."""
 
     NAME = "raytrace"
-    PSPACE = "oklab"
+    PSPACE = "oklch"
 
     def fit(
         self,
@@ -263,11 +263,11 @@ class RayTrace(Fit):
         # Different perceptual spaces may have components in different orders so capture their indexes
         if polar:
             l, c, h = achroma._space.indexes()
-            achroma[c] = 0
+            achroma[c] = 0.0
         else:
-            l, a, b = mapcolor._space.indexes()
-            achroma[a] = 0
-            achroma[b] = 0
+            l, a, b = achroma._space.indexes()
+            achroma[a] = 0.0
+            achroma[b] = 0.0
 
         # If an alpha value is provided for adaptive lightness, calculate a lightness
         # anchor point relative to the hue independent mid point. Scale lightness and
@@ -302,11 +302,12 @@ class RayTrace(Fit):
             # In between iterations, correct the L and H and then cast a ray
             # to the new corrected color finding the intersection again.
             if polar:
-                start = to_rect(mapcolor[:-1], c, h)
-                end = to_rect(achroma[:-1], c, h)
-            else:
                 start = mapcolor[:-1]
                 end = achroma[:-1]
+            else:
+                start = to_polar(mapcolor[:-1], a, b)
+                end = to_polar(achroma[:-1], a, b)
+                end[b] = start[b]
 
             mapcolor.convert(space, in_place=True)
 
