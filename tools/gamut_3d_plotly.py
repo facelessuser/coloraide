@@ -73,7 +73,7 @@ def create_custom_hsl(gamut):
             # Scale and offset the values such that channels are between 0 - 1
             coords[0] = (coords[0] - self.OFFSET_1) / (self.SCALE_1 - self.OFFSET_1)
             coords[1] = (coords[1] - self.OFFSET_2) / (self.SCALE_2 - self.OFFSET_2)
-            coords[2] = (coords[2] - self.OFFSET_3) / (self.SCALE_2 - self.OFFSET_3)
+            coords[2] = (coords[2] - self.OFFSET_3) / (self.SCALE_3 - self.OFFSET_3)
             # Convert to HSL
             return hsl.from_base(coords)
 

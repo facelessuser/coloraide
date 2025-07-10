@@ -41,8 +41,21 @@ def get_cylinder(color: Color) -> tuple[Vector, int]:
         return [values[idx[0]], c, h if not achromatic else alg.NaN], 2
 
     if isinstance(cs, Regular):
-        values = color[:-1]
-        hsl = srgb_to_hsl(color[:-1])
+        coords = color[:-1]
+        idx = cs.indexes()
+        offset_1 = cs.CHANNELS[idx[0]].low
+        offset_2 = cs.CHANNELS[idx[1]].low
+        offset_3 = cs.CHANNELS[idx[2]].low
+
+        scale_1 = cs.CHANNELS[idx[0]].high
+        scale_2 = cs.CHANNELS[idx[1]].high
+        scale_3 = cs.CHANNELS[idx[2]].high
+        coords = [coords[i] for i in idx]
+        # Scale and offset the values such that channels are between 0 - 1
+        coords[0] = (coords[0] - offset_1) / (scale_1 - offset_1)
+        coords[1] = (coords[1] - offset_2) / (scale_2 - offset_2)
+        coords[2] = (coords[2] - offset_3) / (scale_3 - offset_3)
+        hsl = srgb_to_hsl(coords)
         if achromatic:
             hsl[0] = alg.NaN
         return hsl, 0
@@ -71,8 +84,24 @@ def from_cylinder(color: AnyColor, coords: Vector) -> AnyColor:
     if isinstance(cs, Regular):
         if math.isnan(coords[0]):
             coords[0] = 0
-        rgb = hsl_to_srgb(coords)
-        return color.new(space, rgb, color[-1])
+        coords = hsl_to_srgb(coords)
+        idx = cs.indexes()
+        offset_1 = cs.CHANNELS[idx[0]].low
+        offset_2 = cs.CHANNELS[idx[1]].low
+        offset_3 = cs.CHANNELS[idx[2]].low
+
+        scale_1 = cs.CHANNELS[idx[0]].high
+        scale_2 = cs.CHANNELS[idx[1]].high
+        scale_3 = cs.CHANNELS[idx[2]].high
+        # Scale and offset the values back to the origin space's configuration
+        coords[0] = coords[0] * (scale_1 - offset_1) + offset_1
+        coords[1] = coords[1] * (scale_2 - offset_2) + offset_2
+        coords[2] = coords[2] * (scale_3 - offset_3) + offset_3
+        ordered = [0.0, 0.0, 0.0]
+        # Consistently order a given color spaces points based on its type
+        for e, c in enumerate(coords):
+            ordered[idx[e]] = c
+        return color.new(space, ordered, color[-1])
 
     raise ValueError(f'Unsupported color space type {space}')  # pragma: no cover
 
