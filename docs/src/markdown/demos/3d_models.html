@@ -239,14 +239,52 @@ def create_custom_hsl(gamut):
     """Create a custom color object that has access to a special `hsl-gamut` space to map surface in."""
 
     cs = Color.CS_MAP[gamut]
+    hsl = Color.CS_MAP['hsl']
 
-    class HSL(type(Color.CS_MAP['hsl'])):
+    class HSL(type(hsl)):
         NAME = f'-hsl-{gamut}'
         BASE = gamut
         GAMUT_CHECK = gamut
         CLIP_SPACE = None
         WHITE = cs.WHITE
         DYAMIC_RANGE = cs.DYNAMIC_RANGE
+        INDEXES = cs.indexes()
+
+        # Scale channels as needed
+        OFFSET_1 = cs.CHANNELS[INDEXES[0]].low
+        OFFSET_2 = cs.CHANNELS[INDEXES[1]].low
+        OFFSET_3 = cs.CHANNELS[INDEXES[2]].low
+
+        SCALE_1 = cs.CHANNELS[INDEXES[0]].high
+        SCALE_2 = cs.CHANNELS[INDEXES[1]].high
+        SCALE_3 = cs.CHANNELS[INDEXES[2]].high
+
+        def to_base(self, coords):
+            """Convert from RGB to HSL."""
+
+            # Convert from HSL back to its original space
+            coords = hsl.to_base(coords)
+            # Scale and offset the values back to the origin space's configuration
+            coords[0] = coords[0] * (self.SCALE_1 - self.OFFSET_1) + self.OFFSET_1
+            coords[1] = coords[1] * (self.SCALE_2 - self.OFFSET_2) + self.OFFSET_2
+            coords[2] = coords[2] * (self.SCALE_3 - self.OFFSET_3) + self.OFFSET_3
+            ordered = [0.0, 0.0, 0.0]
+            # Consistently order a given color spaces points based on its type
+            for e, c in enumerate(coords):
+                ordered[self.INDEXES[e]] = c
+            return ordered
+
+        def from_base(self, coords):
+            """Convert from HSL to RGB."""
+
+            # Undo order a given color spaces points based on its type
+            coords = [coords[i] for i in self.INDEXES]
+            # Scale and offset the values such that channels are between 0 - 1
+            coords[0] = (coords[0] - self.OFFSET_1) / (self.SCALE_1 - self.OFFSET_1)
+            coords[1] = (coords[1] - self.OFFSET_2) / (self.SCALE_2 - self.OFFSET_2)
+            coords[2] = (coords[2] - self.OFFSET_3) / (self.SCALE_2 - self.OFFSET_3)
+            # Convert to HSL
+            return hsl.from_base(coords)
 
     class ColorCyl(Color):
         """Custom color."""
