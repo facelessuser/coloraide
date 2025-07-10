@@ -10,7 +10,7 @@ from .. import util
 from .. import algebra as alg
 from ..gamut import Fit
 from ..cat import WHITES
-from ..spaces import RGBish, Prism, Space, HSLish, HSVish, HWBish
+from ..spaces import Prism, Space, HSLish, HSVish, HWBish, Labish
 from ..spaces.hsl import hsl_to_srgb, srgb_to_hsl
 from ..spaces.hsv import hsv_to_srgb, srgb_to_hsv
 from ..spaces.hwb import hwb_to_hsv, hsv_to_hwb
@@ -44,7 +44,12 @@ def project_onto(a: Vector, b: Vector, o: Vector) -> Vector:
     vb3 = b[2] - oz
 
     # Project `vec_oa` onto `vec_ob` and convert back to a point
-    r = (va1 * vb1 + va2 * vb2 + va3 * vb3) / (vb1 * vb1 + vb2 * vb2 + vb3 * vb3)
+    n = (va1 * vb1 + va2 * vb2 + va3 * vb3)
+    d = (vb1 * vb1 + vb2 * vb2 + vb3 * vb3)
+    if d:
+        r = n / d
+    else:
+        r = 0.0 if n <= 0 else 1.0
     # Some spaces may project something that exceeds the range of our target vector.
     if r > 1.0:
         r = 1.0
@@ -117,7 +122,7 @@ def coerce_to_rgb(cs: Space) -> Space:
         INDEXES = cs.indexes()
         # Scale saturation and lightness (or HWB whiteness and blackness)
         SCALE_SAT = cs.CHANNELS[INDEXES[1]].high
-        SCALE_LIGHT = cs.CHANNELS[INDEXES[1]].high
+        SCALE_LIGHT = cs.CHANNELS[INDEXES[2]].high
 
         def to_base(self, coords: Vector) -> Vector:
             """Convert from RGB to HSL."""
@@ -228,7 +233,7 @@ class RayTrace(Fit):
         # Requires an RGB-ish or Prism space, preferably a linear space.
         # Coerce RGB cylinders with no defined RGB space to RGB
         coerced = False
-        if not isinstance(cs, (Prism, RGBish)):
+        if not isinstance(cs, (Prism, Labish)):
             coerced = True
             cs = coerce_to_rgb(cs)
 
@@ -241,11 +246,14 @@ class RayTrace(Fit):
         if linear and linear in color.CS_MAP:
             subtractive = cs.SUBTRACTIVE
             cs = color.CS_MAP[linear]
-            if subtractive:
+            if subtractive != cs.SUBTRACTIVE:
                 bmax = color.new(space, [chan.low for chan in cs.CHANNELS]).convert(linear, in_place=True)[:-1]
             else:
                 bmax = color.new(space, bmax).convert(linear, in_place=True)[:-1]
             space = linear
+
+        # Get the minimum bounds
+        bmin = [chan.low for chan in cs.CHANNELS]
 
         orig = color.space()
         mapcolor = color.convert(pspace, norm=False) if orig != pspace else color.clone().normalize(nans=False)
@@ -276,22 +284,17 @@ class RayTrace(Fit):
             alight = mapcolor[l]
 
         # Some perceptual spaces, such as CAM16 or HCT, may compensate for adapting
-        # luminance which may give an achromatic that is not quite achromatic,
-        # causing a more sizeable delta between the max and min value in the
-        # achromatic RGB color. To compensate for such deviations, take the
-        # average value of the RGB components and use that as the achromatic point.
-        anchor = achroma.convert(space)[:-1]
-        anchor = [sum(cs.from_base(anchor) if coerced else anchor) / 3] * 3
+        # luminance which may give an achromatic that is not quite achromatic.
+        # Project the lightness point back onto to the gamut's achromatic line.
+        anchor = cs.from_base(achroma.convert(space)[:-1]) if coerced else achroma.convert(space)[:-1]
+        anchor = project_onto(anchor, bmax, bmin)
 
         # Return white or black if the achromatic version is not within the RGB cube.
         # HDR colors currently use the RGB maximum lightness. We do not currently
         # clip HDR colors to SDR white, but that could be done if required.
-        bmx = bmax[0]
-        point = anchor[0]
-        if point >= bmx:
+        if anchor == bmax:
             color.update(space, cs.to_base(bmax) if coerced else bmax, mapcolor[-1])
-        elif point <= 0:
-            bmin = [0.0, 0.0, 0.0]
+        elif anchor == bmin:
             color.update(space, cs.to_base(bmin) if coerced else bmin, mapcolor[-1])
         else:
             # Create a ray from our current color to the anchor.
@@ -308,8 +311,8 @@ class RayTrace(Fit):
             mapcolor.convert(space, in_place=True)
 
             # Threshold for anchor adjustment
-            low = 1e-6
-            high = bmx - low
+            offset = 1e-6
+            last = None
 
             for i in range(4):
                 if i:
@@ -322,25 +325,32 @@ class RayTrace(Fit):
                     mapcolor.convert(space, in_place=True)
 
                 coords = cs.from_base(mapcolor[:-1]) if coerced else mapcolor[:-1]
-                intersection = raytrace_box(anchor, coords, bmax=bmax)
+                intersection = raytrace_box(anchor, coords, bmin=bmin, bmax=bmax)
 
                 # Adjust anchor point closer to surface to improve results for some spaces.
                 # Don't move point too close to the surface to avoid corner cases with some spaces.
-                if i and all(low < x < high for x in coords):
+                if i and all((bmin[r] + offset) < coords[r] < (bmax[r] - offset) for r in range(3)):
                     anchor = coords
 
                 # Update color with the intersection point on the RGB surface.
                 if intersection:
-                    mapcolor[:-1] = cs.to_base(intersection) if coerced else intersection
+                    last = cs.to_base(intersection) if coerced else intersection
+                    mapcolor[:-1] = last
                     continue
+
+                # This will only happen if our correction caused the new point to equal the anchor point.
+                # The ray will be a point with no direction and impossible to detect surface intersect.
+                if last is not None:
+                    mapcolor[:-1] = last
+
                 break  # pragma: no cover
 
             # Remove noise from floating point conversion.
             if coerced:
                 color.update(
                     space,
-                    cs.to_base([alg.clamp(x, 0.0, bmx) for x in cs.from_base(mapcolor[:-1])]),
+                    cs.to_base([alg.clamp(x, bmin[e], bmax[e]) for e, x in enumerate(cs.from_base(mapcolor[:-1]))]),
                     mapcolor[-1]
                 )
             else:
-                color.update(space, [alg.clamp(x, 0.0, bmx) for x in mapcolor[:-1]], mapcolor[-1])
+                color.update(space, [alg.clamp(x, bmin[e], bmax[e]) for e, x in enumerate(mapcolor[:-1])], mapcolor[-1])
