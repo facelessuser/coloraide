@@ -84,6 +84,7 @@ class TestHSVProperties(util.ColorAsserts, unittest.TestCase):
         self.assertEqual(c._space.names(), ('h', 's', 'v'))
         self.assertEqual(c._space.radial_name(), 's')
         self.assertEqual(c._space.hue_name(), 'h')
+        self.assertEqual(c._space.lightness_name(), 'v')
 
     def test_hue(self):
         """Test `hue`."""

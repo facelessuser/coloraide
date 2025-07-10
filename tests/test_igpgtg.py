@@ -64,6 +64,12 @@ class TestIgPgTgSerialize(util.ColorAssertsPyTest):
 class TestIgPgTgPoperties(util.ColorAsserts, unittest.TestCase):
     """Test IgPgTg."""
 
+    def test_names(self):
+        """Test Lab-ish names."""
+
+        c = Color('color(--igpgtg 0.94415 -0.1422 0.39035)')
+        self.assertEqual(c._space.lightness_name(), 'ig')
+
     def test_ig(self):
         """Test `ig`."""
 

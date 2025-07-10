@@ -6,10 +6,8 @@ https://www.oscars.org/science-technology/aces/aces-documentation
 from __future__ import annotations
 import math
 from ..channels import Channel
-from ..spaces import RGBish, Space
+from ..spaces.srgb_linear import sRGBLinear
 from ..types import Vector
-from .. import util
-from .. import algebra as alg
 
 CC_MIN = (math.log2(2 ** -16) + 9.72) / 17.52
 CC_MAX = (math.log2(65504) + 9.72) / 17.52
@@ -52,7 +50,7 @@ def acescg_to_acescc(acescg: Vector) -> Vector:
     return acescc
 
 
-class ACEScc(RGBish, Space):
+class ACEScc(sRGBLinear):
     """The ACEScc color class."""
 
     BASE = "acescg"
@@ -65,21 +63,6 @@ class ACEScc(RGBish, Space):
         Channel("b", CC_MIN, CC_MAX, bound=True, nans=CC_MIN)
     )
     DYNAMIC_RANGE = 'hdr'
-
-    CHANNEL_ALIASES = {
-        "red": 'r',
-        "green": 'g',
-        "blue": 'b'
-    }
-
-    def is_achromatic(self, coords: Vector) -> bool:
-        """Test if color is achromatic."""
-
-        white = [1, 1, 1]
-        for x in alg.vcross(coords, white):
-            if not math.isclose(0.0, x, abs_tol=util.ACHROMATIC_THRESHOLD_SM):
-                return False
-        return True
 
     def linear(self) -> str:
         """Return linear version of the RGB (if available)."""

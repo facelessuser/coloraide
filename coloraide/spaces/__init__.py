@@ -16,7 +16,7 @@ __deprecated__ = {
 }
 
 
-def __getattr__(name: str) -> Any:
+def __getattr__(name: str) -> Any:  # pragma: no cover
     """Warn for deprecated attributes."""
 
     deprecated = __deprecated__.get(name)

@@ -64,6 +64,12 @@ class TestJzazbzSerialize(util.ColorAssertsPyTest):
 class TestJzazbzProperties(util.ColorAsserts, unittest.TestCase):
     """Test Jzazbz."""
 
+    def test_names(self):
+        """Test Lab-ish names."""
+
+        c = Color('jzazbz(1 0.2 -0.3 / 1)')
+        self.assertEqual(c._space.lightness_name(), 'jz')
+
     def test_jz(self):
         """Test `lightness`."""
 

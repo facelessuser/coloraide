@@ -64,6 +64,12 @@ class TestICtCpSerialize(util.ColorAssertsPyTest):
 class TestICtCpProperties(util.ColorAsserts, unittest.TestCase):
     """Test ICtCp."""
 
+    def test_names(self):
+        """Test Lab-ish names."""
+
+        c = Color('ictcp(1 0.2 -0.3 / 1)')
+        self.assertEqual(c._space.lightness_name(), 'i')
+
     def test_i(self):
         """Test `i`."""
 

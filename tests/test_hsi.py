@@ -69,7 +69,9 @@ class TestHSIPoperties(util.ColorAsserts, unittest.TestCase):
     def test_names(self):
         """Test HSV-ish names."""
 
-        self.assertEqual(Color('color(--hsi 60 1 0.66667)')._space.names(), ('h', 's', 'i'))
+        c = Color('color(--hsi 60 1 0.66667)')
+        self.assertEqual(c._space.names(), ('h', 's', 'i'))
+        self.assertEqual(c._space.lightness_name(), 'i')
 
     def test_h(self):
         """Test `h`."""

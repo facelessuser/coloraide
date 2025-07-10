@@ -51,7 +51,11 @@ class TestCMYSerialize(util.ColorAssertsPyTest):
         ('color(--cmy none 0.3 0.75)', {'none': True}, 'color(--cmy none 0.3 0.75)'),
         # Test Fit
         ('color(--cmy 1.2 0.2 0)', {}, 'color(--cmy 1 0.2 0)'),
-        ('color(--cmy 1.2 0.2 0)', {'fit': False}, 'color(--cmy 1.2 0.2 0)')
+        (
+            'color(--cmy 1.2 0.2 0)',
+            {'color': True, 'fit': {'method': 'raytrace', 'pspace': 'lch-d65'}},
+            'color(--cmy 1 0.20368 0.01594)'
+        )
     ]
 
     @pytest.mark.parametrize('color1,options,color2', COLORS)

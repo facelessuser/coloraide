@@ -49,7 +49,10 @@ class TestCAM02JMhPoperties(util.ColorAsserts, unittest.TestCase):
     def test_names(self):
         """Test LCh-ish names."""
 
-        self.assertEqual(Color('color(--cam02-jmh 97.139 75.504 111.05)')._space.names(), ('j', 'm', 'h'))
+        c = Color('color(--cam02-jmh 97.139 75.504 111.05)')
+        self.assertEqual(c._space.names(), ('j', 'm', 'h'))
+        self.assertEqual(c._space.radial_name(), 'm')
+        self.assertEqual(c._space.lightness_name(), 'j')
 
     def test_h(self):
         """Test `h`."""

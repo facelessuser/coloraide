@@ -67,6 +67,13 @@ class TestCAM02UCSSerialize(util.ColorAssertsPyTest):
 class TestCAM02UCSPoperties(util.ColorAsserts, unittest.TestCase):
     """Test CAM02 UCS."""
 
+    def test_names(self):
+        """Test Lab-ish names."""
+
+        c = Color('color(--cam02-ucs 0.51332 0.92781 1.076)')
+        self.assertEqual(c._space.names(), ('j', 'a', 'b'))
+        self.assertEqual(c._space.lightness_name(), 'j')
+
     def test_j(self):
         """Test `j`."""
 

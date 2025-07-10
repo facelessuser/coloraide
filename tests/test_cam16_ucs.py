@@ -159,6 +159,13 @@ class TestCAM16SCDSerialize(util.ColorAssertsPyTest):
 class TestCAM16SCDPoperties(util.ColorAsserts, unittest.TestCase):
     """Test CAM16 SCD."""
 
+    def test_names(self):
+        """Test Lab-ish names."""
+
+        c = Color('color(--cam16-scd 0.51332 0.92781 1.076)')
+        self.assertEqual(c._space.names(), ('j', 'a', 'b'))
+        self.assertEqual(c._space.lightness_name(), 'j')
+
     def test_j(self):
         """Test `j`."""
 

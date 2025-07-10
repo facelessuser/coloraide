@@ -72,6 +72,7 @@ class TestJzCzhzProperties(util.ColorAsserts, unittest.TestCase):
         self.assertEqual(c._space.names(), ('jz', 'cz', 'hz'))
         self.assertEqual(c._space.radial_name(), 'cz')
         self.assertEqual(c._space.hue_name(), 'hz')
+        self.assertEqual(c._space.lightness_name(), 'jz')
 
     def test_jz(self):
         """Test `jz`."""

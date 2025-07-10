@@ -69,7 +69,9 @@ class TestHSluvProperties(util.ColorAsserts, unittest.TestCase):
     def test_names(self):
         """Test HSL-ish names."""
 
-        self.assertEqual(Color('color(--hsluv none 0% 75% / 1)')._space.names(), ('h', 's', 'l'))
+        c = Color('color(--hsluv none 0% 75% / 1)')
+        self.assertEqual(c._space.names(), ('h', 's', 'l'))
+        self.assertEqual(c._space.lightness_name(), 'l')
 
     def test_hue(self):
         """Test `hue`."""

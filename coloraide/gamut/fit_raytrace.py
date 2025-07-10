@@ -239,7 +239,12 @@ class RayTrace(Fit):
         # Recalculate the bounding box relative to the linear version.
         linear = cs.linear()
         if linear and linear in color.CS_MAP:
-            bmax = color.new(space, bmax).convert(linear, in_place=True)[:-1]
+            subtractive = cs.SUBTRACTIVE
+            cs = color.CS_MAP[linear]
+            if subtractive:
+                bmax = color.new(space, [chan.low for chan in cs.CHANNELS]).convert(linear, in_place=True)[:-1]
+            else:
+                bmax = color.new(space, bmax).convert(linear, in_place=True)[:-1]
             space = linear
 
         orig = color.space()

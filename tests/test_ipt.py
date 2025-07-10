@@ -64,6 +64,12 @@ class TestIPTSerialize(util.ColorAssertsPyTest):
 class TestIPTPoperties(util.ColorAsserts, unittest.TestCase):
     """Test IPT."""
 
+    def test_names(self):
+        """Test Lab-ish names."""
+
+        c = Color('color(--ipt 0.85654 -0.10831 0.65148)')
+        self.assertEqual(c._space.lightness_name(), 'i')
+
     def test_i(self):
         """Test `i`."""
 

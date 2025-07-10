@@ -64,6 +64,12 @@ class TestxyYSerialize(util.ColorAssertsPyTest):
 class TestxyYPoperties(util.ColorAsserts, unittest.TestCase):
     """Test xyY."""
 
+    def test_names(self):
+        """Test Luminant names."""
+
+        c = Color('color(--xyy 0.41931 0.50526 0.92781)')
+        self.assertEqual(c._space.lightness_name(), 'Y')
+
     def test_x(self):
         """Test `x`."""
 

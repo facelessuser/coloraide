@@ -85,7 +85,9 @@ class TestHCTPoperties(util.ColorAsserts, unittest.TestCase):
     def test_names(self):
         """Test LCh-ish names."""
 
-        self.assertEqual(Color('color(--hct 111.05 75.504 97.139)')._space.names(), ('t', 'c', 'h'))
+        c = Color('color(--hct 111.05 75.504 97.139)')
+        self.assertEqual(c._space.names(), ('t', 'c', 'h'))
+        self.assertEqual(c._space.lightness_name(), 't')
 
     def test_h(self):
         """Test `h`."""

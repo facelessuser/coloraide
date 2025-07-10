@@ -133,6 +133,14 @@ class TestHSLProperties(util.ColorAsserts, unittest.TestCase):
         self.assertEqual(c._space.names(), ('h', 's', 'l'))
         self.assertEqual(c._space.radial_name(), 's')
         self.assertEqual(c._space.hue_name(), 'h')
+        self.assertEqual(c._space.lightness_name(), 'l')
+
+    def test_indexes(self):
+        """Test HSL-ish indexes."""
+
+        c = Color('color(--hsl 120 50% 90% / 1)')
+        self.assertEqual(c._space.indexes(), [0, 1, 2])
+        self.assertEqual(c._space.lightness_index(), 2)
 
     def test_hue(self):
         """Test `hue`."""
