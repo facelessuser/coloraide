@@ -2,23 +2,22 @@
 
 ## 5.0
 
--   **NEW**: CAM16, CAM02, ZCAM, Hellwig, Luv, and LChuv will no longer force colors to black when lightness is zero
-    except when chroma/saturation/colorfulness is also zero. This allows out of gamut colors with lightness of zero
+-   **NEW**: CAM16, CAM02, HCT, ZCAM, Hellwig, Luv, and LChuv will no longer force colors to black when lightness is
+    zero except when chroma/saturation/colorfulness is also zero. This allows out of gamut colors with lightness of zero
     to properly be seen as out of gamut.
 -   **NEW**: CSS no longer requires HSL and HWB to return percentage form during serialization when using the non-legacy
-    (no comma) syntax. For consistency, HSL and HWB will only return percentage form with non-legacy serialization  when
-    `percent` is `True`. This matches all other color spaces in ColorAide.
+    (no comma) syntax. For consistency, HSL and HWB will only return percentage form with non-legacy serialization when
+    `percent` is set `True` by user. This matches all other color spaces in ColorAide.
 -   **NEW**: Add new `Luminant` mixin for color spaces which allows for internally targeting spaces that expose a
     lightness component.
--   **NEW**: Rename `Regular` space mixin as `Prism` for a more apt description. `Regular` is still available but
-    deprecated.
--   **NEW**: UCS and xyY are now considered `Prism` spaces.
+-   **NEW**: Rename `Regular` space mixin as `Prism` for a more appropriate description. `Regular` is still available
+    but deprecated.
+-   **NEW**: UCS and xyY are now considered `Prism` and `Luminant` spaces.
 -   **NEW**: Spaces can now declare if they are "subtractive" via a `SUBTRACTIVE` class attribute.
--   **NEW**: Every space now exposes a `linear()`, `indexes()`, and `names()` opposed to just a select few.
+-   **NEW**: Every space now exposes a `linear()`, `indexes()`, and `names()` method opposed to just a select few.
 -   **NEW**: `raytrace` gamut mapping will now successfully operate on `Prism` color spaces (formerly `Regular`) as well
-    as `RGBish`.
+    as `RGBish`. `Prism` spaces with are also `Luminant` are not handled.
 -   **NEW**: CMYK now uses CMY as the base conversion space and ensures round trip with wide gamut colors.
--   **FIX**: `raytrace` gamut mapping method will not fail when CMY, CMYK, and RYB are the target gamut.
 -   **FIX**: Analogous and split complementary harmony results ordered in a more logical configuration.
 -   **FIX**: Fix an issue with some HDR spaces in ray trace gamut mapping.
 
