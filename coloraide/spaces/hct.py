@@ -76,8 +76,7 @@ def hct_to_xyz(coords: Vector, env: Environment) -> Vector:
 
     h, c, t = coords[:]
 
-    # Shortcut out for black
-    if t == 0:
+    if t == 0 and c == 0:
         return [0.0, 0.0, 0.0]
 
     # Calculate the Y we need to target
@@ -85,7 +84,7 @@ def hct_to_xyz(coords: Vector, env: Environment) -> Vector:
 
     # Try to start with a reasonable initial guess for J
     # Calculated by curve fitting J vs T.
-    if t > 0:
+    if t >= 0:
         j = 0.00379058511492914 * t * t + 0.608983189401032 * t + 0.9155088574762233
     else:
         j = 9.514440756550361e-06 * t * t + 0.08693057439788597 * t -21.928975842194614
@@ -147,8 +146,6 @@ def xyz_to_hct(coords: Vector, env: Environment) -> Vector:
     """Convert XYZ to HCT."""
 
     t = y_to_lstar(coords[1])
-    if t == 0.0:
-        return [0.0, 0.0, 0.0]
     c, h = xyz_to_cam(coords, env)[1:3]
     return [h, c, t]
 
@@ -197,12 +194,6 @@ class HCT(LCh):
             return self.from_base(self.to_base(coords))
         coords[0] %= 360.0
         return coords
-
-    def is_achromatic(self, coords: Vector) -> bool | None:
-        """Check if color is achromatic."""
-
-        # Account for both positive and negative chroma
-        return coords[2] == 0 or abs(coords[1]) < self.achromatic_threshold
 
     def names(self) -> tuple[Channel, ...]:
         """Return LCh-ish names in the order L C h."""

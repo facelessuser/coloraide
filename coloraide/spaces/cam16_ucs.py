@@ -7,6 +7,7 @@ https://doi.org/10.1002/col.22131
 """
 from __future__ import annotations
 import math
+from .. import algebra as alg
 from .cam16 import CAM16JMh, xyz_to_cam, cam_to_xyz
 from .lab import Lab
 from ..cat import WHITES
@@ -35,7 +36,9 @@ def cam_jmh_to_cam_ucs(
     J, M, h = jmh
 
     if J == 0.0:
-        return [0.0, 0.0, 0.0]
+        if M == 0.0:
+            return [0.0, 0.0, 00]
+        J = alg.EPS
 
     c1, c2 = COEFFICENTS[model][1:]
 
@@ -65,7 +68,9 @@ def cam_ucs_to_cam_jmh(ucs: Vector, model: str) -> Vector:
     J, a, b = ucs
 
     if J == 0.0:
-        return [0.0, 0.0, 0.0]
+        if a == b == 0.0:
+            return [0.0, 0.0, 00]
+        J = alg.EPS
 
     c1, c2 = COEFFICENTS[model][1:]
 
@@ -108,8 +113,8 @@ class CAM16UCS(Lab):
     def is_achromatic(self, coords: Vector) -> bool:
         """Check if color is achromatic."""
 
-        j, m = cam_ucs_to_cam_jmh(coords, self.MODEL)[:-1]
-        return j == 0 or abs(m) < self.achromatic_threshold
+        m = cam_ucs_to_cam_jmh(coords, self.MODEL)[1]
+        return abs(m) < self.achromatic_threshold
 
     def to_base(self, coords: Vector) -> Vector:
         """To CAM16 JMh from CAM16."""

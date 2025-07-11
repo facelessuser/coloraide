@@ -36,6 +36,10 @@ def luv_to_xyz(luv: Vector, white: tuple[float, float]) -> Vector:
     w_xyz = util.xy_to_xyz(white)
     ur, vr = util.xy_to_uv(white)
 
+    # If chorma is not zero, treat zero lightness as very small
+    if l == 0 and (u or v):
+        l = alg.EPS
+
     if l != 0:
         up = (u / (13 * l)) + ur
         vp = (v / (13 * l)) + vr
@@ -68,11 +72,6 @@ class Luv(Lab):
         "lightness": "l"
     }
     WHITE = WHITES['2deg']['D65']
-
-    def is_achromatic(self, coords: Vector) -> bool:
-        """Check if color is achromatic."""
-
-        return coords[0] == 0.0 or alg.rect_to_polar(coords[1], coords[2])[0] < self.achromatic_threshold
 
     def to_base(self, coords: Vector) -> Vector:
         """To XYZ D50 from Luv."""

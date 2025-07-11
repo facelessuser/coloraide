@@ -35,8 +35,8 @@ class CAM02UCS(Lab):
     def is_achromatic(self, coords: Vector) -> bool:
         """Check if color is achromatic."""
 
-        j, m = cam_ucs_to_cam_jmh(coords, self.MODEL)[:-1]
-        return j == 0 or abs(m) < self.achromatic_threshold
+        m = cam_ucs_to_cam_jmh(coords, self.MODEL)[1]
+        return abs(m) < self.achromatic_threshold
 
     def to_base(self, coords: Vector) -> Vector:
         """To base from UCS."""

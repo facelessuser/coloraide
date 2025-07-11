@@ -156,8 +156,8 @@ class TestsAchromatic(util.ColorAsserts, unittest.TestCase):
         )
         self.assertEqual(Color('hct', [270, 0.00001, NaN]).is_achromatic(), True)
         self.assertEqual(Color('hct', [270, NaN, 0]).is_achromatic(), True)
-        self.assertEqual(Color('hct', [270, 50, 0]).is_achromatic(), True)
-        self.assertEqual(Color('hct', [270, 50, NaN]).is_achromatic(), True)
+        self.assertEqual(Color('hct', [270, 50, 0]).is_achromatic(), False)
+        self.assertEqual(Color('hct', [270, 50, NaN]).is_achromatic(), False)
         self.assertEqual(Color('hct', [270, NaN, 20]).is_achromatic(), True)
         self.assertEqual(Color('hct', [270, NaN, NaN]).is_achromatic(), True)
         self.assertEqual(Color('hct', [29.546, 0.60569, -9.0536]).is_achromatic(), False),
