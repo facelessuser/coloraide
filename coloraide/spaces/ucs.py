@@ -4,7 +4,7 @@ CIE 1960 UCS color class.
 http://en.wikipedia.org/wiki/CIE_1960_color_space#Relation_to_CIE_XYZ
 """
 from __future__ import annotations
-from ..spaces import Space
+from ..spaces import Prism, Space
 from ..channels import Channel
 from ..cat import WHITES
 from ..types import Vector
@@ -24,7 +24,7 @@ def ucs_to_xyz(ucs: Vector) -> Vector:
     return [(3 / 2) * u, v, (3 / 2) * u - 3 * v + 2 * w]
 
 
-class UCS(Space):
+class UCS(Prism, Space):
     """The 1960 UCS class."""
 
     BASE = "xyz-d65"

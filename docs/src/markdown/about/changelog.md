@@ -12,6 +12,7 @@
     lightness component.
 -   **NEW**: Rename `Regular` space mixin as `Prism` for a more apt description. `Regular` is still available but
     deprecated.
+-   **NEW**: UCS and xyY are now considered `Prism` spaces.
 -   **NEW**: Spaces can now declare if they are "subtractive" via a `SUBTRACTIVE` class attribute.
 -   **NEW**: Every space now exposes a `linear()`, `indexes()`, and `names()` opposed to just a select few.
 -   **NEW**: `raytrace` gamut mapping will now successfully operate on `Prism` color spaces (formerly `Regular`) as well
