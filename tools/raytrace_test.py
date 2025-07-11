@@ -147,7 +147,7 @@ def simulate_raytrace_gamut_mapping(args):
     # Requires an RGB-ish space, preferably a linear space.
     # Coerce RGB cylinders with no defined RGB space to RGB
     coerced = False
-    if not isinstance(cs, (fit.Prism, fit.Labish)):
+    if not isinstance(cs, fit.Prism) or isinstance(cs, fit.Luminant):
         coerced = True
         cs = fit.coerce_to_rgb(cs)
 

@@ -10,7 +10,7 @@ from .. import util
 from .. import algebra as alg
 from ..gamut import Fit
 from ..cat import WHITES
-from ..spaces import Prism, Space, HSLish, HSVish, HWBish, Labish
+from ..spaces import Prism, Luminant, Space, HSLish, HSVish, HWBish
 from ..spaces.hsl import hsl_to_srgb, srgb_to_hsl
 from ..spaces.hsv import hsv_to_srgb, srgb_to_hsv
 from ..spaces.hwb import hwb_to_hsv, hsv_to_hwb
@@ -233,7 +233,7 @@ class RayTrace(Fit):
         # Requires an RGB-ish or Prism space, preferably a linear space.
         # Coerce RGB cylinders with no defined RGB space to RGB
         coerced = False
-        if not isinstance(cs, (Prism, Labish)):
+        if not isinstance(cs, Prism) or isinstance(cs, Luminant):
             coerced = True
             cs = coerce_to_rgb(cs)
 
