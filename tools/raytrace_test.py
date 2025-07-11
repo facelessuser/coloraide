@@ -236,10 +236,20 @@ def simulate_raytrace_gamut_mapping(args):
                 print('Uncorrected:', mapcolor)
 
                 coords = mapcolor[:-1]
-                if polar:
-                    mapcolor[:-1] = fit.to_polar(project_onto(fit.to_rect(coords, c, h), start, end), c, h)
+                if adaptive:
+                    if polar:
+                        mapcolor[:-1] = fit.project_onto(coords, start, end)
+                    else:
+                        mapcolor[:-1] = fit.to_rect(fit.project_onto(fit.to_polar(coords, a, b), start, end), a, b)
                 else:
-                    mapcolor[:-1] = project_onto(coords, start, end)
+                    coords[l] = start[l]
+                    if polar:
+                        coords[h] = start[h]
+                    else:
+                        fit.to_polar(coords, a, b)
+                        coords[b] = start[b]
+                        fit.to_rect(coords, a, b)
+                    mapcolor[:-1] = coords
 
                 print('Corrected:', mapcolor)
                 mapcolor.convert(space, in_place=True)

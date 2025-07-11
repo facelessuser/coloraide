@@ -319,10 +319,20 @@ class RayTrace(Fit):
                 if i:
                     # Project the point onto the desired interpolation path
                     coords = mapcolor.convert(pspace, in_place=True, norm=False)[:-1]
-                    if polar:
-                        mapcolor[:-1] = to_polar(project_onto(to_rect(coords, c, h), start, end), c, h)
+                    if adaptive:
+                        if polar:
+                            mapcolor[:-1] = project_onto(coords, start, end)
+                        else:
+                            mapcolor[:-1] = to_rect(project_onto(to_polar(coords, a, b), start, end), a, b)
                     else:
-                        mapcolor[:-1] = project_onto(coords, start, end)
+                        coords[l] = start[l]
+                        if polar:
+                            coords[h] = start[h]
+                        else:
+                            to_polar(coords, a, b)
+                            coords[b] = start[b]
+                            to_rect(coords, a, b)
+                        mapcolor[:-1] = coords
                     mapcolor.convert(space, in_place=True)
 
                 coords = cs.from_base(mapcolor[:-1]) if coerced else mapcolor[:-1]
