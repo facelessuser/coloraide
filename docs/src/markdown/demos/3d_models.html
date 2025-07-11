@@ -200,7 +200,7 @@
 <script src="https://cdn.jsdelivr.net/pyodide/v0.27.7/full/pyodide.js"></script>
 <script id="init" type="text/python">
 from coloraide.everything import ColorAll as Color
-from coloraide.spaces import Regular
+from coloraide.spaces import Prism, Luminant
 import json
 ignore = {'prismatic', 'cmyk'}
 ignore_gamut = {'xyz-d50', 'xyz-d65'}
@@ -212,7 +212,7 @@ for key, value in sorted(Color.CS_MAP.items()):
     options['spaces'].append(key)
     if key in ignore_gamut:
         continue
-    if isinstance(value, Regular) or key in add_gamuts:
+    if (isinstance(value, Prism) and not isinstance(value, Luminant)) or key in add_gamuts:
         options['gamuts'].append(key)
 json.dumps(options)
 </script>
