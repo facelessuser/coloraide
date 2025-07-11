@@ -64,6 +64,12 @@ class TestUCSSerialize(util.ColorAssertsPyTest):
 class TestUCSPoperties(util.ColorAsserts, unittest.TestCase):
     """Test UCS."""
 
+    def test_names(self):
+        """Test UCS names."""
+
+        c = Color('color(--ucs 0.51332 0.92781 1.076)')
+        self.assertEqual(c._space.lightness_name(), 'v')
+
     def test_u(self):
         """Test `u`."""
 
