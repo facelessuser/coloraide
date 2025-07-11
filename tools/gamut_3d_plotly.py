@@ -14,7 +14,7 @@ try:
     from coloraide_extras.everything import ColorAll as Color
 except ImportError:
     from coloraide.everything import ColorAll as Color
-from coloraide.spaces import HSLish, HSVish, HWBish, Labish, LChish  # noqa: E402
+from coloraide.spaces import HSLish, HSVish, HWBish, Labish, LChish, RGBish  # noqa: E402
 from coloraide import algebra as alg  # noqa: E402
 
 FORCE_OWN_GAMUT = {'ryb', 'ryb-biased'}
@@ -31,6 +31,7 @@ def create_custom_hsl(gamut):
 
     cs = Color.CS_MAP[gamut]
     hsl = Color.CS_MAP['hsl']
+    scale = not isinstance(cs, RGBish)
 
     class HSL(type(hsl)):
         NAME = f'-hsl-{gamut}'
@@ -42,13 +43,13 @@ def create_custom_hsl(gamut):
         INDEXES = cs.indexes()
 
         # Scale channels as needed
-        OFFSET_1 = cs.CHANNELS[INDEXES[0]].low
-        OFFSET_2 = cs.CHANNELS[INDEXES[1]].low
-        OFFSET_3 = cs.CHANNELS[INDEXES[2]].low
+        OFFSET_1 = cs.CHANNELS[INDEXES[0]].low if scale else 0.0
+        OFFSET_2 = cs.CHANNELS[INDEXES[1]].low if scale else 0.0
+        OFFSET_3 = cs.CHANNELS[INDEXES[2]].low if scale else 0.0
 
-        SCALE_1 = cs.CHANNELS[INDEXES[0]].high
-        SCALE_2 = cs.CHANNELS[INDEXES[1]].high
-        SCALE_3 = cs.CHANNELS[INDEXES[2]].high
+        SCALE_1 = cs.CHANNELS[INDEXES[0]].high if scale else 1.0
+        SCALE_2 = cs.CHANNELS[INDEXES[1]].high if scale else 1.0
+        SCALE_3 = cs.CHANNELS[INDEXES[2]].high if scale else 1.0
 
         def to_base(self, coords):
             """Convert from RGB to HSL."""
