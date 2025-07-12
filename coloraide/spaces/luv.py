@@ -36,7 +36,7 @@ def luv_to_xyz(luv: Vector, white: tuple[float, float]) -> Vector:
     w_xyz = util.xy_to_xyz(white)
     ur, vr = util.xy_to_uv(white)
 
-    # If chorma is not zero, treat zero lightness as very small
+    # If chroma is not zero, treat zero lightness as very small
     if l == 0 and (u or v):
         l = alg.EPS
 

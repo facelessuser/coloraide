@@ -144,19 +144,13 @@ def simulate_raytrace_gamut_mapping(args):
 
     cs = color.CS_MAP[space]
 
-    # Requires an RGB-ish space, preferably a linear space.
-    # Coerce RGB cylinders with no defined RGB space to RGB
     coerced = False
     if not isinstance(cs, fit.Prism) or isinstance(cs, fit.Luminant):
         coerced = True
         cs = fit.coerce_to_rgb(cs)
 
-    # Get the maximum cube size, usually `[1.0, 1.0, 1.0]`
     bmax = [chan.high for chan in cs.CHANNELS]
 
-    # If there is a non-linear version of the RGB space, results will be
-    # better if we use that. If the target RGB space is HDR, we need to
-    # calculate the bounding box size based on the HDR limit.
     linear = cs.linear()
     if linear and linear in color.CS_MAP:
         subtractive = cs.SUBTRACTIVE
@@ -168,7 +162,6 @@ def simulate_raytrace_gamut_mapping(args):
         space = linear
     print('Target RGB Space:', space)
 
-    # Get the minimum bounds
     bmin = [chan.low for chan in cs.CHANNELS]
 
     orig = color.space()
@@ -196,13 +189,9 @@ def simulate_raytrace_gamut_mapping(args):
     else:
         alight = mapcolor[l]
 
-    # # Some perceptual spaces, such as CAM16 or HCT, may compensate for adapting
-    # # luminance which may give an achromatic that is not quite achromatic.
-    # # Project the lightness point back onto to the gamut's achromatic line.
     anchor = cs.from_base(achroma.convert(space)[:-1]) if coerced else achroma.convert(space)[:-1]
     anchor = fit.project_onto(anchor, bmax, bmin)
 
-    # Return white or black if the achromatic version is not within the RGB cube.
     if anchor == bmax:
         color.update(space, cs.to_base(bmax) if coerced else bmax, mapcolor[-1])
         points.append(first.convert(space)[:-1])
@@ -225,11 +214,9 @@ def simulate_raytrace_gamut_mapping(args):
             end = fit.to_polar(achroma[:-1], a, b)
             end[b] = start[b]
 
-        mapcolor.convert(space, in_place=True)
-
-        offset = 1e-6
         last = None
-
+        offset = 1e-15
+        mapcolor.convert(space, in_place=True)
         for i in range(4):
             if i:
                 mapcolor.convert(pspace, in_place=True, norm=False)
@@ -241,6 +228,7 @@ def simulate_raytrace_gamut_mapping(args):
                         mapcolor[:-1] = fit.project_onto(coords, start, end)
                     else:
                         mapcolor[:-1] = fit.to_rect(fit.project_onto(fit.to_polar(coords, a, b), start, end), a, b)
+
                 else:
                     coords[l] = start[l]
                     if polar:
@@ -259,7 +247,7 @@ def simulate_raytrace_gamut_mapping(args):
             print('-->', anchor, coords)
             intersection = fit.raytrace_box(anchor, coords, bmin=bmin, bmax=bmax)
             print('===', intersection)
-            if i and all((bmin[r] + offset) < coords[r] < (bmax[r] - offset) for r in range(3)):
+            if i and all((bmin[r] + offset) <= coords[r] <= (bmax[r] - offset) for r in range(3)):
                 anchor = coords
 
             if intersection:

@@ -297,10 +297,7 @@ class RayTrace(Fit):
         elif anchor == bmin:
             color.update(space, cs.to_base(bmin) if coerced else bmin, mapcolor[-1])
         else:
-            # Create a ray from our current color to the anchor.
-            # Trace the line to the RGB cube finding the intersection.
-            # In between iterations, correct the L and H and then cast a ray
-            # to the new corrected color finding the intersection again.
+            # Ensure we are handling coordinates in the polar space to better retain hue
             if polar:
                 start = mapcolor[:-1]
                 end = achroma[:-1]
@@ -309,21 +306,23 @@ class RayTrace(Fit):
                 end = to_polar(achroma[:-1], a, b)
                 end[b] = start[b]
 
-            mapcolor.convert(space, in_place=True)
-
-            # Threshold for anchor adjustment
-            offset = 1e-6
+            # Use an iterative process of casting rays to find the intersect with the RGB gamut
+            # and correcting the intersection onto the LCh chroma reduction path.
             last = None
-
+            offset = 1e-15
+            mapcolor.convert(space, in_place=True)
             for i in range(4):
                 if i:
-                    # Project the point onto the desired interpolation path
                     coords = mapcolor.convert(pspace, in_place=True, norm=False)[:-1]
+
+                    # Project the point onto the desired interpolation path in LCh if applying adaptive luminance
                     if adaptive:
                         if polar:
                             mapcolor[:-1] = project_onto(coords, start, end)
                         else:
                             mapcolor[:-1] = to_rect(project_onto(to_polar(coords, a, b), start, end), a, b)
+
+                    # For constant luminance, just correct lightness and hue in LCh
                     else:
                         coords[l] = start[l]
                         if polar:
@@ -333,13 +332,14 @@ class RayTrace(Fit):
                             coords[b] = start[b]
                             to_rect(coords, a, b)
                         mapcolor[:-1] = coords
+
                     mapcolor.convert(space, in_place=True)
 
+                # Cast a ray and find the intersection with the gamut surface
                 coords = cs.from_base(mapcolor[:-1]) if coerced else mapcolor[:-1]
                 intersection = raytrace_box(anchor, coords, bmin=bmin, bmax=bmax)
 
-                # Adjust anchor point closer to surface to improve results for some spaces.
-                # Don't move point too close to the surface to avoid corner cases with some spaces.
+                # Adjust anchor point closer to surface to improve results.
                 if i and all((bmin[r] + offset) < coords[r] < (bmax[r] - offset) for r in range(3)):
                     anchor = coords
 
@@ -349,8 +349,7 @@ class RayTrace(Fit):
                     mapcolor[:-1] = last
                     continue
 
-                # This will only happen if our correction caused the new point to equal the anchor point.
-                # The ray will be a point with no direction and impossible to detect surface intersect.
+                # If we cannot find an intersection, reset to last known intersection
                 if last is not None:
                     mapcolor[:-1] = last
 
