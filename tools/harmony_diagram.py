@@ -105,13 +105,13 @@ def get_cylinder(color, space):
             INDEXES = cs.indexes()
 
             # Scale channels as needed
-            OFFSET_1 = cs.CHANNELS[INDEXES[0]].low
-            OFFSET_2 = cs.CHANNELS[INDEXES[1]].low
-            OFFSET_3 = cs.CHANNELS[INDEXES[2]].low
+            OFFSET_1 = cs.channels[INDEXES[0]].low
+            OFFSET_2 = cs.channels[INDEXES[1]].low
+            OFFSET_3 = cs.channels[INDEXES[2]].low
 
-            SCALE_1 = cs.CHANNELS[INDEXES[0]].high
-            SCALE_2 = cs.CHANNELS[INDEXES[1]].high
-            SCALE_3 = cs.CHANNELS[INDEXES[2]].high
+            SCALE_1 = cs.channels[INDEXES[0]].high
+            SCALE_2 = cs.channels[INDEXES[1]].high
+            SCALE_3 = cs.channels[INDEXES[2]].high
 
         class ColorCyl(color):
             """Custom color."""

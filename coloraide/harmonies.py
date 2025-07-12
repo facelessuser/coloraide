@@ -43,13 +43,13 @@ def get_cylinder(color: Color) -> tuple[Vector, int]:
     if isinstance(cs, Prism) and not isinstance(cs, Luminant):
         coords = color[:-1]
         idx = cs.indexes()
-        offset_1 = cs.CHANNELS[idx[0]].low
-        offset_2 = cs.CHANNELS[idx[1]].low
-        offset_3 = cs.CHANNELS[idx[2]].low
+        offset_1 = cs.channels[idx[0]].low
+        offset_2 = cs.channels[idx[1]].low
+        offset_3 = cs.channels[idx[2]].low
 
-        scale_1 = cs.CHANNELS[idx[0]].high
-        scale_2 = cs.CHANNELS[idx[1]].high
-        scale_3 = cs.CHANNELS[idx[2]].high
+        scale_1 = cs.channels[idx[0]].high
+        scale_2 = cs.channels[idx[1]].high
+        scale_3 = cs.channels[idx[2]].high
         coords = [coords[i] for i in idx]
         # Scale and offset the values such that channels are between 0 - 1
         coords[0] = (coords[0] - offset_1) / (scale_1 - offset_1)
@@ -86,13 +86,13 @@ def from_cylinder(color: AnyColor, coords: Vector) -> AnyColor:
             coords[0] = 0
         coords = hsl_to_srgb(coords)
         idx = cs.indexes()
-        offset_1 = cs.CHANNELS[idx[0]].low
-        offset_2 = cs.CHANNELS[idx[1]].low
-        offset_3 = cs.CHANNELS[idx[2]].low
+        offset_1 = cs.channels[idx[0]].low
+        offset_2 = cs.channels[idx[1]].low
+        offset_3 = cs.channels[idx[2]].low
 
-        scale_1 = cs.CHANNELS[idx[0]].high
-        scale_2 = cs.CHANNELS[idx[1]].high
-        scale_3 = cs.CHANNELS[idx[2]].high
+        scale_1 = cs.channels[idx[0]].high
+        scale_2 = cs.channels[idx[1]].high
+        scale_3 = cs.channels[idx[2]].high
         # Scale and offset the values back to the origin space's configuration
         coords[0] = coords[0] * (scale_1 - offset_1) + offset_1
         coords[1] = coords[1] * (scale_2 - offset_2) + offset_2

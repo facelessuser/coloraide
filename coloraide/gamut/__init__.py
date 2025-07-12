@@ -21,7 +21,7 @@ def clip_channels(color: Color, nans: bool = True) -> bool:
     cs = color._space
     for i, value in enumerate(cs.normalize(color[:-1])):
 
-        chan = cs.CHANNELS[i]
+        chan = cs.channels[i]
 
         # Ignore angles, undefined, or unbounded channels
         if not chan.bound or math.isnan(value) or chan.flags & FLG_ANGLE:
@@ -47,7 +47,7 @@ def verify(color: Color, tolerance: float) -> bool:
 
     cs = color._space
     for i, value in enumerate(cs.normalize(color[:-1])):
-        chan = cs.CHANNELS[i]
+        chan = cs.channels[i]
 
         # Ignore undefined channels, angles which wrap, and unbounded channels
         if not chan.bound or math.isnan(value) or chan.flags & FLG_ANGLE:

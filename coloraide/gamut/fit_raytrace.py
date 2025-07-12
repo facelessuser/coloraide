@@ -122,8 +122,8 @@ def coerce_to_rgb(cs: Space) -> Space:
         DYAMIC_RANGE = cs.DYNAMIC_RANGE
         INDEXES = cs.indexes()
         # Scale saturation and lightness (or HWB whiteness and blackness)
-        SCALE_SAT = cs.CHANNELS[INDEXES[1]].high
-        SCALE_LIGHT = cs.CHANNELS[INDEXES[2]].high
+        SCALE_SAT = cs.channels[INDEXES[1]].high
+        SCALE_LIGHT = cs.channels[INDEXES[2]].high
 
         def to_base(self, coords: Vector) -> Vector:
             """Convert from RGB to HSL."""

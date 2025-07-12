@@ -43,13 +43,13 @@ def create_custom_hsl(gamut):
         INDEXES = cs.indexes()
 
         # Scale channels as needed
-        OFFSET_1 = cs.CHANNELS[INDEXES[0]].low if scale else 0.0
-        OFFSET_2 = cs.CHANNELS[INDEXES[1]].low if scale else 0.0
-        OFFSET_3 = cs.CHANNELS[INDEXES[2]].low if scale else 0.0
+        OFFSET_1 = cs.channels[INDEXES[0]].low if scale else 0.0
+        OFFSET_2 = cs.channels[INDEXES[1]].low if scale else 0.0
+        OFFSET_3 = cs.channels[INDEXES[2]].low if scale else 0.0
 
-        SCALE_1 = cs.CHANNELS[INDEXES[0]].high if scale else 1.0
-        SCALE_2 = cs.CHANNELS[INDEXES[1]].high if scale else 1.0
-        SCALE_3 = cs.CHANNELS[INDEXES[2]].high if scale else 1.0
+        SCALE_1 = cs.channels[INDEXES[0]].high if scale else 1.0
+        SCALE_2 = cs.channels[INDEXES[1]].high if scale else 1.0
+        SCALE_3 = cs.channels[INDEXES[2]].high if scale else 1.0
 
         def to_base(self, coords):
             """Convert from RGB to HSL."""
