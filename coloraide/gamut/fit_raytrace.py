@@ -46,10 +46,11 @@ def project_onto(a: Vector, b: Vector, o: Vector) -> Vector:
     # Project `vec_oa` onto `vec_ob` and convert back to a point
     n = (va1 * vb1 + va2 * vb2 + va3 * vb3)
     d = (vb1 * vb1 + vb2 * vb2 + vb3 * vb3)
-    if d:
-        r = n / d
-    else:
-        r = 0.0 if n <= 0 else 1.0
+
+    if d == 0:  # pragma: no cover
+        d = alg.EPS
+    r = n / d
+
     # Some spaces may project something that exceeds the range of our target vector.
     if r > 1.0:
         r = 1.0

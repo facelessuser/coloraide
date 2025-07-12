@@ -416,6 +416,15 @@ class TestRayTrace(util.ColorAsserts, unittest.TestCase):
         # Therefore, this case is a miss.
         self.assertEqual(raytrace_box([1, 0, 0], [1, 0, 0]), [])
 
+    def test_ray_trace_no_intersect(self):
+        """Test a scenario where an intersect cannot be found in an iteration."""
+
+        # When the intersect is not found, the last good intersect will be selected.
+        self.assertColorEqual(
+            Color('lch-d65', [0.1, 50, 270]).fit('srgb', method='raytrace', pspace='hct', adaptive=0.05),
+            Color('color(--lch-d65 0.08441 0.22909 34.545 / 1)')
+        )
+
 
 class TestHCTGamut(util.ColorAsserts, unittest.TestCase):
     """
