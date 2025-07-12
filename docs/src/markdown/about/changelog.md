@@ -16,7 +16,8 @@
 -   **NEW**: Spaces can now declare if they are "subtractive" via a `SUBTRACTIVE` class attribute.
 -   **NEW**: Every space now exposes a `linear()`, `indexes()`, and `names()` method opposed to just a select few.
 -   **NEW**: `raytrace` gamut mapping will now successfully operate on `Prism` color spaces (formerly `Regular`) as well
-    as `RGBish`. `Prism` spaces with are also `Luminant` are not handled.
+    as `RGBish`. `Prism` spaces which are also `Luminant` are not handled.
+-   **NEW**: Harmonies now better handle irregular `Prism` spaces.
 -   **NEW**: CMYK now uses CMY as the base conversion space and ensures round trip with wide gamut colors.
 -   **FIX**: Analogous and split complementary harmony results ordered in a more logical configuration.
 -   **FIX**: Fix an issue with some HDR spaces in ray trace gamut mapping.

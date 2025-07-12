@@ -3,7 +3,7 @@ from __future__ import annotations
 import math
 from abc import ABCMeta, abstractmethod
 from . import algebra as alg
-from .spaces import Labish, Prism, Space  # noqa: F401
+from .spaces import Labish, Luminant, Prism, Space  # noqa: F401
 from .spaces.hsl import hsl_to_srgb, srgb_to_hsl
 from .cat import WHITES
 from . import util
@@ -40,7 +40,7 @@ def get_cylinder(color: Color) -> tuple[Vector, int]:
         c, h = alg.rect_to_polar(values[idx[1]], values[idx[2]])
         return [values[idx[0]], c, h if not achromatic else alg.NaN], 2
 
-    if isinstance(cs, Prism):
+    if isinstance(cs, Prism) and not isinstance(cs, Luminant):
         coords = color[:-1]
         idx = cs.indexes()
         offset_1 = cs.CHANNELS[idx[0]].low
@@ -140,7 +140,8 @@ class Monochromatic(Harmony):
 
         is_cyl = color1._space.is_polar()
 
-        if not is_cyl and not isinstance(color1._space, (Labish, Prism)):
+        cs = color1._space
+        if not is_cyl and not isinstance(cs, Labish) and not (isinstance(cs, Prism) and not isinstance(cs, Luminant)):
             raise ValueError(f'Unsupported color space type {color.space()}')
 
         # If only one color is requested, just return the current color.

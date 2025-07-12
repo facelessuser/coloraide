@@ -14,7 +14,7 @@ try:
 except ImportError:
     from coloraide.everything import ColorAll as Color
 from coloraide.util import fmt_float  # noqa: E402
-from coloraide.spaces import LChish, Prism, Labish, HSLish, HSVish  # noqa: E402
+from coloraide.spaces import LChish, Luminant, Prism, Labish, HSLish, HSVish  # noqa: E402
 from coloraide.spaces.hsl import HSL  # noqa: E402
 from coloraide.spaces.lch import LCh  # noqa: E402
 from coloraide import algebra as alg  # noqa: E402
@@ -93,7 +93,7 @@ def get_cylinder(color, space):
 
         return ColorCyl
 
-    if isinstance(cs, Prism):
+    if isinstance(cs, Prism) and not isinstance(cs, Luminant):
 
         class CustomHSL(_HSL):
             NAME = '-custom-cylinder'
