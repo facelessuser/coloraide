@@ -2,12 +2,15 @@
 
 ## 5.0
 
+-   **BREAKING**: CSS serialization no longer requires HSL and HWB to return percentage form during serialization when
+    using the non-legacy (no comma) syntax. For consistency, HSL and HWB will only return percentage form with
+    non-legacy serialization when `percent` is set `True` by user. Legacy format will still format strings with
+    percentages. This matches all other color spaces in ColorAide that use modern CSS serialization syntax. If you rely
+    on ColorAide serializing HSL in the non-legacy format with percentage output, simply add `percent=True` when calling
+    `to_string()`.
 -   **NEW**: CAM16, CAM02, HCT, ZCAM, Hellwig, Luv, and LChuv will no longer force colors to black when lightness is
     zero except when chroma/saturation/colorfulness is also zero. This allows out of gamut colors with lightness of zero
     to properly be seen as out of gamut.
--   **NEW**: CSS no longer requires HSL and HWB to return percentage form during serialization when using the non-legacy
-    (no comma) syntax. For consistency, HSL and HWB will only return percentage form with non-legacy serialization when
-    `percent` is set `True` by user. This matches all other color spaces in ColorAide.
 -   **NEW**: Add new `Luminant` mixin for color spaces which allows for internally targeting spaces that expose a
     lightness component.
 -   **NEW**: Rename `Regular` space mixin as `Prism` for a more appropriate description. `Regular` is still available
