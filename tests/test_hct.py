@@ -122,6 +122,18 @@ class TestHCTPoperties(util.ColorAsserts, unittest.TestCase):
         self.assertEqual(c['alpha'], 0.5)
 
 
+class TestSpecialCases(util.ColorAsserts, unittest.TestCase):
+    """Test special cases."""
+
+    def test_zero_lightness_high_chroma(self):
+        """Test cases of zero lightness and high chroma."""
+
+        c = Color('color(--hct 30 20 0)')
+        c2 = c.convert('srgb')
+        self.assertEqual(c2.in_gamut(tolerance=0), False)
+        self.assertColorEqual(c2, Color('rgb(0.12248 0.01215 -0.47841)'))
+
+
 class TestNull(util.ColorAsserts, unittest.TestCase):
     """Test Null cases."""
 

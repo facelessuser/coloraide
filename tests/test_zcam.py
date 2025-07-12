@@ -116,6 +116,18 @@ class TestNull(util.ColorAsserts, unittest.TestCase):
         self.assertTrue(c.get('hue'), 270 + 180)
 
 
+class TestSpecialCases(util.ColorAsserts, unittest.TestCase):
+    """Test special cases."""
+
+    def test_zero_lightness_high_chroma(self):
+        """Test cases of zero lightness and high chroma."""
+
+        c = Color('color(--zcam-jmh 0 20 30)')
+        c2 = c.convert('srgb')
+        self.assertEqual(c2.in_gamut(tolerance=0), False)
+        self.assertColorEqual(c2, Color('rgb(26.501 -12.907 0.36996)'))
+
+
 class TestsAchromatic(util.ColorAsserts, unittest.TestCase):
     """Test achromatic."""
 
@@ -215,6 +227,24 @@ class TestZCAMApperanceModel(util.ColorAsserts, unittest.TestCase):
         for a, b in zip(
             zcam_to_xyz(Jz=self.COORDS.Jz, Cz=self.COORDS.Cz, hz=self.COORDS.hz, env=ZCAMJMh.ENV),
             zcam_to_xyz(Jz=self.COORDS.Jz, Cz=self.COORDS.Cz, Hz=self.COORDS.Hz, env=ZCAMJMh.ENV)
+        ):
+            self.assertCompare(a, b, 14)
+
+    def test_Qz_zero_high_colorfulness(self):
+        """Test Qz as zero with high colorfulness."""
+
+        for a, b in zip(
+            zcam_to_xyz(Qz=0, Mz=self.COORDS.Mz, hz=self.COORDS.hz, env=ZCAMJMh.ENV),
+            [0.01850871672409, -0.01746007126696, 0.12181968332865]
+        ):
+            self.assertCompare(a, b, 14)
+
+    def test_Qz_zero_low_colorfulness(self):
+        """Test Qz as zero with zero colorfulness."""
+
+        for a, b in zip(
+            zcam_to_xyz(Qz=0, Mz=0, hz=self.COORDS.hz, env=ZCAMJMh.ENV),
+            [0, 0, 0]
         ):
             self.assertCompare(a, b, 14)
 

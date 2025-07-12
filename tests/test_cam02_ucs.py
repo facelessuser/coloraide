@@ -291,8 +291,16 @@ class TestCAM02LCDPoperties(util.ColorAsserts, unittest.TestCase):
         self.assertEqual(c['alpha'], 0.5)
 
 
-class TestsMisc(util.ColorAsserts, unittest.TestCase):
-    """Test miscellaneous cases."""
+class TestSpecialCases(util.ColorAsserts, unittest.TestCase):
+    """Test special cases."""
+
+    def test_zero_lightness_high_chroma(self):
+        """Test cases of zero lightness and high chroma."""
+
+        c = Color('color(--cam02-ucs 0 20 30)')
+        c2 = c.convert('srgb')
+        self.assertEqual(c2.in_gamut(tolerance=0), False)
+        self.assertColorEqual(c2, Color('rgb(-0.10218 0.13047 -1.0947)'))
 
     def test_from_negative_lightness(self):
         """Test conversion from negative lightness."""

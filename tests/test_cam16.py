@@ -87,6 +87,18 @@ class TestCAM16JMhPoperties(util.ColorAsserts, unittest.TestCase):
         self.assertEqual(c['alpha'], 0.5)
 
 
+class TestSpecialCases(util.ColorAsserts, unittest.TestCase):
+    """Test special cases."""
+
+    def test_zero_lightness_high_chroma(self):
+        """Test cases of zero lightness and high chroma."""
+
+        c = Color('color(--cam16-jmh 0 20 30)')
+        c2 = c.convert('srgb')
+        self.assertEqual(c2.in_gamut(tolerance=0), False)
+        self.assertColorEqual(c2, Color('rgb(0.23616 0.01358 -0.98442)'))
+
+
 class TestNull(util.ColorAsserts, unittest.TestCase):
     """Test Null cases."""
 
@@ -196,6 +208,24 @@ class TestCAM16ApperanceModel(util.ColorAsserts, unittest.TestCase):
         for a, b in zip(
             cam_to_xyz(J=self.COORDS.J, C=self.COORDS.C, h=self.COORDS.h, env=CAM16JMh.ENV),
             cam_to_xyz(J=self.COORDS.J, C=self.COORDS.C, H=self.COORDS.H, env=CAM16JMh.ENV)
+        ):
+            self.assertCompare(a, b, 14)
+
+    def test_Q_zero_high_colorfulness(self):
+        """Test Q as zero with high colorfulness."""
+
+        for a, b in zip(
+            cam_to_xyz(Q=0, M=self.COORDS.M, h=self.COORDS.h, env=CAM16JMh.ENV),
+            [-4.860684339e-05, 2.8059773e-06, -0.00035069967303]
+        ):
+            self.assertCompare(a, b, 14)
+
+    def test_Q_zero_low_colorfulness(self):
+        """Test Q as zero with zero colorfulness."""
+
+        for a, b in zip(
+            cam_to_xyz(Q=0, M=0, h=self.COORDS.h, env=CAM16JMh.ENV),
+            [0, 0, 0]
         ):
             self.assertCompare(a, b, 14)
 
