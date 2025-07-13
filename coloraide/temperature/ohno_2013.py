@@ -35,7 +35,7 @@ class BlackBodyCurve:
     ) -> None:
         """Initialize."""
 
-        keys = list(cmfs.keys())
+        keys = [*cmfs.keys()]
         self.cmfs_start = min(keys)
         self.cmfs_end = max(keys)
         self.cmfs = cmfs

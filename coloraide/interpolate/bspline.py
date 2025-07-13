@@ -44,7 +44,7 @@ class InterpolatorBSpline(InterpolatorContinuous[AnyColor]):
         """Interpolate."""
 
         # Prepare in-boundary coordinates
-        coords = list(zip(*self.coordinates[index - 1:index + 3]))
+        coords = [*zip(*self.coordinates[index - 1:index + 3])]
 
         # Apply interpolation to each channel
         channels = []

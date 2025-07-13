@@ -21,8 +21,8 @@ XYZ_W = (98.0722647623506, 100.0, 118.225418982695)
 WHITE_POINT_SC = tuple(util.xyz_to_xyY(XYZ_W)[:-1])  # type: tuple[float, float]  # type: ignore[assignment]
 # Rows: hue 0 - 350 at steps of 10
 # Columns: lightness 15 - 90 at steps of 5
-LCH_L = list(range(15, 91, 5))
-LCH_H = list(range(0, 351, 10))
+LCH_L = [*range(15, 91, 5)]
+LCH_H = [*range(0, 351, 10)]
 LCH_POINTER = [
     [10, 30, 43, 56, 68, 77, 79, 77, 72, 65, 57, 50, 40, 30, 19, 8],
     [15, 30, 45, 56, 64, 70, 73, 73, 71, 65, 57, 48, 39, 30, 18, 7],

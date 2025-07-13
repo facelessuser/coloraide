@@ -124,7 +124,7 @@ if 'SESSIONS' not in globals() or not globals()["SESSIONS"]:
             """Initialize."""
 
             if not hasattr(iterable, '__len__'):
-                iterable = list(iterable)
+                iterable = [*iterable]
 
             if len(iterable) not in (3, 6, 12, 24, 48):
                 raise ValueError('Wheel only supports iterables of length 3, 6, 12, 24, or 48')

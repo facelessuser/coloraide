@@ -860,7 +860,7 @@ class Color(metaclass=ColorMeta):
 
         # Return if already in desired form
         if cspace1 == cspace2:
-            return [*coords, 1] if l == 2 else list(coords)
+            return [*coords, 1] if l == 2 else [*coords]
 
         # If starting space is XYZ, then convert to xy
         if cspace1 == 'xyz':

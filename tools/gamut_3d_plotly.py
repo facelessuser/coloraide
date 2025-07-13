@@ -212,7 +212,7 @@ def cyl_disc(
             cmap.append(s.to_string(hex=True))
 
     # Calculate triangles
-    tri = Delaunay(list(zip(u, v)))
+    tri = Delaunay([*zip(u, v)])
 
     create3d(fig, x, y, z, tri, cmap, edges, faces, ecolor, fcolor, opacity, filters)
 
@@ -336,7 +336,7 @@ def render_space_cyl(fig, space, gamut, resolution, opacity, edges, faces, ecolo
             cmap.append(s.to_string(hex=True))
 
     # Calculate the triangles
-    tri = Delaunay(list(zip(u, v)))
+    tri = Delaunay([*zip(u, v)])
 
     create3d(fig, x, y, z, tri, cmap, edges, faces, ecolor, fcolor, opacity, filters)
 

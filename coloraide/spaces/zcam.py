@@ -180,7 +180,7 @@ class Environment:
         """
 
         self.output_white = util.xyz_to_absxyz(util.xy_to_xyz(white), yw=100)
-        self.ref_white = list(reference_white)
+        self.ref_white = [*reference_white]
         self.surround = surround
         self.discounting = discounting
         xyz_w = self.ref_white

@@ -115,7 +115,7 @@ class VonKries(CAT):
 
         # We are already using the correct white point
         if w1 == w2:
-            return list(xyz)
+            return [*xyz]
 
         a, b = sorted([w1, w2])
         m, mi = self.get_adaptation_matrices(a, b)

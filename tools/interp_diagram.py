@@ -23,7 +23,7 @@ from coloraide import algebra as alg  # noqa: E402
 def get_spline(x, y, steps=100):
     """Get spline."""
 
-    return tuple(list(i) for i in zip(*alg.interpolate(list(zip(x, y)), method='monotone').steps(steps)))
+    return tuple([*i] for i in zip(*alg.interpolate([*zip(x, y)], method='monotone').steps(steps)))
 
 
 def main():

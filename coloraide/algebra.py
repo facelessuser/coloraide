@@ -599,7 +599,7 @@ def ilerp2d(
             jy = [sum(i) for i in zip(*[[yi * c for c in ci] for ci, yi in zip(vertices_t, _y)])]
 
             # Create the Jacobian matrix, but we need it in column form
-            j = list(zip(jx, jy))
+            j = [*zip(jx, jy)]
 
             # Solve for new guess
             xy = subtract(xy, solve(j, residual), dims=D1)
@@ -741,7 +741,7 @@ def ilerp3d(
             jz = [sum(i) for i in zip(*[[zi * c for c in ci] for ci, zi in zip(vertices_t, _z)])]
 
             # Create the Jacobian matrix, but we need it in column form
-            j = list(zip(jx, jy, jz))
+            j = [*zip(jx, jy, jz)]
 
             # Solve for new guess
             xyz = subtract(xyz, solve(j, residual), dims=D1)
@@ -935,7 +935,7 @@ class Interpolate:
 
         self.length = length
         self.num_coords = len(points[0])
-        self.points = list(zip(*points))
+        self.points = [*zip(*points)]
         self.callback = callback
         self.linear = linear
 
@@ -1169,7 +1169,7 @@ def cross(a: ArrayLike, b: ArrayLike) -> Any:
     if dims_a == 1 or dims_b == 1:
         # Calculate target shape
         mdim = max(dims_a, dims_b)
-        new_shape = list(_broadcast_shape([shape_a, shape_b], mdim))
+        new_shape = [*_broadcast_shape([shape_a, shape_b], mdim)]
         if mdim > 1 and new_shape[-1] == 2:
             new_shape.pop(-1)
 
@@ -1203,7 +1203,7 @@ def cross(a: ArrayLike, b: ArrayLike) -> Any:
     size = bcast.shape[-1]
 
     # Adjust shape for the way cross outputs data
-    new_shape = list(bcast.shape)
+    new_shape = [*bcast.shape]
     mdim = max(dims_a, dims_b)
     if mdim > 1 and new_shape[-1] == 2:
         new_shape.pop(-1)
@@ -1371,7 +1371,7 @@ def dot(
             else:
                 # Dot product of N-D and M-D matrices
                 # Resultant size: `dot(xy, yz) = xz` or `dot(nxy, myz) = nxmz`
-                cols = list(_extract_cols(b, shape_b))  # type: ignore[arg-type]
+                cols = [*_extract_cols(b, shape_b)]  # type: ignore[arg-type]
                 n = shape_b[-1]  # type: ignore[misc]
                 with ArrayBuilder(result, shape_a[:-1] + shape_b[:-2]) as build:
                     for row in _extract_rows(a, shape_a):  # type: ignore[arg-type]
@@ -1510,7 +1510,7 @@ def matmul(
             return [vdot(row, b) for row in a]  # type: ignore[arg-type]
         elif dims_b == 2:
             # Matrix multiply of two matrices
-            cols = list(it.zip_longest(*b))
+            cols = [*it.zip_longest(*b)]
             return [
                 [vdot(row, col) for col in cols] for row in a  # type: ignore[arg-type]
             ]
@@ -1758,7 +1758,7 @@ def multi_dot(arrays: Sequence[ArrayLike]) -> Any:
     shapes = [shape(a) for a in arrays]
 
     # We need the list mutable if we are going to update the entries
-    _arrays = list(arrays) if not isinstance(arrays, list) else arrays  # type: Any
+    _arrays = [*arrays] if not isinstance(arrays, list) else arrays  # type: Any
 
     # Row vector
     if len(shapes[0]) == 1:
@@ -2179,7 +2179,7 @@ def broadcast_to(a: ArrayLike | float, s: int | Shape) -> float | Array:
     if not ndim_target:
         return a  # type: ignore[return-value]
 
-    s1 = list(s_orig)
+    s1 = [*s_orig]
     if ndim_orig < ndim_target:
         s1 = ([1] * (ndim_target - ndim_orig)) + s1
 
@@ -2195,7 +2195,7 @@ def broadcast_to(a: ArrayLike | float, s: int | Shape) -> float | Array:
                 next(build).append(data)
         return result
 
-    return list(bcast)
+    return [*bcast]
 
 
 class vectorize:
@@ -2242,7 +2242,7 @@ class vectorize:
         size = len(indexes)
 
         # Cast to a list so we can update the input arguments with vectorized inputs
-        inputs = list(args)
+        inputs = [*args]
 
         # Gather all the input values we need to vectorize so we can broadcast them together
         vinputs = [inputs[i] for i in indexes] + [kwargs[k] for k in keys]
@@ -2732,7 +2732,7 @@ def linspace(start: ArrayLike | float, stop: ArrayLike | float, num: int = 50, e
                 raise ValueError(f'Cannot broadcast start ({s1}) and stop ({s2})')
 
         # Apply linear interpolation steps across the vectors
-        values = list(zip(start, stop))  # type: ignore[arg-type]
+        values = [*zip(start, stop)]  # type: ignore[arg-type]
         m1 = []  # type: Matrix
         for r in range(num):
             m1.append([])
@@ -3277,7 +3277,7 @@ def flatiter(array: float | ArrayLike) -> Iterator[float]:
 def ravel(array: float | ArrayLike) -> Vector:
     """Return a flattened vector."""
 
-    return list(flatiter(array))
+    return [*flatiter(array)]
 
 
 def _frange(start: float, stop: float, step: float) -> Iterator[float]:
@@ -3308,9 +3308,9 @@ def arange(
         start = 0
 
     if isinstance(start, int) and isinstance(stop, int) and isinstance(step, int):
-        return list(range(start, stop, step))
+        return [*range(start, stop, step)]
     else:
-        return list(_frange(float(start), float(stop), float(step)))
+        return [*_frange(float(start), float(stop), float(step))]
 
 
 @overload
@@ -3349,10 +3349,10 @@ def transpose(array: ArrayLike | float) -> float | Array:
         return array  # type: ignore[return-value]
     # Vector
     if l == 1:
-        return list(array)  # type: ignore[return-value, arg-type]
+        return [*array]  # type: ignore[return-value, arg-type]
     # 2 x 2 matrix
     if l == 2:
-        return [list(z) for z in zip(*array)]  # type: ignore[misc]
+        return [[*z] for z in zip(*array)]  # type: ignore[misc]
 
     # N x M matrix
     if s and s[0] == 0:
@@ -3705,7 +3705,7 @@ def lu(
     elif dims > 2:
         last = s[-2:]  # type: tuple[int, int] # type: ignore[assignment]
         first = s[:-2]  # type: Shape
-        rows = list(_extract_rows(matrix, s))
+        rows = [*_extract_rows(matrix, s)]
         step = last[-2]
         l = []  # type: Any
         u = []  # type: Any
@@ -3757,12 +3757,12 @@ def lu(
         size = 0
     else:
         if p_indices or permute_l:
-            p = list(range(size))
+            p = [*range(size)]
             l = identity(size)
         else:
             p = identity(size)
-            l = [list(row) for row in p]
-        u = [list(row) for row in matrix]
+            l = [[*row] for row in p]
+        u = [[*row] for row in matrix]
 
     # Create upper and lower triangle in 'u' and 'l'. 'p' tracks the permutation (relative position of rows)
     for i in range(size - 1):
@@ -4228,7 +4228,7 @@ def svd(
     elif dims > 2:
         last = s[-2:]  # type: tuple[int, int] # type: ignore[misc]
         first = s[:-2]  # type: Shape # type: ignore[misc]
-        rows = list(_extract_rows(a, s))
+        rows = [*_extract_rows(a, s)]
         step = last[-2]
         m, n = last
         sigma = []  # type: Any
@@ -4378,7 +4378,7 @@ def qr(
     elif dims > 2:
         last = s[-2:]  # type: tuple[int, int] # type: ignore[misc]
         first = s[:-2]  # type: Shape # type: ignore[misc]
-        rows = list(_extract_rows(a, s))
+        rows = [*_extract_rows(a, s)]
         step = last[-2]
         m, n = last
         r = []  # type: Any
@@ -4426,7 +4426,7 @@ def matrix_rank(a: MatrixLike | TensorLike) -> Any:
 
     # Stack of matrices
     first = s[:-2]  # type: Shape # type: ignore[misc]
-    rows = list(_extract_rows(a, s))
+    rows = [*_extract_rows(a, s)]
     step = last[-2]
     m, n = last
     ranks = []  # type: Any
@@ -4503,7 +4503,7 @@ def solve(a: MatrixLike | TensorLike, b: ArrayLike) -> Array:
                 r = b[i]
                 if len(r) != size2:
                     raise ValueError('Mismatched dimensions')
-                ordered.append(list(r))
+                ordered.append([*r])
             s2 = (size, size2)  # type: Shape
             return _back_sub_matrix(u, _forward_sub_matrix(l, ordered, s2), s2)
 
@@ -4555,7 +4555,7 @@ def solve(a: MatrixLike | TensorLike, b: ArrayLike) -> Array:
             if prod(l[i][i] * u[i][i] for i in range(size)) == 0.0:
                 raise ValueError('Matrix is singular')
 
-            bi = [list(mb[i]) for i in p]
+            bi = [[*mb[i]] for i in p]
             s3 = (size, len(bi[0]))
             next(build).append(_back_sub_matrix(u, _forward_sub_matrix(l, bi, s3), s3))
     return m  # type: ignore[no-any-return]
@@ -4592,7 +4592,7 @@ def det(array: MatrixLike | TensorLike) -> float | Vector:
         return 0.0 if not dt else dt
     else:
         last = s[-2:]  # type: ignore[misc]
-        rows = list(_extract_rows(array, s))
+        rows = [*_extract_rows(array, s)]
         step = last[-2]
         return [det(rows[r:r + step]) for r in range(0, len(rows), step)]
 
@@ -4621,7 +4621,7 @@ def inv(matrix: MatrixLike | TensorLike) -> Matrix | Tensor:
     elif dims > 2:
         invert = []  # type: Tensor
         step = last[-2]
-        rows = list(_extract_rows(matrix, s))
+        rows = [*_extract_rows(matrix, s)]
         with ArrayBuilder(invert, s[:-2]) as build:  # type: ignore[misc]
             for r in range(0, len(rows), step):
                 next(build).append(inv(rows[r:r + step]))
@@ -4670,7 +4670,7 @@ def pinv(a: MatrixLike | TensorLike) -> Matrix | Tensor:
     elif dims > 2:
         last = s[-2:]  # type: tuple[int, int] # type: ignore[misc]
         invert = []  # type: Tensor
-        rows = list(_extract_rows(a, s))
+        rows = [*_extract_rows(a, s)]
         step = last[-2]
         with ArrayBuilder(invert, s[:-2]) as build:  # type: ignore[misc]
             for r in range(0, len(rows), step):
@@ -4949,7 +4949,7 @@ def inner(a: float | ArrayLike, b: float | ArrayLike) -> float | Array:
     if dims_b == 1:
         second = [b]  # type: Any
     elif dims_b > 2:
-        second = list(_extract_rows(b, shape_b))  # type: ignore[arg-type]
+        second = [*_extract_rows(b, shape_b)]  # type: ignore[arg-type]
     else:
         second = b
 
@@ -5215,7 +5215,7 @@ def roll(
         p = prod(s)
         sgn = sign(shift)
         shift = int(shift % (p * sgn)) if p and sgn else 0
-        flat = ravel(a) if len(s) != 1 else list(a)  # type: ignore[arg-type]
+        flat = ravel(a) if len(s) != 1 else [*a]  # type: ignore[arg-type]
         sh = -shift
         flat[:] = flat[sh:] + flat[:sh]
         return reshape(flat, s)

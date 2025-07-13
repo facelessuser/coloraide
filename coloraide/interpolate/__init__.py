@@ -186,7 +186,7 @@ class Interpolator(Generic[AnyColor], metaclass=ABCMeta):
         """Add/adjust padding."""
 
         # Make sure it is a sequence
-        padding = [padding] if not isinstance(padding, Sequence) else list(padding)
+        padding = [padding] if not isinstance(padding, Sequence) else [*padding]
 
         # If it is empty
         if not padding:

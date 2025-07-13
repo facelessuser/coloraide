@@ -97,7 +97,7 @@ class SpectralLocus:
     ) -> None:
         """Initialize."""
 
-        self.spline = alg.interpolate(list(zip(x, y)), method='catrom')
+        self.spline = alg.interpolate([*zip(x, y)], method='catrom')
         self.domain = domain
 
     def scale(self, point):
@@ -119,7 +119,7 @@ class SpectralLocus:
     def steps(self, steps):
         """Get steps."""
 
-        return tuple(list(i) for i in zip(*self.spline.steps(steps)))
+        return tuple([*i] for i in zip(*self.spline.steps(steps)))
 
     def __call__(self, wave):
         """Get the uv for the given temp."""
@@ -130,7 +130,7 @@ class SpectralLocus:
 def get_spline(x, y, steps=100):
     """Get spline."""
 
-    return tuple(list(i) for i in zip(*alg.interpolate(list(zip(x, y)), method='catrom').steps(steps)))
+    return tuple([*i] for i in zip(*alg.interpolate([*zip(x, y)], method='catrom').steps(steps)))
 
 
 def convert_chromaticity(xy, opt):
@@ -195,8 +195,8 @@ class Polygon2D:
     def __init__(self, x, y):
         """Initialize polygon."""
 
-        self.x = list(x)
-        self.y = list(y)
+        self.x = [*x]
+        self.y = [*y]
         self.xmin = min(self.x)
         self.xmax = max(self.x)
         self.ymin = min(self.y)
@@ -438,7 +438,7 @@ def cie_diagram(
             interp = alg.interpolate([blue[:-1], red[:-1]])
             sxy.extend([interp(i / 50) for i in range(1, 51)])
             sx, sy = zip(*sxy)
-            xy = list(zip(*[convert_chromaticity((a, b), opt) for a, b in zip(sx, sy)]))
+            xy = [*zip(*[convert_chromaticity((a, b), opt) for a, b in zip(sx, sy)])]
             spaces.append(
                 (
                     sx,
@@ -715,7 +715,7 @@ def cie_diagram(
                     showarrow=False
                 )
 
-                duvx, duvy = list(zip(*[convert_chromaticity((bu, bv), opt) for bu, bv in zip(duvx, duvy)]))
+                duvx, duvy = [*zip(*[convert_chromaticity((bu, bv), opt) for bu, bv in zip(duvx, duvy)])]
                 fig.add_traces(data=go.Scatter(
                     x=duvx,
                     y=duvy,
