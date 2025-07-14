@@ -61,7 +61,7 @@ def apply_filter(name, amount, space, method, p):
         # General filter.
         color.filter(name, amount, space=space, in_place=True, out_space='srgb')
     # Fit the color back into the color gamut and return the results
-    return tuple(int(x * 255) for x in color.fit(**GMAP)[:4 if has_alpha else -1])
+    return tuple(round(x * 255) for x in color.fit(**GMAP)[:4 if has_alpha else -1])
 
 
 def process_image(img, output, name, amount, space, cvd_approach):

@@ -63,7 +63,7 @@ def apply_compositing(background, blend, operator, pixels, fit, space):
     if background != 'transparent':
         result = Color.layer([result, background]).clip()
 
-    return tuple(int(x * 255) for x in result.fit(**GMAP)[:4])
+    return tuple(round(x * 255) for x in result.fit(**GMAP)[:4])
 
 
 def process_image(imgs, bg, output, blend, porter_duff, space):

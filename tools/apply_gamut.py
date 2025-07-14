@@ -57,10 +57,7 @@ def apply_gamut_map(amount, p, gamut):
     if amount:
         color.set('oklch.c', lambda c: c * amount)
     # Fit the color back into the color gamut and return the results
-    return tuple(
-        int(x * 255)
-        for x in color.convert('srgb').fit(**GMAP)[:4 if has_alpha else -1]
-    )
+    return tuple(round(x * 255) for x in color.convert('srgb').fit(**GMAP)[:4 if has_alpha else -1])
 
 
 def process_image(img, output, amount, gamut):
