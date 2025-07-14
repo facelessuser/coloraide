@@ -3308,9 +3308,10 @@ def arange(
         start = 0
 
     if isinstance(start, int) and isinstance(stop, int) and isinstance(step, int):
-        return [*range(start, stop, step)]
+        value = [*range(start, stop, step)]  # type: ignore[arg-type]
     else:
-        return [*_frange(float(start), float(stop), float(step))]
+        value = [*_frange(float(start), float(stop), float(step))]  # type: ignore[arg-type]
+    return value
 
 
 @overload
@@ -3349,7 +3350,7 @@ def transpose(array: ArrayLike | float) -> float | Array:
         return array  # type: ignore[return-value]
     # Vector
     if l == 1:
-        return [*array]  # type: ignore[return-value, arg-type]
+        return [*array]  # type: ignore[misc]
     # 2 x 2 matrix
     if l == 2:
         return [[*z] for z in zip(*array)]  # type: ignore[misc]
@@ -5215,7 +5216,7 @@ def roll(
         p = prod(s)
         sgn = sign(shift)
         shift = int(shift % (p * sgn)) if p and sgn else 0
-        flat = ravel(a) if len(s) != 1 else [*a]  # type: ignore[arg-type]
+        flat = ravel(a) if len(s) != 1 else [*a]  # type: ignore[misc]
         sh = -shift
         flat[:] = flat[sh:] + flat[:sh]
         return reshape(flat, s)
