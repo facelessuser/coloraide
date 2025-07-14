@@ -458,7 +458,7 @@ def plot_gamut_in_space(
             c = Color(edges).convert('srgb').fit(**gmap)
             if filters:
                 c.filter(filters[0], **filters[1], in_place=True, out_space=c.space()).clip()
-            ecolor = c.to_string(hex=True)
+            ecolor = c.to_string(hex=True, alpha=False)
             edges = True
         faces = config.get('faces', False)
         fcolor = ''
@@ -466,7 +466,7 @@ def plot_gamut_in_space(
             c = Color(faces).convert('srgb').fit(**gmap)
             if filters:
                 c.filter(filters[0], **filters[1], in_place=True, out_space=c.space()).clip()
-            fcolor = c.to_string(hex=True)
+            fcolor = c.to_string(hex=True, alpha=False)
             faces = True
 
         render_space_cyl(fig, space, gamut, resolution, opacity, edges, faces, ecolor, fcolor, gmap, filters)
@@ -514,7 +514,7 @@ def plot_colors(fig, space, gamut, gmap_colors, colors, gmap, filters=()):
                     x=x, y=y, z=z,
                     line={'color': 'black', 'width': 2},
                     marker={
-                        'color': c2.to_string(hex=True),
+                        'color': c2.to_string(hex=True, alpha=False),
                         'size': [16, 0],
                         'opacity': 1,
                         'line': {'width': 2}
@@ -563,13 +563,14 @@ def plot_interpolation(
         if interp_gmap:
             c.fit('srgb', **gmap)
         store_coords(c, x, y, z, flags)
-        c.convert('srgb', in_place=True).fit(**gmap)
+        c.convert('srgb', in_place=True)
+        c.fit(**gmap)
         if filters:
             c.filter(filters[0], **filters[1], in_place=True, out_space=c.space()).clip()
         if simulate_alpha:
-            cmap.append(Color.layer([c, 'white'], space='srgb').to_string(hex=True))
+            cmap.append(Color.layer([c, 'white'], space='srgb').to_string(hex=True, alpha=False))
         else:
-            cmap.append(c.to_string(comma=True, alpha=False))
+            cmap.append(c.to_string(hex=True, alpha=False))
 
     trace = go.Scatter3d(
         x=x, y=y, z=z,
@@ -625,9 +626,9 @@ def plot_harmony(
         if filters:
             c.filter(filters[0], **filters[1], in_place=True, out_space=c.space()).clip()
         if simulate_alpha:
-            cmap.append(Color.layer([c, 'white'], space='srgb').to_string(hex=True))
+            cmap.append(Color.layer([c, 'white'], space='srgb').to_string(hex=True, alpha=False))
         else:
-           cmap.append(c.to_string(comma=True, alpha=False))
+           cmap.append(c.to_string(hex=True, alpha=False))
 
     if options['name'] in ('wheel', 'rectangle', 'square', 'triad'):
         x.append(x[0])
@@ -700,7 +701,7 @@ def plot_average(
         if filters:
             c.filter(filters[0], **filters[1], in_place=True, out_space=c.space()).clip()
         if simulate_alpha:
-            cmap.append(Color.layer([c, 'white'], space='srgb').to_string(hex=True))
+            cmap.append(Color.layer([c, 'white'], space='srgb').to_string(hex=True, alpha=False))
         else:
            cmap.append(c.to_string(comma=True, alpha=False))
 
@@ -712,9 +713,9 @@ def plot_average(
         if filters:
             c.filter(filters[0], **filters[1], in_place=True, out_space=c.space()).clip()
         if simulate_alpha:
-            cmap.append(Color.layer([c, 'white'], space='srgb').to_string(hex=True))
+            cmap.append(Color.layer([c, 'white'], space='srgb').to_string(hex=True, alpha=False))
         else:
-            cmap.append(c.to_string(comma=True, alpha=False))
+            cmap.append(c.to_string(hex=True, alpha=False))
 
         trace = go.Scatter3d(
             x=x, y=y, z=z,
