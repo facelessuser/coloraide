@@ -264,6 +264,8 @@ Wz
 XD
 XYB
 XYZ
+Y'CbCr
+YCbCr
 YCbCr
 Yoshi
 ZCAM
@@ -319,10 +321,12 @@ electro
 emissive
 falsi
 fixup
+footroom
 formatter
 gradians
 grayscale
 hashable
+headroom
 helixes
 homogenous
 hz
