@@ -38,6 +38,9 @@ from .spaces.hct import HCT
 from .spaces.ucs import UCS
 from .spaces.rec709 import Rec709
 from .spaces.rec709_oetf import Rec709OETF
+from .spaces.ycbcr_709 import YCbCr709
+from .spaces.ycbcr_2020 import YCbCr2020
+from .spaces.sycc import sYCC
 from .spaces.ryb import RYB, RYBBiased
 from .spaces.cubehelix import Cubehelix
 from .spaces.rec2020_oetf import Rec2020OETF
@@ -111,6 +114,9 @@ ColorAll.register(
         Msh(),
         sCAMJMh(),
         sUCS(),
+        sYCC(),
+        YCbCr709(),
+        YCbCr2020(),
 
         # Delta E
         DE99o(),

@@ -97,6 +97,7 @@ icon: lucide/scroll-text
     `to_string()`.
 -   **NEW**: `Channel` object's `limit` parameter can now accept a function to constrain a channel. This can allow for
     more complex boundary constraints, such as rounding the value in addition to channels with a hard boundary ranges.
+-   **NEW**: Add the `sycc`, `ycbcr-709`, and `ycbcr-2020` color space.
 -   **NEW**: CAM16, CAM02, HCT, ZCAM, and Hellwig will no longer force colors to black when lightness is zero except
     when chroma/saturation/colorfulness is also zero. This allows out of gamut colors with lightness of zero
     to properly be seen as out of gamut.
