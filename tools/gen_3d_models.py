@@ -80,11 +80,20 @@ models = {
     'scam-jmh': {'title': TEMPLATE.format('sCAM JMh'), 'filename': 'scam-jmh-3d.png', 'azim': 320},
     'srgb': {'title': 'sRGB Color Space', 'filename': 'srgb-3d.png'},
     'sucs': {'title': TEMPLATE.format('sUCS'), 'filename': 'sucs-3d.png', 'azim': 320},
+    'sycc': {'title': TEMPLATE.format('sYCC'), 'filename': 'sycc-3d.png', 'gamut': 'srgb'},
     'ucs': {'title': TEMPLATE.format('UCS'), 'filename': 'ucs-3d.png', 'azim': 60, 'elev': 10},
     'xyb': {'title': TEMPLATE.format('XYB'), 'filename': 'xyb-3d.png', 'azim': 45},
     'xyy': {'title': TEMPLATE.format('xyY'), 'filename': 'xyy-3d.png'},
     'xyz-d50': {'title': TEMPLATE.format('XYZ D50'), 'filename': 'xyz-d50-3d.png'},
     'xyz-d65': {'title': TEMPLATE.format('XYZ D65'), 'filename': 'xyz-d65-3d.png'},
+    'ycbcr-709': {
+        'title': "Rec. 709 Gamut Plotted in Y'CbCr ITU-R BT.709 Color Space",
+        'filename': 'ycbcr-709-3d.png', 'gamut': 'rec709'
+    },
+    'ycbcr-2020': {
+        'title': "Rec. 2020 Gamut Plotted in Y'CbCr ITU-R BT.2020 Color Space",
+        'filename': 'ycbcr-2020-3d.png', 'gamut': 'rec2020'
+    }
     'zcam-jmh': {'title': TEMPLATE.format('ZCAM JMh'), 'filename': 'zcam-jmh-3d.png', 'azim': 320}
 }
 
