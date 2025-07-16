@@ -3748,7 +3748,7 @@ def lu(
         else:
             tall = True
             for row in matrix:
-                row.extend([0.0] * diff)  # type: ignore[list-item]
+                row.extend([0.0] * diff)  # type: ignore[list-item, arg-type]
 
     # Initialize the triangle matrices along with the permutation matrix.
     if empty:
