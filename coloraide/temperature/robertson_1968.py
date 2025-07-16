@@ -103,31 +103,32 @@ class Robertson1968(CCT):
     def to_cct(self, color: Color, **kwargs: Any) -> Vector:
         """Calculate a color's CCT."""
 
+        dip = temp = duv = 0.0
+        sign = -1
         u, v = color.split_chromaticity(self.CHROMATICITY)[:-1]
         end = len(self.table) - 1
-        slope_invert = False
 
         # Search for line pair coordinate is between.
-        previous_di = temp = duv = 0.0
-
         for index, current in enumerate(self.table):
             # Get the distance
             # If a table was generated with values down to 1000K,
             # we would get a positive slope, so to keep logic the
             # same, adjust distance calculation such that negative
             # is still what we are looking for.
-            if current[3] < 0:
-                di = (v - current[2]) - current[3] * (u - current[1])
+            slope = current[3]
+            if slope < 0:
+                di = (v - current[2]) - slope * (u - current[1])
             else:
-                slope_invert = True
-                di = (current[2] - v) - current[3] * (current[1] - u)
+                di = (current[2] - v) - slope * (current[1] - u)
+
             if index > 0 and (di <= 0.0 or index == end):
                 # Calculate the required interpolation factor between the two lines
                 previous = self.table[index - 1]
-                current_denom = math.sqrt(1.0 + current[3] ** 2)
+                pslope = previous[3]
+                current_denom = math.sqrt(1.0 + slope ** 2)
+                previous_denom = math.sqrt(1.0 + pslope ** 2)
                 di /= current_denom
-                previous_denom = math.sqrt(1.0 + previous[3] ** 2)
-                dip = previous_di / previous_denom
+                dip /= previous_denom
                 factor = dip / (dip - di)
 
                 # Calculate the temperature, if the mired value is zero
@@ -137,17 +138,21 @@ class Robertson1968(CCT):
 
                 # Interpolate the slope vectors
                 dup = 1 / previous_denom
-                dvp = previous[3] / previous_denom
                 du = 1 / current_denom
-                dv = current[3] / current_denom
+                dvp = pslope / previous_denom
+                dv = slope / current_denom
                 du = alg.lerp(dup, du, factor)
                 dv = alg.lerp(dvp, dv, factor)
                 denom = math.sqrt(du ** 2 + dv ** 2)
                 du /= denom
                 dv /= denom
 
+                # Check if we need to flip the sign
+                if (slope * pslope) < 0:
+                    sign = 1
+
                 # Calculate Duv
-                duv = (
+                duv = sign * (
                     du * (u - alg.lerp(previous[1], current[1], factor)) +
                     dv * (v - alg.lerp(previous[2], current[2], factor))
                 )
@@ -155,9 +160,9 @@ class Robertson1968(CCT):
                 break
 
             # Save distance as previous
-            previous_di = di
+            dip = di
 
-        return [temp, -duv if duv and not slope_invert else duv]
+        return [temp, duv]
 
     def from_cct(
         self,
@@ -190,8 +195,6 @@ class Robertson1968(CCT):
 
                 # Calculate the offset along the slope
                 if duv:
-                    slope_invert = current[3] >= 0
-
                     # Calculate the slope vectors
                     u1 = 1.0
                     v1 = current[3]
@@ -205,6 +208,16 @@ class Robertson1968(CCT):
                     u2 /= length
                     v2 /= length
 
+                    # Check for discontinuity and adjust accordingly
+                    conflict = (current[3] * future[3]) < 0
+                    if conflict:
+                        rad, ang = math.sqrt(u2 * u2 + v2 * v2), math.atan2(v2, u2) % math.tau
+                        ang += math.pi
+                        u2, v2 = rad * math.cos(ang), rad * math.sin(ang)
+
+                    # Calculate the sign
+                    sign = 1.0 if not conflict and future[3] >= 0 else -1.0
+
                     # Find vector from the locus to our point.
                     du = alg.lerp(u2, u1, f)
                     dv = alg.lerp(v2, v1, f)
@@ -213,8 +226,8 @@ class Robertson1968(CCT):
                     dv /= denom
 
                     # Adjust the uv by the calculated offset
-                    u += du * (-duv if not slope_invert else duv)
-                    v += dv * (-duv if not slope_invert else duv)
+                    u += du * sign * duv
+                    v += dv * sign * duv
                 break
 
         return color.chromaticity(space, [u, v, 1], self.CHROMATICITY, scale=scale, scale_space=scale_space)
