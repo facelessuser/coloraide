@@ -127,9 +127,8 @@ class Robertson1968(CCT):
 
         # Check for discontinuity and adjust accordingly
         if (pslope * slope) < 0:
-            rad, ang = math.sqrt(u2 * u2 + v2 * v2), math.atan2(v2, u2) % math.tau
-            ang += math.pi
-            u2, v2 = rad * math.cos(ang), rad * math.sin(ang)
+            u2 *= -1
+            v2 *= -1
 
         # Find vector from the locus to our point.
         du = alg.lerp(u2, u1, factor)
