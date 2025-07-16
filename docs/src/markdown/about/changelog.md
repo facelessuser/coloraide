@@ -24,6 +24,7 @@
 -   **NEW**: CMYK now uses CMY as the base conversion space and ensures round trip with wide gamut colors.
 -   **FIX**: Analogous and split complementary harmony results ordered in a more logical configuration.
 -   **FIX**: Fix an issue with some HDR spaces in ray trace gamut mapping.
+-   **FIX**: Fix Duv sign flips and poor precision near inflection points in the Robertson 1968 CCT curve.
 
 ## 4.7.2
 

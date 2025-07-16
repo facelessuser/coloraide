@@ -2,7 +2,6 @@
 import math
 from coloraide.everything import ColorAll as Color
 from coloraide import cmfs
-from coloraide import cat
 from . import util
 import pytest
 import unittest
@@ -59,8 +58,8 @@ class TestOhno2013Color(util.ColorAssertsPyTest):
         """Test CCT methods."""
 
         cct, duv = Color(color).cct()
-        c = Color.blackbody('xyz-d65', cct, duv, scale=False)
-        cct2, duv2 = c.cct()
+        c = Color.blackbody('xyz-d65', cct, duv, scale=False, method='ohno-2013')
+        cct2, duv2 = c.cct(method='ohno-2013')
         assert math.isclose(cct, cct2, rel_tol=0.00001, abs_tol=0.00001)
         assert math.isclose(duv, duv2, rel_tol=0.00001, abs_tol=0.00001)
 
@@ -138,6 +137,7 @@ class TestCCTSpecificCases(util.ColorAsserts, unittest.TestCase):
         """Test alternate CMFs."""
 
         from coloraide.temperature.ohno_2013 import Ohno2013
+        from coloraide import cat
 
         class Custom(Color):
             CCT = 'ohno-2013'
@@ -202,3 +202,14 @@ class TestCCTSpecificCases(util.ColorAsserts, unittest.TestCase):
         cct2, duv2 = Custom('orange').cct()
         assert math.isclose(cct2, 2423.930481644873, rel_tol=1e-11, abs_tol=1e-11)
         assert math.isclose(duv2, 0.008112876273860207, rel_tol=1e-11, abs_tol=1e-11)
+
+    def test_robertson_discontinuity(self):
+        """Test logic around the discontinuity in Robertson approach."""
+
+        cct = 1625
+        duv = 0.02
+        cct2, duv2 = Color.blackbody('xyz-d65', cct, duv, scale=False).cct()
+
+        assert math.isclose(cct, cct2, rel_tol=0.00001, abs_tol=0.00001)
+        assert math.isclose(duv, duv2, rel_tol=0.00001, abs_tol=0.00001)
+

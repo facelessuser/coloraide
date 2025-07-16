@@ -235,7 +235,7 @@ associated with the expansion technique, all while maintaining good accuracy. Th
 ```py play
 color = Color.blackbody('srgb-linear', 5000, duv=0.02, method='ohno-2013')
 color
-color.cct()
+color.cct(method='ohno-2013')
 ```
 
 ColorAide exposes some of the knobs to control the automatic expansion.
