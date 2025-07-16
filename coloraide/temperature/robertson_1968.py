@@ -133,23 +133,20 @@ class Robertson1968(CCT):
 
                 # Calculate the temperature, if the mired value is zero
                 # assume the maximum temperature of 100000K.
-                mired = alg.lerp(previous[0], current[0], factor)
-                temp = 1.0E6 / mired if mired > 0 else math.inf
+                d = (previous[0] - factor * (previous[0] - current[0]))
+                temp = 1.0E6 / d if d else math.inf
 
-                # Interpolate the slope vectors
-                dup = 1 / previous_denom
-                du = 1 / current_denom
-                dvp = pslope / previous_denom
-                dv = slope / current_denom
-                du = alg.lerp(dup, du, factor)
-                dv = alg.lerp(dvp, dv, factor)
-                denom = math.sqrt(du ** 2 + dv ** 2)
-                du /= denom
-                dv /= denom
+                # Angle
+                a1 = math.atan2(pslope, 1) % math.tau
+                a2 = math.atan2(slope, 1) % math.tau
 
-                # Check if we need to flip the sign
+                # Check slopes to see if we have a discontinuity and adjust
                 if (slope * pslope) < 0:
-                    sign = 1
+                    a2 = (a2 + math.pi) if a2 < math.pi else (a2 - math.pi)
+
+                # Find vector from the locus to our point.
+                da = alg.lerp(a1, a2, factor)
+                du, dv = math.cos(da), math.sin(da)
 
                 # Calculate Duv
                 duv = sign * (
@@ -209,14 +206,14 @@ class Robertson1968(CCT):
                     v2 /= length
 
                     # Check for discontinuity and adjust accordingly
-                    conflict = (current[3] * future[3]) < 0
-                    if conflict:
+                    discontinuity = (current[3] * future[3]) < 0
+                    if discontinuity:
                         rad, ang = math.sqrt(u2 * u2 + v2 * v2), math.atan2(v2, u2) % math.tau
                         ang += math.pi
                         u2, v2 = rad * math.cos(ang), rad * math.sin(ang)
 
                     # Calculate the sign
-                    sign = 1.0 if not conflict and future[3] >= 0 else -1.0
+                    sign = 1.0 if not discontinuity and future[3] >= 0 else -1.0
 
                     # Find vector from the locus to our point.
                     du = alg.lerp(u2, u1, f)
