@@ -52,7 +52,7 @@ class Robertson1968(CCT):
         mired: VectorLike,
         sigfig: int,
         planck_step: int,
-    ) -> list[tuple[float, float, float, float]]:
+    ) -> list[tuple[float, float, float, float, float, float, float]]:
         """
         Generate the necessary table for the Robertson1968 method.
 
@@ -67,10 +67,15 @@ class Robertson1968(CCT):
         We are able to calculate the uv pair for each mired point directly except for 0. 0 requires us to
         interpolate the values as it will cause a divide by zero in the Planckian locus. In this case, we
         assume a perfect 0.5 (middle) for our interpolation.
+
+        Additionally, we precalucuate a few other things to save time:
+        - slope length of unit vector
+        - u component of slope unit vector
+        - v component of slope unit vector
         """
 
         xyzw = util.xy_to_xyz(white)
-        table = []  # type: list[tuple[float, float, float, float]]
+        table = []  # type: list[tuple[float, float, float, float, float, float, float]]
         to_uv = util.xy_to_uv_1960 if self.CHROMATICITY == 'uv-1960' else util.xy_to_uv
         for t in mired:
             uv1 = to_uv(planck.temp_to_xy_planckian_locus(1e6 / (t - 0.01), cmfs, xyzw, step=planck_step))
@@ -88,41 +93,37 @@ class Robertson1968(CCT):
             m = alg.lerp(m1, m2, factor)
             if sigfig:
                 template = f'{{:.{sigfig}g}}'
+                slope = float(template.format(m))
+                length = math.sqrt(1 + slope * slope)
+
                 table.append(
                     (
                         float(t),
                         float(template.format(uv[0])),
                         float(template.format(uv[1])),
-                        float(template.format(m))
+                        slope,
+                        length,
+                        1 / length,
+                        slope / length
                     )
                 )
             else:
-                table.append((t, uv[0], uv[1], m))
+                length = math.sqrt(1 + m * m)
+                table.append((t, uv[0], uv[1], m, length, 1 / length, m / length))
         return table
 
     def calc_du_dv(
         self,
-        previous: tuple[float, float, float, float],
-        current: tuple[float, float, float, float],
+        previous: tuple[float, float, float, float, float, float, float],
+        current: tuple[float, float, float, float, float, float, float],
         factor: float
     ) -> tuple[float, float]:
         """Calculate the Duv."""
 
         pslope = previous[3]
         slope = current[3]
-
-        # Calculate the slope vectors
-        u1 = 1.0
-        v1 = pslope
-        length = math.sqrt(1.0 + v1 ** 2)
-        u1 /= length
-        v1 /= length
-
-        u2 = 1.0
-        v2 = slope
-        length = math.sqrt(1.0 + v2 ** 2)
-        u2 /= length
-        v2 /= length
+        u1, v1 = previous[5:5 + 2]
+        u2, v2 = current[5:5 + 2]
 
         # Check for discontinuity and adjust accordingly
         if (pslope * slope) < 0:
@@ -133,9 +134,9 @@ class Robertson1968(CCT):
         # Find vector from the locus to our point.
         du = alg.lerp(u2, u1, factor)
         dv = alg.lerp(v2, v1, factor)
-        denom = math.sqrt(du ** 2 + dv ** 2)
-        du /= denom
-        dv /= denom
+        length = math.sqrt(du ** 2 + dv ** 2)
+        du /= length
+        dv /= length
 
         return du, dv
 
@@ -163,15 +164,13 @@ class Robertson1968(CCT):
             if index > 0 and (di <= 0.0 or index == end):
                 # Calculate the required interpolation factor between the two lines
                 previous = self.table[index - 1]
-                pslope = previous[3]
-                current_denom = math.sqrt(1.0 + slope ** 2)
-                previous_denom = math.sqrt(1.0 + pslope ** 2)
-                di /= current_denom
-                dip /= previous_denom
+                di /= current[4]
+                dip /= previous[4]
                 factor = dip / (dip - di)
 
                 # Calculate the temperature. If the mired value is zero, assume infinity.
-                mired = (previous[0] - factor * (previous[0] - current[0]))
+                pmired = previous[0]
+                mired = (pmired - factor * (pmired - current[0]))
                 kelvin = 1.0E6 / mired if mired else math.inf
 
                 # Calculate Duv
