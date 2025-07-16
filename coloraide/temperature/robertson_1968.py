@@ -16,6 +16,7 @@ from .. import cmfs
 from ..temperature import CCT
 from ..types import Vector, VectorLike, AnyColor
 from typing import Any, TYPE_CHECKING
+from dataclasses import dataclass
 
 if TYPE_CHECKING:  #pragma: no cover
     from ..color import Color
@@ -24,6 +25,19 @@ if TYPE_CHECKING:  #pragma: no cover
 MIRED_ORIGINAL = tuple(range(0, 100, 10)) + tuple(range(100, 601, 25))
 # Extended 16 mired points 625 - 1000
 MIRED_EXTENDED = MIRED_ORIGINAL + tuple(range(625, 1001, 25))
+
+
+@dataclass(frozen=True)
+class CCTEntry:
+    """CCT LUT entry."""
+
+    mired: float
+    u: float
+    v: float
+    slope: float
+    slope_length: float
+    du: float
+    dv: float
 
 
 class Robertson1968(CCT):
@@ -52,7 +66,7 @@ class Robertson1968(CCT):
         mired: VectorLike,
         sigfig: int,
         planck_step: int,
-    ) -> list[tuple[float, float, float, float, float, float, float]]:
+    ) -> list[CCTEntry]:
         """
         Generate the necessary table for the Robertson1968 method.
 
@@ -75,7 +89,7 @@ class Robertson1968(CCT):
         """
 
         xyzw = util.xy_to_xyz(white)
-        table = []  # type: list[tuple[float, float, float, float, float, float, float]]
+        table = []  # type: list[CCTEntry]
         to_uv = util.xy_to_uv_1960 if self.CHROMATICITY == 'uv-1960' else util.xy_to_uv
         for t in mired:
             uv1 = to_uv(planck.temp_to_xy_planckian_locus(1e6 / (t - 0.01), cmfs, xyzw, step=planck_step))
@@ -97,7 +111,7 @@ class Robertson1968(CCT):
                 length = math.sqrt(1 + slope * slope)
 
                 table.append(
-                    (
+                    CCTEntry(
                         float(t),
                         float(template.format(uv[0])),
                         float(template.format(uv[1])),
@@ -109,21 +123,23 @@ class Robertson1968(CCT):
                 )
             else:
                 length = math.sqrt(1 + m * m)
-                table.append((t, uv[0], uv[1], m, length, 1 / length, m / length))
+                table.append(CCTEntry(t, uv[0], uv[1], m, length, 1 / length, m / length))
         return table
 
     def calc_du_dv(
         self,
-        previous: tuple[float, float, float, float, float, float, float],
-        current: tuple[float, float, float, float, float, float, float],
+        previous: CCTEntry,
+        current: CCTEntry,
         factor: float
     ) -> tuple[float, float]:
         """Calculate the Duv."""
 
-        pslope = previous[3]
-        slope = current[3]
-        u1, v1 = previous[5:5 + 2]
-        u2, v2 = current[5:5 + 2]
+        pslope = previous.slope
+        slope = current.slope
+        u1 = previous.du
+        v1 = previous.dv
+        u2 = current.du
+        v2 = current.dv
 
         # Check for discontinuity and adjust accordingly
         if (pslope * slope) < 0:
@@ -154,29 +170,29 @@ class Robertson1968(CCT):
             # we would get a positive slope, so to keep logic the
             # same, adjust distance calculation such that negative
             # is still what we are looking for.
-            slope = current[3]
+            slope = current.slope
             if slope < 0:
-                di = (v - current[2]) - slope * (u - current[1])
+                di = (v - current.v) - slope * (u - current.u)
             else:
-                di = (current[2] - v) - slope * (current[1] - u)
+                di = (current.v - v) - slope * (current.u - u)
 
             if index > 0 and (di <= 0.0 or index == end):
                 # Calculate the required interpolation factor between the two lines
                 previous = self.table[index - 1]
-                di /= current[4]
-                dip /= previous[4]
+                di /= current.slope_length
+                dip /= previous.slope_length
                 factor = dip / (dip - di)
 
                 # Calculate the temperature. If the mired value is zero, assume infinity.
-                pmired = previous[0]
-                mired = (pmired - factor * (pmired - current[0]))
+                pmired = previous.mired
+                mired = (pmired - factor * (pmired - current.mired))
                 kelvin = 1.0E6 / mired if mired else math.inf
 
                 # Calculate Duv
                 du, dv = self.calc_du_dv(previous, current, 1 - factor)
                 duv = sign * (
-                    du * (u - alg.lerp(previous[1], current[1], factor)) +
-                    dv * (v - alg.lerp(previous[2], current[2], factor))
+                    du * (u - alg.lerp(previous.u, current.u, factor)) +
+                    dv * (v - alg.lerp(previous.v, current.v, factor))
                 )
 
                 break
@@ -207,19 +223,20 @@ class Robertson1968(CCT):
             future = self.table[index + 1]
 
             # Find the two isotherms that our target temp is between
-            if mired < future[0] or index == end:
+            future_mired = future.mired
+            if mired < future_mired or index == end:
                 # Find relative weight between the two values
-                f = (future[0] - mired) / (future[0] - current[0])
+                f = (future_mired - mired) / (future_mired - current.mired)
 
                 # Interpolate the uv coordinates of our target temperature
-                u = alg.lerp(future[1], current[1], f)
-                v = alg.lerp(future[2], current[2], f)
+                u = alg.lerp(future.u, current.u, f)
+                v = alg.lerp(future.v, current.v, f)
 
                 # Calculate the offset along the slope
                 if duv:
                     # Calculate the sign
-                    slope = future[3]
-                    sign = 1.0 if not (slope * current[3]) < 0 and slope >= 0 else -1.0
+                    slope = future.slope
+                    sign = 1.0 if not (slope * current.slope) < 0 and slope >= 0 else -1.0
 
                     # Adjust the uv by the calculated offset
                     du, dv = self.calc_du_dv(current, future, f)
