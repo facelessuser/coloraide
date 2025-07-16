@@ -102,8 +102,15 @@ class Robertson1968(CCT):
                 d1 = math.sqrt((uv[1] - uv1[1]) ** 2 + (uv[0] - uv1[0]) ** 2)
                 d2 = math.sqrt((uv2[1] - uv[1]) ** 2 + (uv2[0] - uv[0]) ** 2)
                 factor = d1 / (d1 + d2)
-            m1 = -((uv[1] - uv1[1]) / (uv[0] - uv1[0])) ** -1
-            m2 = -((uv2[1] - uv[1]) / (uv2[0] - uv[0])) ** -1
+
+            # Attempt to calculate the slope, if it falls exactly where the slope switch,
+            # There will be a divide by zero, just skip this location.
+            try:
+                m1 = -((uv[1] - uv1[1]) / (uv[0] - uv1[0])) ** -1
+                m2 = -((uv2[1] - uv[1]) / (uv2[0] - uv[0])) ** -1
+            except ZeroDivisionError:  # pragma: no cover
+                continue
+
             m = alg.lerp(m1, m2, factor)
             if sigfig:
                 template = f'{{:.{sigfig}g}}'

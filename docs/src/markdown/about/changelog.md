@@ -25,6 +25,8 @@
 -   **FIX**: Analogous and split complementary harmony results ordered in a more logical configuration.
 -   **FIX**: Fix an issue with some HDR spaces in ray trace gamut mapping.
 -   **FIX**: Fix Duv sign flips and poor precision near inflection points in the Robertson 1968 CCT curve.
+-   **FIX**: Fix an issue where a custom range of mired points for the Robertson 1968 CCT curve can fall exactly where
+    slopes change direction, causing a divide by zero. Catch this case and skip any point that falls in this region.
 
 ## 4.7.2
 
