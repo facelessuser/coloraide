@@ -68,7 +68,7 @@ class Robertson1968(CCT):
         interpolate the values as it will cause a divide by zero in the Planckian locus. In this case, we
         assume a perfect 0.5 (middle) for our interpolation.
 
-        Additionally, we precalucuate a few other things to save time:
+        Additionally, we precalculate a few other things to save time:
         - slope length of unit vector
         - u component of slope unit vector
         - v component of slope unit vector
