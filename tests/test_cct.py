@@ -202,3 +202,23 @@ class TestCCTSpecificCases(util.ColorAsserts, unittest.TestCase):
         cct2, duv2 = Custom('orange').cct()
         assert math.isclose(cct2, 2423.930481644873, rel_tol=1e-11, abs_tol=1e-11)
         assert math.isclose(duv2, 0.008112876273860207, rel_tol=1e-11, abs_tol=1e-11)
+
+    def test_robertson_discontinuity(self):
+        """Test logic around the discontinuity in Robertson approach."""
+
+        from coloraide.temperature import robertson_1968
+        from coloraide import cmfs
+        from coloraide import cat
+
+        class Custom(Color):
+            CCT = 'robertson-1968'
+
+        # Don't use significant figure rounding
+
+        cct = 1625
+        duv = 0.02
+        cct2, duv2 = Color.blackbody('xyz-d65', cct, duv, scale=False).cct()
+
+        assert math.isclose(cct, cct2, rel_tol=0.00001, abs_tol=0.00001)
+        assert math.isclose(duv, duv2, rel_tol=0.00001, abs_tol=0.00001)
+
