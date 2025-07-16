@@ -2,7 +2,6 @@
 import math
 from coloraide.everything import ColorAll as Color
 from coloraide import cmfs
-from coloraide import cat
 from . import util
 import pytest
 import unittest
@@ -138,6 +137,7 @@ class TestCCTSpecificCases(util.ColorAsserts, unittest.TestCase):
         """Test alternate CMFs."""
 
         from coloraide.temperature.ohno_2013 import Ohno2013
+        from coloraide import cat
 
         class Custom(Color):
             CCT = 'ohno-2013'
@@ -205,15 +205,6 @@ class TestCCTSpecificCases(util.ColorAsserts, unittest.TestCase):
 
     def test_robertson_discontinuity(self):
         """Test logic around the discontinuity in Robertson approach."""
-
-        from coloraide.temperature import robertson_1968
-        from coloraide import cmfs
-        from coloraide import cat
-
-        class Custom(Color):
-            CCT = 'robertson-1968'
-
-        # Don't use significant figure rounding
 
         cct = 1625
         duv = 0.02

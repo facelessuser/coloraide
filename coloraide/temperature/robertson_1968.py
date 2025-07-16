@@ -100,10 +100,49 @@ class Robertson1968(CCT):
                 table.append((t, uv[0], uv[1], m))
         return table
 
+    def calc_du_dv(
+        self,
+        previous: tuple[float, float, float, float],
+        current: tuple[float, float, float, float],
+        factor: float
+    ) -> tuple[float, float]:
+        """Calculate the Duv."""
+
+        pslope = previous[3]
+        slope = current[3]
+
+        # Calculate the slope vectors
+        u1 = 1.0
+        v1 = pslope
+        length = math.sqrt(1.0 + v1 ** 2)
+        u1 /= length
+        v1 /= length
+
+        u2 = 1.0
+        v2 = slope
+        length = math.sqrt(1.0 + v2 ** 2)
+        u2 /= length
+        v2 /= length
+
+        # Check for discontinuity and adjust accordingly
+        if (pslope * slope) < 0:
+            rad, ang = math.sqrt(u2 * u2 + v2 * v2), math.atan2(v2, u2) % math.tau
+            ang += math.pi
+            u2, v2 = rad * math.cos(ang), rad * math.sin(ang)
+
+        # Find vector from the locus to our point.
+        du = alg.lerp(u2, u1, factor)
+        dv = alg.lerp(v2, v1, factor)
+        denom = math.sqrt(du ** 2 + dv ** 2)
+        du /= denom
+        dv /= denom
+
+        return du, dv
+
     def to_cct(self, color: Color, **kwargs: Any) -> Vector:
         """Calculate a color's CCT."""
 
-        dip = temp = duv = 0.0
+        dip = kelvin = duv = 0.0
         sign = -1
         u, v = color.split_chromaticity(self.CHROMATICITY)[:-1]
         end = len(self.table) - 1
@@ -131,24 +170,12 @@ class Robertson1968(CCT):
                 dip /= previous_denom
                 factor = dip / (dip - di)
 
-                # Calculate the temperature, if the mired value is zero
-                # assume the maximum temperature of 100000K.
-                d = (previous[0] - factor * (previous[0] - current[0]))
-                temp = 1.0E6 / d if d else math.inf
-
-                # Angle
-                a1 = math.atan2(pslope, 1) % math.tau
-                a2 = math.atan2(slope, 1) % math.tau
-
-                # Check slopes to see if we have a discontinuity and adjust
-                if (slope * pslope) < 0:
-                    a2 = (a2 + math.pi) if a2 < math.pi else (a2 - math.pi)
-
-                # Find vector from the locus to our point.
-                da = alg.lerp(a1, a2, factor)
-                du, dv = math.cos(da), math.sin(da)
+                # Calculate the temperature. If the mired value is zero, assume infinity.
+                mired = (previous[0] - factor * (previous[0] - current[0]))
+                kelvin = 1.0E6 / mired if mired else math.inf
 
                 # Calculate Duv
+                du, dv = self.calc_du_dv(previous, current, 1 - factor)
                 duv = sign * (
                     du * (u - alg.lerp(previous[1], current[1], factor)) +
                     dv * (v - alg.lerp(previous[2], current[2], factor))
@@ -159,7 +186,7 @@ class Robertson1968(CCT):
             # Save distance as previous
             dip = di
 
-        return [temp, duv]
+        return [kelvin, duv]
 
     def from_cct(
         self,
@@ -174,7 +201,7 @@ class Robertson1968(CCT):
         """Calculate a color that satisfies the CCT."""
 
         # Find inverse temperature to use as index.
-        r = 1.0E6 / kelvin
+        mired = 1.0E6 / kelvin
         u = v = 0.0
         end = len(self.table) - 2
 
@@ -182,9 +209,9 @@ class Robertson1968(CCT):
             future = self.table[index + 1]
 
             # Find the two isotherms that our target temp is between
-            if r < future[0] or index == end:
+            if mired < future[0] or index == end:
                 # Find relative weight between the two values
-                f = (future[0] - r) / (future[0] - current[0])
+                f = (future[0] - mired) / (future[0] - current[0])
 
                 # Interpolate the uv coordinates of our target temperature
                 u = alg.lerp(future[1], current[1], f)
@@ -192,37 +219,12 @@ class Robertson1968(CCT):
 
                 # Calculate the offset along the slope
                 if duv:
-                    # Calculate the slope vectors
-                    u1 = 1.0
-                    v1 = current[3]
-                    length = math.sqrt(1.0 + v1 ** 2)
-                    u1 /= length
-                    v1 /= length
-
-                    u2 = 1.0
-                    v2 = future[3]
-                    length = math.sqrt(1.0 + v2 ** 2)
-                    u2 /= length
-                    v2 /= length
-
-                    # Check for discontinuity and adjust accordingly
-                    discontinuity = (current[3] * future[3]) < 0
-                    if discontinuity:
-                        rad, ang = math.sqrt(u2 * u2 + v2 * v2), math.atan2(v2, u2) % math.tau
-                        ang += math.pi
-                        u2, v2 = rad * math.cos(ang), rad * math.sin(ang)
-
                     # Calculate the sign
-                    sign = 1.0 if not discontinuity and future[3] >= 0 else -1.0
-
-                    # Find vector from the locus to our point.
-                    du = alg.lerp(u2, u1, f)
-                    dv = alg.lerp(v2, v1, f)
-                    denom = math.sqrt(du ** 2 + dv ** 2)
-                    du /= denom
-                    dv /= denom
+                    slope = future[3]
+                    sign = 1.0 if not (slope * current[3]) < 0 and slope >= 0 else -1.0
 
                     # Adjust the uv by the calculated offset
+                    du, dv = self.calc_du_dv(current, future, f)
                     u += du * sign * duv
                     v += dv * sign * duv
                 break
