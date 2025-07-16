@@ -59,8 +59,8 @@ class TestOhno2013Color(util.ColorAssertsPyTest):
         """Test CCT methods."""
 
         cct, duv = Color(color).cct()
-        c = Color.blackbody('xyz-d65', cct, duv, scale=False)
-        cct2, duv2 = c.cct()
+        c = Color.blackbody('xyz-d65', cct, duv, scale=False, method='ohno-2013')
+        cct2, duv2 = c.cct(method='ohno-2013')
         assert math.isclose(cct, cct2, rel_tol=0.00001, abs_tol=0.00001)
         assert math.isclose(duv, duv2, rel_tol=0.00001, abs_tol=0.00001)
 
