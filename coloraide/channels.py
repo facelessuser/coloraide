@@ -1,5 +1,7 @@
 """Channels."""
 from __future__ import annotations
+from typing import Callable
+from . import algebra as alg
 
 FLG_ANGLE = 1
 FLG_PERCENT = 2
@@ -16,7 +18,7 @@ class Channel(str):
     offset: float
     bound: bool
     flags: int
-    limit: tuple[float | None, float | None]
+    limit: Callable[[float], float] | None
     nans: float
 
     def __new__(
@@ -27,7 +29,7 @@ class Channel(str):
         mirror_range: bool = False,
         bound: bool = False,
         flags: int = 0,
-        limit: tuple[float | None, float | None] = (None, None),
+        limit: Callable[[float], float] | tuple[float | None, float | None] | None = None,
         nans: float = 0.0
     ) -> Channel:
         """Initialize."""
@@ -40,7 +42,7 @@ class Channel(str):
         obj.offset = 0.0 if mirror else -low
         obj.bound = bound
         obj.flags = flags
-        obj.limit = limit
+        obj.limit = (lambda x, l=limit: alg.clamp(x, l[0], l[1])) if isinstance(limit, tuple) else limit  # type: ignore[misc]
         obj.nans = nans
 
         return obj

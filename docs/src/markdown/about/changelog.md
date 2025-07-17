@@ -8,6 +8,8 @@
     percentages. This matches all other color spaces in ColorAide that use modern CSS serialization syntax. If you rely
     on ColorAide serializing HSL in the non-legacy format with percentage output, simply add `percent=True` when calling
     `to_string()`.
+-   **NEW**: `Channel` object's `limit` parameter can now accept a function to constrain a channel. This can allow for
+    more complex boundary constraint, such as rounding the value as well a channel within a hard boundary range.
 -   **NEW**: CAM16, CAM02, HCT, ZCAM, Hellwig, Luv, and LChuv will no longer force colors to black when lightness is
     zero except when chroma/saturation/colorfulness is also zero. This allows out of gamut colors with lightness of zero
     to properly be seen as out of gamut.
