@@ -93,7 +93,7 @@ class HWBish(Cylindrical):
         return "w"
 
 
-class Labish(Luminant):
+class Labish(Luminant, Prism):
     """Lab-ish color spaces."""
 
 
