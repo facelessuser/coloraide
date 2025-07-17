@@ -24,6 +24,12 @@ from .. import algebra as alg
 BT709 = [0.2126, 0.0722]
 
 
+def digital_round(x: float, env: Environment) -> float:
+    """Rounding for digital values."""
+
+    return alg.clamp(alg.round_half_up(x), 0, env.max_integer_size)
+
+
 class Environment:
     """Environment."""
 
@@ -33,13 +39,14 @@ class Environment:
         kr: float,
         kb: float,
         integer: bool = False,
-        output: str = 'standard',
+        standard: bool = False,
         bit_depth: int = 8
     ) -> None:
         """Initialize."""
 
-        if bit_depth not in (8, 10, 12, 14):
-            raise ValueError(f"Unsupported bit depth of '{bit_depth}'")
+        self.max_integer_size = (1 << bit_depth) - 1
+        self.standard = standard
+        self.integer = integer
 
         # Construct the Y'CbCr matrix
         kg = 1 - kr - kb
@@ -51,33 +58,34 @@ class Environment:
         self.ycbcr_to_rgb = alg.inv(self.rgb_to_ycbcr)
 
         # Standard form which removes negative values and adds headroom/footroom
-        if output == 'standard':
+        if standard:
             self.y_scale = 219 * (1 << (bit_depth - 8))  # type: float
             self.y_offset = 1 << (bit_depth - 4)  # type: float
             self.c_scale = 224 * (1 << (bit_depth - 8))  # type: float
             self.c_offset = 1 << (bit_depth - 1)  # type: float
+
         # Removes negative values but extends values to full range without adding headroom/footroom
-        elif output == 'full':
-            self.y_scale = (1 << bit_depth) - 1
-            self.y_offset = 0
-            self.c_scale = (1 << bit_depth) - 1
-            self.c_offset = 1 << (bit_depth - 1)
-        # Negative values remain unchanged
-        elif output == 'default':
-            self.y_scale = (1 << bit_depth) - 1
-            self.y_offset = 0
-            self.c_scale = (1 << bit_depth) - 1
-            self.c_offset = 0
+        # The default form cannot be in unsigned integer form and must be shifted
         else:
-            raise ValueError(f"Unrecognized output '{output}'")
+            if integer:
+                self.y_scale = self.max_integer_size
+                self.y_offset = 0
+                self.c_scale = self.max_integer_size
+                self.c_offset = 1 << (bit_depth - 1)
+
+            # Floating point should revert to normal
+            else:
+                self.y_scale = self.max_integer_size
+                self.y_offset = 0
+                self.c_scale = self.max_integer_size
+                self.c_offset = 0
 
         # Scale integer range down to 0 - 1
         if not integer:
-            div = (1 << bit_depth) - 1
-            self.y_scale /= div
-            self.y_offset /= div
-            self.c_scale /= div
-            self.c_offset /= div
+            self.y_scale /= self.max_integer_size
+            self.y_offset /= self.max_integer_size
+            self.c_scale /= self.max_integer_size
+            self.c_offset /= self.max_integer_size
 
         # Calculate minimum and maximum ranges for color channels
         self.y_range = [self.y_offset + 0 * self.y_scale, self.y_offset + 1 * self.y_scale]
@@ -89,6 +97,10 @@ class YCbCr(Luminant, Space):
 
     ENV: Environment
 
+    CHANNEL_ALIASES = {
+        'lightness': 'y'
+    }
+
     def lightness_name(self) -> str:
         """Get lightness name."""
 
@@ -97,33 +109,44 @@ class YCbCr(Luminant, Space):
     def is_achromatic(self, coords: Vector) -> bool:
         """Check if color is achromatic."""
 
-        o = self.ENV.c_offset
-        s = self.ENV.c_scale
-        return alg.rect_to_polar((coords[1] - o) / s, (coords[2] - o) / s)[0] < util.ACHROMATIC_THRESHOLD_SM
+        env = self.ENV
+        if env.standard or env.integer:
+            o = env.c_offset
+            s = env.c_scale
+            return alg.rect_to_polar((coords[1] - o) / s, (coords[2] - o) / s)[0] < util.ACHROMATIC_THRESHOLD_SM
+        else:
+            return alg.rect_to_polar(coords[1], coords[2])[0] < util.ACHROMATIC_THRESHOLD_SM
 
     def to_base(self, coords: Vector) -> Vector:
         """To base from oRGB."""
 
-        co = self.ENV.c_offset
-        cs = self.ENV.c_scale
+        env = self.ENV
+        if env.integer:
+            coords = [digital_round(c, env) for c in coords]
+        co = env.c_offset
+        cs = env.c_scale
         coords = [
-            (coords[0] - self.ENV.y_offset) / self.ENV.y_scale,
+            (coords[0] - env.y_offset) / env.y_scale,
             (coords[1] - co) / cs,
             (coords[2] - co) / cs,
         ]
-        return alg.matmul(self.ENV.ycbcr_to_rgb, coords, dims=alg.D2_D1)
+        return alg.matmul(env.ycbcr_to_rgb, coords, dims=alg.D2_D1)
 
     def from_base(self, coords: Vector) -> Vector:
         """From base to oRGB."""
 
-        co = self.ENV.c_offset
-        cs = self.ENV.c_scale
-        coords = alg.matmul(self.ENV.rgb_to_ycbcr, coords, dims=alg.D2_D1)
-        return [
-            self.ENV.y_offset + coords[0] * self.ENV.y_scale,
+        env = self.ENV
+        co = env.c_offset
+        cs = env.c_scale
+        coords = alg.matmul(env.rgb_to_ycbcr, coords, dims=alg.D2_D1)
+        coords = [
+            env.y_offset + coords[0] * env.y_scale,
             co + coords[1] * cs,
             co + coords[2] * cs,
         ]
+        if env.integer:
+            coords = [digital_round(c, env) for c in coords]
+        return coords
 
 
 class YCbCr709(Prism, YCbCr):
@@ -133,10 +156,10 @@ class YCbCr709(Prism, YCbCr):
     NAME = "ycbcr-709"
     SERIALIZE = ("--ycbcr-709",)
     WHITE = WHITES['2deg']['D65']
-    ENV = Environment(kr=BT709[0], kb=BT709[1], bit_depth=8)
+    ENV = Environment(kr=BT709[0], kb=BT709[1], bit_depth=8, standard=True)
     CHANNELS = (
-        Channel("y", ENV.y_range[0], ENV.y_range[1], bound=True),
-        Channel("cb", ENV.c_range[0], ENV.c_range[1], bound=True),
-        Channel("cr", ENV.c_range[0], ENV.c_range[1], bound=True)
+        Channel("y", ENV.y_range[0], ENV.y_range[1], nans=ENV.y_range[0], bound=True),
+        Channel("cb", ENV.c_range[0], ENV.c_range[1], nans=ENV.c_range[0], bound=True),
+        Channel("cr", ENV.c_range[0], ENV.c_range[1], nans=ENV.c_range[0], bound=True)
     )
     GAMUT_CHECK = 'rec709'
