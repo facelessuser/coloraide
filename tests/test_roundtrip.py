@@ -19,7 +19,12 @@ class TestRoundTrip:
     class Color(Base):
         """Local color object."""
 
+    # These spaces don't have a gamut large enough to have good round trip throughout sRGB
     Color.deregister('space:hpluv')
+    # These spaces, since they are digital, don't have the resolution to have good round trip throughout sRGB
+    Color.deregister('space:sycc-8bit')
+    Color.deregister('space:ycbcr709-8bit')
+    Color.deregister('space:ycbcr2020-10bit')
 
     SPACES = dict.fromkeys(Color.CS_MAP, 6)
     # Not as accurate due to approximation back to CAM16
@@ -87,9 +92,13 @@ class TestAchromaticRoundTrip(TestRoundTrip):
     class Color(Base):
         """Local color object."""
 
-    Color.deregister('space:hpluv')
+    # These spaces don't have a gamut large enough to have good round trip throughout sRGB
     Color.deregister('space:ryb')
     Color.deregister('space:ryb-biased')
+    # These spaces, since they are digital, don't have the resolution to have good round trip throughout sRGB
+    Color.deregister('space:sycc-8bit')
+    Color.deregister('space:ycbcr709-8bit')
+    Color.deregister('space:ycbcr2020-10bit')
 
     SPACES = dict.fromkeys(Color.CS_MAP, 6)
 
