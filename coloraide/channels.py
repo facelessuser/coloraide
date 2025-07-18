@@ -18,7 +18,7 @@ class Channel(str):
     offset: float
     bound: bool
     flags: int
-    limit: Callable[[float], float] | None
+    limit: Callable[[float], float | int]
     nans: float
 
     def __new__(
@@ -26,10 +26,9 @@ class Channel(str):
         name: str,
         low: float,
         high: float,
-        mirror_range: bool = False,
         bound: bool = False,
         flags: int = 0,
-        limit: Callable[[float], float] | tuple[float | None, float | None] | None = None,
+        limit: Callable[[float], float | int] | tuple[float | None, float | None] | None = None,
         nans: float = 0.0
     ) -> Channel:
         """Initialize."""
@@ -42,7 +41,15 @@ class Channel(str):
         obj.offset = 0.0 if mirror else -low
         obj.bound = bound
         obj.flags = flags
-        obj.limit = (lambda x, l=limit: alg.clamp(x, l[0], l[1])) if isinstance(limit, tuple) else limit  # type: ignore[misc]
+        # If nothing is provided, assume casting to float
+        if limit is None:
+            obj.limit = float
+        # Support legacy limit which takes a tuple of min/max range and constrains to that in floating point
+        elif isinstance(limit, tuple):
+            obj.limit = lambda x, l=limit: float(alg.clamp(x, l[0], l[1]))  # type: ignore[misc]
+        # Use provided limiting function
+        else:
+            obj.limit = limit
         obj.nans = nans
 
         return obj

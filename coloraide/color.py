@@ -221,12 +221,10 @@ class Color(metaclass=ColorMeta):
         space = self._space
         if isinstance(i, slice):
             for index, value in zip(range(len(self._coords))[i], v):  # type: ignore[arg-type]
-                limit = space.channels[index].limit
-                self._coords[index] = float(limit(value) if limit is not None else value)
+                self._coords[index] = space.channels[index].limit(value)
         else:
             index = space.get_channel_index(i) if isinstance(i, str) else i
-            limit = space.channels[index].limit
-            self._coords[index] = float(limit(v) if limit is not None else v)  # type: ignore[arg-type]
+            self._coords[index] = space.channels[index].limit(v)  # type: ignore[arg-type]
 
     def __eq__(self, other: Any) -> bool:
         """Compare equal."""
@@ -259,9 +257,8 @@ class Color(metaclass=ColorMeta):
                 num_data = len(data)
                 if num_data < num_channels:
                     data = [*data, *[math.nan] * (num_channels - num_data)]
-                coords = [float(c.limit(v) if c.limit is not None else v) for c, v in zipl(space_class.CHANNELS, data)]
-                limit = space_class.channels[-1].limit
-                coords.append(float(limit(alpha) if limit is not None else alpha))
+                coords = [c.limit(v) for c, v in zipl(space_class.CHANNELS, data)]
+                coords.append(space_class.channels[-1].limit(alpha))
                 obj = space_class, coords
 
             # Parse a CSS string
@@ -269,9 +266,8 @@ class Color(metaclass=ColorMeta):
                 m = cls._match(color, fullmatch=True)
                 if m is None:
                     raise ValueError(f"'{color}' is not a valid color")
-                coords = [float(c.limit(v) if c.limit is not None else v) for c, v in zipl(m[0].CHANNELS, m[1])]
-                limit = m[0].channels[-1].limit
-                coords.append(float(limit(m[2]) if limit is not None else m[2]))
+                coords = [c.limit(v) for c, v in zipl(m[0].CHANNELS, m[1])]
+                coords.append(m[0].channels[-1].limit(m[2]))
                 obj = m[0], coords
 
         # Handle a color instance
