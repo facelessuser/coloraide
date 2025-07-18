@@ -85,13 +85,22 @@ models = {
     'cubehelix': {'title': TEMPLATE.format('Cubehelix'), 'filename': 'cubehelix-3d.png'},
     'zcam-jmh': {'title': TEMPLATE.format('ZCAM JMh'), 'filename': 'zcam-jmh-3d.png', 'azim': 320},
     'sycc': {'title': TEMPLATE.format('sYCC'), 'filename': 'sycc-3d.png', 'gamut': 'srgb'},
-    'ycbcr-709': {
-        'title': "Rec. 709 Gamut Plotted in Y'CbCr ITU-R BT.709 Color Space",
-        'filename': 'ycbcr-709-3d.png', 'gamut': 'rec709'
+    'ypbpr709': {
+        'title': "Rec. 709 Gamut Plotted in YPbPr ITU-R BT.709 Color Space",
+        'filename': 'ypbpr709-3d.png', 'gamut': 'rec709'
     },
-    'ycbcr-2020': {
-        'title': "Rec. 2020 Gamut Plotted in Y'CbCr ITU-R BT.2020 Color Space",
-        'filename': 'ycbcr-2020-3d.png', 'gamut': 'rec2020'
+    'ypbpr2020': {
+        'title': "Rec. 2020 Gamut Plotted in YPbPr ITU-R BT.2020 Color Space",
+        'filename': 'ypbpr2020-3d.png', 'gamut': 'rec2020'
+    },
+    'sycc-8bit': {'title': TEMPLATE.format('sYCC (8 Bit)'), 'filename': 'sycc-8bit-3d.png', 'gamut': 'srgb'},
+    'ycbcr709-8bit': {
+        'title': "Rec. 709 Gamut Plotted in YCbCr (8 BIT) ITU-R BT.709 Color Space",
+        'filename': 'ycbcr709-8bit-3d.png', 'gamut': 'rec709'
+    },
+    'ycbcr2020-10bit': {
+        'title': "Rec. 2020 Gamut Plotted in YCbCr (10 BIT) ITU-R BT.2020 Color Space",
+        'filename': 'ycbcr2020-10bit-3d.png', 'gamut': 'rec2020'
     }
 }
 
