@@ -35,6 +35,9 @@ from .spaces.zcam import ZCAMJMh
 from .spaces.hct import HCT
 from .spaces.ucs import UCS
 from .spaces.rec709 import Rec709
+from .spaces.ycbcr709 import YPbPr709, YCbCr709
+from .spaces.ycbcr2020 import YPbPr2020, YCbCr2020
+from .spaces.sycc import sYCC, sYCC8
 from .spaces.ryb import RYB, RYBBiased
 from .spaces.cubehelix import Cubehelix
 from .distance.delta_e_99o import DE99o
@@ -101,6 +104,12 @@ ColorAll.register(
         RYBBiased(),
         Cubehelix(),
         ZCAMJMh(),
+        sYCC(),
+        YPbPr709(),
+        YPbPr2020(),
+        sYCC8(),
+        YCbCr709(),
+        YCbCr2020(),
 
         # Delta E
         DE99o(),
