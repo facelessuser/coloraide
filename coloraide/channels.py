@@ -43,13 +43,11 @@ class Channel(str):
         obj.flags = flags
         # If nothing is provided, assume casting to float
         if limit is None:
-            obj.limit = float
-        # Support legacy limit which takes a tuple of min/max range and constrains to that in floating point
+            limit = float
+        # If a tuple of min/max is provided, create a function to clamp to the range
         elif isinstance(limit, tuple):
-            obj.limit = lambda x, l=limit: float(alg.clamp(x, l[0], l[1]))  # type: ignore[misc]
-        # Use provided limiting function
-        else:
-            obj.limit = limit
+            limit = lambda x, l=limit: float(alg.clamp(x, l[0], l[1]))  # type: ignore[misc]
+        obj.limit = limit
         obj.nans = nans
 
         return obj
