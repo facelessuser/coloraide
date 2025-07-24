@@ -76,7 +76,7 @@ class Environment:
         Clamping is then applied to keep the value within the target integer type.
         """
 
-        return alg.clamp(int(alg.sign(x) * math.floor(abs(x) + 5)), 0, self.max_integer_size)
+        return alg.clamp(int(alg.sign(x) * math.floor(abs(x) + 0.5)), 0, self.max_integer_size)
 
 
 class YPbPr(Labish, Space):
