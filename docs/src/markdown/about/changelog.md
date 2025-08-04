@@ -3,13 +3,13 @@
 ## 5.0
 
 -   **BREAKING**: CSS serialization no longer requires HSL and HWB to return percentage form during serialization when
-    using the non-legacy (no comma) syntax. For consistency, HSL and HWB will only return percentage form with
-    non-legacy serialization when `percent` is set `True` by user. Legacy format will still format strings with
+    using the non-legacy (no comma) syntax. For consistency, HSL and HWB will only return the percentage form with
+    non-legacy serialization when `percent` is set `True` by the user. The legacy format will still format strings with
     percentages. This matches all other color spaces in ColorAide that use modern CSS serialization syntax. If you rely
     on ColorAide serializing HSL in the non-legacy format with percentage output, simply add `percent=True` when calling
     `to_string()`.
 -   **NEW**: `Channel` object's `limit` parameter can now accept a function to constrain a channel. This can allow for
-    more complex boundary constraint, such as rounding the value as well a channel within a hard boundary range.
+    more complex boundary constraints, such as rounding the value in addition to channels with a hard boundary ranges.
 -   **NEW**: CAM16, CAM02, HCT, ZCAM, Hellwig, Luv, and LChuv will no longer force colors to black when lightness is
     zero except when chroma/saturation/colorfulness is also zero. This allows out of gamut colors with lightness of zero
     to properly be seen as out of gamut.
