@@ -78,13 +78,7 @@ def xy_to_uv_1960(xy: VectorLike) -> Vector:
 
     x, y = xy
     denom = (12 * y - 2 * x + 3)
-    if denom != 0:
-        u = (4 * x) / denom
-        v = (6 * y) / denom
-    else:
-        u = v = 0
-
-    return [u, v]
+    return [0.0, 0.0] if denom == 0 else [(4 * x) / denom, (6 * y) / denom]
 
 
 def uv_1960_to_xy(uv: VectorLike) -> Vector:
@@ -92,13 +86,7 @@ def uv_1960_to_xy(uv: VectorLike) -> Vector:
 
     u, v = uv
     denom = (2 * u - 8 * v + 4)
-    if denom != 0:
-        x = (3 * u) / denom
-        y = (2 * v) / denom
-    else:
-        x = y = 0
-
-    return [x, y]
+    return [0.0, 0.0] if denom == 0 else [(3 * u) / denom, (2 * v) / denom]
 
 
 def pq_st2084_oetf(
@@ -134,7 +122,7 @@ def pq_st2084_eotf(
     adjusted = []
     for c in values:
         c = alg.spow(c, im2)
-        adjusted.append(10000 * alg.spow(max((c - c1), 0) / (c2 - c3 * c), im1))
+        adjusted.append(10000 * alg.spow((c - c1) / (c2 - c3 * c), im1))
     return adjusted
 
 

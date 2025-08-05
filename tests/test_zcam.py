@@ -125,7 +125,7 @@ class TestSpecialCases(util.ColorAsserts, unittest.TestCase):
         c = Color('color(--zcam-jmh 0 20 30)')
         c2 = c.convert('srgb')
         self.assertEqual(c2.in_gamut(tolerance=0), False)
-        self.assertColorEqual(c2, Color('rgb(26.501 -12.907 0.36996)'))
+        self.assertColorEqual(c2, Color('rgb(26.5 -12.906 0.36673)'))
 
 
 class TestsAchromatic(util.ColorAsserts, unittest.TestCase):
@@ -235,7 +235,7 @@ class TestZCAMApperanceModel(util.ColorAsserts, unittest.TestCase):
 
         for a, b in zip(
             zcam_to_xyz(Qz=0, Mz=self.COORDS.Mz, hz=self.COORDS.hz, env=ZCAMJMh.ENV),
-            [0.01850871672409, -0.01746007126696, 0.12181968332865]
+            [0.01850774016452, -0.01745988018649, 0.12181973680859]
         ):
             self.assertCompare(a, b, 14)
 

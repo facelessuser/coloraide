@@ -254,11 +254,9 @@ def zcam_to_xyz(
 
     # Black?
     if Jz == 0.0:
-        Jz = alg.EPS
         if not any((Cz, Mz, Sz, Vz, Kz, Wz)):
             return [0.0, 0.0, 0.0]
     if Qz == 0.0:
-        Qz = alg.EPS
         if not any((Cz, Mz, Sz, Vz, Kz, Wz)):
             return [0.0, 0.0, 0.0]
 
@@ -289,11 +287,11 @@ def zcam_to_xyz(
     if Sz is not None:
         Cz = Qz * Sz ** 2 / (100 * env.qzw * env.fl ** 1.2)
     elif Vz is not None:
-        Cz = math.sqrt((Vz ** 2 - (Jz - 58) ** 2) / 3.4)
+        Cz = alg.nth_root((Vz ** 2 - (Jz - 58) ** 2) / 3.4, 2)
     elif Kz is not None:
-        Cz = math.sqrt((((Kz - 100) / - 0.8) ** 2 - (Jz ** 2)) / 8)
+        Cz = alg.nth_root((((Kz - 100) / - 0.8) ** 2 - (Jz ** 2)) / 8, 2)
     elif Wz is not None:
-        Cz = math.sqrt((Wz - 100) ** 2 - (100 - Jz) ** 2)
+        Cz = alg.nth_root((Wz - 100) ** 2 - (100 - Jz) ** 2, 2)
 
     if Cz is not None:
         Mz = (Cz / 100) * env.qzw
