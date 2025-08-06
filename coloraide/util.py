@@ -122,7 +122,7 @@ def pq_st2084_eotf(
     adjusted = []
     for c in values:
         c = alg.spow(c, im2)
-        adjusted.append(10000 * alg.spow((c - c1) / (c2 - c3 * c), im1))
+        adjusted.append(10000 * alg.spow(max((c - c1), 0) / (c2 - c3 * c), im1))
     return adjusted
 
 
