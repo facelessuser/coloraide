@@ -265,7 +265,7 @@ def cam_to_xyz(
     if C is not None:
         alpha = C / J_root
     elif M is not None:
-        alpha = (M / env.fl_root) / J_root
+        alpha = M / env.fl_root / J_root
     elif s is not None:
         alpha = 0.0004 * (s ** 2) * (env.a_w + 4) / env.c
     t = alg.spow(alpha * math.pow(1.64 - math.pow(0.29, env.n), -0.73), 10 / 9)

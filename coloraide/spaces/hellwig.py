@@ -173,11 +173,9 @@ def cam_to_xyz(
 
     # Black?
     if J == 0.0:
-        J = alg.EPS
         if not any((C, M, s)):
             return [0.0, 0.0, 0.0]
     if Q == 0.0:
-        Q = alg.EPS
         if not any((C, M, s)):
             return [0.0, 0.0, 0.0]
 

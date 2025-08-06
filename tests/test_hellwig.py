@@ -206,7 +206,7 @@ class TestHellwigApperanceModel(util.ColorAsserts, unittest.TestCase):
 
         for a, b in zip(
             cam_to_xyz(Q=0, M=self.COORDS.M, h=self.COORDS.h, env=HellwigJMh.ENV),
-            [-0.00561722983796, -0.00135510306102, -0.08167951639681]
+            [-0.00561722983796, -0.00135510306102, -0.08167951639685]
         ):
             self.assertCompare(a, b, 14)
 
