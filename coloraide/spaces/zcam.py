@@ -252,11 +252,8 @@ def zcam_to_xyz(
     if env is None:
         raise ValueError("No viewing conditions/environment provided")
 
-    # Black?
-    if Jz == 0.0:
-        if not any((Cz, Mz, Sz, Vz, Kz, Wz)):
-            return [0.0, 0.0, 0.0]
-    if Qz == 0.0:
+    # Shortcut out if black?
+    if Jz == 0.0 or Qz == 0.0:
         if not any((Cz, Mz, Sz, Vz, Kz, Wz)):
             return [0.0, 0.0, 0.0]
 

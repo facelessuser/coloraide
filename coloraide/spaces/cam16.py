@@ -236,7 +236,9 @@ def cam_to_xyz(
     if env is None:
         raise ValueError("No viewing conditions/environment provided")
 
-    # Black?
+    # Shortcut out if black.
+    # If lightness is zero, but chroma/colorfulness/saturation is not zero,
+    # Set J to a very small value to avoid divisions by zero.
     if J == 0.0:
         J = alg.EPS
         if not any((C, M, s)):

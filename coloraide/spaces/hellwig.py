@@ -171,11 +171,8 @@ def cam_to_xyz(
     if env is None:
         raise ValueError("No viewing conditions/environment provided")
 
-    # Black?
-    if J == 0.0:
-        if not any((C, M, s)):
-            return [0.0, 0.0, 0.0]
-    if Q == 0.0:
+    # Shortcut out if black?
+    if J == 0.0 or Q == 0:
         if not any((C, M, s)):
             return [0.0, 0.0, 0.0]
 
