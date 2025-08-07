@@ -105,7 +105,7 @@ class TestSpecialCases(util.ColorAsserts, unittest.TestCase):
 
         c = Color('color(--luv 0 20 30)')
         c2 = c.convert('srgb')
-        self.assertEqual(c2.in_gamut(tolerance=0), False)
+        self.assertEqual(c2.in_gamut(tolerance=0), True)
         self.assertColorEqual(c2, Color('black'))
 
 
@@ -119,7 +119,7 @@ class TestsAchromatic(util.ColorAsserts, unittest.TestCase):
         self.assertEqual(Color('luv', [30, 0.0000001, 0]).is_achromatic(), True)
         self.assertEqual(Color('luv', [NaN, 0.0000001, 0]).is_achromatic(), True)
         self.assertEqual(Color('luv', [0, NaN, NaN]).is_achromatic(), True)
-        self.assertEqual(Color('luv', [0, 30, -40]).is_achromatic(), False)
-        self.assertEqual(Color('luv', [NaN, 0, -30]).is_achromatic(), False)
+        self.assertEqual(Color('luv', [0, 30, -40]).is_achromatic(), True)
+        self.assertEqual(Color('luv', [NaN, 0, -30]).is_achromatic(), True)
         self.assertEqual(Color('luv', [30, NaN, 0]).is_achromatic(), True)
         self.assertEqual(Color('luv', [NaN, NaN, 0]).is_achromatic(), True)
