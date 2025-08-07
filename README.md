@@ -1,5 +1,4 @@
 [![Donate via PayPal][donate-image]][donate-link]
-[![Build][github-ci-image]][github-ci-link]
 [![Coverage Status][codecov-image]][codecov-link]
 [![PyPI Version][pypi-image]][pypi-link]
 [![PyPI Downloads][pypi-down]][pypi-link]
@@ -55,8 +54,6 @@ https://facelessuser.github.io/coloraide
 
 MIT
 
-[github-ci-image]: https://github.com/facelessuser/coloraide/workflows/build/badge.svg
-[github-ci-link]: https://github.com/facelessuser/coloraide/actions?query=workflow%3Abuild+branch%3Amain
 [codecov-image]: https://img.shields.io/codecov/c/github/facelessuser/coloraide/main.svg?logo=codecov&logoColor=aaaaaa&labelColor=333333
 [codecov-link]: https://codecov.io/github/facelessuser/coloraide
 [pypi-image]: https://img.shields.io/pypi/v/coloraide.svg?logo=pypi&logoColor=aaaaaa&labelColor=333333
