@@ -12,8 +12,7 @@
     more complex boundary constraints, such as rounding the value in addition to channels with a hard boundary ranges.
 -   **NEW**: CAM16, CAM02, HCT, ZCAM, and Hellwig will no longer force colors to black when lightness is zero except
     when chroma/saturation/colorfulness is also zero. This allows out of gamut colors with lightness of zero
-    to properly be seen as out of gamut. Accuracy with round trips of colors in these ranges is dependent upon the color
-    space algorithm and how well it already handles zero lightness or can be mitigated to avoid zero division.
+    to properly be seen as out of gamut.
 -   **NEW**: Add new `Luminant` mixin for color spaces which allows for internally targeting spaces that expose a
     lightness component.
 -   **NEW**: Rename `Regular` space mixin as `Prism` for a more appropriate description. `Regular` is still available
