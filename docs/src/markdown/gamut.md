@@ -511,14 +511,14 @@ color spaces/models that do not map to an obvious RGB gamut.
 HPLuv, which is only defined as a cylindrical color space that represent only a subset of the sRGB color space, has no
 defined RGB gamut on which to operate on. Additionally Okhsl and Okhsv are two cylindrical color spaces, based on the
 perceptual Oklab color space, that are meant to target the sRGB gamut, but are only a loose approximation which actually
-can slightly clip the sRGB gamut while simultaneously containing a few colors that exceed the sRGB gamut. ColorAide will
-not automatically associate these color spaces with an RGB gamut as their is not one that precisely represent the colors
-in Okhsl and Okhsv.
+can slightly clip the sRGB gamut while simultaneously containing a few colors that exceed the sRGB gamut.
 
-With that said, ColorAide will translate these spaces into a cube shape to apply gamut mapping on them if they are
-specifically used. In the case of HPLuv, results are usually fine, but you may find that gamut mapping Okhsl
-may not provide the intended results. It should be noted that the currently suggested CSS gamut mapping algorithm
-(`oklch-chroma`) does not do much better, so, for Okhsl and Okhsv, it is better to use the closest RGB gamut.
+ColorAide will _not_ automatically associate HPLuv, Okhsl or Okhsv with an RGB gamut as there is not one that precisely
+represent the colors in Okhsl and Okhsv. With that said, ColorAide _will_ translate these spaces into a cube shape to
+apply gamut mapping on them if they are specifically used. In the case of HPLuv, results are usually fine, but you may
+find that gamut mapping Okhsl may not provide the intended results. It should be noted that the currently suggested CSS
+gamut mapping algorithm (`oklch-chroma`) does not do much better, so, for Okhsl and Okhsv, it is better to use the
+closest RGB gamut.
 
 ```py play
 Steps([c.fit('okhsl', method='raytrace') for c in Color.steps(['oklch(90% 0.4 0)', 'oklch(90% 0.4 360)'], steps=100, space='oklch', hue='longer')])
