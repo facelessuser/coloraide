@@ -307,11 +307,13 @@ class RayTrace(Fit):
                 end = to_polar(achroma[:-1], a, b)
                 end[b] = start[b]
 
+            # Offset is required for some perceptual spaces that are senstive
+            # to anchors that get too close to the surface.
+            offset = 1e-15
+
             # Use an iterative process of casting rays to find the intersect with the RGB gamut
             # and correcting the intersection onto the LCh chroma reduction path.
-            last = None
-            offset = 1e-15
-            mapcolor.convert(space, in_place=True)
+            last = mapcolor.convert(space, in_place=True)[:-1]
             for i in range(4):
                 if i:
                     coords = mapcolor.convert(pspace, in_place=True, norm=False)[:-1]
@@ -350,10 +352,8 @@ class RayTrace(Fit):
                     mapcolor[:-1] = last
                     continue
 
-                # If we cannot find an intersection, reset to last known intersection
-                if last is not None:
-                    mapcolor[:-1] = last
-
+                # If we cannot find an intersection, reset to last good color
+                mapcolor[:-1] = last
                 break  # pragma: no cover
 
             # Remove noise from floating point conversion.
