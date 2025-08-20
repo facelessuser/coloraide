@@ -43,11 +43,10 @@ Channels | Aliases
 
 ## Input/Output
 
-Linear Display P3 is not supported via the CSS spec and the parser input and string output only supports the
-`#!css-color color()` function format using the custom name `#!css-color --display-p3-linear`:
+Parsed input and string output formats support all valid CSS forms:
 
 ```css-color
-color(--display-p3-linear r g b / a)  // Color function
+color(display-p3-linear r g b / a)  // Color function
 ```
 
 When manually creating a color via raw data or specifying a color space as a parameter in a function, the color
@@ -58,7 +57,7 @@ Color("display-p3-linear", [0, 0, 0], 1)
 ```
 
 The string representation of the color object and the default string output will be in the
-`#!css-color color(--display-p3-linear r g b / a)` form.
+`#!css-color color(display-p3-linear r g b / a)` form.
 
 ```py play
 Color("display-p3-linear", [0.82246, 0.03319, 0.01708])

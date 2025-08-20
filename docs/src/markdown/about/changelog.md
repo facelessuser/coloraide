@@ -1,5 +1,11 @@
 # Changelog
 
+## 5.1
+
+-   **NEW**: Linear Display P3 is now serialized as the official CSS color name `color(display-p3-linear ...)` which
+    matches recent spec updates. `color(--display-p3-linear ...)` is still accepted as an input, but ColorAide will not
+    use this serialization on output and support for the old name will be removed at some future time.
+
 ## 5.0
 
 -   **BREAKING**: CSS serialization no longer requires HSL and HWB to return percentage form during serialization when
