@@ -307,7 +307,7 @@ class RayTrace(Fit):
                 end = to_polar(achroma[:-1], a, b)
                 end[b] = start[b]
 
-            # Offset is required for some perceptual spaces that are senstive
+            # Offset is required for some perceptual spaces that are sensitive
             # to anchors that get too close to the surface.
             offset = 1e-15
 
