@@ -22,7 +22,7 @@ TO_LMS = [
 ]
 FROM_LMS = alg.inv(TO_LMS)
 
-# IAB transformation matrices
+# Iab transformation matrices
 TO_IAB = [
     alg.divide([200.0, 100.0, 5.0], 3.05, dims=alg.D1_SC),
     [430.0, -470.0, 40.0],
@@ -182,8 +182,8 @@ def scam_to_xyz(
 
     # Calculate hue
     if h is not None:
-        h %= 360
-    if h is None and H is not None:
+        h = h % 360
+    elif H is not None:
         h = inv_hue_quadrature(H)
 
     # Calculate `I` from one of the lightness derived coordinates.
@@ -204,11 +204,11 @@ def scam_to_xyz(
     elif V is not None:
         C = alg.nth_root((V ** 2 - Ia ** 2) / 3, 2)
     elif M is not None:
-        et = eccentricity(h)
+        et = eccentricity(h)  # type: ignore[arg-type]
         C = M * alg.spow(Ia, 0.27) / ((env.fl ** 0.1) * et * env.fm)
 
     # Convert to XYZ from sUCS
-    return sucs_to_xyz([I, C, h])
+    return sucs_to_xyz([I, C, h])  # type: ignore[list-item]
 
 
 def xyz_to_scam(xyz: Vector, env: Environment, calc_hue_quadrature: bool = True) -> Vector:

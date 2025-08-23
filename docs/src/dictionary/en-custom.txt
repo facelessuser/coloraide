@@ -102,6 +102,7 @@ ICtCp
 IPT
 ITP
 ITU
+Iab
 IgPgTg
 Illuminant
 Interpolator
@@ -359,7 +360,9 @@ reflectance
 reflectances
 repurpose
 rgb
+sCAM
 sRGB
+sUCS
 seperable
 severities
 smoothstep
