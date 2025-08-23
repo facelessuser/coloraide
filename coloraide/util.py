@@ -153,7 +153,7 @@ def scale100(coords: Vector) -> Vector:
 
 
 def scale1(coords: Vector) -> Vector:
-    """Scale from 1 to 100."""
+    """Scale from 100 to 1."""
 
     return [c * 0.01 for c in coords]
 
