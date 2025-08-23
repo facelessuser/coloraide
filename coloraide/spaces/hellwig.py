@@ -18,7 +18,7 @@ from __future__ import annotations
 import math
 from .cam16 import (
     M16,
-    MI6_INV,
+    M16_INV,
     M1,
     adapt,
     unadapt,
@@ -222,7 +222,7 @@ def cam_to_xyz(
     # Calculate back from cone response to XYZ
     rgb_a = alg.multiply_x3(alg.matmul_x3(M1, [p2, a, b], dims=alg.D2_D1), 1 / 1403, dims=alg.D1_SC)
     rgb_c = unadapt(rgb_a, env.fl)
-    return util.scale1(alg.matmul_x3(MI6_INV, alg.multiply_x3(rgb_c, env.d_rgb_inv, dims=alg.D1), dims=alg.D2_D1))
+    return util.scale1(alg.matmul_x3(M16_INV, alg.multiply_x3(rgb_c, env.d_rgb_inv, dims=alg.D1), dims=alg.D2_D1))
 
 
 def xyz_to_cam(xyz: Vector, env: Environment, calc_hue_quadrature: bool = False) -> Vector:

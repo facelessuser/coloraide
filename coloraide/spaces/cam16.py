@@ -19,7 +19,7 @@ from ..types import Vector, VectorLike
 
 # CAT16
 M16 = CAT16.MATRIX
-MI6_INV = [
+M16_INV = [
     [1.8620678550872327, -1.0112546305316843, 0.14918677544445175],
     [0.38752654323613717, 0.6214474419314753, -0.008973985167612518],
     [-0.015841498849333856, -0.03412293802851557, 1.0499644368778496]
@@ -290,7 +290,7 @@ def cam_to_xyz(
     # Calculate back from cone response to XYZ
     rgb_a = alg.multiply_x3(alg.matmul_x3(M1, [p2, a, b], dims=alg.D2_D1), 1 / 1403, dims=alg.D1_SC)
     rgb_c = unadapt(rgb_a, env.fl)
-    return util.scale1(alg.matmul_x3(MI6_INV, alg.multiply_x3(rgb_c, env.d_rgb_inv, dims=alg.D1), dims=alg.D2_D1))
+    return util.scale1(alg.matmul_x3(M16_INV, alg.multiply_x3(rgb_c, env.d_rgb_inv, dims=alg.D1), dims=alg.D2_D1))
 
 
 def xyz_to_cam(xyz: Vector, env: Environment, calc_hue_quadrature: bool = False) -> Vector:
