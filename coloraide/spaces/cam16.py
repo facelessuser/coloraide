@@ -248,7 +248,7 @@ def cam_to_xyz(
         if not any((C, M, s)):
             return [0.0, 0.0, 0.0]
 
-    # Break hue into Cartesian components
+    # Calculate hue
     h_rad = 0.0
     if h is not None:
         h_rad = math.radians(h % 360)
