@@ -32,6 +32,7 @@ from .spaces.cam16 import CAM16JMh
 from .spaces.cam16_ucs import CAM16UCS, CAM16LCD, CAM16SCD
 from .spaces.hellwig import HellwigJMh, HellwigHKJMh
 from .spaces.zcam import ZCAMJMh
+from .spaces.scam import sCAMJMh
 from .spaces.hct import HCT
 from .spaces.ucs import UCS
 from .spaces.rec709 import Rec709
@@ -107,6 +108,7 @@ ColorAll.register(
         ZCAMJMh(),
         Rec2020OETF(),
         Msh(),
+        sCAMJMh(),
 
         # Delta E
         DE99o(),
