@@ -5,7 +5,6 @@ https://opg.optica.org/oe/fulltext.cfm?uri=oe-32-3-3100&id=545619
 """
 from __future__ import annotations
 import math
-import bisect
 from .. import util
 from .. import algebra as alg
 from .lch import LCh
@@ -255,7 +254,7 @@ def xyz_to_scam_jmh(xyz: Vector, env: Environment) -> Vector:
 
 
 def scam_jmh_to_xyz(jmh: Vector, env: Environment) -> Vector:
-    """sCAM JMh to XYZ."""
+    """Convert sCAM JMh to XYZ."""
 
     J, M, h = jmh
     return scam_to_xyz(J=J, M=M, h=h, env=env)
