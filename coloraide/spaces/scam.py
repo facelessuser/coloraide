@@ -11,7 +11,7 @@ from .lch import LCh
 from ..cat import WHITES
 from ..channels import Channel, FLG_ANGLE
 from ..types import Vector, VectorLike
-from .cam16 import hue_quadrature, inv_hue_quadrature
+from .cam16 import hue_quadrature, inv_hue_quadrature, M16, M16_INV
 
 # LMS matrices
 TO_LMS = [
@@ -47,6 +47,24 @@ def eccentricity(h: float) -> float:
     """Calculate eccentricity."""
 
     return 1 + 0.06 * math.cos(math.radians(110 + h))
+
+
+def adapt(xyz: Vector, xyz_ws: Vector, xyz_wd: Vector, d: float) -> Vector:
+    """
+    Adapt using CAT16 matrix but using CAM02 degree of adaptatin.
+
+    This was proposed by one of the authors Li, Molin in the Colour project:
+    https://github.com/colour-science/colour/pull/1349#issuecomment-3058339414
+    """
+
+    lms = alg.matmul_x3(M16, xyz, dims=alg.D2_D1)
+    lms_ws = alg.matmul_x3(M16, xyz_ws, dims=alg.D2_D1)
+    lms_wd = alg.matmul_x3(M16, xyz_wd, dims=alg.D2_D1)
+
+    y_ratio = xyz_ws[1] / xyz_wd[1]
+    lms_r = alg.divide_x3(lms_wd, lms_ws, dims=alg.D1)
+    lms_a = [lms[r] * (d * y_ratio * lms_r[r] + (1 - d)) for r in range(3)]
+    return alg.matmul_x3(M16_INV, lms_a, dims=alg.D2_D1)
 
 
 class Environment:
@@ -99,7 +117,6 @@ class Environment:
 
         self.discounting = discounting
         self.ref_white = util.xy_to_xyz(white)
-        self.output_white = util.xy_to_xyz(WHITES['2deg']['D65'])
         self.surround = surround
 
         # The average luminance of the environment in `cd/m^2cd/m` (a.k.a. nits)
@@ -107,17 +124,25 @@ class Environment:
         # The relative luminance of the nearby background
         self.yb = background_luminance
         # Absolute luminance of the reference white.
-        xyz_w = util.scale100(self.ref_white)
-        self.yw = xyz_w[1]
+        self.input_white = util.scale100(self.ref_white)
+        self.yw = self.input_white[1]
+        # Destination luminance
+        self.output_white = alg.multiply_x3(
+            util.xy_to_xyz(WHITES['2deg']['D65']),
+            (self.la * 100) / self.yb,
+            dims=alg.D1_SC
+        )
 
         # Surround: dark, dim, and average
         self.c, self.fm = SURROUND[self.surround]
 
-        # Factor of luminance level adaptation
         self.fl = 0.1710 * (self.la ** (1 / 3)) * (1 / (1 - 0.4934 * math.exp(-0.9934 * self.la)))
         self.n = self.yb / self.yw
         self.z = 1.48 + math.sqrt(self.n)
         self.cz = self.c * self.z
+
+        # Factor of luminance level adaptation
+        self.d = alg.clamp(self.fm * (1 - 1 / 3.6 * math.exp((-self.la - 42) / 92)), 0, 1) if not discounting else 1
 
 
 def sucs_to_xyz(ich: Vector) -> Vector:
@@ -207,11 +232,14 @@ def scam_to_xyz(
         C = M * alg.spow(Ia, 0.27) / ((env.fl ** 0.1) * et * env.fm)
 
     # Convert to XYZ from sUCS
-    return sucs_to_xyz([I, C, h])  # type: ignore[list-item]
+    xyz = sucs_to_xyz([I, C, h])  # type: ignore[list-item]
+    return adapt(xyz, env.output_white, env.input_white, env.d)
 
 
 def xyz_to_scam(xyz: Vector, env: Environment, calc_hue_quadrature: bool = True) -> Vector:
     """From XYZ to sCAM."""
+
+    xyz = adapt(xyz, env.input_white, env.output_white, env.d)
 
     # Convert from XYZ to sUCS
     I, C, h = xyz_to_sucs(xyz)
