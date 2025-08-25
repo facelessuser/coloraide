@@ -51,7 +51,7 @@ def eccentricity(h: float) -> float:
 
 def adapt(xyz: Vector, xyz_ws: Vector, xyz_wd: Vector, d: float) -> Vector:
     """
-    Adapt using CAT16 matrix but using CAM02 degree of adaptatin.
+    Adapt using CAT16 matrix but using CAM02 degree of adaptation.
 
     This was proposed by one of the authors Li, Molin in the Colour project:
     https://github.com/colour-science/colour/pull/1349#issuecomment-3058339414
@@ -315,8 +315,8 @@ class sCAMJMh(LCh):
         discounting=False
     )
     CHANNELS = (
-        Channel("j", 0.0, 100.0),
-        Channel("m", 0, 105.0),
+        Channel("j", 0.0, 99.999),
+        Channel("m", 0, 25.0),
         Channel("h", 0.0, 360.0, flags=FLG_ANGLE)
     )
 
