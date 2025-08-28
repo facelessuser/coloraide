@@ -59,8 +59,8 @@ The string representation of the color object and the default string output use 
 `#!css-color color(--ipt i p t / a)` form.
 
 ```py play
-Color("ipt", [0.45616, 0.62086, 0.44282])
-Color("ipt", [0.64877, 0.189, 0.5303]).to_string()
+Color("ipt", [0.45616, 0.62091, 0.44283])
+Color("ipt", [0.64877, 0.18904, 0.53032]).to_string()
 ```
 
 ## Registering

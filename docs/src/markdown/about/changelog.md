@@ -5,6 +5,7 @@
 -   **NEW**: Linear Display P3 is now serialized as the official CSS color name `color(display-p3-linear ...)` which
     matches recent spec updates. `color(--display-p3-linear ...)` is still accepted as an input, but ColorAide will not
     use this serialization on output and support for the old name will be removed at some future time.
+-   **FIX**: Improve IPT's LMS conversion matrix to perform better in 64 bit.
 -   **FIX**: In the unlikely case that the ray trace gamut mapping never finds a gamut intersection, ensure it falls
     back to the original color for clipping.
 
