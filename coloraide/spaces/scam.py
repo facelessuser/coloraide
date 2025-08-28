@@ -8,26 +8,11 @@ import math
 from .. import util
 from .. import algebra as alg
 from .lch import LCh
-from ..cat import WHITES
 from ..channels import Channel, FLG_ANGLE
-from ..types import Vector, VectorLike
 from .cam16 import hue_quadrature, inv_hue_quadrature, M16, M16_INV
-
-# LMS matrices
-TO_LMS = [
-    [0.4002, 0.7075, -0.0807],
-    [-0.2280, 1.1500, 0.0612],
-    [0.0000, 0.0000, 0.9184],
-]
-FROM_LMS = alg.inv(TO_LMS)
-
-# Iab transformation matrices
-TO_IAB = [
-    alg.divide([200.0, 100.0, 5.0], 3.05, dims=alg.D1_SC),
-    [430.0, -470.0, 40.0],
-    [49.0, 49.0, -98.0]
-]
-FROM_IAB = alg.inv(TO_IAB)
+from .sucs import xyz_to_sucs, sucs_to_xyz
+from ..cat import WHITES
+from ..types import Vector, VectorLike
 
 SURROUND = {
     'dark': (0.39, 0.85),
@@ -145,27 +130,6 @@ class Environment:
         self.d = alg.clamp(self.fm * (1 - 1 / 3.6 * math.exp((-self.la - 42) / 92)), 0, 1) if not discounting else 1
 
 
-def sucs_to_xyz(ich: Vector) -> Vector:
-    """From sUCS to XYZ."""
-
-    i, c, h = ich
-    c = (math.exp(0.0252 * c) - 1) / 0.0447
-    r = math.radians(h)
-    a, b = c * math.cos(r), c * math.sin(r)
-    lms = [alg.nth_root(x, 0.43) for x in alg.matmul_x3(FROM_IAB, [i, a, b], dims=alg.D2_D1)]
-    return alg.matmul_x3(FROM_LMS, lms, dims=alg.D2_D1)
-
-
-def xyz_to_sucs(xyz: Vector) -> Vector:
-    """From XYZ to sUCS."""
-
-    lms_p = [math.copysign(abs(i) ** 0.43, i) for i in alg.matmul_x3(TO_LMS, xyz, dims=alg.D2_D1)]
-    i, a, b = alg.matmul_x3(TO_IAB, lms_p, dims=alg.D2_D1)
-    c = (1 / 0.0252) * math.log(1 + 0.0447 * math.sqrt(a ** 2 + b ** 2))
-    h = math.atan2(b, a) % math.tau
-    return [i, c, math.degrees(h)]
-
-
 def scam_to_xyz(
     J: float | None = None,
     C: float | None = None,
@@ -233,12 +197,15 @@ def scam_to_xyz(
 
     # Convert to XYZ from sUCS
     xyz = sucs_to_xyz([I, C, h])  # type: ignore[list-item]
+
+    # Apply chromatic adaptation
     return adapt(xyz, env.output_white, env.input_white, env.d)
 
 
 def xyz_to_scam(xyz: Vector, env: Environment, calc_hue_quadrature: bool = True) -> Vector:
     """From XYZ to sCAM."""
 
+    # Apply chromatic adaptation
     xyz = adapt(xyz, env.input_white, env.output_white, env.d)
 
     # Convert from XYZ to sUCS
@@ -315,7 +282,7 @@ class sCAMJMh(LCh):
         discounting=False
     )
     CHANNELS = (
-        Channel("j", 0.0, 99.999),
+        Channel("j", 0.0, 100.0),
         Channel("m", 0, 25.0),
         Channel("h", 0.0, 360.0, flags=FLG_ANGLE)
     )
