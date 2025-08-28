@@ -7,6 +7,7 @@ from __future__ import annotations
 import math
 from ..channels import Channel
 from ..spaces.srgb_linear import sRGBLinear
+from ..cat import WHITES
 from ..types import Vector
 
 CC_MIN = (math.log2(2 ** -16) + 9.72) / 17.52
@@ -56,7 +57,7 @@ class ACEScc(sRGBLinear):
     BASE = "acescg"
     NAME = "acescc"
     SERIALIZE = ("--acescc",)  # type: tuple[str, ...]
-    WHITE = (0.32168, 0.33767)
+    WHITE = WHITES['2deg']['ACES-D60']
     CHANNELS = (
         Channel("r", CC_MIN, CC_MAX, bound=True, nans=CC_MIN),
         Channel("g", CC_MIN, CC_MAX, bound=True, nans=CC_MIN),

@@ -7,6 +7,7 @@ from __future__ import annotations
 from ..channels import Channel
 from ..spaces.srgb_linear import sRGBLinear
 from .. import algebra as alg
+from ..cat import WHITES
 from ..types import Vector
 
 AP1_TO_XYZ = [
@@ -40,7 +41,7 @@ class ACEScg(sRGBLinear):
     BASE = "xyz-d65"
     NAME = "acescg"
     SERIALIZE = ("--acescg",)  # type: tuple[str, ...]
-    WHITE = (0.32168, 0.33767)
+    WHITE = WHITES['2deg']['ACES-D60']
     CHANNELS = (
         Channel("r", 0.0, 65504.0, bound=True),
         Channel("g", 0.0, 65504.0, bound=True),

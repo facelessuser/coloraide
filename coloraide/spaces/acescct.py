@@ -7,8 +7,9 @@ from __future__ import annotations
 import math
 from ..channels import Channel
 from ..spaces.srgb_linear import sRGBLinear
-from ..types import Vector
 from .acescc import CC_MAX
+from ..cat import WHITES
+from ..types import Vector
 
 CCT_MIN = 0.0729055341958355
 CCT_MAX = CC_MAX
@@ -51,7 +52,7 @@ class ACEScct(sRGBLinear):
     BASE = "acescg"
     NAME = "acescct"
     SERIALIZE = ("--acescct",)  # type: tuple[str, ...]
-    WHITE = (0.32168, 0.33767)
+    WHITE = WHITES['2deg']['ACES-D60']
     CHANNELS = (
         Channel("r", CCT_MIN, CCT_MAX, bound=True, nans=CCT_MIN),
         Channel("g", CCT_MIN, CCT_MAX, bound=True, nans=CCT_MIN),
