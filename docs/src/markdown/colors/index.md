@@ -58,7 +58,9 @@ flowchart LR
 
     xyz-d65 --- display-p3-linear --- display-p3
 
-    xyz-d65 --- rec2020-linear  --- rec2020
+    xyz-d65 --- rec2020-linear
+        rec2020-linear --- rec2020
+        rec2020-linear --- rec2020-oetf
         rec2020-linear --- rec2100-linear
             rec2100-linear --- rec2100-pq
             rec2100-linear --- rec2100-hlg
@@ -123,6 +125,7 @@ flowchart LR
     xyz-d50(XYZ D50)
     rec2020(Rec. 2020)
     rec2020-linear(Linear Rec. 2020)
+    rec2020-oetf(Rec. 2020 OETF)
     rec2100-pq(Rec. 2100 PQ)
     rec2100-hlg(Rec. 2100 HLG)
     rec2100-linear(Linear Rec. 2100)
@@ -191,6 +194,7 @@ flowchart LR
     click xyz-d50 "./xyz_d50/" _self
     click rec2020 "./rec2020/" _self
     click rec2020-linear "./rec2020_linear/" _self
+    click rec2020-oetf "./rec2020_oetf/" _self
     click rec2100-pq "./rec2100_pq/" _self
     click rec2100-hlg "./rec2100_hlg/" _self
     click rec2100-linear "./rec2100_linear/" _self
@@ -319,6 +323,7 @@ Color Space                                     | ID
 [Prismatic](./prismatic.md)                     | `prismatic`
 [ProPhoto RGB](./prophoto_rgb.md)               | `prophoto-rgb`
 [Rec. 2020](./rec2020.md)                       | `rec2020`
+[Rec. 2020 OETF](./rec2020_oetf.md)             | `rec2020-oetf`
 [Rec. 2100 HLG](./rec2100_hlg.md)               | `rec2100-hlg`
 [Rec. 2100 PQ](./rec2100_pq.md)                 | `rec2100-pq`
 [Rec. 709](./rec709.md)                         | `rec709`

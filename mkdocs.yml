@@ -62,6 +62,7 @@ nav:
         - Display P3: colors/display_p3.md
         - A98 RGB: colors/a98_rgb.md
         - Rec. 2020: colors/rec2020.md
+        - Rec. 2020 (OETF): colors/rec2020_oetf.md
         - ProPhoto RGB: colors/prophoto_rgb.md
         - Rec. 709: colors/rec709.md
         - Rec. 2100 PQ: colors/rec2100_pq.md

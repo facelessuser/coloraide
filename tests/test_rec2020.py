@@ -9,15 +9,15 @@ class TestRec2020(util.ColorAssertsPyTest):
     """Test Rec. 2020."""
 
     COLORS = [
-        ('red', 'color(rec2020 0.79198 0.23098 0.07376)'),
-        ('orange', 'color(rec2020 0.86727 0.64078 0.18496)'),
-        ('yellow', 'color(rec2020 0.97831 0.99436 0.29839)'),
-        ('green', 'color(rec2020 0.23521 0.43171 0.08543)'),
-        ('blue', 'color(rec2020 0.16837 0.05113 0.94678)'),
-        ('indigo', 'color(rec2020 0.19583 0.03329 0.43481)'),
-        ('violet', 'color(rec2020 0.80438 0.51467 0.89463)'),
+        ('red', 'color(rec2020 0.82346 0.32843 0.18034)'),
+        ('orange', 'color(rec2020 0.88768 0.69325 0.28583)'),
+        ('yellow', 'color(rec2020 0.98172 0.99525 0.39006)'),
+        ('green', 'color(rec2020 0.33232 0.50979 0.19178)'),
+        ('blue', 'color(rec2020 0.27035 0.1548 0.9551)'),
+        ('indigo', 'color(rec2020 0.29594 0.12946 0.51255)'),
+        ('violet', 'color(rec2020 0.83406 0.58313 0.91092)'),
         ('white', 'color(rec2020 1 1 1)'),
-        ('gray', 'color(rec2020 0.45214 0.45214 0.45214)'),
+        ('gray', 'color(rec2020 0.52792 0.52792 0.52792)'),
         ('black', 'color(rec2020 0 0 0)'),
         # Test CSS color
         ('color(rec2020 0 0.50196 0)', 'color(rec2020 0 0.50196 0)'),
@@ -50,11 +50,11 @@ class TestRec2020Serialize(util.ColorAssertsPyTest):
         ('color(rec2020 none 0.3 0.75)', {}, 'color(rec2020 0 0.3 0.75)'),
         ('color(rec2020 none 0.3 0.75)', {'none': True}, 'color(rec2020 none 0.3 0.75)'),
         # Test Fit
-        ('color(rec2020 1.2 0.2 0)', {}, 'color(rec2020 1 0.41739 0.13711)'),
+        ('color(rec2020 1.2 0.2 0)', {}, 'color(rec2020 1 0.49997 0.26844)'),
         (
             'color(rec2020 1.2 0.2 0)',
             {'color': True, 'fit': {'method': 'raytrace', 'pspace': 'lch-d65'}},
-            'color(rec2020 1 0.46248 0.19988)'
+            'color(rec2020 1 0.53993 0.3247)'
         ),
         ('color(rec2020 1.2 0.2 0)', {'fit': False}, 'color(rec2020 1.2 0.2 0)')
     ]

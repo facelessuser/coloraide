@@ -1,7 +1,11 @@
 # Changelog
 
-## 5.1
+## 6.0
 
+-   **BREAK**: Update Rec. 2020 to use the OETF in BT.1886 to match the change in the CSS spec. An a new color space
+    called `rec2020-oetf` has been added that uses the old transfer function as specified in BT.2020 to give users a
+    way to have the old behavior, but it must be registered manually or the user must use `coloraide.everything.ColorAll`
+    which registers all color spaces by default.
 -   **NEW**: Linear Display P3 is now serialized as the official CSS color name `color(display-p3-linear ...)` which
     matches recent spec updates. `color(--display-p3-linear ...)` is still accepted as an input, but ColorAide will not
     use this serialization on output, and support for the old name will be removed at some future time.
@@ -13,7 +17,7 @@
 
 ## 5.0
 
--   **BREAKING**: CSS serialization no longer requires HSL and HWB to return percentage form during serialization when
+-   **BREAK**: CSS serialization no longer requires HSL and HWB to return percentage form during serialization when
     using the non-legacy (no comma) syntax. For consistency, HSL and HWB will only return the percentage form with
     non-legacy serialization when `percent` is set `True` by the user. The legacy format will still format strings with
     percentages. This matches all other color spaces in ColorAide that use modern CSS serialization syntax. If you rely
