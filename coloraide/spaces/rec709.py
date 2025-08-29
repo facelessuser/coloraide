@@ -4,8 +4,11 @@ Rec. 709 color space class.
 This color space uses the same chromaticities and white points as sRGB,
 but uses the same gamma correction as Rec. 2020, just at 10 bit precision.
 
+Transfer function of BT.709 matches BT.601.
+
 - https://en.wikipedia.org/wiki/Rec._709
 - https://www.itu.int/dms_pubrec/itu-r/rec/bt/R-REC-BT.709-6-201506-I!!PDF-E.pdf
+- https://www.itu.int/dms_pubrec/itu-r/rec/bt/R-REC-BT.601-7-201103-I!!PDF-E.pdf
 """
 from __future__ import annotations
 from .srgb_linear import sRGBLinear
@@ -19,12 +22,8 @@ BETA45 = BETA * 4.5
 ALPHAM1 = 0.099
 
 
-def lin_709(rgb: Vector) -> Vector:
-    """
-    Convert an array of Rec. 709 RGB values in the range 0.0 - 1.0 to linear light (un-corrected) form.
-
-    Transfer function is similar to Rec. 2020, just at a lower precision
-    """
+def inverse_oetf_bt709(rgb: Vector) -> Vector:
+    """Convert an array of Rec. 709 RGB values in the range 0.0 - 1.0 to linear light (un-corrected) form."""
 
     result = []
     for i in rgb:
@@ -37,12 +36,8 @@ def lin_709(rgb: Vector) -> Vector:
     return result
 
 
-def gam_709(rgb: Vector) -> Vector:
-    """
-    Convert an array of linear-light Rec. 709 RGB  in the range 0.0-1.0 to gamma corrected form.
-
-    Transfer function is similar to Rec. 2020, just at a lower precision
-    """
+def oetf_bt709(rgb: Vector) -> Vector:
+    """Convert an array of linear-light Rec. 709 RGB  in the range 0.0-1.0 to gamma corrected form."""
 
     result = []
     for i in rgb:
@@ -70,9 +65,9 @@ class Rec709(sRGBLinear):
     def to_base(self, coords: Vector) -> Vector:
         """To XYZ from Rec. 709."""
 
-        return lin_709(coords)
+        return inverse_oetf_bt709(coords)
 
     def from_base(self, coords: Vector) -> Vector:
         """From XYZ to Rec. 709."""
 
-        return gam_709(coords)
+        return oetf_bt709(coords)

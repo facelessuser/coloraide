@@ -65,7 +65,7 @@ def hlg_black_level_lift(lw: float = 0.0, lb: float = 1000.0) -> float:
     return math.sqrt(3 * (lb / lw) ** (1 / hlg_gamma(lw)))
 
 
-def hlg_oetf(values: Vector, env: Environment) -> Vector:
+def oetf_hlg(values: Vector, env: Environment) -> Vector:
     """HLG OETF."""
 
     adjusted = []  # type: Vector
@@ -75,8 +75,8 @@ def hlg_oetf(values: Vector, env: Environment) -> Vector:
     return adjusted
 
 
-def hlg_eotf(values: Vector, env: Environment) -> Vector:
-    """HLG EOTF."""
+def inverse_oetf_hlg(values: Vector, env: Environment) -> Vector:
+    """HLG inverse OETF."""
 
     adjusted = []  # type: Vector
     for e in values:
@@ -107,9 +107,9 @@ class Rec2100HLG(sRGBLinear):
     def to_base(self, coords: Vector) -> Vector:
         """To base from Rec 2100 HLG."""
 
-        return [c * self.ENV.inv_scale for c in hlg_eotf(coords, self.ENV)]
+        return [c * self.ENV.inv_scale for c in inverse_oetf_hlg(coords, self.ENV)]
 
     def from_base(self, coords: Vector) -> Vector:
         """From base to Rec. 2100 HLG."""
 
-        return hlg_oetf([c * self.ENV.scale for c in coords], self.ENV)
+        return oetf_hlg([c * self.ENV.scale for c in coords], self.ENV)

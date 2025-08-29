@@ -76,7 +76,7 @@ def xyz_to_izazbz(xyz: Vector, lms_matrix: Matrix, m2: float) -> Vector:
     lms = alg.matmul_x3(XYZ_TO_LMS, [xm, ym, za], dims=alg.D2_D1)
 
     # PQ encode the LMS
-    pqlms = util.pq_st2084_oetf(lms, m2=m2)
+    pqlms = util.inverse_eotf_st2084(lms, m2=m2)
 
     # Calculate Izazbz
     return alg.matmul_x3(lms_matrix, pqlms, dims=alg.D2_D1)
@@ -89,7 +89,7 @@ def izazbz_to_xyz(izazbz: Vector, lms_matrix: Matrix, m2: float) -> Vector:
     pqlms = alg.matmul_x3(lms_matrix, izazbz, dims=alg.D2_D1)
 
     # Decode PQ LMS to LMS
-    lms = util.pq_st2084_eotf(pqlms, m2=m2)
+    lms = util.eotf_st2084(pqlms, m2=m2)
 
     # Convert back to absolute XYZ D65
     xm, ym, za = alg.matmul_x3(LMS_TO_XYZ, lms, dims=alg.D2_D1)

@@ -1,7 +1,12 @@
-"""Rec 2020 color class."""
+"""
+Rec. 2020 color space.
+
+Uses the default OETF specified in the ITU-R BT2020 spec.
+https://www.itu.int/dms_pubrec/itu-r/rec/bt/R-REC-BT.2020-2-201510-I!!PDF-E.pdf
+"""
 from __future__ import annotations
-from .srgb_linear import sRGBLinear
 import math
+from .srgb_linear import sRGBLinear
 from .. import algebra as alg
 from ..types import Vector
 
@@ -11,12 +16,8 @@ BETA45 = BETA * 4.5
 ALPHAM1 = ALPHA - 1
 
 
-def lin_2020(rgb: Vector) -> Vector:
-    """
-    Convert an array of rec-2020 RGB values in the range 0.0 - 1.0 to linear light (un-corrected) form.
-
-    https://en.wikipedia.org/wiki/Rec._2020#Transfer_characteristics
-    """
+def inverse_oetf_bt2020(rgb: Vector) -> Vector:
+    """Convert an array of rec-2020 RGB values in the range 0.0 - 1.0 to linear light (un-corrected) form."""
 
     result = []
     for i in rgb:
@@ -29,12 +30,8 @@ def lin_2020(rgb: Vector) -> Vector:
     return result
 
 
-def gam_2020(rgb: Vector) -> Vector:
-    """
-    Convert an array of linear-light rec-2020 RGB  in the range 0.0-1.0 to gamma corrected form.
-
-    https://en.wikipedia.org/wiki/Rec._2020#Transfer_characteristics
-    """
+def oetf_bt2020(rgb: Vector) -> Vector:
+    """Convert an array of linear-light rec-2020 RGB  in the range 0.0-1.0 to gamma corrected form."""
 
     result = []
     for i in rgb:
@@ -48,7 +45,7 @@ def gam_2020(rgb: Vector) -> Vector:
 
 
 class Rec2020(sRGBLinear):
-    """Rec 2020 class."""
+    """Rec 2020 class using OETF gamma correction."""
 
     BASE = "rec2020-linear"
     NAME = "rec2020"
@@ -61,9 +58,9 @@ class Rec2020(sRGBLinear):
     def to_base(self, coords: Vector) -> Vector:
         """To XYZ from Rec. 2020."""
 
-        return lin_2020(coords)
+        return inverse_oetf_bt2020(coords)
 
     def from_base(self, coords: Vector) -> Vector:
         """From XYZ to Rec. 2020."""
 
-        return gam_2020(coords)
+        return oetf_bt2020(coords)

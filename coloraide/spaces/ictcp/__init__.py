@@ -60,7 +60,7 @@ def ictcp_to_xyz_d65(ictcp: Vector) -> Vector:
     pqlms = alg.matmul_x3(ictcp_to_lms_p_mi, ictcp, dims=alg.D2_D1)
 
     # Decode PQ LMS to LMS
-    lms = util.pq_st2084_eotf(pqlms)
+    lms = util.eotf_st2084(pqlms)
 
     # Convert back to absolute XYZ D65
     absxyz = alg.matmul_x3(lms_to_xyz_mi, lms, dims=alg.D2_D1)
@@ -79,7 +79,7 @@ def xyz_d65_to_ictcp(xyzd65: Vector) -> Vector:
     lms = alg.matmul_x3(xyz_to_lms_m, absxyz, dims=alg.D2_D1)
 
     # PQ encode the LMS
-    pqlms = util.pq_st2084_oetf(lms)
+    pqlms = util.inverse_eotf_st2084(lms)
 
     # Calculate Izazbz
     return alg.matmul_x3(lms_p_to_ictcp_m, pqlms, dims=alg.D2_D1)

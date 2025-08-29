@@ -1,7 +1,7 @@
 """Display-p3 color class."""
 from __future__ import annotations
 from .srgb_linear import sRGBLinear
-from .srgb import lin_srgb, gam_srgb
+from .srgb import inverse_eotf_srgb, eotf_srgb
 from ..types import Vector
 
 
@@ -19,9 +19,9 @@ class DisplayP3(sRGBLinear):
     def to_base(self, coords: Vector) -> Vector:
         """To XYZ from Display P3."""
 
-        return lin_srgb(coords)
+        return eotf_srgb(coords)
 
     def from_base(self, coords: Vector) -> Vector:
         """From XYZ to Display P3."""
 
-        return gam_srgb(coords)
+        return inverse_eotf_srgb(coords)

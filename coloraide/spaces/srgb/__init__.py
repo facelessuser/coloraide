@@ -6,7 +6,7 @@ from ...types import Vector
 import math
 
 
-def lin_srgb(rgb: Vector) -> Vector:
+def eotf_srgb(rgb: Vector) -> Vector:
     """
     Convert an array of sRGB values in the range 0.0 - 1.0 to linear light (un-corrected) form.
 
@@ -24,7 +24,7 @@ def lin_srgb(rgb: Vector) -> Vector:
     return result
 
 
-def gam_srgb(rgb: Vector) -> Vector:
+def inverse_eotf_srgb(rgb: Vector) -> Vector:
     """
     Convert an array of linear-light sRGB values in the range 0.0-1.0 to gamma corrected form.
 
@@ -57,9 +57,9 @@ class sRGB(sRGBLinear):
     def from_base(self, coords: Vector) -> Vector:
         """From sRGB Linear to sRGB."""
 
-        return gam_srgb(coords)
+        return inverse_eotf_srgb(coords)
 
     def to_base(self, coords: Vector) -> Vector:
         """To sRGB Linear from sRGB."""
 
-        return lin_srgb(coords)
+        return eotf_srgb(coords)
