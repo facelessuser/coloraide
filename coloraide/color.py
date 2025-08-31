@@ -606,18 +606,11 @@ class Color(metaclass=ColorMeta):
         self,
         space: str,
         *,
-        fit: bool | str = False,
+        fit: bool | str | dict[str, Any] = False,
         in_place: bool = False,
         norm: bool = True
     ) -> Self:
         """Convert to color space."""
-
-        # Convert the color and then fit it.
-        if fit:
-            method = None if not isinstance(fit, str) else fit
-            if not self.in_gamut(space, tolerance=0.0):
-                converted = self.convert(space, in_place=in_place, norm=norm)
-                return converted.fit(method=method)
 
         # Nothing to do, just return the color with no alterations.
         if space == self.space():
@@ -630,6 +623,10 @@ class Color(metaclass=ColorMeta):
         # Normalize achromatic colors, but skip if we internally don't need this.
         if norm and this._space.is_polar() and this.is_achromatic():
             this[this._space.hue_index()] = math.nan  # type: ignore[attr-defined]
+
+        # Fit the color if required
+        if fit and not this.in_gamut(tolerance=0.0):
+            this.fit(**(fit if isinstance(fit, dict) else {'method': None if fit is True else fit}))
 
         return this
 
