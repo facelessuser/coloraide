@@ -4,12 +4,12 @@
 
 -   **NEW**: Linear Display P3 is now serialized as the official CSS color name `color(display-p3-linear ...)` which
     matches recent spec updates. `color(--display-p3-linear ...)` is still accepted as an input, but ColorAide will not
-    use this serialization on output and support for the old name will be removed at some future time.
+    use this serialization on output, and support for the old name will be removed at some future time.
 -   **NEW**: When setting the `fit` parameter in `convert()`, `fit` now accepts `bool | str | dict[str, Any]`, where the
     dictionary is treated as various keyword arguments that will be passed to the `fit()` function after conversion.
 -   **FIX**: Improve IPT's LMS conversion matrix to perform better in 64 bit.
--   **FIX**: In the unlikely case that the ray trace gamut mapping never finds a gamut intersection, ensure it falls
-    back to the original color for clipping.
+-   **FIX**: In the unlikely case that the ray trace gamut mapping never finds a gamut intersection during an iteration,
+    ensure it falls back to the original color for clipping.
 
 ## 5.0
 
