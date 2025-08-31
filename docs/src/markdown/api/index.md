@@ -431,7 +431,6 @@ def convert(
     self,
     space: str,
     *,
-    fit: bool | str | dict[str, Any] = False,
     in_place: bool = False,
     norm: bool = True
 ) -> Self:
@@ -451,7 +450,6 @@ Parameters
     Parameters | Defaults      | Description
     ---------- | ------------- | -----------
     `space`    |               | A string representing the desired final color space.
-    `fit`      | `#!py False`  | Parameter specifying whether the current color should be gamut mapped into the final, desired color space. If set to `#!py3 True`, the color will be gamut mapped using the default gamut mapping method. If set to a string, the string will be interpreted as the name of the gamut mapping method to be used. If set to a dictionary, it will be passed to `Color.fit()` as `Color.fit(**fit)` setting the the various gamut mapping keyword arguments.
     `in_place` | `#!py False`  | Boolean specifying whether the convert should alter the current [`Color`](#color) object or return a new one.
     `norm`     | `#!py True`   | When set to `#!py False`, this prevents achromatic normalization when converting from a different color space. If no update occurs, nothing is done.
 

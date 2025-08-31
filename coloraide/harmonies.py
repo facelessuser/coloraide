@@ -153,10 +153,10 @@ class Monochromatic(Harmony):
         mask = ['hue', 'alpha'] if is_cyl else ['alpha']
         w = color1.new('xyz-d65', WHITE, math.nan)
         max_lum = w[1]
-        w.convert(space, fit=True, in_place=True, norm=False).mask(mask, in_place=True)
+        w.convert(space, in_place=True, norm=False).fit().mask(mask, in_place=True)
         b = color1.new('xyz-d65', BLACK, math.nan)
         min_lum = b[1]
-        b.convert(space, fit=True, in_place=True, norm=False).mask(mask, in_place=True)
+        b.convert(space, in_place=True, norm=False).fit().mask(mask, in_place=True)
 
         # Minimum steps should be adjusted to account for trimming off white and
         # black if the color is not achromatic. Additionally, prepare our slice

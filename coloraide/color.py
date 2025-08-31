@@ -606,7 +606,7 @@ class Color(metaclass=ColorMeta):
         self,
         space: str,
         *,
-        fit: bool | str | dict[str, Any] = False,
+        fit: bool | str = False,
         in_place: bool = False,
         norm: bool = True
     ) -> Self:
@@ -626,6 +626,9 @@ class Color(metaclass=ColorMeta):
 
         # Fit the color if required
         if fit and not this.in_gamut(tolerance=0.0):
+            warn_deprecated(
+                "The 'fit' parameter in convert() has been deprecated, please call color.convert(space).fit() instead"
+            )
             this.fit(**(fit if isinstance(fit, dict) else {'method': None if fit is True else fit}))
 
         return this

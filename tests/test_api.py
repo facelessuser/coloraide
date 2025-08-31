@@ -4,6 +4,7 @@ from coloraide import Color, NaN
 from coloraide.everything import ColorAll
 from . import util
 import math
+import pytest
 
 
 class TestMisc(util.ColorAsserts, unittest.TestCase):
@@ -321,6 +322,7 @@ class TestMisc(util.ColorAsserts, unittest.TestCase):
         c2 = c1.convert('hsl')
         self.assertColorEqual(c2, Color('hsl(39, 100%, 50%)'), precision=0)
 
+    @pytest.mark.filterwarnings("ignore")
     def test_convert_fit(self):
         """Test convert fit."""
 
@@ -330,17 +332,8 @@ class TestMisc(util.ColorAsserts, unittest.TestCase):
         self.assertTrue(c2.in_gamut())
         c3 = c1.convert('display-p3').fit()
         self.assertColorEqual(c2, c3)
-        c4 = c1.convert(
-            'display-p3',
-            fit={
-                'method': 'minde-chroma',
-                'pspace': 'lch-d65',
-                'jnd': 2,
-                'de_options': {'method': '2000', 'space': 'lab-d65'}
-            }
-        )
-        self.assertColorEqual(c3, c4)
 
+    @pytest.mark.filterwarnings("ignore")
     def test_convert_fit_clip(self):
         """Test convert fit."""
 
