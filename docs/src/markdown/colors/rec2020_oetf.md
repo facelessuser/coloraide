@@ -32,8 +32,7 @@ ultra-high-definition television (UHDTV) with standard dynamic range (SDR) and w
 resolutions, frame rates with progressive scan, bit depths, color primaries, RGB and luma-chroma color representations,
 chroma subsamplings, and an opto-electronic transfer function. The color is used in 4k and 8k UHDTV.
 
-This particular variant uses the OETF specified in the spec, but usually, the OETF in BT.1886 is often used instead with
-a gamma of 2.4.
+This is a scene-referred variant that uses the OETF specified in the BT.2020 spec.
 
 _[Learn about REC.2020](https://en.wikipedia.org/wiki/Rec._2020)_
 

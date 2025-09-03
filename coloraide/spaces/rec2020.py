@@ -1,5 +1,5 @@
 """
-Rec. 2020 color space.
+Rec. 2020 color space (display referred).
 
 Uses the display referred EOTF as specified in BT.1886.
 

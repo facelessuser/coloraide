@@ -1,5 +1,5 @@
 """
-Rec. 2020 color space.
+Rec. 2020 color space (scene referred).
 
 Uses the default OETF specified in the ITU-R BT2020 spec.
 https://www.itu.int/dms_pubrec/itu-r/rec/bt/R-REC-BT.2020-2-201510-I!!PDF-E.pdf
