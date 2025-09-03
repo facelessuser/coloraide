@@ -8,31 +8,49 @@ Uses the display referred EOTF as specified in BT.1886.
 """
 from __future__ import annotations
 from .srgb_linear import sRGBLinear
-import math
 from .. import algebra as alg
 from ..types import Vector
 
+GAMMA = 2.40
+IGAMMA = 1 / GAMMA
 
-def inverse_eotf_bt1886(rgb: Vector, lb: float = 0, lw: float = 1.0, gamma: float = 2.40) -> Vector:
-    """Inverse ITU-R BT.1886 EOTF."""
 
+def inverse_eotf_bt1886(rgb: Vector) -> Vector:
+    """
+    Inverse ITU-R BT.1886 EOTF.
+
+    ```
     igamma = 1 / gamma
 
     d = lw ** igamma - lb ** igamma
     a = d ** gamma
     b = lb ** igamma / d
     return [math.copysign(a * alg.spow(abs(l) / a, igamma) - b, l) for l in rgb]
+    ```
+
+    When using `lb == 0`, `lw == 1`, and gamma of `2.4`, this simplifies to a simple power of `1 / 2.4`.
+    """
+
+    return [alg.spow(v, IGAMMA) for v in rgb]
 
 
-def eotf_bt1886(rgb: Vector, lb: float = 0, lw: float = 1.0, gamma: float = 2.40) -> Vector:
-    """ITU-R BT.1886 EOTF."""
+def eotf_bt1886(rgb: Vector) -> Vector:
+    """
+    ITU-R BT.1886 EOTF.
 
+    ```
     igamma = 1 / gamma
 
     d = lw ** igamma - lb ** igamma
     a = d ** gamma
     b = lb ** igamma / d
     return [math.copysign(a * alg.spow(max(abs(v) + b, 0), gamma), v) for v in rgb]
+    ```
+
+    When using `lb == 0`, `lw == 1`, and gamma of `2.4`, this simplifies to a simple power of `2.4`.
+    """
+
+    return [alg.spow(v, GAMMA) for v in rgb]
 
 
 class Rec2020(sRGBLinear):
