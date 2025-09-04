@@ -3469,34 +3469,6 @@ def reshape(array: ArrayLike | float, new_shape: int | Shape) -> float | Array:
     return m
 
 
-def _shape(a: ArrayLike | float, s: Shape) -> Shape:
-    """
-    Get the shape of the array.
-
-    We only test the first index at each depth for speed.
-    """
-
-    # Found a scalar input
-    if not isinstance(a, Sequence):
-        return s
-
-    # Get the length
-    size = len(a)
-
-    # Array is empty, return the shape
-    if not size:
-        return (size,)
-
-    # Recursively get the shape of the first entry and compare against the others
-    first = _shape(a[0], s)
-    for r in range(1, size):
-        if _shape(a[r], s) != first:
-            raise ValueError('Ragged lists are not supported')
-
-    # Construct the final shape
-    return (size,) + first
-
-
 @overload
 def _quick_shape(a: float) -> EmptyShape:
     ...
@@ -3519,7 +3491,7 @@ def _quick_shape(a: TensorLike) -> TensorShape:
 
 def _quick_shape(a: ArrayLike | float) -> Shape:
     """
-    Acquire shape taking shortcuts by assume a non-ragged, consistently shaped array.
+    Acquire shape taking shortcuts by assuming a non-ragged, consistently shaped array.
 
     No checking for consistency is performed allowing for a quicker check.
     """
@@ -3558,7 +3530,25 @@ def shape(a: TensorLike) -> TensorShape:
 def shape(a: ArrayLike | float) -> Shape:
     """Get the shape of a list."""
 
-    return _shape(a, ())
+    # Found a scalar input
+    if not isinstance(a, Sequence):
+        return ()
+
+    # Get the length
+    size = len(a)
+
+    # Array is empty, return the shape
+    if not size:
+        return (size,)
+
+    # Recursively get the shape of the first entry and compare against the others
+    first = shape(a[0])
+    for r in range(1, size):
+        if shape(a[r]) != first:
+            raise ValueError('Ragged lists are not supported')
+
+    # Construct the final shape
+    return (size,) + first
 
 
 def fill_diagonal(matrix: Matrix | Tensor, val: float | ArrayLike, wrap: bool = False) -> None:
