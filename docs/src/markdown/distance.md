@@ -27,7 +27,7 @@ Handling spaces with polar coordinates is new in 3.3.
 ## Delta E
 
 The `delta_e` function gives access to various ∆E implementations, which are just different algorithms to calculate
-distance. Some are simply Euclidean distance withing a certain color space, some are far more complex.
+distance. Some are simply Euclidean distance within a certain color space, some are far more complex.
 
 If no `method` is specified, the default implementation is ∆E^\*^~ab~ (CIE76) which uses a simple Euclidean distancing
 algorithm on the CIELab color space. It is fast, but not as accurate as later iterations of the algorithm as CIELab is
