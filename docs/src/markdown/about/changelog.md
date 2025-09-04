@@ -2,9 +2,9 @@
 
 ## 6.0
 
--   **BREAK**: Update Rec. 2020 to use the OETF in BT.1886 to match the change in the CSS spec. An a new color space
-    called `rec2020-oetf` has been added that uses the old transfer function as specified in BT.2020 to give users a
-    way to have the old behavior, but it must be registered manually or the user must use `coloraide.everything.ColorAll`
+-   **BREAK**: Update Rec. 2020 to use the EOTF in BT.1886 to match the change in the CSS spec. A new color space called
+    `rec2020-oetf` has been added that uses the old transfer function as specified in BT.2020 to give users a way to
+    have the old behavior, but it must be registered manually, or the user must use `coloraide.everything.ColorAll`
     which registers all color spaces by default.
 
 ## 5.1
