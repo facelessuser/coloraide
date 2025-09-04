@@ -69,9 +69,9 @@ def oetf_hlg(values: Vector, env: Environment) -> Vector:
     """HLG OETF."""
 
     adjusted = []  # type: Vector
-    for e in values:
-        e = alg.nth_root(3 * e, 2) if e <= 1 / 12 else env.a * math.log(12 * e - env.b) + env.c
-        adjusted.append((e - env.beta) / (1 - env.beta))
+    for v in values:
+        v = alg.nth_root(3 * v, 2) if v <= 1 / 12 else env.a * math.log(12 * v - env.b) + env.c
+        adjusted.append((v - env.beta) / (1 - env.beta))
     return adjusted
 
 
@@ -79,9 +79,9 @@ def inverse_oetf_hlg(values: Vector, env: Environment) -> Vector:
     """HLG inverse OETF."""
 
     adjusted = []  # type: Vector
-    for e in values:
-        e = (1 - env.beta) * e + env.beta
-        adjusted.append((e ** 2) / 3 if e <= 0.5 else (math.exp((e - env.c) / env.a) + env.b) / 12)
+    for v in values:
+        v = (1 - env.beta) * v + env.beta
+        adjusted.append((v ** 2 / 3) if v <= 0.5 else (math.exp((v - env.c) / env.a) + env.b) / 12)
     return adjusted
 
 
