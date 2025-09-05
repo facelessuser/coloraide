@@ -1,13 +1,13 @@
-# REC. 2020
+# REC. 2020 (OETF)
 
-/// success | The Rec. 2020 color space is registered in `Color` by default
+/// failure | The Rec. 2020 (OETF) color space is not registered in `Color` by default
 ///
 
 /// html | div.info-container
 //// info | Properties
     attrs: {class: inline end}
 
-**Name:** `rec2020`
+**Name:** `rec2020-oetf`
 
 **White Point:** D65 / 2˚
 
@@ -32,8 +32,7 @@ ultra-high-definition television (UHDTV) with standard dynamic range (SDR) and w
 resolutions, frame rates with progressive scan, bit depths, color primaries, RGB and luma-chroma color representations,
 chroma subsamplings, and an opto-electronic transfer function. The color is used in 4k and 8k UHDTV.
 
-This variant is display-referred and uses the more commonly used EOTF transfer function found in the BT.1886 spec with a
-gamma of 2.4.
+This is a scene-referred variant that uses the OETF specified in the BT.2020 spec.
 
 _[Learn about REC.2020](https://en.wikipedia.org/wiki/Rec._2020)_
 
@@ -49,34 +48,35 @@ Channels | Aliases
 
 ## Input/Output
 
-Parsed input and string output formats support all valid CSS forms:
+Rec. 709 is not supported via the CSS spec and the parser input and string output only supports the
+`#!css-color color()` function format using the custom name `#!css-color --rec2020-oetf`:
 
 ```css-color
-color(rec2020 r g b / a)  // Color function
+color(--rec2020-oetf r g b / a)  // Color function
 ```
 
 When manually creating a color via raw data or specifying a color space as a parameter in a function, the color
 space name is always used:
 
 ```py
-Color("rec2020", [0, 0, 0], 1)
+Color("--rec2020-oetf", [0, 0, 0], 1)
 ```
 
 The string representation of the color object and the default string output will be in the
 `#!css-color color(rec2020 r g b / a)` form.
 
 ```py play
-Color("rec2020", [0.82346, 0.32843, 0.18034])
-Color("rec2020", [0.88768, 0.69325, 0.28583]).to_string()
+Color("rec2020-oetf", [0.79198, 0.23098, 0.07376])
+Color("rec2020-oetf", [0.86727, 0.64078, 0.18496]).to_string()
 ```
 
 ## Registering
 
 ```py
 from coloraide import Color as Base
-from coloraide.spaces.rec2020 import Rec2020
+from coloraide.spaces.rec2020_oetf import Rec2020OETF
 
 class Color(Base): ...
 
-Color.register(Rec2020())
+Color.register(Rec2020OETF())
 ```

@@ -62,6 +62,7 @@ nav:
         - Display P3: colors/display_p3.md
         - A98 RGB: colors/a98_rgb.md
         - Rec. 2020: colors/rec2020.md
+        - Rec. 2020 (OETF): colors/rec2020_oetf.md
         - ProPhoto RGB: colors/prophoto_rgb.md
         - Rec. 709: colors/rec709.md
         - Rec. 2100 PQ: colors/rec2100_pq.md
@@ -322,7 +323,7 @@ extra_css:
 extra_javascript:
   - https://cdn.jsdelivr.net/npm/ace-builds@1.43.0/src-min-noconflict/ace.js
   - https://cdn.jsdelivr.net/npm/mermaid@11.7.0/dist/mermaid.min.js
-  - playground-config-0840b121.js
+  - playground-config-8fce84bc.js
   - https://cdn.jsdelivr.net/pyodide/v0.27.7/full/pyodide.js
   - assets/coloraide-extras/extra-notebook-DQhi9PGr.js
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js

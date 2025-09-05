@@ -304,8 +304,8 @@ class TestRayTrace(util.ColorAsserts, unittest.TestCase):
         # Force projection out of range on high end.
         options = {"method": 'raytrace', "pspace": 'lchuv', "adaptive": 0.5}
         self.assertColorEqual(
-            Color('rec2020', [0, 0, 0.5]).fit('srgb', **options),
-            Color('color(rec2020 0.06611 0.06611 0.45269)')
+            Color('rec2020-oetf', [0, 0, 0.5]).fit('srgb', **options),
+            Color('color(--rec2020-oetf 0.06611 0.06611 0.45269)')
         )
 
     def test_sdr_extremes_low(self):
