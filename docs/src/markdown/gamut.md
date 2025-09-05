@@ -461,7 +461,7 @@ version will be used automatically for best results. Currently, ColorAide can ga
 spaces as they either have an RGB gamut or can be coerced into one.
 
 The ray trace approach works by taking a given color and converting it to a perceptual Lab-ish or LCh-ish color space
-(the default being Oklab) and then calculates the achromatic version of the color which will be our anchor point.
+(the default being OkLCh) and then calculates the achromatic version of the color which will be our anchor point.
 Assuming our anchor point is within bounds, a ray is cast from the inside of the cube, from the anchor point to the
 current color. The intersection along this path with the RGB gamut surface is then found.  If the achromatic color
 exceeds the maximum or minimum lightness of the gamut, the respective maximum or minimum achromatic color is returned.
@@ -514,11 +514,11 @@ perceptual Oklab color space, that are meant to target the sRGB gamut, but are o
 can slightly clip the sRGB gamut while simultaneously containing a few colors that exceed the sRGB gamut.
 
 ColorAide will _not_ automatically associate HPLuv, Okhsl or Okhsv with an RGB gamut as there is not one that precisely
-represent the colors in Okhsl and Okhsv. With that said, ColorAide _will_ translate these spaces into a cube shape to
-apply gamut mapping on them if they are specifically used. In the case of HPLuv, results are usually fine, but you may
-find that gamut mapping Okhsl may not provide the intended results. It should be noted that the currently suggested CSS
-gamut mapping algorithm (`oklch-chroma`) does not do much better, so, for Okhsl and Okhsv, it is better to use the
-closest RGB gamut.
+represents any of these colors. With that said, ColorAide _will_ translate these spaces into a cube shape to apply gamut
+mapping on them if they are specifically used. In the case of HPLuv, results are usually fine, but you may find that
+gamut mapping Okhsl may not provide the intended results. It should be noted that the currently suggested CSS gamut
+mapping algorithm (`oklch-chroma`) does not do much better, so, for Okhsl and Okhsv, it is better to use the closest RGB
+gamut.
 
 ```py play
 Steps([c.fit('okhsl', method='raytrace') for c in Color.steps(['oklch(90% 0.4 0)', 'oklch(90% 0.4 360)'], steps=100, space='oklch', hue='longer')])
