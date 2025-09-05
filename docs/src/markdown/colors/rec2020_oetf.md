@@ -1,4 +1,4 @@
-# REC. 2020
+# REC. 2020 (OETF)
 
 /// failure | The Rec. 2020 (OETF) color space is not registered in `Color` by default
 ///
