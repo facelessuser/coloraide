@@ -89,7 +89,7 @@ def hct_to_xyz(coords: Vector, env: Environment) -> Vector:
     else:
         j = 9.514440756550361e-06 * t * t + 0.08693057439788597 * t -21.928975842194614
 
-    epsilon = 2e-12
+    epsilon = 2e-13
 
     maxiter = 16
     last = math.inf
