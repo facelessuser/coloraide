@@ -10,14 +10,14 @@ class TestRec709(util.ColorAssertsPyTest):
 
     COLORS = [
         ('red', 'color(--rec709 1 0 0)'),
-        ('orange', 'color(--rec709 1 0.60889 0)'),
+        ('orange', 'color(--rec709 1 0.66546 0)'),
         ('yellow', 'color(--rec709 1 1 0)'),
-        ('green', 'color(--rec709 0 0.45228 0)'),
+        ('green', 'color(--rec709 0 0.52792 0)'),
         ('blue', 'color(--rec709 0 0 1)'),
-        ('indigo', 'color(--rec709 0.23389 0 0.46067)'),
-        ('violet', 'color(--rec709 0.92519 0.46067 0.92519)'),
+        ('indigo', 'color(--rec709 0.33092 0 0.53536)'),
+        ('violet', 'color(--rec709 0.93681 0.53536 0.93681)'),
         ('white', 'color(--rec709 1 1 1)'),
-        ('gray', 'color(--rec709 0.45228 0.45228 0.45228)'),
+        ('gray', 'color(--rec709 0.52792 0.52792 0.52792)'),
         ('black', 'color(--rec709 0 0 0)'),
         # Test CSS color
         ('color(--rec709 0 0.50196 0)', 'color(--rec709 0 0.50196 0)'),
@@ -50,11 +50,11 @@ class TestRec709Serialize(util.ColorAssertsPyTest):
         ('color(--rec709 none 0.3 0.75)', {}, 'color(--rec709 0 0.3 0.75)'),
         ('color(--rec709 none 0.3 0.75)', {'none': True}, 'color(--rec709 none 0.3 0.75)'),
         # Test Fit
-        ('color(--rec709 1.2 0.2 0)', {}, 'color(--rec709 1 0.37065 0.18538)'),
+        ('color(--rec709 1.2 0.2 0)', {}, 'color(--rec709 1 0.44719 0.30775)'),
         (
             'color(--rec709 1.2 0.2 0)',
             {'color': True, 'fit': {'method': 'raytrace', 'pspace': 'lch-d65'}},
-            'color(--rec709 1 0.41112 0.24303)'
+            'color(--rec709 1 0.4846 0.35603)'
         ),
         ('color(--rec709 1.2 0.2 0)', {'fit': False}, 'color(--rec709 1.2 0.2 0)')
     ]

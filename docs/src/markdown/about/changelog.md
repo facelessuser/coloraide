@@ -7,6 +7,11 @@
     has been added that uses the previous transfer function as specified in the BT.2020 paper to give users a way to
     have the old behavior. `rec2020-oetf` is not registered by default and must must be registered manually, or the
     user can import `coloraide.everything.ColorAll` which registers all color spaces by default.
+-   **BREAK**: Update Rec. 709 to be display referred using the EOTF in BT.1886 with a gamma of 2.4. This matches the
+    more common usage of Rec. 709. A new color space called `rec709-oetf` has been added that uses the previous transfer
+    function as specified in the BT.709 paper to give users a way to have the old behavior. `rec709-oetf` is not
+    registered by default and must must be registered manually, or the user can import `coloraide.everything.ColorAll`
+    which registers all color spaces by default.
 
 ## 5.1
 
