@@ -1,16 +1,16 @@
-# Rec. 709
+# Rec. 709 (OETF)
 
 /// new | New 2.4
 ///
 
-/// failure | The Rec. 709 color space is not registered in `Color` by default
+/// failure | The Rec. 709 (OETF) color space is not registered in `Color` by default
 ///
 
 /// html | div.info-container
 //// info | Properties
     attrs: {class: inline end}
 
-**Name:** `rec709`
+**Name:** `rec709-oetf`
 
 **White Point:** D65 / 2˚
 
@@ -34,8 +34,8 @@ Rec. 709 (also known as Rec.709, BT.709, and ITU 709) is a standard developed by
 characteristics of high-definition television (HDTV). The color space is similar to [sRGB](./srgb.md) in the fact that
 the primary chromaticities and white points are identical, the difference is the transfer function.
 
-This Rec. 709 variant uses the more common, display-referred transfer function from BT.1886, with a gamma of 2.4, that
-is often used with [Rec. 2020](./rec2020.md).
+This Rec. 709 variant uses the same transfer function as specified in [Rec. 2020's](./rec2020_oetf.md) spec, though the
+precision of the constants are at 10 bit instead of 12 bit or greater. This provides a scene-referred color space.
 
 _[Learn about Rec. 709](https://en.wikipedia.org/wiki/Rec._709)_
 ///
@@ -51,25 +51,25 @@ Channels | Aliases
 ## Input/Output
 
 Rec. 709 is not supported via the CSS spec and the parser input and string output only supports the
-`#!css-color color()` function format using the custom name `#!css-color --rec709`:
+`#!css-color color()` function format using the custom name `#!css-color --rec709-oetf`:
 
 ```css-color
-color(--rec709 r g b / a)  // Color function
+color(--rec709-oetf r g b / a)  // Color function
 ```
 
 When manually creating a color via raw data or specifying a color space as a parameter in a function, the color
 space name is always used:
 
 ```py
-Color("rec709", [0, 0, 0], 1)
+Color("rec709-oetf", [0, 0, 0], 1)
 ```
 
 The string representation of the color object and the default string output will be in the
-`#!css-color color(--rec709 r g b / a)` form.
+`#!css-color color(--rec709-oetf r g b / a)` form.
 
 ```py play
-Color("rec709", [1, 0, 0], 1)
-Color("rec709", [1, 0.66546, 0], 1).to_string()
+Color("rec709-oetf", [1, 0, 0], 1)
+Color("rec709-oetf", [1, 0.60879, 0], 1).to_string()
 ```
 
 ## Registering
