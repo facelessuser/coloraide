@@ -23,9 +23,9 @@ class TestRoundTrip:
 
     SPACES = dict.fromkeys(Color.CS_MAP, 10)
     # HCT will actually provide good conversion at about 11 decimal precision,
-    # but certain spaces have a gamma power function that is less accurate near zero: Rec. 2020, Rec. 709, etc.
-    # Because of this, HCT, which approximates its inverse transform, can emphasizes these cases and fall a little
-    # below our target of 6. This is expected.
+    # but certain spaces have a gamma power function that is less accurate with RGB channels near zero
+    # (not necessarily near black): Rec. 2020, Rec. 709, etc. HCT, which approximates its inverse transform,
+    # can emphasizes these cases and fall a little below our target of 6. This is expected.
     # To handle this in testing, we can specify more nuanced conditions. Provide the default precision,
     # and optional lower precision, and spaces that would trigger this lower precision.
     SPACES['hct'] = (10, 4, {'rec709', 'rec2020', 'a98-rgb'})
@@ -103,13 +103,6 @@ class TestAchromaticRoundTrip(TestRoundTrip):
     Color.deregister('space:ryb-biased')
 
     SPACES = dict.fromkeys(Color.CS_MAP, 10)
-    # HCT will actually provide good conversion at about 11 decimal precision,
-    # but certain spaces have a gamma power function that is less accurate near zero: Rec. 2020, Rec. 709, etc.
-    # Because of this, HCT, which approximates its inverse transform, can emphasizes these cases and fall a little
-    # below our target of 6. This is expected.
-    # To handle this in testing, we can specify more nuanced conditions. Provide the default precision,
-    # and optional lower precision, and spaces that would trigger this lower precision.
-    SPACES['hct'] = (10, 4, {'rec709', 'rec2020', 'a98-rgb'})
 
     COLORS = [
         Color('darkgrey'),
