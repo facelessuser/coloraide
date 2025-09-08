@@ -166,18 +166,18 @@ class YCbCr(Luminant, Prism, Space):
 class YPbPr709(YPbPr):
     """YPbPr color class using Rec. 709."""
 
-    BASE = 'rec709'
+    BASE = 'rec709-oetf'
     NAME = "ypbpr709"
     SERIALIZE = ("--ypbpr709",)
     WHITE = WHITES['2deg']['D65']
     ENV = Environment(k=BT709)
-    GAMUT_CHECK = 'rec709'
+    GAMUT_CHECK = 'rec709-oetf'
 
 
 class YCbCr709Bit8(YCbCr):
     """YCbCr color class using Rec. 709 (8 bit)."""
 
-    BASE = 'rec709'
+    BASE = 'rec709-oetf'
     NAME = "ycbcr709-8bit"
     SERIALIZE = ("--ycbcr709-8bit",)
     WHITE = WHITES['2deg']['D65']
@@ -188,13 +188,13 @@ class YCbCr709Bit8(YCbCr):
         Channel("cb", ENV.c_range[0], ENV.c_range[1], nans=ENV.c_range[0], bound=True, limit=ENV.digital_round),
         Channel("cr", ENV.c_range[0], ENV.c_range[1], nans=ENV.c_range[0], bound=True, limit=ENV.digital_round)
     )
-    GAMUT_CHECK = 'rec709'
+    GAMUT_CHECK = 'rec709-oetf'
 
 
 class YCbCr709Bit10(YCbCr):
     """YCbCr color class using Rec. 709 (10 bit)."""
 
-    BASE = 'rec709'
+    BASE = 'rec709-oetf'
     NAME = "ycbcr709-10bit"
     SERIALIZE = ("--ycbcr709-10bit",)
     WHITE = WHITES['2deg']['D65']
@@ -205,5 +205,5 @@ class YCbCr709Bit10(YCbCr):
         Channel("cb", ENV.c_range[0], ENV.c_range[1], nans=ENV.c_range[0], bound=True, limit=ENV.digital_round),
         Channel("cr", ENV.c_range[0], ENV.c_range[1], nans=ENV.c_range[0], bound=True, limit=ENV.digital_round)
     )
-    GAMUT_CHECK = 'rec709'
+    GAMUT_CHECK = 'rec709-oetf'
 
