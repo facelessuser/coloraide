@@ -14,7 +14,7 @@ env = hct.HCT.ENV
 j = []
 t = []
 
-for r in range(200000):
+for r in range(200001):
     xyz = Color('srgb', [r / 100000] * 3).convert('xyz-d65')
     j.append(cam16.xyz_to_cam(xyz.coords(), env)[0])
     t.append(hct.y_to_lstar(xyz[1]))
@@ -25,7 +25,7 @@ print(np.polyfit(t, j, 2).tolist())
 j = []
 t = []
 
-for r in range(200000):
+for r in range(200001):
     xyz = Color('srgb', [-r / 100000] * 3).convert('xyz-d65')
     j.append(cam16.xyz_to_cam(xyz.coords(), env)[0])
     t.append(hct.y_to_lstar(xyz[1]))

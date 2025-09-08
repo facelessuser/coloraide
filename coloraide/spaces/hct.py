@@ -85,21 +85,20 @@ def hct_to_xyz(coords: Vector, env: Environment) -> Vector:
     # Try to start with a reasonable initial guess for J
     # Calculated by curve fitting J vs T.
     if t >= 0:
-        j = 0.00379058511492914 * t * t + 0.608983189401032 * t + 0.9155088574762233
+        j = 0.003790578348640494 * t * t + 0.6089841908066893 * t + 0.9154856839591797
     else:
-        j = 9.514440756550361e-06 * t * t + 0.08693057439788597 * t -21.928975842194614
+        j = 9.514281401058887e-06 * t * t + 0.08693011228986187 * t - 21.92910930537688
 
-    epsilon = 2e-12
+    epsilon = 1e-12
 
     maxiter = 16
     last = math.inf
-    best = j
-    xyz = [0.0] * 3
+    best = xyz = [0.0] * 3
 
     # Try to find a J such that the returned y matches the returned y of the L*
     for _ in range(maxiter):
         prev = j
-        xyz[:] = cam_to_xyz(J=j, C=c, h=h, env=env)
+        xyz = cam_to_xyz(J=j, C=c, h=h, env=env)
 
         # If we are within range, return XYZ
         # If we are closer than last time, save the values
@@ -110,7 +109,7 @@ def hct_to_xyz(coords: Vector, env: Environment) -> Vector:
             return xyz
 
         if delta < last:
-            best = j
+            best = xyz
             last = delta
 
         # ```
@@ -131,15 +130,11 @@ def hct_to_xyz(coords: Vector, env: Environment) -> Vector:
         if j == 0 or abs(prev - j) < epsilon:  # pragma: no cover
             break
 
-    # We could not acquire the precision we desired, return our closest attempt.
-    xyz[:] = cam_to_xyz(J=best, C=c, h=h, env=env)
-
     # ```
-    # if not converged:
-    #     print('FAIL:', [h, c, t], xyz[1], y)
+    # print('FAIL:', [h, c, t], xyz[1], y)
     # ```
 
-    return xyz
+    return best
 
 
 def xyz_to_hct(coords: Vector, env: Environment) -> Vector:
