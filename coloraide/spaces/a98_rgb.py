@@ -1,4 +1,8 @@
-"""A98 RGB color class."""
+"""
+A98 RGB color class.
+
+- https://www.adobe.com/digitalimag/pdfs/AdobeRGB1998.pdf
+"""
 from __future__ import annotations
 from .srgb_linear import sRGBLinear
 from .. import algebra as alg
