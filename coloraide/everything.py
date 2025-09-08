@@ -35,6 +35,7 @@ from .spaces.zcam import ZCAMJMh
 from .spaces.hct import HCT
 from .spaces.ucs import UCS
 from .spaces.rec709 import Rec709
+from .spaces.rec709_oetf import Rec709OETF
 from .spaces.ryb import RYB, RYBBiased
 from .spaces.cubehelix import Cubehelix
 from .spaces.rec2020_oetf import Rec2020OETF
@@ -61,6 +62,7 @@ ColorAll.register(
     [
         # Spaces
         Rec709(),
+        Rec709OETF(),
         DIN99o(),
         LCh99o(),
         Luv(),
