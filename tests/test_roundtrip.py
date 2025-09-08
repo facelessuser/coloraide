@@ -22,7 +22,8 @@ class TestRoundTrip:
     Color.deregister('space:hpluv')
 
     SPACES = dict.fromkeys(Color.CS_MAP, 6)
-    # Not as accurate due to approximation back to CAM16
+    # Not as accurate due to approximation back of J in CAM16 for HCT
+    SPACES['hct'] = 4
 
     COLORS = [
         Color('red'),
