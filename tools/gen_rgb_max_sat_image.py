@@ -83,7 +83,7 @@ def main():
     """Main."""
 
     parser = argparse.ArgumentParser(
-        prog='apply_gamut.py',
+        prog='gen_rgb_max_sat_image.py',
         description='Generate an image containing maximum saturation for a given RGB ICC profile.'
     )
     parser.add_argument('--icc', '-i', help='ICC profile.')
