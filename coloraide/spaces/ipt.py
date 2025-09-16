@@ -11,6 +11,8 @@ from .. import algebra as alg
 from .. import util
 from ..types import Vector
 
+D65 = tuple(util.xyz_to_xyY([0.9504, 1.0, 1.0889])[:-1])  # type: tuple[float, float]  # type: ignore[assignment]
+
 # IPT matrices for LMS conversion with better accuracy for 64 bit doubles
 XYZ_TO_LMS = [
     [0.40021823485770675, 0.7075142362766385, -0.08070681117219487],
@@ -71,7 +73,7 @@ class IPT(Lab):
     # The D65 white point used in the paper was different than what we use.
     # We use chromaticity points (0.31270, 0.3290) which gives us an XYZ of ~[0.9505, 1.0000, 1.0890]
     # IPT uses XYZ of [0.9504, 1.0, 1.0889] which yields chromaticity points ~(0.3127035830618893, 0.32902313032606195)
-    WHITE = tuple(util.xyz_to_xyY([0.9504, 1.0, 1.0889])[:-1])  # type: ignore[assignment]
+    WHITE = D65
 
     def lightness_name(self) -> str:
         """Get lightness name."""
