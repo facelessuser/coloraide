@@ -179,7 +179,7 @@ def scam_to_xyz(
     if J is not None:
         Ia = J
     elif Q is not None:
-        Ia = Q / ((2 * (env.fl ** 0.46)) / env.c)
+        Ia = Q / ((2 * (env.fl ** 0.1)) / env.c)
     I = alg.nth_root(Ia * 0.01, env.cz) * 100
 
     # Calculate the chroma component
@@ -218,7 +218,7 @@ def xyz_to_scam(xyz: Vector, env: Environment, calc_hue_quadrature: bool = True)
     Ia = 100 * alg.spow(I * 0.01, env.cz)
 
     # Brightness
-    Q = Ia * ((2 * (env.fl ** 0.46)) / env.c)
+    Q = Ia * ((2 * (env.fl ** 0.1)) / env.c)
 
     # Colorfulness
     M = (C * (env.fl ** 0.1) * et) * alg.zdiv(1, alg.spow(Ia, 0.27), 0.0) * env.fm
