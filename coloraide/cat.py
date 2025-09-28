@@ -18,9 +18,9 @@ WHITES = {
         "A": (0.44758, 0.40745),
         "B": (0.34842, 0.35161),
         "C": (0.31006, 0.31616),
-        "D50": (0.34570, 0.35850),  # Use 4 digits like everyone
+        "D50": (0.34570, 0.35850),  # Use 4 digits like everyone (0.34567, 0,35851)
         "D55": (0.33243, 0.34744),
-        "D65": (0.31270, 0.32900),  # Use 4 digits like everyone
+        "D65": (0.31270, 0.32900),  # Use 4 digits like everyone (0.31272, 0,32903)
         "D75": (0.29903, 0.31488),
         "ACES-D60": (0.32168, 0.33767),
         "ASTM-E308-D65": cast('tuple[float, float]', tuple(util.xyz_to_xyY([0.95047, 1.0, 1.08883])[:-1])),
