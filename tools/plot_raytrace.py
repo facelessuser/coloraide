@@ -322,7 +322,7 @@ def simulate_raytrace_gamut_mapping(args):
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(
-        prog='raytrace_test.py', description='Test ray tracing.'
+        prog='plot_raytrace.py', description='Plot ray tracing.'
     )
     # Flag arguments
     parser.add_argument(
