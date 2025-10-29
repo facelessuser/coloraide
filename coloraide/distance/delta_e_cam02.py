@@ -34,9 +34,9 @@ class DECAM02(DeltaE):
 
         # Normal approach to specifying CAM02 target space
         cs = color.CS_MAP[space]
-        if not isinstance(color.CS_MAP[space], CAM02UCS):
+        if not isinstance(cs, CAM02UCS):
             raise ValueError("Distance color space must be derived from CAM02UCS.")
-        model = cs.MODEL  # type: ignore[attr-defined]
+        model = cs.MODEL
         kl = COEFFICENTS[model][0]
 
         j1, a1, b1 = color.convert(space).coords(nans=False)
