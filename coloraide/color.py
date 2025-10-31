@@ -81,7 +81,7 @@ from .temperature import CCT
 from .temperature.ohno_2013 import Ohno2013
 from .temperature.robertson_1968 import Robertson1968
 from .types import Plugin
-from typing import overload, Sequence, Iterable, Any, Callable, Mapping
+from typing import Iterator, overload, Sequence, Iterable, Any, Callable, Mapping
 if (3, 11) <= sys.version_info:
     from typing import Self
 else:
@@ -193,6 +193,11 @@ class Color(metaclass=ColorMeta):
         """Get number of channels."""
 
         return len(self._space.channels)
+
+    def __iter__(self) -> Iterator[float]:
+        """Initialize iterator."""
+
+        return iter(self._coords)
 
     @overload
     def __getitem__(self, i: str | int) -> float:

@@ -581,7 +581,7 @@ def carryforward_convert(color: Color, space: str, hue_index: int, powerless: bo
     needs_conversion = space != color.space()
 
     # Only look to "carry forward" if we have undefined channels
-    if needs_conversion and any(math.isnan(c) for c in color):  # type: ignore[attr-defined]
+    if needs_conversion and any(math.isnan(c) for c in color):
         cs1 = color._space
         cs2 = color.CS_MAP[space]
         channels = {
