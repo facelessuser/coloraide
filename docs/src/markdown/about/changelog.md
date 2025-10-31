@@ -12,6 +12,7 @@
     function as specified in the BT.709 paper to give users a way to have the old behavior. `rec709-oetf` is not
     registered by default and must must be registered manually, or the user can import `coloraide.everything.ColorAll`
     which registers all color spaces by default.
+-   **FIX**: Minor typing fixes.
 
 ## 5.1
 
