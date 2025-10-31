@@ -10,7 +10,7 @@ from ..spaces.lab import xyz_to_lab, lab_to_xyz
 from ..spaces.lch import lab_to_lch, lch_to_lab
 from .. import algebra as alg
 from .. import util
-from ..types import Vector, Matrix, AnyColor
+from ..types import Vector, Matrix, AnyColor, VectorLike  # noqa: F401
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:  #pragma: no cover
@@ -18,7 +18,7 @@ if TYPE_CHECKING:  #pragma: no cover
 
 # White point C as defined in the Pointer data spreadsheet
 XYZ_W = (98.0722647623506, 100.0, 118.225418982695)
-WHITE_POINT_SC = tuple(util.xyz_to_xyY(XYZ_W)[:-1])  # type: tuple[float, float]  # type: ignore[assignment]
+WHITE_POINT_SC = tuple(util.xyz_to_xyY(XYZ_W)[:-1])  # type: VectorLike
 # Rows: hue 0 - 350 at steps of 10
 # Columns: lightness 15 - 90 at steps of 5
 LCH_L = [*range(15, 91, 5)]
