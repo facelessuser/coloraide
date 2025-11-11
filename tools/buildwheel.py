@@ -26,7 +26,7 @@ PLAYGROUND_WHEELS = [
 
 PLAYGROUND_PYODIDE_PKGS = ['micropip']
 
-MKDOCS_YML = 'docs/src/mkdocs.yml'
+ZENSICAL_YML = 'docs/src/zensical.yml'
 
 RE_CONFIG = re.compile(r'playground-config.*?\.js')
 RE_BUILD = re.compile(r'Successfully built ([-_0-9.a-zA-Z]+?\.whl)')
@@ -159,10 +159,10 @@ if __name__ == "__main__":
                     f.write(colorpicker)
 
         # Update `mkdocs` source to reference wheel config
-        with open(MKDOCS_YML, 'rb') as f:
+        with open(ZENSICAL_YML, 'rb') as f:
             mkdocs = f.read().decode('utf-8')
         mkdocs = RE_CONFIG.sub(f'playground-config-{hsh}.js', mkdocs)
-        with open(MKDOCS_YML, 'wb') as f:
+        with open(ZENSICAL_YML, 'wb') as f:
             f.write(mkdocs.encode('utf-8'))
 
     print("FAILED :(" if status else "SUCCESS :)")
