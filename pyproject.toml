@@ -171,6 +171,6 @@ legacy_tox_ini = """
         -r requirements/docs.txt
     commands=
         "{envpython}" tools/buildwheel.py
-        "{envpython}" -m mkdocs build --clean --verbose --strict
+        "{envpython}" -m zensical.main build -f zensical.yml --clean --strict
         "{envbindir}"/pyspelling
 """

@@ -6,39 +6,6 @@ on:
     - '*'
 
 jobs:
-
-  documents:
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.13'
-    - name: Setup Node
-      uses: actions/setup-node@v2
-      with:
-        node-version: '22'
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip setuptools
-        python -m pip install -r requirements/dev.txt
-        python -m pip install -r requirements/docs.txt
-        npm install --legacy-peer-deps
-    - name: Deploy documents
-      run: |
-        git config user.name facelessuser
-        git config user.email "${{ secrets.GH_EMAIL }}"
-        git remote add gh-token "https://${{ secrets.GH_TOKEN }}@github.com/facelessuser/coloraide.git"
-        git fetch gh-token && git fetch gh-token gh-pages:gh-pages
-        python tools/buildwheel.py
-        npm run build
-        python -m mkdocs gh-deploy -v --clean --remote-name gh-token
-        git push gh-token gh-pages
-
   build:
     runs-on: ubuntu-latest
 

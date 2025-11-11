@@ -9,7 +9,7 @@
 
 .playground,
 .notebook {
-  button:not(.md-clipboard) {
+  button:not(.md-code__button) {
     position: relative;
     padding: 0 1.5em;
     color: var(--md-typeset-a-color);
