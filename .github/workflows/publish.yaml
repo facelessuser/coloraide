@@ -38,6 +38,7 @@ jobs:
           python -m pip install --upgrade pip build
           python -m pip install -r requirements/dev.txt
           python -m pip install -r requirements/docs.txt
+          npm install --legacy-peer-deps
       - run: |
           python tools/buildwheel.py
           npm run build
