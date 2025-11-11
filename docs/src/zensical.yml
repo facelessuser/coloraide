@@ -339,7 +339,7 @@ markdown_extensions:
       block_tag: 'pre'
 
 extra_css:
-  - assets/pymdownx-extras/extra-2a1405f331.css
+  - assets/pymdownx-extras/extra-7b8e8e17e4.css
   - assets/coloraide-extras/extra.css
   - https://cdn.jsdelivr.net/npm/ace-builds@1.43.0/css/ace.css
 extra_javascript:
