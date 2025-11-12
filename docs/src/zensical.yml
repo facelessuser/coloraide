@@ -44,16 +44,18 @@ theme:
     - navigation.tabs
     - navigation.top
     - navigation.instant
-    - navigation.sections
     - navigation.indexes
-    - toc.follow
-    - content.code.copy
+    - navigation.path
+    - navigation.prune
     - navigation.footer
+    - toc.follow
+    - content.tabs.link
     - search.share
     - search.highlight
     - search.suggest
-  pymdownx:
-    sponsor: "https://github.com/sponsors/facelessuser"
+    - content.code.copy
+    - content.tabs.link
+    - content.code.annotations
 
 nav:
   - ColorAide:
@@ -188,16 +190,16 @@ nav:
           - '1.0': about/releases/1.0.md
 
 markdown_extensions:
-  - markdown.extensions.toc:
+  - toc:
       slugify: !!python/object/apply:pymdownx.slugs.slugify {kwds: {case: lower}}
       permalink: ""
-  - markdown.extensions.smarty:
+  - smarty:
       smart_quotes: false
+  - attr_list:
+  - tables:
+  - abbr:
+  - footnotes:
   - pymdownx.betterem:
-  - markdown.extensions.attr_list:
-  - markdown.extensions.tables:
-  - markdown.extensions.abbr:
-  - markdown.extensions.footnotes:
   - pymdownx.superfences:
       preserve_tabs: true
       custom_fences:
@@ -339,7 +341,7 @@ markdown_extensions:
       block_tag: 'pre'
 
 extra_css:
-  - assets/pymdownx-extras/extra-7b8e8e17e4.css
+  - assets/pymdownx-extras/extra-a1ecc5dcda.css
   - assets/coloraide-extras/extra.css
   - https://cdn.jsdelivr.net/npm/ace-builds@1.43.0/css/ace.css
 extra_javascript:
