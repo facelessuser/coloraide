@@ -46,7 +46,6 @@ theme:
     - navigation.instant
     - navigation.indexes
     - navigation.path
-    - navigation.prune
     - navigation.footer
     - toc.follow
     - content.tabs.link
