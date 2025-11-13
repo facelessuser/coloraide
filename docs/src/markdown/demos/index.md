@@ -11,7 +11,7 @@ All results, from any color space, are gamut mapped to the detected display gamu
 you can force lower gamuts that fit inside your detected gamut as well. Larger gamuts than the detected gamut will be
 unavailable.
 
-[Try it out](./colorpicker.html)
+[Try it out](../examples/colorpicker.html)
 
 ## Interactive 3D Color Space Models
 
@@ -22,4 +22,4 @@ spaces are supported, but color spaces with more than 3 color components (not in
 can be generated in a number of color gamuts, though a few models are restricted to their own color space for practical
 reasons.
 
-[Try it out](./3d_models.html)
+[Try it out](../examples/3d_models.html)
