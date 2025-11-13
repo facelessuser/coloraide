@@ -152,10 +152,10 @@ if __name__ == "__main__":
 
         for demo in ['colorpicker', '3d_models']:
             colorpicker = ''
-            with open(f'docs/src/markdown/demos/{demo}.html') as f:
+            with open(f'docs/src/markdown/examples/{demo}.html') as f:
                 colorpicker = re.sub(r"(?m)(^[ ]*let package = ').*?(')", fr'\1{package}\2', f.read())
             if colorpicker:
-                with open(f'docs/src/markdown/demos/{demo}.html', 'w') as f:
+                with open(f'docs/src/markdown/examples/{demo}.html', 'w') as f:
                     f.write(colorpicker)
 
         # Update `mkdocs` source to reference wheel config
