@@ -1,3 +1,6 @@
+---
+icon: lucide/funnel
+---
 # Filters
 
 ## Description

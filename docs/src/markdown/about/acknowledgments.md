@@ -1,3 +1,6 @@
+---
+icon: lucide/thumbs-up
+---
 # Acknowledgments
 
 All projects gain help and inspiration from somewhere, and we wanted to document the places in which we gathered

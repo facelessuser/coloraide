@@ -1,3 +1,6 @@
+---
+icon: lucide/sun-medium
+---
 # Chromatic Adaptation
 
 ## Description

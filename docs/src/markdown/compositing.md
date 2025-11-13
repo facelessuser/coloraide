@@ -1,3 +1,6 @@
+---
+icon: lucide/blend
+---
 # Compositing and Blending
 
 Alpha compositing and blending are tied together under the umbrella of compositing. Each is just an aspect of the

@@ -1,3 +1,6 @@
+---
+icon: lucide/thermometer
+---
 # Correlated Color Temperature
 
 /// new | New 2.4

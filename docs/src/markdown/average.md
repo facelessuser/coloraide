@@ -1,3 +1,6 @@
+---
+icon: lucide/chart-column
+---
 # Color Averaging
 
 Color averaging is the process taking multiple colors and calculating an average color from them, essentially mixing

@@ -1,3 +1,6 @@
+---
+icon: lucide/sliders-horizontal
+---
 # Manipulating Colors
 
 Once a `#!py3 Color` object is created, you have access to all the color channels. Color channels can be read

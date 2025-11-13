@@ -1,3 +1,6 @@
+---
+icon: lucide/scaling
+---
 # Gamut Mapping
 
 Many color spaces are designed to represent a specific range of colors. This is often done to target specific display

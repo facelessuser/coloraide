@@ -1,3 +1,6 @@
+---
+icon: lucide/contrast
+---
 # Contrast
 
 ## Description

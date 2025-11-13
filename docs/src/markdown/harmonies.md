@@ -1,3 +1,6 @@
+---
+icon: lucide/palette
+---
 # Color Harmonies
 
 Isaac Newton, based on his observations of light interacting with prisms, constructed the first known color wheel. From

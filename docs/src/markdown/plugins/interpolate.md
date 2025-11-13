@@ -1,3 +1,6 @@
+---
+icon: lucide/spline
+---
 # Interpolation
 
 ## Description

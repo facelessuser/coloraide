@@ -1,3 +1,6 @@
+---
+icon: lucide/contrast
+---
 # Contrast
 
 ColorAide provides a number of utilities related to luminance and contrast.

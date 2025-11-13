@@ -1,3 +1,6 @@
+---
+icon: lucide/sun-medium
+---
 # Chromatic Adaptation
 
 Chromatic adaptation is the human visual system's ability to adjust to changes in illumination in order to preserve the

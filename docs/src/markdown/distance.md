@@ -1,3 +1,6 @@
+---
+icon: lucide/ruler
+---
 # Color Distance and Delta E
 
 The difference or distance between two colors allows for a quantified analysis of how far apart two colors are from one

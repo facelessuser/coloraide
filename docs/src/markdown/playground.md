@@ -1,4 +1,5 @@
 ---
+icon: lucide/flask-conical
 hide:
   - navigation
   - toc

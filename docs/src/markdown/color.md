@@ -1,3 +1,6 @@
+---
+icon: lucide/swatch-book
+---
 # The Color Object
 
 The `Color` object is where all the magic of ColorAide happens and provides access to all the color manipulation

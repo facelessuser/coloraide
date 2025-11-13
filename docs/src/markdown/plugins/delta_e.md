@@ -1,3 +1,6 @@
+---
+icon: lucide/ruler
+---
 # Delta E
 
 ## Description

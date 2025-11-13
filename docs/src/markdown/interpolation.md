@@ -1,3 +1,6 @@
+---
+icon: lucide/spline
+---
 # Color Interpolation
 
 Interpolation is a type of estimation that finds new data points based on the range of a discrete set of known data

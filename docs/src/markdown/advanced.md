@@ -1,3 +1,6 @@
+---
+icon: lucide/brain
+---
 # Advanced Topics
 
 Colors are complicated, and sometimes it may not be understood why colors or color transformations yield the results

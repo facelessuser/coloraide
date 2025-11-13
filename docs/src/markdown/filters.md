@@ -1,3 +1,6 @@
+---
+icon: lucide/funnel
+---
 # Filters
 
 ColorAide implements a number of filters with each filter being provided as a plugin. Filters simply apply some logic

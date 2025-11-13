@@ -1,3 +1,6 @@
+---
+icon: lucide/chart-scatter
+---
 # Chromaticity Coordinates
 
 Colors are generally composed of two parts, luminance and chromaticity. Luminance refers to the brightness while

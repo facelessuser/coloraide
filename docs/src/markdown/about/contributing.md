@@ -1,3 +1,6 @@
+---
+icon: lucide/users
+---
 # Contributing &amp; Support
 
 There are many ways to help support this project, regardless of skills and abilities. If you enjoy this project and want

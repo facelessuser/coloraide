@@ -1,3 +1,6 @@
+---
+icon: lucide/case-sensitive
+---
 # String Output
 
 ColorAide supports serializing colors in the same formats that it accepts as inputs. This includes all CSS formats for
