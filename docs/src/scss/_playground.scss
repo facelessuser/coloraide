@@ -230,7 +230,7 @@ div.playground {
 .playground-footer {
   display: flex;
   margin-bottom: 1em;
-  padding: convert.px2em(3px, 13.6px) convert.px2em(16px, 13.6px) convert.px2em(16px, 13.6px);
+  padding: convert.px2em(3px, 13.6px) convert.px2em(16px, 13.6px) convert.px2em(16px, 16px);
   overflow: hidden;
   color: var(--md-code-hl-comment-color);
   font-size: convert.px2em(13.6px);
