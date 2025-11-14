@@ -230,13 +230,13 @@ div.playground {
 .playground-footer {
   display: flex;
   margin-bottom: 1em;
-  padding: convert.px2em(3px, 13.6px) convert.px2em(16px, 13.6px) convert.px2em(2px, 13.6px);
+  padding: convert.px2em(3px, 13.6px) convert.px2em(16px, 13.6px) convert.px2em(16px, 13.6px);
   overflow: hidden;
   color: var(--md-code-hl-comment-color);
   font-size: convert.px2em(13.6px);
   background: var(--md-code-bg-color);
-  border-bottom-right-radius: convert.px2rem(2px);
-  border-bottom-left-radius: convert.px2rem(2px);
+  border-bottom-right-radius: convert.px2rem(9.6px);
+  border-bottom-left-radius: convert.px2rem(9.6px);
 
   hr {
     margin: 0 0 convert.px2em(2px, 13.6px) 0;
