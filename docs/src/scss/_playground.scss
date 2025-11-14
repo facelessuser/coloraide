@@ -255,3 +255,7 @@ div.playground {
     padding-right: 1em;
   }
 }
+
+.md-typeset .playground pre>code {
+  border-radius: 0;
+}
