@@ -231,7 +231,7 @@ div.playground {
   display: flex;
   margin-top: convert.px2em(-1px);
   margin-bottom: 1em;
-  padding: convert.px2em(3px, 13.6px) convert.px2em(16px, 13.6px) convert.px2em(16px, 16px);
+  padding: convert.px2em(3px, 13.6px) convert.px2em(16px, 13.6px) convert.px2em(8px, 16px);
   overflow: hidden;
   color: var(--md-code-hl-comment-color);
   font-size: convert.px2em(13.6px);

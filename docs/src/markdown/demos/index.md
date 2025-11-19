@@ -1,6 +1,3 @@
----
-icon: lucide/cog
----
 # ColorAide Demos
 
 ## Online Color Picker

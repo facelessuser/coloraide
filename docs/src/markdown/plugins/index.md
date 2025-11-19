@@ -1,6 +1,3 @@
----
-icon: lucide/package
----
 # ColorAide Plugins
 
 ColorAide implements extendable portions of the `Color` object as plugins. This makes adding things such as new ∆E

@@ -1,6 +1,3 @@
----
-icon: lucide/house
----
 # Introduction
 
 ## What is ColorAide?

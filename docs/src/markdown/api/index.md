@@ -1,6 +1,3 @@
----
-icon: lucide/book-open
----
 # Color API
 
 ## `#!py coloraide.NaN` {#nan}
