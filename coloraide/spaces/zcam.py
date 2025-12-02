@@ -415,7 +415,7 @@ class ZCAMJMh(LCh):
     CHANNELS = (
         Channel("jz", 0.0, 100.0),
         Channel("mz", 0, 60.0),
-        Channel("hz", 0.0, 360.0, flags=FLG_ANGLE)
+        Channel("hz", flags=FLG_ANGLE)
     )
 
     def normalize(self, coords: Vector) -> Vector:

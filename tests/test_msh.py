@@ -23,12 +23,12 @@ class TestMsh(util.ColorAssertsPyTest):
         # Test color
         ('color(--msh 100 0.1 0.1rad)', 'color(--msh 100 0.1 0.1rad)'),
         ('color(--msh 100 0.1 0.1rad / 0.5)', 'color(--msh 100 0.1 0.1rad / 0.5)'),
-        ('color(--msh 50% 50% 0.1rad / 50%)', 'color(--msh 75 0.8 0.1rad / 0.5)'),
+        ('color(--msh 50% 50% 0.1rad / 50%)', 'color(--msh 89.975 0.8 0.1rad / 0.5)'),
         ('color(--msh none none none / none)', 'color(--msh none none none / none)'),
         # Test percent ranges
         ('color(--msh 0% 0% 0rad)', 'color(--msh 0 0 0rad)'),
-        ('color(--msh 100% 100% 0rad)', 'color(--msh 150 1.6 0rad)'),
-        ('color(--msh -100% -100% 0rad)', 'color(--msh -150 -1.6 0rad)')
+        ('color(--msh 100% 100% 0rad)', 'color(--msh 179.95 1.6 0rad)'),
+        ('color(--msh -100% -100% 0rad)', 'color(--msh -179.95 -1.6 0rad)')
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)
