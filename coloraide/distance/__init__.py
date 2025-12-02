@@ -49,10 +49,12 @@ def distance_euclidean(color: AnyColor, sample: AnyColor, space: str = "lab-d65"
     if c1._space.is_polar():
         hi = c1._space.hue_index()  # type: ignore[attr-defined]
         ri = c1._space.radial_index()  # type: ignore[attr-defined]
-        a, b = alg.polar_to_rect(coords1[ri], coords1[hi])
+        h_max = c1._space.channels[hi].high
+        scale = 360 / h_max
+        a, b = alg.polar_to_rect(coords1[ri], coords1[hi] * scale)
         coords1[hi] = a
         coords1[ri] = b
-        a, b = alg.polar_to_rect(coords2[ri], coords2[hi])
+        a, b = alg.polar_to_rect(coords2[ri], coords2[hi] * scale)
         coords2[hi] = a
         coords2[ri] = b
 
