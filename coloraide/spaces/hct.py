@@ -172,7 +172,7 @@ class HCT(LCh):
     }
 
     CHANNELS = (
-        Channel("h", 0.0, 360.0, flags=FLG_ANGLE),
+        Channel("h", flags=FLG_ANGLE),
         Channel("c", 0.0, 145.0),
         Channel("t", 0.0, 100.0)
     )

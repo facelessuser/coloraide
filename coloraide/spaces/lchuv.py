@@ -16,7 +16,7 @@ class LChuv(LCh):
     CHANNELS = (
         Channel("l", 0.0, 100.0),
         Channel("c", 0.0, 220.0),
-        Channel("h", 0.0, 360.0, flags=FLG_ANGLE)
+        Channel("h", flags=FLG_ANGLE)
     )
 
     def is_achromatic(self, coords: Vector) -> bool:

@@ -110,7 +110,7 @@ class HPLuv(HSL):
     NAME = "hpluv"
     SERIALIZE = ("--hpluv",)
     CHANNELS = (
-        Channel("h", 0.0, 360.0, flags=FLG_ANGLE),
+        Channel("h", flags=FLG_ANGLE),
         Channel("p", 0.0, 100.0, bound=True),
         Channel("l", 0.0, 100.0, bound=True)
     )

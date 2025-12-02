@@ -38,7 +38,7 @@ class OkLCh(LCh):
     CHANNELS = (
         Channel("l", 0.0, 1.0),
         Channel("c", 0.0, 0.4),
-        Channel("h", 0.0, 360.0, flags=FLG_ANGLE)
+        Channel("h", flags=FLG_ANGLE)
     )
     CHANNEL_ALIASES = {
         "lightness": "l",

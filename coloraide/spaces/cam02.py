@@ -281,7 +281,7 @@ class CAM02JMh(LCh):
     CHANNELS = (
         Channel("j", 0.0, 100.0),
         Channel("m", 0, 120.0),
-        Channel("h", 0.0, 360.0, flags=FLG_ANGLE)
+        Channel("h", flags=FLG_ANGLE)
     )
 
     def lightness_name(self) -> str:

@@ -325,7 +325,7 @@ class HellwigJMh(LCh):
     CHANNELS = (
         Channel("j", 0.0, 100.0),
         Channel("m", 0, 70.0),
-        Channel("h", 0.0, 360.0, flags=FLG_ANGLE)
+        Channel("h", flags=FLG_ANGLE)
     )
 
     def lightness_name(self) -> str:
@@ -383,5 +383,5 @@ class HellwigHKJMh(HellwigJMh):
     CHANNELS = (
         Channel("j", 0.0, 101.56018891418564),
         Channel("m", 0, 70.0),
-        Channel("h", 0.0, 360.0, flags=FLG_ANGLE)
+        Channel("h", flags=FLG_ANGLE)
     )

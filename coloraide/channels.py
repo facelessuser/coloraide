@@ -38,8 +38,8 @@ class Channel(str):
     def __new__(
         cls,
         name: str,
-        low: float,
-        high: float,
+        low: float = 0.0,
+        high: float = 1.0,
         bound: bool = False,
         flags: int = 0,
         limit: Callable[[float], float | int] | tuple[float | None, float | None] | None = None,

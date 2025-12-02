@@ -144,7 +144,7 @@ class Okhsv(HSV):
     NAME = "okhsv"
     SERIALIZE = ("--okhsv",)
     CHANNELS = (
-        Channel("h", 0.0, 360.0, flags=FLG_ANGLE),
+        Channel("h", flags=FLG_ANGLE),
         Channel("s", 0.0, 1.0, bound=True),
         Channel("v", 0.0, 1.0, bound=True)
     )

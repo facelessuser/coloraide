@@ -32,7 +32,7 @@ class JzCzhz(LCh):
     CHANNELS = (
         Channel("jz", 0.0, 1.0),
         Channel("cz", 0.0, 0.26),
-        Channel("hz", 0.0, 360.0, flags=FLG_ANGLE)
+        Channel("hz", flags=FLG_ANGLE)
     )
 
     def lightness_name(self) -> str:

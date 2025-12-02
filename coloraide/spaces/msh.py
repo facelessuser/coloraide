@@ -40,9 +40,9 @@ class Msh(LCh):
     NAME = "msh"
     SERIALIZE = ("--msh",)
     CHANNELS = (
-        Channel("m", 0.0, 150.0),
+        Channel("m", 0.0, 179.94996634797567),
         Channel("s", 0.0, 1.6),
-        Channel("h", 0.0, math.tau, flags=FLG_ANGLE, hue=HUE_RAD)
+        Channel("h", flags=FLG_ANGLE, hue=HUE_RAD)
     )
     CHANNEL_ALIASES = {
         "magnitude": "m",
