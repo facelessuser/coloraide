@@ -90,7 +90,7 @@ Color.register(Msh())
 The ["Diverging Color Maps for Scientific Visualization (Expanded)"](https://www.kennethmoreland.com/color-maps/ColorMapsExpanded.pdf)
 paper by Kenneth Moreland outlines an approach to creating _better_ divergent color maps utilizing Msh. It takes two end
 colors and will inject white between the colors if neither of the sides is unsaturated. It then adjusts the unsaturated
-color's hue to ensure a smooth transition by adding some "spin" to in the radial direction to avoid things like a purple
+color's hue to ensure a smooth transition by adding some "spin" in the radial direction to avoid things like a purple
 shift in blue.
 
 ```py play
