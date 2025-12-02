@@ -40,9 +40,15 @@ def average(
     if cs.is_polar():
         hue_index = cs.hue_index()  # type: ignore[attr-defined]
         is_hwb = isinstance(cs, HWBish)
+        hue_max = cs.channels[hue_index].high
+        to_rad = math.tau / hue_max
+        to_hue = hue_max / math.tau
     else:
         hue_index = -1
         is_hwb = False
+        hue_max = 0.0
+        to_rad = 0.0
+        to_hue = 0.0
     channels = cs.channels
     chan_count = len(channels)
     avgs = [0.0] * chan_count
@@ -104,7 +110,7 @@ def average(
                 counts[i] += 1
                 n = counts[i]
                 if i == hue_index:
-                    rad = math.radians(coord)
+                    rad = coord * to_rad
                     sin += ((math.sin(rad) * wfactor) - sin) / n
                     cos += ((math.cos(rad) * wfactor) - cos) / n
                 else:
@@ -132,8 +138,8 @@ def average(
             if abs(sin) < util.ACHROMATIC_THRESHOLD_SM and abs(cos) < util.ACHROMATIC_THRESHOLD_SM:
                 avgs[i] = math.nan
             else:
-                avg_theta = math.degrees(math.atan2(sin, cos))
-                avgs[i] = (avg_theta + 360) if avg_theta < 0 else avg_theta
+                avg_theta = math.atan2(sin, cos) * to_hue
+                avgs[i] = (avg_theta + hue_max) if avg_theta < 0 else avg_theta
         else:
             avgs[i] /= factor
 

@@ -18,6 +18,7 @@ from . import average
 from . import temperature
 from . import util
 from . import algebra as alg
+from .css.serialize import POSTFIX
 from .deprecate import deprecated, warn_deprecated
 from itertools import zip_longest as zipl
 from .css import parse
@@ -694,9 +695,17 @@ class Color(metaclass=ColorMeta):
     def __repr__(self) -> str:
         """Representation."""
 
+        channels = self._space.channels
+        l = len(channels)
+
         return 'color({} {} / {})'.format(
             self._space._serialize()[0],
-            ' '.join([util.fmt_float(coord, util.DEF_PREC, util.DEF_ROUND_MODE) for coord in self[:-1]]),
+            ' '.join(
+                [
+                    util.fmt_float(self[i], util.DEF_PREC, util.DEF_ROUND_MODE) + POSTFIX[channels[i].hue]
+                    for i in range(l - 1)
+                ]
+            ),
             util.fmt_float(self[-1], util.DEF_PREC)
         )
 

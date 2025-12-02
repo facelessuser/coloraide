@@ -7,47 +7,49 @@ from ..types import Vector, AnyColor
 from typing import Any
 
 
-def adjust_shorter(h1: float, h2: float, offset: float) -> tuple[float, float]:
+def adjust_shorter(h1: float, h2: float, offset: float, mx: float) -> tuple[float, float]:
     """Adjust the given hues."""
 
+    half = mx / 2
     d = h2 - h1
-    if d > 180:
-        h2 -= 360.0
-        offset -= 360.0
-    elif d < -180:
-        h2 += 360
-        offset += 360.0
+    if d > half:
+        h2 -= mx
+        offset -= mx
+    elif d < -half:
+        h2 += mx
+        offset += mx
     return h2, offset
 
 
-def adjust_longer(h1: float, h2: float, offset: float) -> tuple[float, float]:
+def adjust_longer(h1: float, h2: float, offset: float, mx: float) -> tuple[float, float]:
     """Adjust the given hues."""
 
+    half = mx / 2
     d = h2 - h1
-    if 0 < d < 180:
-        h2 -= 360.0
-        offset -= 360.0
-    elif -180 < d <= 0:
-        h2 += 360
-        offset += 360.0
+    if 0 < d < half:
+        h2 -= mx
+        offset -= mx
+    elif -half < d <= 0:
+        h2 += mx
+        offset += mx
     return h2, offset
 
 
-def adjust_increase(h1: float, h2: float, offset: float) -> tuple[float, float]:
+def adjust_increase(h1: float, h2: float, offset: float, mx: float) -> tuple[float, float]:
     """Adjust the given hues."""
 
     if h2 < h1:
-        h2 += 360.0
-        offset += 360.0
+        h2 += mx
+        offset += mx
     return h2, offset
 
 
-def adjust_decrease(h1: float, h2: float, offset: float) -> tuple[float, float]:
+def adjust_decrease(h1: float, h2: float, offset: float, mx: float) -> tuple[float, float]:
     """Adjust the given hues."""
 
     if h2 > h1:
-        h2 -= 360.0
-        offset -= 360.0
+        h2 -= mx
+        offset -= mx
     return h2, offset
 
 
@@ -70,13 +72,14 @@ class InterpolatorContinuous(Interpolator[AnyColor]):
         """
 
         index = self.hue_index
+        mx = self.max_hue
 
         if hue == 'specified':
             return (color2 or color1), offset
 
         # Probably the first hue
         if color2 is None:
-            color1[index] = color1[index] % 360
+            color1[index] = color1[index] % mx
             return color1, offset
 
         if hue == 'shorter':
@@ -91,14 +94,14 @@ class InterpolatorContinuous(Interpolator[AnyColor]):
             raise ValueError(f"Unknown hue adjuster '{hue}'")
 
         c1 = color1[index]
-        c2 = (color2[index] % 360) + offset
+        c2 = (color2[index] % mx) + offset
 
         # Adjust hue, handle gaps across `NaN`s
         if not math.isnan(c2):
             if not math.isnan(c1):
-                c2, offset = adjuster(c1, c2, offset)
+                c2, offset = adjuster(c1, c2, offset, mx)
             elif fallback is not None:
-                c2, offset = adjuster(fallback, c2, offset)
+                c2, offset = adjuster(fallback, c2, offset, mx)
 
         color2[index] = c2
         return color2, offset

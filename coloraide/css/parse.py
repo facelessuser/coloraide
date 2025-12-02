@@ -5,7 +5,7 @@ import math
 from .. import algebra as alg
 from ..types import Vector
 from . import color_names
-from ..channels import Channel, FLG_ANGLE
+from ..channels import Channel, FLG_ANGLE, HUE_DEG
 from typing import TYPE_CHECKING, Any
 import functools
 
@@ -13,12 +13,12 @@ if TYPE_CHECKING:  # pragma: no cover
     from ..spaces import Space
 
 RGB_CHANNEL_SCALE = 1.0 / 255.0
-HUE_SCALE = 1.0 / 360.0
 SCALE_PERCENT = 1 / 100.0
 MAX_CHANNELS = 16
 
 CONVERT_TURN = 360
 CONVERT_GRAD = 90 / 100
+CONVERT_RAD = 180 / math.pi
 
 RE_HEX = re.compile(r'(?i)(\#)((?:[a-f0-9]{6}(?:[a-f0-9]{2})?|[a-f0-9]{3}(?:[a-f0-9])?))\b')
 RE_NAME = re.compile(r'(?i)\b([a-z]{3,})\b')
@@ -106,7 +106,7 @@ def norm_angle_channel(angle: str) -> float:
     elif angle.endswith('grad'):
         value = norm_float(angle[:-4]) * CONVERT_GRAD
     elif angle.endswith('rad'):
-        value = math.degrees(norm_float(angle[:-3]))
+        value = norm_float(angle[:-3]) * CONVERT_RAD
     elif angle.endswith('deg'):
         value = norm_float(angle[:-3])
     else:
@@ -163,7 +163,8 @@ def parse_channels(color: list[str], boundry: tuple[Channel, ...], scaled: bool 
         if i < length:
             bound = boundry[i]
             if bound.flags & FLG_ANGLE:
-                channels.append(norm_angle_channel(c))
+                v = norm_angle_channel(c)
+                channels.append(v * (bound.high / 360) if bound.hue != HUE_DEG else v)
             elif scaled:
                 channels.append(norm_scaled_color_channel(c, bound.high))
             else:
@@ -194,7 +195,8 @@ def parse_color(tokens: dict[str, Any], space: Space) -> tuple[Vector, float] | 
         c = tokens['func']['values'][i]['value']
         channel = properties[i]
         if channel.flags & FLG_ANGLE:
-            channels.append(norm_angle_channel(c))
+            v = norm_angle_channel(c)
+            channels.append(v * (channel.high / 360) if channel.hue != HUE_DEG else v)
         else:
             channels.append(norm_color_channel(c.lower(), channel.span, channel.offset))
     return (channels, alpha)
