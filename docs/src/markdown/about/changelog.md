@@ -3,6 +3,12 @@ icon: lucide/scroll-text
 ---
 # Changelog
 
+## 6.1
+
+-   **NEW**: Add new Msh color space.
+-   **NEW**: Abstract hue handling throughout the code to allow for colors with hues that default to other units, such
+    as radians, which is required by Msh.
+
 ## 6.0
 
 -   **BREAK**: Update Rec. 2020 to be display referred using the EOTF in BT.1886 with a gamma of 2.4. This matches the

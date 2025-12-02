@@ -73,6 +73,7 @@ flowchart LR
     xyz-d50 --- lab --- lch
 
     xyz-d65 --- lab-d65 --- lch-d65
+        lab-d65 --- msh
 
     xyz-d65 --- oklab --- oklch
         oklab --- okhsl
@@ -163,6 +164,7 @@ flowchart LR
     lch99o(DIN99o LCh)
     lchuv(LChuv)
     luv(Luv)
+    msh(Msh)
     okhsl(Okhsl)
     okhsv(Okhsv)
     oklab(Oklab)
@@ -233,6 +235,7 @@ flowchart LR
     click lch99o "./lch99o/" _self
     click lchuv "./lchuv/" _self
     click luv "./luv/" _self
+    click msh "./msh/" _self
     click okhsl "./okhsl/" _self
     click okhsv "./okhsv/" _self
     click oklab "./oklab/" _self
@@ -316,6 +319,7 @@ Color Space                                     | ID
 [Linear sRGB](./srgb_linear.md)                 | `srgb-linear`
 [Luv LCh](./lchuv.md)                           | `lchuv`
 [Luv](./luv.md)                                 | `luv`
+[Msh](./msh.md)                                 | `msh`
 [Okhsl](./okhsl.md)                             | `okhsl`
 [Okhsv](./okhsv.md)                             | `okhsv`
 [Oklab](./oklab.md)                             | `oklab`
