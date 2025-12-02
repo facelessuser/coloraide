@@ -17,14 +17,22 @@ def run(gamut, space, max_chroma, adaptive, calc_near):
     far_de = max_de = 0
     far_worst = worst = None
     lch = Color('white').convert(space)
-    l, _, h = lch._space.indexes()
+    l, c, h = lch._space.indexes()
+    max_hue = lch._space.channels[h].high
+    half_hue = max_hue / 2
+    scale = max_hue / 360
+
     scale = lch[l] / 100
 
     start = 0
     for light in range(0, 100):
         end = light
         for hue in range(360):
-            c1 = Color(space, [light * scale, max_chroma, hue / 2])
+            coords = [0.0] * 3
+            coords[l] = light * scale
+            coords[c] = max_chroma
+            coords[h] = (hue * scale) / 2
+            c1 = Color(space, coords)
             c2 = c1.clone().fit(gamut, method='raytrace', pspace=space, adaptive=adaptive)
             de = c1.delta_e(c2, method='2000')
             dl = (c1[l] - c2[l])
@@ -36,10 +44,10 @@ def run(gamut, space, max_chroma, adaptive, calc_near):
 
             h1, h2 = c1[h], c2[h]
             dh = (h1 - h2)
-            if dh > 180:
-                dh -= 360
-            elif dh < -180:
-                dh += 360
+            if dh > half_hue:
+                dh -= max_hue
+            elif dh < -half_hue:
+                dh += max_hue
             if abs(dh) > abs(max_delta_h):
                 max_delta_h = dh
                 worst = c1
@@ -80,10 +88,10 @@ def run(gamut, space, max_chroma, adaptive, calc_near):
 
             h1, h2 = c1[h], c2[h]
             dh = (h1 - h2)
-            if dh > 180:
-                dh -= 360
-            elif dh < -180:
-                dh += 360
+            if dh > half_hue:
+                dh -= max_hue
+            elif dh < -half_hue:
+                dh += max_hue
             if abs(dh) > abs(max_delta_h):
                 max_delta_h = dh
                 worst = c1

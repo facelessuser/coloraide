@@ -5,7 +5,7 @@ import math
 from .. import util
 from .. import algebra as alg
 from .color_names import to_name
-from ..channels import FLG_ANGLE
+from ..channels import FLG_ANGLE, HUE_DEG, HUE_RAD, HUE_GRAD, HUE_TURN, HUE_NULL
 from ..types import Vector
 from typing import Sequence, Any, TYPE_CHECKING
 
@@ -18,6 +18,14 @@ COMMA = ', '
 SLASH = ' / '
 SPACE = ' '
 EMPTY = ''
+
+POSTFIX = {
+    HUE_NULL: '',
+    HUE_DEG: '',
+    HUE_RAD: 'rad',
+    HUE_GRAD: 'grad',
+    HUE_TURN: 'turn'
+}
 
 
 def named_color(
@@ -84,11 +92,14 @@ def color_function(
             string.append(COMMA if legacy else SPACE)
         channel = channels[idx]
 
-        if not (channel.flags & FLG_ANGLE) and percent and util.get_index(percent, idx, False):
+        angle = channel.flags & FLG_ANGLE
+        post = POSTFIX[channel.hue] if angle and channel.hue != HUE_DEG else ''
+
+        if not angle and percent and util.get_index(percent, idx, False):
             span, offset = channel.span, channel.offset
         else:
             span = offset = 0.0
-            if not channel.flags & FLG_ANGLE and not is_last:
+            if not angle and not is_last:
                 value *= scale
 
         string.append(
@@ -98,7 +109,7 @@ def color_function(
                 rounding,
                 span,
                 offset
-            )
+            ) + post
         )
 
     string.append(')')

@@ -14,8 +14,10 @@ try:
     from coloraide_extras.everything import ColorAll as Color
 except ImportError:
     from coloraide.everything import ColorAll as Color
+from coloraide.channels import HUE_DEG
 from coloraide.spaces import HSLish, HSVish, HWBish, Labish, LChish, RGBish  # noqa: E402
 from coloraide import algebra as alg  # noqa: E402
+from coloraide.css.serialize import POSTFIX  # noqa: E402
 
 FORCE_OWN_GAMUT = {'ryb', 'ryb-biased'}
 
@@ -167,7 +169,7 @@ def cyl_disc(
 
     # Using a lightness of 0 can sometimes cause the bottom not to show with certain resolutions, so use a very
     # small value instead.
-    zpos = 1e-16 if location == 'bottom' else 1.0 * factor
+    zpos = 1e-14 if location == 'bottom' else 1.0 * factor
 
     x = []
     y = []
@@ -176,9 +178,12 @@ def cyl_disc(
     v = []
     cmap = []
 
+    min_hue = cs.channels[cs.hue_index()].low
+    max_hue = cs.channels[cs.hue_index()].high
+
     # Interpolate a circle on the outer edge
     s1 = ColorCyl.steps(
-        [ColorCyl(gamut, [hue, 1 * factor, 1 * zpos]) for hue in alg.linspace(0, 360, 2, endpoint=True)],
+        [ColorCyl(gamut, [hue, 1 * factor, 1 * zpos]) for hue in alg.linspace(min_hue, max_hue, 2, endpoint=True)],
         steps=max(7, (resolution // 6) * 6 + 1),
         space=gamut,
         hue='specified'
@@ -222,16 +227,18 @@ def store_coords(c, x, y, z, flags):
 
     # LCh spaces
     if flags['is_lchish']:
-        light, chroma, hue = c._space.names()
-        a, b = alg.polar_to_rect(c[chroma], c[hue])
+        light, chroma, hue = c._space.indexes()
+        h = (c[hue] * (360 / c._space.channels[hue].high)) if c._space.channels[hue] != HUE_DEG else c[hue]
+        a, b = alg.polar_to_rect(c[chroma], h)
         x.append(a)
         y.append(b)
         z.append(c[light])
 
     # HSL, HSV, or HWB spaces
     elif flags['is_hslish'] or flags['is_hsvish'] or flags['is_hwbish']:
-        hue, sat, light = c._space.names()
-        a, b = alg.polar_to_rect(c[sat], c[hue])
+        hue, sat, light = c._space.indexes()
+        h = (c[hue] * (360 / c._space.channels[hue].high)) if c._space.channels[hue] != HUE_DEG else c[hue]
+        a, b = alg.polar_to_rect(c[sat], h)
         x.append(a)
         y.append(b)
         z.append(c[light])
@@ -239,8 +246,9 @@ def store_coords(c, x, y, z, flags):
     # Any other generic cylindrical space that doesn't fit in the categories above.
     elif flags['is_cyl']:
         hue = c._space.hue_index()
+        h = (c[hue] * (360 / c._space.channels[hue].high)) if c._space.channels[hue] != HUE_DEG else c[hue]
         radius = c._space.radial_index()
-        a, b = alg.polar_to_rect(c[radius], c[hue])
+        a, b = alg.polar_to_rect(c[radius], h)
         x.append(a)
         y.append(b)
         z.append(c[3 - hue - radius])
@@ -301,15 +309,18 @@ def render_space_cyl(fig, space, gamut, resolution, opacity, edges, faces, ecolo
     # Include, at the very least, 6 evenly spaced hues, and at higher resolutions
     # will include a multiple that will include the same 6 key points.
     # In HSL, this will cover all the corners of the RGB space.
+    min_hue = cs.channels[cs.hue_index()].low
+    max_hue = cs.channels[cs.hue_index()].high
+
     s1 = ColorCyl.steps(
-        [ColorCyl(gspace, [hue, 1 * factor, 1 * factor]) for hue in alg.linspace(0, 360, 2, endpoint=True)],
+        [ColorCyl(gspace, [hue, 1 * factor, 1 * factor]) for hue in alg.linspace(min_hue, max_hue, 2, endpoint=True)],
         steps=max(7, (resolution // 6) * 6 + 1),
         space=gspace,
         hue='specified'
     )
     # A generic color at the bottom of the space which we can rotate for
     # interpolation by changing the hue.
-    s2 = ColorCyl(gspace, [alg.NaN, 1 * factor, 1e-16])
+    s2 = ColorCyl(gspace, [alg.NaN, 1 * factor, 1e-14])
 
     # Create a 3D mesh by interpolating ring at each lightness down the cylinder side.
     # Include at least 3 points of lightness: lightest, darkest, and mid, which in
@@ -418,7 +429,16 @@ def plot_gamut_in_space(
         "gridcolor": gridcolor,
         "zerolinecolor": zerolinecolor,
     }
-    xaxis = str(names[axm[0]]) if not is_cyl else f"{names[axm[0]]} (0˚ - 360˚)"
+    min_hue = target.channels[target.hue_index()].low
+    max_hue = target.channels[target.hue_index()].high
+    type_hue = target.channels[target.hue_index()].hue
+
+    if not is_cyl:
+        xaxis = str(names[axm[0]])
+    elif max_hue == 360:
+        xaxis = f"{names[axm[0]]} (0˚ - 360˚)"
+    else:
+        xaxis = f"{names[axm[0]]} ({min_hue}{POSTFIX[type_hue]} - {max_hue}{POSTFIX[type_hue]})"
     yaxis = str(names[axm[1]])
     zaxis = str(names[axm[2]])
 

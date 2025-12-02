@@ -145,6 +145,10 @@ def plot_slice(
     else:
         lightness, chroma, hue = cs.names()
 
+    hue_index = cs.hue_index()
+    max_hue = cs.channels[hue_index].high
+    to_degree = 360 / max_hue
+
     if gmap is None:
         gmap = {'method': 'raytrace'}
 
@@ -156,17 +160,17 @@ def plot_slice(
     theta = []
     r = []
     maximums = []
-    for h in alg.linspace(0, 360, res):
+    for h in alg.linspace(0.0, max_hue, res):
         custom[hue] = h
         custom[lightness] = constant
         custom[chroma] = max_chroma
         custom.fit(gamut, **gmap)
         mx = custom[chroma]
         chromas = []
-        for c in alg.linspace(0, mx, res):
+        for c in alg.linspace(0.0, mx, res):
             custom[lightness] = constant
             custom[chroma] = c
-            theta.append(h)
+            theta.append(h * to_degree)
             chromas.append(c)
             cmap.append(custom.convert('srgb').to_string(hex=True, **gmap))
         maximums.append((h, mx))
@@ -214,6 +218,10 @@ def main():
         CustomColor = get_cylinder(Color, space)
         space = '-custom-cylinder'
         cs = CustomColor.CS_MAP[space]
+
+    hue_index = cs.hue_index()
+    max_hue = cs.channels[hue_index].high
+    to_degree = 360 / max_hue
 
     c_original = CustomColor(args.color)
     c1 = c_original.convert(space)
@@ -266,7 +274,7 @@ def main():
         if args.map_colors:
             [c.fit(args.gamut, method=gmap) for c in colors]
 
-        hues1 = [c[hue] % 360 for c in colors]
+        hues1 = [c[hue] % max_hue for c in colors]
         chromas = [c[chroma] for c in colors]
         hues2 = [m[0] for m in maximums]
 
@@ -287,8 +295,8 @@ def main():
             h1 = maximums[start][0]
             h2 = maximums[end][1]
             dh = (h1 - h2)
-            if dh > 180:
-                h2 += 360
+            if dh > (max_hue / 2):
+                h2 += max_hue
 
             # Use inverse interpolation to determine where between our hue map we are.
             # Then use that point to calculate the approximate max chroma for that hue.
@@ -299,7 +307,7 @@ def main():
 
             fig.add_traces(data=go.Scatterpolar(
                 r=[0, norm_c],
-                theta=[0, h],
+                theta=[0, h * to_degree],
                 mode="lines+markers",
                 line={'color': 'black', 'width': 2},
                 marker={

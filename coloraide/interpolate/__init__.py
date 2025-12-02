@@ -104,8 +104,12 @@ class Interpolator(Generic[AnyColor], metaclass=ABCMeta):
         cs = self.color_cls.CS_MAP[space]
         if cs.is_polar():
             self.hue_index = cs.hue_index()  # type: ignore[attr-defined]
+            self.max_hue = cs.channels[self.hue_index].high
+            self.half_hue = self.max_hue / 2
         else:
             self.hue_index = -1
+            self.max_hue = 0.0
+            self.half_hue = 0.0
         self.premultiplied = premultiplied
 
         # Calculate padded start and end

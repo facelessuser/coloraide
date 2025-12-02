@@ -50,28 +50,31 @@ class InterpolatorCSSLinear(InterpolatorLinear[AnyColor]):
         if hue == "specified":
             return
 
-        c1 %= 360
-        c2 %= 360
+        mx = self.max_hue
+        half = self.half_hue
+
+        c1 %= mx
+        c2 %= mx
 
         if hue == "shorter":
-            if c2 - c1 > 180:
-                c1 += 360
-            elif c2 - c1 < -180:
-                c2 += 360
+            if c2 - c1 > half:
+                c1 += mx
+            elif c2 - c1 < -half:
+                c2 += mx
 
         elif hue == "longer":
-            if 0 < (c2 - c1) < 180:
-                c1 += 360
-            elif -180 < (c2 - c1) <= 0:
-                c2 += 360
+            if 0 < (c2 - c1) < half:
+                c1 += mx
+            elif -half < (c2 - c1) <= 0:
+                c2 += mx
 
         elif hue == "increasing":
             if c2 < c1:
-                c2 += 360
+                c2 += mx
 
         elif hue == "decreasing":
             if c1 < c2:
-                c1 += 360
+                c1 += mx
 
         else:
             raise ValueError(f"Unknown hue adjuster '{hue}'")

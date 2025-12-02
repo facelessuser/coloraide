@@ -17,19 +17,20 @@ WHITE = util.xy_to_xyz(WHITES['2deg']['D65'])
 BLACK = [0, 0, 0]
 
 
-def adjust_hue(hue: float, deg: float) -> float:
+def adjust_hue(hue: float, deg: float, scale: float) -> float:
     """Adjust hue by the given degree."""
 
-    return hue + deg
+    return hue + deg * scale
 
 
-def get_cylinder(color: Color) -> tuple[Vector, int]:
+def get_cylinder(color: Color) -> tuple[Vector, int, float]:
     """Return cylindrical values from a select number of color spaces on the fly."""
 
     space = color.space()
 
     if color._space.is_polar():
-        return color[:-1], color._space.hue_index()  # type: ignore[attr-defined]
+        h_idx = color._space.hue_index()  # type: ignore[attr-defined]
+        return color[:-1], h_idx, color._space.channels[h_idx].high / 360.0
 
     cs = color.CS_MAP[color.space()]  # type: Space
     achromatic = color.is_achromatic()
@@ -38,7 +39,7 @@ def get_cylinder(color: Color) -> tuple[Vector, int]:
         idx = cs.indexes()
         values = color[:-1]
         c, h = alg.rect_to_polar(values[idx[1]], values[idx[2]])
-        return [values[idx[0]], c, h if not achromatic else alg.NaN], 2
+        return [values[idx[0]], c, h if not achromatic else alg.NaN], 2, 1.0
 
     if isinstance(cs, Prism) and not isinstance(cs, Luminant):
         coords = color[:-1]
@@ -58,7 +59,7 @@ def get_cylinder(color: Color) -> tuple[Vector, int]:
         hsl = srgb_to_hsl(coords)
         if achromatic:
             hsl[0] = alg.NaN
-        return hsl, 0
+        return hsl, 0, 1.0
 
     raise ValueError(f'Unsupported color space type {space}')  # pragma: no cover
 
@@ -235,14 +236,14 @@ class Geometric(Harmony):
 
         # Get the color cylinder
         color = color.convert(space, norm=False).normalize()
-        coords, h_idx = get_cylinder(color)
+        coords, h_idx, h_scale = get_cylinder(color)
 
         # Adjusts hue and convert to the final color
         degree = current = 360.0 / self.count
         colors = [from_cylinder(color, coords)]
         for _ in range(self.count - 1):
             coords2 = coords[:]
-            coords2[h_idx] = adjust_hue(coords2[h_idx], current)
+            coords2[h_idx] = adjust_hue(coords2[h_idx], current, h_scale)
             colors.append(from_cylinder(color, coords2))
             current += degree
         return colors
@@ -293,14 +294,14 @@ class SplitComplementary(Harmony):
 
         # Get the color cylinder
         color = color.convert(space, norm=False).normalize()
-        coords, h_idx = get_cylinder(color)
+        coords, h_idx, h_scale = get_cylinder(color)
 
         # Adjusts hue and convert to the final color
         colors = [from_cylinder(color, coords)]
         clone = coords[:]
-        clone[h_idx] = adjust_hue(clone[h_idx], -210)
+        clone[h_idx] = adjust_hue(clone[h_idx], -210, h_scale)
         colors.append(from_cylinder(color, clone))
-        coords[h_idx] = adjust_hue(coords[h_idx], 210)
+        coords[h_idx] = adjust_hue(coords[h_idx], 210, h_scale)
         colors.insert(0, from_cylinder(color, coords))
         return colors
 
@@ -313,14 +314,14 @@ class Analogous(Harmony):
 
         # Get the color cylinder
         color = color.convert(space, norm=False).normalize()
-        coords, h_idx = get_cylinder(color)
+        coords, h_idx, h_scale = get_cylinder(color)
 
         # Adjusts hue and convert to the final color
         colors = [from_cylinder(color, coords)]
         clone = coords[:]
-        clone[h_idx] = adjust_hue(clone[h_idx], 30)
+        clone[h_idx] = adjust_hue(clone[h_idx], 30, h_scale)
         colors.append(from_cylinder(color, clone))
-        coords[h_idx] = adjust_hue(coords[h_idx], -30)
+        coords[h_idx] = adjust_hue(coords[h_idx], -30, h_scale)
         colors.insert(0, from_cylinder(color, coords))
         return colors
 
@@ -333,17 +334,17 @@ class TetradicRect(Harmony):
 
         # Get the color cylinder
         color = color.convert(space, norm=False).normalize()
-        coords, h_idx = get_cylinder(color)
+        coords, h_idx, h_scale = get_cylinder(color)
 
         # Adjusts hue and convert to the final color
         colors = [from_cylinder(color, coords)]
         clone = coords[:]
-        clone[h_idx] = adjust_hue(clone[h_idx], 30)
+        clone[h_idx] = adjust_hue(clone[h_idx], 30, h_scale)
         colors.append(from_cylinder(color, clone))
         clone = coords[:]
-        clone[h_idx] = adjust_hue(clone[h_idx], 180)
+        clone[h_idx] = adjust_hue(clone[h_idx], 180, h_scale)
         colors.append(from_cylinder(color, clone))
-        coords[h_idx] = adjust_hue(coords[h_idx], 210)
+        coords[h_idx] = adjust_hue(coords[h_idx], 210, h_scale)
         colors.append(from_cylinder(color, coords))
         return colors
 
