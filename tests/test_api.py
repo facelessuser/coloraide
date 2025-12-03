@@ -60,6 +60,19 @@ class TestMisc(util.ColorAsserts, unittest.TestCase):
             'lab(30 56 -36 / 0.523)'
         )
 
+    def test_to_string_angle(self):
+        """Test string output with user specified angle."""
+
+        self.assertEqual(
+            Color('purple').convert('hsl').to_string(),
+            'hsl(300 100 25.098)'
+        )
+
+        self.assertEqual(
+            Color('purple').convert('hsl').to_string(angle='rad'),
+            'hsl(5.236rad 100 25.098)'
+        )
+
     def test_to_string_bad_value(self):
         """Test that serializing infinity fails."""
 

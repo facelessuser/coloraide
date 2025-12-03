@@ -14,7 +14,7 @@ try:
     from coloraide_extras.everything import ColorAll as Color
 except ImportError:
     from coloraide.everything import ColorAll as Color
-from coloraide.channels import HUE_DEG
+from coloraide.channels import ANGLE_DEG
 from coloraide.spaces import HSLish, HSVish, HWBish, Labish, LChish, RGBish  # noqa: E402
 from coloraide import algebra as alg  # noqa: E402
 from coloraide.css.serialize import POSTFIX  # noqa: E402
@@ -228,7 +228,7 @@ def store_coords(c, x, y, z, flags):
     # LCh spaces
     if flags['is_lchish']:
         light, chroma, hue = c._space.indexes()
-        h = (c[hue] * (360 / c._space.channels[hue].high)) if c._space.channels[hue] != HUE_DEG else c[hue]
+        h = (c[hue] * (360 / c._space.channels[hue].high)) if c._space.channels[hue] != ANGLE_DEG else c[hue]
         a, b = alg.polar_to_rect(c[chroma], h)
         x.append(a)
         y.append(b)
@@ -237,7 +237,7 @@ def store_coords(c, x, y, z, flags):
     # HSL, HSV, or HWB spaces
     elif flags['is_hslish'] or flags['is_hsvish'] or flags['is_hwbish']:
         hue, sat, light = c._space.indexes()
-        h = (c[hue] * (360 / c._space.channels[hue].high)) if c._space.channels[hue] != HUE_DEG else c[hue]
+        h = (c[hue] * (360 / c._space.channels[hue].high)) if c._space.channels[hue] != ANGLE_DEG else c[hue]
         a, b = alg.polar_to_rect(c[sat], h)
         x.append(a)
         y.append(b)
@@ -246,7 +246,7 @@ def store_coords(c, x, y, z, flags):
     # Any other generic cylindrical space that doesn't fit in the categories above.
     elif flags['is_cyl']:
         hue = c._space.hue_index()
-        h = (c[hue] * (360 / c._space.channels[hue].high)) if c._space.channels[hue] != HUE_DEG else c[hue]
+        h = (c[hue] * (360 / c._space.channels[hue].high)) if c._space.channels[hue] != ANGLE_DEG else c[hue]
         radius = c._space.radial_index()
         a, b = alg.polar_to_rect(c[radius], h)
         x.append(a)

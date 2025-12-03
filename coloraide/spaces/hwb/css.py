@@ -24,6 +24,7 @@ class HWB(base.HWB):
         none: bool = False,
         color: bool = False,
         percent: bool | Sequence[bool] = False,
+        angle: str = 'deg',
         **kwargs: Any
     ) -> str:
         """Convert to CSS."""
@@ -38,7 +39,8 @@ class HWB(base.HWB):
             none=none,
             color=color,
             percent=percent,
-            scale=100
+            scale=100,
+            angle=angle
         )
 
     def match(

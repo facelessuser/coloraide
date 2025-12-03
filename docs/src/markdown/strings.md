@@ -326,3 +326,14 @@ fallback to whatever the other options dictate.
 ```py play
 Color("#663399").to_string(names=True)
 ```
+
+### Angle
+
+Polar spaces that output colors in a CSS function often can have angles specified in the units of degrees, radians,
+gradians, or turns. The default is usually degrees, except in rare occasions where the color space is defined with other
+units. If you'd like to serialize the color with a specific, supported unit type, you specify the unit via the `angle`
+option. Supported options are: `deg`, `rad`, `grad`, and `turn`.
+
+```py play
+Color("hsl", [270, 1, 0.5]).to_string(angle='rad')
+```

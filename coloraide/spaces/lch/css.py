@@ -24,6 +24,7 @@ class LCh(base.CIELCh):
         none: bool = False,
         color: bool = False,
         percent: bool | Sequence[bool] = False,
+        angle: str = 'deg',
         **kwargs: Any
     ) -> str:
         """Convert to CSS."""
@@ -37,7 +38,8 @@ class LCh(base.CIELCh):
             fit=fit,
             none=none,
             color=color,
-            percent=percent
+            percent=percent,
+            angle=angle
         )
 
     def match(

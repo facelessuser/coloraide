@@ -6,8 +6,9 @@ icon: lucide/scroll-text
 ## 6.1
 
 -   **NEW**: Add new Msh color space.
--   **NEW**: Abstract hue handling throughout the code to allow for colors with hues that default to other units, such
+-   **NEW**: Abstract angle handling throughout the code to allow for colors with hues that default to other units, such
     as radians, which is required by Msh.
+-   **NEW**: Allow specifying angle units for string output in `to_string` via `angle` parameter.
 
 ## 6.0
 

@@ -8,17 +8,17 @@ FLG_ANGLE = 1
 FLG_PERCENT = 2
 FLG_OPT_PERCENT = 4
 FLG_MIRROR_PERCENT = 8
-HUE_NULL = 0
-HUE_DEG = 1
-HUE_RAD = 2
-HUE_GRAD = 3
-HUE_TURN = 4
+ANGLE_NULL = 0
+ANGLE_DEG = 1
+ANGLE_RAD = 2
+ANGLE_GRAD = 3
+ANGLE_TURN = 4
 
-HUE_RANGE = {
-    HUE_DEG: (0.0, 360.0),
-    HUE_RAD: (0.0, math.tau),
-    HUE_GRAD: (0.0, 400),
-    HUE_TURN: (0.0, 1.0)
+ANGLE_RANGE = {
+    ANGLE_DEG: (0.0, 360.0),
+    ANGLE_RAD: (0.0, math.tau),
+    ANGLE_GRAD: (0.0, 400),
+    ANGLE_TURN: (0.0, 1.0)
 }
 
 
@@ -44,17 +44,17 @@ class Channel(str):
         flags: int = 0,
         limit: Callable[[float], float | int] | tuple[float | None, float | None] | None = None,
         nans: float = 0.0,
-        hue: int = HUE_NULL
+        angle: int = ANGLE_NULL
     ) -> Channel:
         """Initialize."""
 
         obj = super().__new__(cls, name)
         obj.bound = bound
         obj.flags = flags
-        obj.hue = (HUE_DEG if hue == HUE_NULL else hue) if flags & FLG_ANGLE else HUE_NULL
+        obj.hue = (ANGLE_DEG if angle == ANGLE_NULL else angle) if flags & FLG_ANGLE else ANGLE_NULL
         if obj.hue:
-            obj.low = HUE_RANGE[obj.hue][0]
-            obj.high = HUE_RANGE[obj.hue][1]
+            obj.low = ANGLE_RANGE[obj.hue][0]
+            obj.high = ANGLE_RANGE[obj.hue][1]
         else:
             obj.low = low
             obj.high = high

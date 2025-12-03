@@ -18,7 +18,7 @@ from . import average
 from . import temperature
 from . import util
 from . import algebra as alg
-from .css.serialize import POSTFIX
+from .channels import ANGLE_DEG, ANGLE_RAD, ANGLE_GRAD, ANGLE_TURN, ANGLE_NULL
 from .deprecate import deprecated, warn_deprecated
 from itertools import zip_longest as zipl
 from .css import parse
@@ -89,6 +89,14 @@ else:
     from typing_extensions import Self
 
 SUPPORTED_CHROMATICITY_SPACES = {'xyz', 'uv-1960', 'uv-1976', 'xy-1931'}
+
+POSTFIX = {
+    ANGLE_NULL: '',
+    ANGLE_DEG: 'deg',
+    ANGLE_RAD: 'rad',
+    ANGLE_GRAD: 'grad',
+    ANGLE_TURN: 'trun'
+}
 
 
 class ColorMatch:

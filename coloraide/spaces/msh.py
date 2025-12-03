@@ -5,11 +5,17 @@ Accounts for negative lightness and uses degrees for hue instead of radians.
 
 - https://www.kennethmoreland.com/color-maps/ColorMapsExpanded.pdf
 """
+from __future__ import annotations
 import math
 from .lch import LCh
 from ..cat import WHITES
-from ..channels import Channel, FLG_ANGLE, HUE_RAD
+from ..channels import Channel, FLG_ANGLE, ANGLE_RAD
+from ..css import serialize
 from ..types import Vector
+from typing import TYPE_CHECKING, Sequence, Any
+
+if TYPE_CHECKING:  #pragma: no cover
+    from ..color import Color
 
 
 def lab_to_msh(lab: Vector) -> Vector:
@@ -42,7 +48,7 @@ class Msh(LCh):
     CHANNELS = (
         Channel("m", 0.0, 179.94996634797567),
         Channel("s", 0.0, 1.6),
-        Channel("h", flags=FLG_ANGLE, hue=HUE_RAD)
+        Channel("h", flags=FLG_ANGLE, angle=ANGLE_RAD)
     )
     CHANNEL_ALIASES = {
         "magnitude": "m",
@@ -79,3 +85,30 @@ class Msh(LCh):
         """From Lab to LCh."""
 
         return lab_to_msh(coords)
+
+    def to_string(
+        self,
+        parent: Color,
+        *,
+        alpha: bool | None = None,
+        precision: int | Sequence[int] | None = None,
+        rounding: str | None = None,
+        fit: str | bool | dict[str, Any] = True,
+        none: bool = False,
+        percent: bool | Sequence[bool] = False,
+        angle: str = 'rad',
+        **kwargs: Any
+    ) -> str:
+        """Convert to CSS 'color' string: `color(space coords+ / alpha)`."""
+
+        return serialize.serialize_css(
+            parent,
+            color=True,
+            alpha=alpha,
+            precision=precision,
+            rounding=rounding,
+            fit=fit,
+            none=none,
+            percent=percent,
+            angle=angle
+        )

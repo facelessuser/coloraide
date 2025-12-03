@@ -25,6 +25,7 @@ class HSL(base.HSL):
         color: bool = False,
         percent: bool | Sequence[bool] = False,
         comma: bool = False,
+        angle: str = 'deg',
         **kwargs: Any
     ) -> str:
         """Convert to CSS."""
@@ -46,7 +47,8 @@ class HSL(base.HSL):
             color=color,
             legacy=comma,
             percent=percent,
-            scale=100
+            scale=100,
+            angle=angle
         )
 
     def match(

@@ -242,6 +242,7 @@ class Space(Plugin, metaclass=SpaceMeta):
         fit: str | bool | dict[str, Any] = True,
         none: bool = False,
         percent: bool | Sequence[bool] = False,
+        angle: str = 'deg',
         **kwargs: Any
     ) -> str:
         """Convert to CSS 'color' string: `color(space coords+ / alpha)`."""
@@ -254,7 +255,8 @@ class Space(Plugin, metaclass=SpaceMeta):
             rounding=rounding,
             fit=fit,
             none=none,
-            percent=percent
+            percent=percent,
+            angle=angle
         )
 
     def match(
