@@ -710,7 +710,7 @@ class Color(metaclass=ColorMeta):
             self._space._serialize()[0],
             ' '.join(
                 [
-                    util.fmt_float(self[i], util.DEF_PREC, util.DEF_ROUND_MODE) + POSTFIX[channels[i].hue]
+                    util.fmt_float(self[i], util.DEF_PREC, util.DEF_ROUND_MODE) + POSTFIX[channels[i].angle]
                     for i in range(l - 1)
                 ]
             ),

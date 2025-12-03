@@ -17,7 +17,7 @@ except ImportError:
 from coloraide.channels import ANGLE_DEG
 from coloraide.spaces import HSLish, HSVish, HWBish, Labish, LChish, RGBish  # noqa: E402
 from coloraide import algebra as alg  # noqa: E402
-from coloraide.css.serialize import POSTFIX  # noqa: E402
+from coloraide.color import POSTFIX  # noqa: E402
 
 FORCE_OWN_GAMUT = {'ryb', 'ryb-biased'}
 
@@ -429,16 +429,18 @@ def plot_gamut_in_space(
         "gridcolor": gridcolor,
         "zerolinecolor": zerolinecolor,
     }
-    min_hue = target.channels[target.hue_index()].low
-    max_hue = target.channels[target.hue_index()].high
-    type_hue = target.channels[target.hue_index()].hue
 
     if not is_cyl:
         xaxis = str(names[axm[0]])
-    elif max_hue == 360:
-        xaxis = f"{names[axm[0]]} (0˚ - 360˚)"
     else:
-        xaxis = f"{names[axm[0]]} ({min_hue}{POSTFIX[type_hue]} - {max_hue}{POSTFIX[type_hue]})"
+        max_angle = target.channels[target.hue_index()].angle
+        if max_angle == 360:
+            xaxis = f"{names[axm[0]]} (0˚ - 360˚)"
+        else:
+            min_angle = target.channels[target.hue_index()].low
+            type_angle = target.channels[target.hue_index()].angle
+            xaxis = f"{names[axm[0]]} ({min_angle}{POSTFIX[type_angle]} - {max_angle}{POSTFIX[type_angle]})"
+
     yaxis = str(names[axm[1]])
     zaxis = str(names[axm[2]])
 

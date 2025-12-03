@@ -33,7 +33,7 @@ class Channel(str):
     flags: int
     limit: Callable[[float], float | int]
     nans: float
-    hue: int
+    angle: int
 
     def __new__(
         cls,
@@ -51,10 +51,10 @@ class Channel(str):
         obj = super().__new__(cls, name)
         obj.bound = bound
         obj.flags = flags
-        obj.hue = (ANGLE_DEG if angle == ANGLE_NULL else angle) if flags & FLG_ANGLE else ANGLE_NULL
-        if obj.hue:
-            obj.low = ANGLE_RANGE[obj.hue][0]
-            obj.high = ANGLE_RANGE[obj.hue][1]
+        obj.angle = (ANGLE_DEG if angle == ANGLE_NULL else angle) if flags & FLG_ANGLE else ANGLE_NULL
+        if obj.angle:
+            obj.low = ANGLE_RANGE[obj.angle][0]
+            obj.high = ANGLE_RANGE[obj.angle][1]
         else:
             obj.low = low
             obj.high = high

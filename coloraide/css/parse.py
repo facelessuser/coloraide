@@ -164,7 +164,7 @@ def parse_channels(color: list[str], boundry: tuple[Channel, ...], scaled: bool 
             bound = boundry[i]
             if bound.flags & FLG_ANGLE:
                 v = norm_angle_channel(c)
-                channels.append(v * (bound.high / 360) if bound.hue != ANGLE_DEG else v)
+                channels.append(v * (bound.high / 360) if bound.angle != ANGLE_DEG else v)
             elif scaled:
                 channels.append(norm_scaled_color_channel(c, bound.high))
             else:
@@ -196,7 +196,7 @@ def parse_color(tokens: dict[str, Any], space: Space) -> tuple[Vector, float] | 
         channel = properties[i]
         if channel.flags & FLG_ANGLE:
             v = norm_angle_channel(c)
-            channels.append(v * (channel.high / 360) if channel.hue != ANGLE_DEG else v)
+            channels.append(v * (channel.high / 360) if channel.angle != ANGLE_DEG else v)
         else:
             channels.append(norm_color_channel(c.lower(), channel.span, channel.offset))
     return (channels, alpha)
