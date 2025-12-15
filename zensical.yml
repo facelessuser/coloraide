@@ -349,7 +349,7 @@ extra_javascript:
   - https://cdn.jsdelivr.net/npm/mermaid@11.12.1/dist/mermaid.min.js
   - playground-config-b8b4c043.js
   - https://cdn.jsdelivr.net/pyodide/v0.27.7/full/pyodide.js
-  - assets/coloraide-extras/extra-notebook-DQhi9PGr.js
+  - assets/coloraide-extras/extra-notebook-Ca7qa01G.js
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
 
 extra:

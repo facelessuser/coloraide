@@ -28,10 +28,8 @@ import {deleteAsync, deleteSync} from "del"
 import path from "path"
 import inlineSvg from "postcss-inline-svg"
 import cssSvgo from "postcss-svgo"
-// `import replace from "gulp-replace"`
 import outputManifest from "rollup-plugin-output-manifest"
 import sourcemaps from "gulp-sourcemaps"
-import regenerator from "rollup-plugin-regenerator"
 import fs from "fs"
 import rollupReplace from "@rollup/plugin-replace"
 
@@ -109,7 +107,6 @@ const rollupjs = async(sources, options) => {
 
   const pluginModules = [
     rollupBabel({babelHelpers: "bundled"}),
-    regenerator(),
     rollupReplace({values: {"{{pycode}}": pycode}, preventAssignment: false, delimiters: ["", ""]})
   ]
 
