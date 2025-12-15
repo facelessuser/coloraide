@@ -409,7 +409,7 @@
         <div>Copyright &copy; 2020 - 2025 <a href="https://github.com/facelessuser">Isaac Muse</a></div>
       </footer>
     </div>
-  <script src="https://cdn.jsdelivr.net/pyodide/v0.27.7/full/pyodide.js"></script>
+  <script src="https://cdn.jsdelivr.net/pyodide/v0.29.0/full/pyodide.js"></script>
   <script>
 
 (() => {
@@ -685,8 +685,8 @@
         compose.destroy()
 
         // Hide show channels as needed to accommodate color space
-        const entry = colorSpaces.get(space)
-        if (entry.get('count') === 5) {
+        const entry = colorSpaces[space]
+        if (entry['count'] === 5) {
           const s4 = document.getElementById('slider4')
           s4.closest('.slider-wrapper').classList.remove('hidden')
         } else {
@@ -701,27 +701,27 @@
         const coords = c.coords.callKwargs({'nans': false})
         coords.append(c.alpha.callKwargs({'nans': false}))
         const defined = coords.toJs()
-        for (let i = 0; i < entry.get('count'); i++) {
-          const chan = entry.get('channels').get(i)
+        for (let i = 0; i < entry['count']; i++) {
+          const chan = entry['channels'][i]
           const slider = sliders[i]
           const range = slider.querySelector('.range input')
           const label = slider.querySelector('label')
           const text = slider.querySelector('input[inputmode=numeric]')
-          label.innerHTML = `${chan.get('name')} (${chan.get('low')} - ${chan.get('high')})`
-          const scale = (chan.get('angle')) ? 360 : 100
-          range.setAttribute('min', chan.get('low'))
-          range.setAttribute('max', chan.get('high'))
-          range.setAttribute('step', (chan.get('high') - chan.get('low')) / scale)
+          label.innerHTML = `${chan['name']} (${chan['low']} - ${chan['high']})`
+          const scale = (chan['angle']) ? 360 : 100
+          range.setAttribute('min', chan['low'])
+          range.setAttribute('max', chan['high'])
+          range.setAttribute('step', (chan['high'] - chan['low']) / scale)
           text.value = c.get(i)
           range.value = defined[i].toString()
           const result = pyodide.runPython(`
 from coloraide.everything import ColorAll as Color
 c = Color('${c.to_string.callKwargs({'precision': 10, 'fit': false})}')
-cmin = c.clone().set('${chan.get('name')}', ${chan.get('low')})
-c.set('${chan.get('name')}', ${chan.get('high')})
+cmin = c.clone().set('${chan['name']}', ${chan['low']})
+c.set('${chan['name']}', ${chan['high']})
 stops = []
 p = 1
-angle = ${(chan.get('angle')) ? 'True' : 'False'}
+angle = ${(chan['angle']) ? 'True' : 'False'}
 for e, i in enumerate(Color.steps([cmin, c], steps=21, space='${space}', hue='specified')):
     stops.append(i.fit('${displayGamut}', method='${displayMapping}').convert('${displayGamut}').to_string())
 '--slider-stops: ' + ','.join(stops)
@@ -744,7 +744,7 @@ for e, i in enumerate(Color.steps([cmin, c], steps=21, space='${space}', hue='sp
         busyTarget = document.getElementById('color-display')
         showBusy(busyTarget, 'Loading ColorAide...')
         pyodide = await loadPyodide({
-          indexURL: "https://cdn.jsdelivr.net/pyodide/v0.27.7/full/",
+          indexURL: "https://cdn.jsdelivr.net/pyodide/v0.29.0/full/",
           fullStdLib: false
         })
 
@@ -783,8 +783,8 @@ results = {'spaces': space_info, 'gmap': gmap}
 results
 `)
         const resultObj = result.toJs()
-        colorSpaces = resultObj.get('spaces')
-        mapMethods = resultObj.get('gmap')
+        colorSpaces = resultObj['spaces']
+        mapMethods = resultObj['gmap']
         result.destroy()
         let outSet = null;
         const options = document.getElementById('spaces')
@@ -794,7 +794,7 @@ results
         const defaultOutput = document.createElement('option')
         defaultOutput.innerHTML = 'current'
         defaultOutput.setAttribute('value', 'current')
-        for (let key of colorSpaces.keys()) {
+        for (const key in colorSpaces) {
           const opt1 = document.createElement('option')
           const opt2 = document.createElement('option')
           opt1.innerHTML = key
