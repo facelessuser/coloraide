@@ -46,10 +46,11 @@ WHITES = {
 }  # type: dict[str, dict[str, tuple[float, float]]]
 
 
+@functools.lru_cache(maxsize=20)
 def calc_adaptation_matrices(
     w1: tuple[float, float],
     w2: tuple[float, float],
-    m: Matrix,
+    m: tuple[tuple[float, ...], ...],
 ) -> tuple[Matrix, Matrix]:
     """
     Get the von Kries based adaptation matrix based on the method and illuminants.
@@ -93,22 +94,12 @@ class VonKries(CAT):
 
     NAME = 'von-kries'
 
-    MATRIX = [
-        [0.4002400, 0.7076000, -0.0808100],
-        [-0.2263000, 1.1653200, 0.0457000],
-        [0.0000000, 0.0000000, 0.9182200]
-    ]  # type: Matrix
-
-    @classmethod
-    @functools.lru_cache(maxsize=20)
-    def get_adaptation_matrices(
-        cls: type[VonKries],
-        w1: tuple[float, float],
-        w2: tuple[float, float]
-    ) -> tuple[Matrix, Matrix]:
-        """Get the adaptation matrices."""
-
-        return calc_adaptation_matrices(w1, w2, cls.MATRIX)
+    # Require a hashable matrix for caching results.
+    MATRIX = (
+        (0.4002400, 0.7076000, -0.0808100),
+        (-0.2263000, 1.1653200, 0.0457000),
+        (0.0000000, 0.0000000, 0.9182200)
+    )
 
     def adapt(self, w1: tuple[float, float], w2: tuple[float, float], xyz: VectorLike) -> Vector:
         """
@@ -125,7 +116,7 @@ class VonKries(CAT):
             return [*xyz]
 
         a, b = sorted([w1, w2])
-        m, mi = self.get_adaptation_matrices(a, b)
+        m, mi = calc_adaptation_matrices(a, b, self.MATRIX)
         return alg.matmul_x3(mi if a != w1 else m, xyz, dims=alg.D2_D1)
 
 
@@ -139,11 +130,11 @@ class Bradford(VonKries):
 
     NAME = "bradford"
 
-    MATRIX = [
-        [0.8951000, 0.2664000, -0.1614000],
-        [-0.7502000, 1.7135000, 0.0367000],
-        [0.0389000, -0.0685000, 1.0296000]
-    ]
+    MATRIX = (
+        (0.8951000, 0.2664000, -0.1614000),
+        (-0.7502000, 1.7135000, 0.0367000),
+        (0.0389000, -0.0685000, 1.0296000)
+    )
 
 
 class XYZScaling(VonKries):
@@ -156,11 +147,11 @@ class XYZScaling(VonKries):
 
     NAME = "xyz-scaling"
 
-    MATRIX = [
-        [1, 0, 0],
-        [0, 1, 0],
-        [0, 0, 1]
-    ]
+    MATRIX = (
+        (1, 0, 0),
+        (0, 1, 0),
+        (0, 0, 1)
+    )
 
 
 class CAT02(VonKries):
@@ -172,11 +163,11 @@ class CAT02(VonKries):
 
     NAME = "cat02"
 
-    MATRIX = [
-        [0.7328000, 0.4296000, -0.1624000],
-        [-0.7036000, 1.6975000, 0.0061000],
-        [0.0030000, 0.0136000, 0.9834000]
-    ]
+    MATRIX = (
+        (0.7328000, 0.4296000, -0.1624000),
+        (-0.7036000, 1.6975000, 0.0061000),
+        (0.0030000, 0.0136000, 0.9834000)
+    )
 
 
 class CMCCAT97(VonKries):
@@ -188,11 +179,11 @@ class CMCCAT97(VonKries):
 
     NAME = "cmccat97"
 
-    MATRIX = [
-        [0.8951000, -0.7502000, 0.0389000],
-        [0.2664000, 1.7135000, 0.0685000],
-        [-0.1614000, 0.0367000, 1.0296000],
-    ]
+    MATRIX = (
+        (0.8951000, -0.7502000, 0.0389000),
+        (0.2664000, 1.7135000, 0.0685000),
+        (-0.1614000, 0.0367000, 1.0296000)
+    )
 
 
 class Sharp(VonKries):
@@ -204,11 +195,11 @@ class Sharp(VonKries):
 
     NAME = "sharp"
 
-    MATRIX = [
-        [1.2694000, -0.0988000, -0.1706000],
-        [-0.8364000, 1.8006000, 0.0357000],
-        [0.0297000, -0.0315000, 1.0018000]
-    ]
+    MATRIX = (
+        (1.2694000, -0.0988000, -0.1706000),
+        (-0.8364000, 1.8006000, 0.0357000),
+        (0.0297000, -0.0315000, 1.0018000)
+    )
 
 
 class CMCCAT2000(VonKries):
@@ -221,11 +212,11 @@ class CMCCAT2000(VonKries):
 
     NAME = 'cmccat2000'
 
-    MATRIX = [
-        [0.7982000, 0.3389000, -0.1371000],
-        [-0.5918000, 1.5512000, 0.0406000],
-        [0.0008000, 0.0239000, 0.9753000]
-    ]
+    MATRIX = (
+        (0.7982000, 0.3389000, -0.1371000),
+        (-0.5918000, 1.5512000, 0.0406000),
+        (0.0008000, 0.0239000, 0.9753000)
+    )
 
 
 class CAT16(VonKries):
@@ -237,8 +228,8 @@ class CAT16(VonKries):
 
     NAME = "cat16"
 
-    MATRIX = [
-        [0.401288, 0.650173, -0.051461],
-        [-0.250268, 1.204414, 0.045854],
-        [-0.002079, 0.048952, 0.953127]
-    ]
+    MATRIX = (
+        (0.401288, 0.650173, -0.051461),
+        (-0.250268, 1.204414, 0.045854),
+        (-0.002079, 0.048952, 0.953127)
+    )

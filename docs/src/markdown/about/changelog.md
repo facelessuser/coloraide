@@ -3,6 +3,11 @@ icon: lucide/scroll-text
 ---
 # Changelog
 
+## 6.2
+
+-   **NEW**: Require a hashable matrix in von Kris style CAT plugins for use in `lru_cache` on an external function
+    opposed to applying `lru_cache` on an internal class method.
+
 ## 6.1
 
 -   **NEW**: Add new Msh color space.
