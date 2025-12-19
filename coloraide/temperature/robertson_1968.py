@@ -15,8 +15,7 @@ from .. import cat
 from .. import cmfs
 from ..temperature import CCT
 from ..types import Vector, VectorLike, AnyColor
-from typing import Any, TYPE_CHECKING
-from dataclasses import dataclass
+from typing import Any, TYPE_CHECKING, NamedTuple
 
 if TYPE_CHECKING:  #pragma: no cover
     from ..color import Color
@@ -27,8 +26,7 @@ MIRED_ORIGINAL = tuple(range(0, 100, 10)) + tuple(range(100, 601, 25))
 MIRED_EXTENDED = MIRED_ORIGINAL + tuple(range(625, 1001, 25))
 
 
-@dataclass(frozen=True)
-class CCTEntry:
+class CCTEntry(NamedTuple):
     """CCT LUT entry."""
 
     mired: float

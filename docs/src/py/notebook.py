@@ -15,7 +15,7 @@ and finding and outputting color previews.
 # ruff: noqa: S307
 import xml.etree.ElementTree as Etree
 from collections.abc import Sequence, Mapping
-from collections import namedtuple
+from typing import NamedTuple
 import ast
 from io import StringIO
 import sys
@@ -132,8 +132,11 @@ if 'SESSIONS' not in globals() or not globals()["SESSIONS"]:
             super().__init__(iterable)
 
 
-    class ColorTuple(namedtuple('ColorTuple', ['string', 'color'])):
+    class ColorTuple(NamedTuple):
         """Color tuple."""
+
+        string: str
+        color: ColorAll
 
 
     class AtomicString(str):
