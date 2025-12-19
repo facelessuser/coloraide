@@ -3,10 +3,20 @@ import unittest
 from . import util
 from coloraide.everything import ColorAll as Color, NaN
 from coloraide.spaces.hellwig import cam_to_xyz, xyz_to_cam, HellwigJMh, HellwigHKJMh
-from collections import namedtuple
+from typing import NamedTuple
 import pytest
 
-HellwigCoords = namedtuple("HellwigCoords", "J C h s Q M H")
+
+class HellwigCoords(NamedTuple):
+    """Hellwig coordinates."""
+
+    J: float
+    C: float
+    h: float
+    s: float
+    Q: float
+    M: float
+    H: float
 
 
 class TestHellwigJMh(util.ColorAssertsPyTest):

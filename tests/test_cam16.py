@@ -3,10 +3,20 @@ import unittest
 from . import util
 from coloraide.everything import ColorAll as Color, NaN
 from coloraide.spaces.cam16 import cam_to_xyz, xyz_to_cam, CAM16JMh
-from collections import namedtuple
+from typing import NamedTuple
 import pytest
 
-CAM16Coords = namedtuple("CAM16Coords", "J C h s Q M H")
+
+class CAM16Coords(NamedTuple):
+    """CAM16 coordinates."""
+
+    J: float
+    C: float
+    h: float
+    s: float
+    Q: float
+    M: float
+    H: float
 
 
 class TestCAM16JMh(util.ColorAssertsPyTest):

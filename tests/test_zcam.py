@@ -3,10 +3,23 @@ import unittest
 from . import util
 from coloraide.everything import ColorAll as Color, NaN
 from coloraide.spaces.zcam import zcam_to_xyz, xyz_to_zcam, ZCAMJMh
-from collections import namedtuple
+from typing import NamedTuple
 import pytest
 
-ZCAMCoords = namedtuple("ZCAMCoords", "Jz Cz hz Qz Mz Sz Vz Kz Wz Hz")
+
+class ZCAMCoords(NamedTuple):
+    """ZCAM coordinates."""
+
+    Jz: float
+    Cz: float
+    hz: float
+    Qz: float
+    Mz: float
+    Sz: float
+    Vz: float
+    Kz: float
+    Wz: float
+    Hz: float
 
 
 class TestZCAMJMh(util.ColorAssertsPyTest):
