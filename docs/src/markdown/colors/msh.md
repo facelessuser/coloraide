@@ -95,6 +95,8 @@ shift in blue.
 
 ```py play
 import math
+from coloraide import stop
+
 
 def prepare_msh_divergent_interpolation(c1, c2):
     """Optimize colors for interpolation."""
@@ -140,13 +142,17 @@ def prepare_msh_divergent_interpolation(c1, c2):
     colors.append(c2)
 
     # Adjust hue of unsaturated colors.
-    if (colors[1]['s'] < 0.05) and (colors[0]['s'] > 0.05):
+    if (colors[0]['s'] < 0.05) and (colors[1]['s'] > 0.05):
+        colors[0]['h'] = adjust_hue(colors[1].coords(), colors[0]['m'])
+    elif (colors[1]['s'] < 0.05) and (colors[0]['s'] > 0.05):
         colors[1]['h'] = adjust_hue(colors[0].coords(), colors[1]['m'])
-    elif (colors[-2]['s'] < 0.05) and (colors[-1]['s'] > 0.05):
-        colors[-2]['h'] = adjust_hue(colors[-1].coords(), colors[-2]['m'])
 
     # If white was inserted, adjust hues of unsaturated color on the right side.
     if len(colors) > 2:
+        if (colors[-2]['s'] < 0.05) and (colors[-1]['s'] > 0.05):
+            colors[-2]['h'] = adjust_hue(colors[-1].coords(), colors[-2]['m'])
+        elif (colors[-1]['s'] < 0.05) and (colors[-2]['s'] > 0.05):
+            colors[-1]['h'] = adjust_hue(colors[-2].coords(), colors[-1]['m'])
         colors[1] = stop(colors[1], 0.5)
         colors[-2] = stop(colors[-2], 0.5)
 
