@@ -8,6 +8,7 @@ icon: lucide/scroll-text
 -   **NEW**: Require a hashable matrix in von Kris style CAT plugins for use in `lru_cache` on an external function
     opposed to applying `lru_cache` on an internal class method.
 -   **CHORE**: Minor code improvements.
+-   **FIX**: Fix typing issue in `coloraide.algebra`.
 -   **FIX**: Fixed interpolation example in docs relating to the Msh color space.
 
 ## 6.1
