@@ -1,3 +1,6 @@
+---
+icon: lucide/swatch-book
+---
 # Color Space
 
 ## Description
