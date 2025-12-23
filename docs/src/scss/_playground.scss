@@ -227,6 +227,12 @@ div.playground {
   display: none;
 }
 
+.playground-results .color-command > .highlight:first-child code,
+.playground-results .color-command > .swatch-bar:empty + .highlight code {
+  border-top-left-radius: convert.px2rem(9.6px);
+  border-top-right-radius: convert.px2rem(9.6px);
+}
+
 .playground-footer {
   display: flex;
   margin-top: convert.px2em(-1px);
