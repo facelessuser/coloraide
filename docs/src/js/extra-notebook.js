@@ -412,7 +412,9 @@ ${content}
         buttonShare.classList.toggle("hidden")
         editor.setValue(editor.getValue())
         editor.focus()
-        pg.scrollIntoView({behavior: "smooth", block: 'center', inline: 'nearest'})
+        setTimeout(() => {
+          pg.scrollIntoView({behavior: "smooth", block: 'center', inline: 'nearest'})
+        })
       })
 
       buttonShare.addEventListener("click", async() => {
@@ -474,7 +476,9 @@ ${content}
         buttonCancel.classList.toggle("hidden")
         delete editTemp[currentID]
         busy = false
-        pg.scrollIntoView({behavior: "smooth", block: 'center', inline: 'nearest'})
+        setTimeout(() => {
+          pg.scrollIntoView({behavior: "smooth", block: 'center', inline: 'nearest'})
+        })
       })
 
       buttonCancel.addEventListener("click", () => {
@@ -488,7 +492,9 @@ ${content}
         buttonShare.classList.toggle("hidden")
         buttonRun.classList.toggle("hidden")
         buttonCancel.classList.toggle("hidden")
-        pg.scrollIntoView({behavior: "smooth", block: 'center', inline: 'nearest'})
+        setTimeout(() => {
+          pg.scrollIntoView({behavior: "smooth", block: 'center', inline: 'nearest'})
+        })
       })
     })
   }
