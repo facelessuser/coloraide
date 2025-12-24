@@ -341,7 +341,7 @@ markdown_extensions:
 
 extra_css:
   - assets/pymdownx-extras/extra-0a1087787d.css
-  - assets/coloraide-extras/extra-ebf3a98f4d.css
+  - assets/coloraide-extras/extra-76e8091b4a.css
   - https://cdn.jsdelivr.net/npm/ace-builds@1.43.0/css/ace.css
 extra_javascript:
   - assets/pymdownx-extras/extra-loader-Ccztcqfq.js
@@ -349,7 +349,7 @@ extra_javascript:
   - https://cdn.jsdelivr.net/npm/mermaid@11.12.1/dist/mermaid.min.js
   - playground-config-21defe50.js
   - https://cdn.jsdelivr.net/pyodide/v0.29.0/full/pyodide.js
-  - assets/coloraide-extras/extra-notebook-CKvB0eua.js
+  - assets/coloraide-extras/extra-notebook-qvRCIPPc.js
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
 
 extra:
