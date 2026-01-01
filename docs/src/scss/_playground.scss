@@ -199,7 +199,8 @@ div.playground {
   margin: 0;
 }
 
-.playground-results code {
+.playground-results pre > code {
+  display: block;
   min-height: 3em;
 }
 

@@ -1018,7 +1018,8 @@ def render_notebook(*args, **kwargs):
         'pymdownx.blocks.definition',
         'pymdownx.blocks.tab',
         'pymdownx.fancylists',
-        'pymdownx.blocks.caption'
+        'pymdownx.blocks.caption',
+        'pymdownx.quotes'
     ]
     extension_configs = {
         'markdown.extensions.toc': {
@@ -1031,6 +1032,11 @@ def render_notebook(*args, **kwargs):
         'pymdownx.arithmatex': {
             'generic': True,
             'block_tag': 'pre'
+        },
+        'pymdownx.highlight': {
+            "line_spans": "__codeline",
+            "line_anchors": "__codelineno",
+            "anchor_linenums": True
         },
         'pymdownx.superfences': {
             'preserve_tabs': True,
@@ -1102,6 +1108,9 @@ def render_notebook(*args, **kwargs):
                 {'name': 'details-danger', 'class': 'danger'}, {'name': 'details-bug', 'class': 'bug'},
                 {'name': 'details-example', 'class': 'example'}, {'name': 'details-quote', 'class': 'quote'}
             ]
+        },
+        'pymdownx.quotes': {
+            'callouts': True
         }
     }
 
