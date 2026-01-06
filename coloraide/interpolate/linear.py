@@ -129,14 +129,16 @@ class InterpolatorLinear(Interpolator[AnyColor]):
         for i, values in enumerate(zip(*self.coordinates[i:i + 2])):  # noqa: B020
             a, b = values
 
+            a_nan, b_nan = math.isnan(a), math.isnan(b)
+
             # Both values are undefined, so return undefined
-            if math.isnan(a) and math.isnan(b):
+            if a_nan and b_nan:
                 value = math.nan
 
             # One channel is undefined, take the one that is not
-            elif math.isnan(a):
+            elif a_nan:
                 value = b
-            elif math.isnan(b):
+            elif b_nan:
                 value = a
 
             # Using linear interpolation between the two points
