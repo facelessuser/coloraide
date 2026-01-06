@@ -89,7 +89,17 @@ QR_MODES = {'reduced', 'complete', 'r', 'raw'}
 def sign(x: float) -> float:
     """Return the sign of a given value."""
 
-    return x / abs(x) if x and x == x else float(x)
+    # [1, infinity]
+    if x > 0.0:
+        return 1.0
+    # [-1, -infinity]
+    elif x < 0.0:
+        return -1.0
+    # +/- zero
+    elif x == 0.0:
+        return float(x)
+    # +/- NaN
+    return x
 
 
 def order(x: float) -> int:

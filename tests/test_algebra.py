@@ -2820,6 +2820,8 @@ class TestAlgebra(unittest.TestCase):
         self.assertEqual(math.copysign(1, alg.sign(-math.nan)), -1)
         self.assertTrue(math.isnan(alg.sign(-math.nan)))
         self.assertEqual(math.copysign(1, alg.sign(math.nan)), 1)
+        self.assertEqual(alg.sign(float('inf')), 1)
+        self.assertEqual(alg.sign(float('-inf')), -1)
 
     def test_solve_newton_and_halley(self):
         """Test solving with Newton."""
