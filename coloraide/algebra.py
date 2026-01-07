@@ -99,7 +99,7 @@ def sign(x: float) -> float:
     elif x == 0.0:
         return 0.0
     # +/- NaN
-    return math.nan
+    return x
 
 
 def order(x: float) -> int:
