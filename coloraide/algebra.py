@@ -43,7 +43,6 @@ MAX_10_EXP = sys.float_info.max_10_exp
 MIN_FLOAT = sys.float_info.min
 
 # Keeping for backwards compatibility
-prod = math.prod
 _all = builtins.all
 _any = builtins.any
 
@@ -86,7 +85,7 @@ QR_MODES = {'reduced', 'complete', 'r', 'raw'}
 ################################
 # General math
 ################################
-def sign(x: float) -> float:
+def sgn(x: float) -> float:
     """Return the sign of a given value."""
 
     # [1, infinity]
@@ -1126,7 +1125,7 @@ def _cross_pad(a: ArrayLike, s: ArrayShape) -> Array:
     m = acopy(a)
 
     # Initialize indexes so we can properly write our data
-    total = prod(s[:-1])
+    total = math.prod(s[:-1])
     idx = [0] * (len(s) - 1)
 
     for c in range(total):
@@ -1791,8 +1790,8 @@ def multi_dot(arrays: Sequence[ArrayLike]) -> Any:
     # We can easily calculate three with less complexity and in less time. Anything
     # greater than three becomes a headache.
     if count == 3:
-        pa = prod(shapes[0])
-        pc = prod(shapes[2])
+        pa = math.prod(shapes[0])
+        pc = math.prod(shapes[2])
         cost1 = pa * shapes[2][0] + pc * shapes[0][0]
         cost2 = pc * shapes[0][1] + pa * shapes[2][1]  # type: ignore[misc]
         if cost1 < cost2:
@@ -1853,7 +1852,7 @@ class _BroadcastTo:
         elif self.different:
             # Calculate the shape of the data.
             if len(old) > 1:
-                self.amount = prod(old[:-1])
+                self.amount = math.prod(old[:-1])
                 self.length = old[-1]
             else:
                 # Vectors have to be handled a bit special as they only have 1-D
@@ -1864,7 +1863,7 @@ class _BroadcastTo:
             # We need to flip them based on whether the original shape has an even or odd number of
             # dimensions.
             diff = [int(x / y) if y else y for x, y in zip(new, old)]
-            repeat = prod(diff[:-1]) if len(old) > 1 else 1
+            repeat = math.prod(diff[:-1]) if len(old) > 1 else 1
             expand = diff[-1]
             if len(diff) > 1 and diff[-2] > 1:
                 self.repeat = expand
@@ -2118,7 +2117,7 @@ class Broadcast:
         # But shouldn't matter for what we do.
         self.shape = common
         self.ndims = max_dims
-        self.size = prod(common)
+        self.size = math.prod(common)
         self._init()
 
     def _init(self) -> None:
@@ -2386,7 +2385,7 @@ class _vectorize2:
                 # Apply math to two N-D matrices
                 if dims_a == dims_b:
                     empty = (not shape_a or 0 in shape_a) and (not shape_b or 0 in shape_b)
-                    if not empty and prod(shape_a) != prod(shape_b):  # pragma: no cover
+                    if not empty and math.prod(shape_a) != math.prod(shape_b):  # pragma: no cover
                         raise ValueError(f'Shape {shape_a} does not match the data total of {shape_b}')
                     with ArrayBuilder(m, shape_a) as build:
                         for x, y in zip(flatiter(a), flatiter(b)):
@@ -2813,6 +2812,38 @@ def isnan(a: TensorLike, *, dims: DimHints = ..., **kwargs: Any) -> TensorBool:
 isnan = vectorize2(math.isnan, doc="Test if a value or values in an array are NaN.", params=1)
 
 
+@overload  # type: ignore[no-overload-impl]
+def sign(a: float, *, dims: DimHints = ..., **kwargs: Any) -> float:
+    ...
+
+
+@overload
+def sign(a: VectorLike, *, dims: DimHints = ..., **kwargs: Any) -> Vector:
+    ...
+
+
+@overload
+def sign(a: MatrixLike, *, dims: DimHints = ..., **kwargs: Any) -> Matrix:
+    ...
+
+
+@overload
+def sign(a: TensorLike, *, dims: DimHints = ..., **kwargs: Any) -> Tensor:
+    ...
+
+
+sign = vectorize2(sgn, doc="Return the sign of a number.", params=1)
+
+
+def prod(a: ArrayLike | float) -> float:
+    """Return the product."""
+
+    l = len(shape(a))
+    if l == 0:
+        return float(math.prod([a]))  # type: ignore[list-item]
+    return float(math.prod(flatiter(a) if l > 1 else a)) # type: ignore[arg-type]
+
+
 def allclose(a: ArrayType, b: ArrayType, **kwargs: Any) -> bool:
     """Test if all are close."""
 
@@ -3128,14 +3159,14 @@ def full(array_shape: int | Shape, fill_value: float | ArrayLike) -> Array | flo
         if not isinstance(fill_value, Sequence):
             return fill_value
         _s = shape(fill_value)
-        if prod(_s) == 1:
+        if math.prod(_s) == 1:
             return ravel(fill_value)[0]
 
     # Normalize `fill_value` to be an array.
     elif not isinstance(fill_value, Sequence):
         m = []  # type: Array
         with ArrayBuilder(m, s) as build:
-            for v in [fill_value] * prod(s):
+            for v in [fill_value] * math.prod(s):
                 next(build).append(v)
         return m
 
@@ -3366,9 +3397,9 @@ def transpose(array: ArrayLike | float) -> float | Array:
     # N x M matrix
     if s and s[0] == 0:
         s = s[1:] + (0,)
-        total = prod(s[:-1])
+        total = math.prod(s[:-1])
     else:
-        total = prod(s)
+        total = math.prod(s)
 
     # Create the array
     m = []  # type: Array
@@ -3463,8 +3494,8 @@ def reshape(array: ArrayLike | float, new_shape: int | Shape) -> float | Array:
     empty = (not new_shape or 0 in new_shape) and (not current_shape or 0 in current_shape)
 
     # Make sure we can actually reshape.
-    total = prod(new_shape) if not empty else prod(new_shape[:-1])
-    if not empty and total != prod(current_shape):
+    total = math.prod(new_shape if not empty else new_shape[:-1])
+    if not empty and total != math.prod(current_shape):
         raise ValueError(f'Shape {new_shape} does not match the data total of {shape(array)}')
 
     # Create the array
@@ -4298,7 +4329,7 @@ def _qr(a: Matrix, m: int, n: int, mode: str = 'reduced') -> Any:
     for k in range(0, m - 1 if not tall else n):
         # Calculate the householder reflections
         norm = math.sqrt(sum([r[i][k] ** 2 for i in range(k, m)]))
-        sig = -sign(r[k][k])
+        sig = -sgn(r[k][k])
         u0 = r[k][k] - sig * norm
         w = [[(r[i][k] / u0) if u0 else 1] for i in range(k, m)]
         w[0][0] = 1
@@ -4487,7 +4518,7 @@ def solve(a: MatrixLike | TensorLike, b: ArrayLike) -> Array:
         p, l, u = lu(a, p_indices=True, _shape=s)
 
         # If determinant is zero, we can't solve. Really small determinant may give bad results.
-        if prod(l[i][i] * u[i][i] for i in range(size)) == 0.0:
+        if math.prod(l[i][i] * u[i][i] for i in range(size)) == 0.0:
             raise ValueError('Matrix is singular')
 
         # Solve for x using forward substitution on U and back substitution on L
@@ -4529,7 +4560,7 @@ def solve(a: MatrixLike | TensorLike, b: ArrayLike) -> Array:
 
                 p, l, u = lu(ma, p_indices=True, _shape=m_shape)
 
-                if prod(l[i][i] * u[i][i] for i in range(size)) == 0.0:  # pragma: no cover
+                if math.prod(l[i][i] * u[i][i] for i in range(size)) == 0.0:  # pragma: no cover
                     raise ValueError('Matrix is singular')
 
                 next(build).append(_back_sub_vector(u, _forward_sub_vector(l, [b[i] for i in p], size), size))  # type: ignore[misc]
@@ -4551,7 +4582,7 @@ def solve(a: MatrixLike | TensorLike, b: ArrayLike) -> Array:
 
             p, l, u = lu(ma, p_indices=True, _shape=s[-2:])  # type: ignore[misc]
 
-            if prod(l[i][i] * u[i][i] for i in range(size)) == 0.0:
+            if math.prod(l[i][i] * u[i][i] for i in range(size)) == 0.0:
                 raise ValueError('Matrix is singular')
 
             bi = [[*mb[i]] for i in p]
@@ -4586,8 +4617,8 @@ def det(array: MatrixLike | TensorLike) -> float | Vector:
         size = s[0]
         p, l, u = lu(array, _shape=s)
         swaps = size - trace(p)
-        sign = (-1) ** (swaps - 1) if swaps else 1
-        dt = sign * prod(l[i][i] * u[i][i] for i in range(size))
+        _sign = (-1) ** (swaps - 1) if swaps else 1
+        dt = _sign * math.prod(l[i][i] * u[i][i] for i in range(size))
         return 0.0 if not dt else dt
     else:
         last = s[-2:]  # type: ignore[misc]
@@ -4633,7 +4664,7 @@ def inv(matrix: MatrixLike | TensorLike) -> Matrix | Tensor:
     # Floating point math will produce very small, non-zero determinants for singular matrices.
     # This occurs with Numpy as well.
     # Don't bother calculating sign as we only care about how close to zero we are.
-    if prod(l[i][i] * u[i][i] for i in range(size)) == 0.0:
+    if math.prod(l[i][i] * u[i][i] for i in range(size)) == 0.0:
         raise ValueError('Matrix is singular')
 
     # Solve for the identity matrix (will give us inverse)
@@ -4730,7 +4761,7 @@ def vstack(arrays: Sequence[ArrayLike | float]) -> Matrix | Tensor:
                 raise ValueError('All the input array dimensions except for the concatenation axis must match exactly')
 
         # Stack the arrays
-        m.extend(reshape(a, (prod(s[:1 - dims]),) + s[1 - dims:-1] + s[-1:]))  # type: ignore[arg-type, misc]
+        m.extend(reshape(a, (math.prod(s[:1 - dims]),) + s[1 - dims:-1] + s[-1:]))  # type: ignore[arg-type, misc]
 
         # Update the last array tracker
         if not last or len(last) > len(s):
@@ -4748,7 +4779,7 @@ def _hstack_extract(a: ArrayLike | float, s: ArrayShape) -> Iterator[Array]:
     """Extract data from the second axis."""
 
     data = flatiter(a)
-    length = prod(s[1:])
+    length = math.prod(s[1:])
 
     for _ in range(s[0]):
         yield [next(data) for _ in range(length)]
@@ -5211,9 +5242,9 @@ def roll(
     if axis is None:
         if not isinstance(shift, int):
             shift = sum(shift)
-        p = prod(s)
-        sgn = sign(shift)
-        shift = int(shift % (p * sgn)) if p and sgn else 0
+        p = math.prod(s)
+        _sign = sgn(shift)
+        shift = int(shift % (p * _sign)) if p and _sign else 0
         flat = ravel(a) if len(s) != 1 else [*a]  # type: ignore[misc]
         sh = -shift
         flat[:] = flat[sh:] + flat[:sh]
@@ -5231,8 +5262,8 @@ def roll(
     for i, j in broadcast(shift, axes):
         if j < 0:
             j = l + j
-        sgn = sign(i)
-        new_shift.append(int(i % (s[j] * sgn)) if s[j] and sgn else 0)  # type: ignore[call-overload]
+        _sign = sgn(i)
+        new_shift.append(int(i % (s[j] * _sign)) if s[j] and _sign else 0)  # type: ignore[call-overload]
         new_axes.append(j)  # type: ignore[arg-type]
 
     # Perform the roll across the specified axes

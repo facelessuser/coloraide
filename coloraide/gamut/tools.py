@@ -34,4 +34,4 @@ def adaptive_hue_independent(l: float, c: float, alpha: float = 0.05) -> float:
     ld = l - 0.5
     abs_ld = abs(ld)
     e1 = 0.5 + abs_ld + alpha * c
-    return 0.5 * (1 + alg.sign(ld) * (e1 - math.sqrt(e1 ** 2 - 2.0 * abs_ld)))
+    return 0.5 * (1 + alg.sgn(ld) * (e1 - math.sqrt(e1 ** 2 - 2.0 * abs_ld)))

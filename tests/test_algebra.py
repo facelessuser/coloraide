@@ -3628,6 +3628,12 @@ class TestAlgebra(unittest.TestCase):
             ]
         )
 
+    def test_prod(self):
+        """Test product."""
+
+        self.assertEqual(alg.prod(3), 3.0)
+        self.assertEqual(alg.prod([3, 2, 4]), 24.0)
+        self.assertEqual(alg.prod([[1, 2, 3], [4, 5, 6], [7, 8, 9]]), 362880.0)
 
 def test_pprint(capsys):
     """Test matrix print."""
