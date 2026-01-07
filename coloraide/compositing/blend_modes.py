@@ -269,6 +269,7 @@ class BlendLuminosity(NonSeperableBlend):
 
     def apply(self, cb: Vector, cs: Vector) -> Vector:
         """Blend two vectors."""
+
         return set_lum(cb, lum(cs))
 
 
