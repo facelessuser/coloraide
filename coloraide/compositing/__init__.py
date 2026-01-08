@@ -8,26 +8,13 @@ from .. spaces import RGBish
 from . import porter_duff
 from . import blend_modes
 from .. import algebra as alg
-from ..channels import Channel
 from ..types import Vector, ColorInput, AnyColor
 from typing import Sequence
-
-
-def clip_channel(coord: float, channel: Channel) -> float:
-    """Clipping channel."""
-
-    # Channel is not bound, return as is
-    if not channel.bound:
-        return coord
-
-    # Constraind coordinate
-    return alg.clamp(coord, channel.low, channel.high)
 
 
 def apply_compositing(
     color1: Vector,
     color2: Vector,
-    channels: tuple[Channel, ...],
     blender: blend_modes.Blend | None,
     operator: str | bool
 ) -> Vector:
@@ -42,17 +29,16 @@ def apply_compositing(
     # Setup compositing
     compositor = None  # type: porter_duff.PorterDuff | None
     cra = csa
+    if operator is True:
+        operator = 'source-over'
     if isinstance(operator, str):
         compositor = porter_duff.compositor(operator)(cba, csa)
-        cra = alg.clamp(compositor.ao(), 0, 1)
-    elif operator is True:
-        compositor = porter_duff.compositor('source-over')(cba, csa)
-        cra = alg.clamp(compositor.ao(), 0, 1)
+        # Colors automatically clamp alpha, so to properly undo premultiplication, clamp alpha so we match browsers.
+        cra = alg.clamp(compositor.ao(), 0.0, 1.0)
 
-    # Blend each channel. Afterward, clip and apply alpha compositing.
+    # Blend each channel and apply alpha compositing.
     i = 0
     for cb, cr in zip(coords2, blender.blend(coords2, coords1) if blender else coords1):
-        cr = clip_channel(cr, channels[i])
         if compositor:
             color1[i] = compositor.co(cb, cr)
             if cra not in (0, 1):
@@ -98,6 +84,6 @@ def compose(
     dest = color_cls._handle_color_input(colors[-1]).convert(space).normalize(nans=False)[:]
     for x in range(len(colors) - 2, -1, -1):
         src = color_cls._handle_color_input(colors[x]).convert(space).normalize(nans=False)[:]
-        dest = apply_compositing(src, dest, color_cls.CS_MAP[space].channels, blender, operator)
+        dest = apply_compositing(src, dest, blender, operator)
 
     return color_cls(space, dest[:-1], dest[-1]).convert(out_space, in_place=True)

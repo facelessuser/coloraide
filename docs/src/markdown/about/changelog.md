@@ -3,6 +3,11 @@ icon: lucide/scroll-text
 ---
 # Changelog
 
+## 6.2.1
+
+-   **FIX**: During compositing, do not clip colors after the blend step.
+-   **FIX**: Ensure `coloraide.algebra.sign` handles infinities.
+
 ## 6.2
 
 -   **NEW**: Require a hashable matrix in von Kris style CAT plugins for use in `lru_cache` on an external function
