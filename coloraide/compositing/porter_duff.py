@@ -41,12 +41,12 @@ class Clear(PorterDuff):
     def fa(self) -> float:
         """Calculate `Fa`."""
 
-        return 0
+        return 0.0
 
     def fb(self) -> float:
         """Calculate `Fb`."""
 
-        return 0
+        return 0.0
 
 
 class Copy(PorterDuff):
@@ -55,12 +55,12 @@ class Copy(PorterDuff):
     def fa(self) -> float:
         """Calculate `Fa`."""
 
-        return 1
+        return 1.0
 
     def fb(self) -> float:
         """Calculate `Fb`."""
 
-        return 0
+        return 0.0
 
 
 class Destination(PorterDuff):
@@ -69,12 +69,12 @@ class Destination(PorterDuff):
     def fa(self) -> float:
         """Calculate `Fa`."""
 
-        return 0
+        return 0.0
 
     def fb(self) -> float:
         """Calculate `Fb`."""
 
-        return 1
+        return 1.0
 
 
 class SourceOver(PorterDuff):
@@ -83,12 +83,12 @@ class SourceOver(PorterDuff):
     def fa(self) -> float:
         """Calculate `Fa`."""
 
-        return 1
+        return 1.0
 
     def fb(self) -> float:
         """Calculate `Fb`."""
 
-        return 1 - self.csa
+        return 1.0 - self.csa
 
 
 class DestinationOver(PorterDuff):
@@ -97,12 +97,12 @@ class DestinationOver(PorterDuff):
     def fa(self) -> float:
         """Calculate `Fa`."""
 
-        return 1 - self.cba
+        return 1.0 - self.cba
 
     def fb(self) -> float:
         """Calculate `Fb`."""
 
-        return 1
+        return 1.0
 
 
 class SourceIn(PorterDuff):
@@ -116,7 +116,7 @@ class SourceIn(PorterDuff):
     def fb(self) -> float:
         """Calculate `Fb`."""
 
-        return 0
+        return 0.0
 
 
 class DestinationeIn(PorterDuff):
@@ -125,7 +125,7 @@ class DestinationeIn(PorterDuff):
     def fa(self) -> float:
         """Calculate `Fa`."""
 
-        return 0
+        return 0.0
 
     def fb(self) -> float:
         """Calculate `Fb`."""
@@ -139,12 +139,12 @@ class SourceOut(PorterDuff):
     def fa(self) -> float:
         """Calculate `Fa`."""
 
-        return 1 - self.cba
+        return 1.0 - self.cba
 
     def fb(self) -> float:
         """Calculate `Fb`."""
 
-        return 0
+        return 0.0
 
 
 class DestinationOut(PorterDuff):
@@ -153,12 +153,12 @@ class DestinationOut(PorterDuff):
     def fa(self) -> float:
         """Calculate `Fa`."""
 
-        return 0
+        return 0.0
 
     def fb(self) -> float:
         """Calculate `Fb`."""
 
-        return 1 - self.csa
+        return 1.0 - self.csa
 
 
 class SourceAtop(PorterDuff):
@@ -172,7 +172,7 @@ class SourceAtop(PorterDuff):
     def fb(self) -> float:
         """Calculate `Fb`."""
 
-        return 1 - self.csa
+        return 1.0 - self.csa
 
 
 class DestinationAtop(PorterDuff):
@@ -181,7 +181,7 @@ class DestinationAtop(PorterDuff):
     def fa(self) -> float:
         """Calculate `Fa`."""
 
-        return 1 - self.cba
+        return 1.0 - self.cba
 
     def fb(self) -> float:
         """Calculate `Fb`."""
@@ -195,12 +195,12 @@ class XOR(PorterDuff):
     def fa(self) -> float:
         """Calculate `Fa`."""
 
-        return 1 - self.cba
+        return 1.0 - self.cba
 
     def fb(self) -> float:
         """Calculate `Fb`."""
 
-        return 1 - self.csa
+        return 1.0 - self.csa
 
 
 class Lighter(PorterDuff):
@@ -209,12 +209,12 @@ class Lighter(PorterDuff):
     def fa(self) -> float:
         """Calculate `Fa`."""
 
-        return 1
+        return 1.0
 
     def fb(self) -> float:
         """Calculate `Fb`."""
 
-        return 1
+        return 1.0
 
 
 SUPPORTED = {
