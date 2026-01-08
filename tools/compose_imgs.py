@@ -48,7 +48,7 @@ def printt(t):
 
 
 @lru_cache(maxsize=1024 * 1024)
-def apply_compositing(background, blend, operator, pixels, fit, space):
+def apply_compositing(background, blend, operator, pixels, space):
     """Apply compositing."""
 
     result = Color.layer(
