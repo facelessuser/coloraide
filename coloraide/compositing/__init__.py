@@ -16,19 +16,12 @@ from typing import Sequence
 def clip_channel(coord: float, channel: Channel) -> float:
     """Clipping channel."""
 
-    if channel.bound:
-        a = channel.low  # type: float | None
-        b = channel.high  # type: float | None
+    # Channel is not bound, return as is
+    if not channel.bound:
+        return coord
 
-    # These parameters are unbounded
-    else:  # pragma: no cover
-        # Will not execute unless we have a space that defines some coordinates
-        # as bound and others as not. We do not currently have such spaces.
-        a = None
-        b = None
-
-    # Fit value in bounds.
-    return alg.clamp(coord, a, b)
+    # Constraind coordinate
+    return alg.clamp(coord, channel.low, channel.high)
 
 
 def apply_compositing(
