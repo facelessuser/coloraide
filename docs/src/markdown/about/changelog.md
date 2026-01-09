@@ -5,6 +5,7 @@ icon: lucide/scroll-text
 
 ## 6.2.1
 
+-   **FIX**: Skip blend step when compositing two colors when one or both are fully transparent.
 -   **FIX**: During compositing, do not clip colors after the blend step.
 -   **FIX**: Ensure `coloraide.algebra.sign` handles infinities.
 

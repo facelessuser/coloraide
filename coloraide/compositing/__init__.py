@@ -36,6 +36,10 @@ def apply_compositing(
         # Colors automatically clamp alpha, so to properly undo premultiplication, clamp alpha so we match browsers.
         cra = alg.clamp(compositor.ao(), 0.0, 1.0)
 
+    # If one color is transparent, skip blending
+    if not csa or not cba:
+        blender = None
+
     # Blend each channel and apply alpha compositing.
     i = 0
     for cb, cr in zip(coords2, blender.blend(coords2, coords1) if blender else coords1):

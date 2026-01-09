@@ -12,6 +12,12 @@ YELLOWISH = '#f5d311'
 class TestBlendModes(util.ColorAsserts, unittest.TestCase):
     """Test blend modes."""
 
+    def test_transparent(self):
+        """Test blending with transparent colors."""
+
+        self.assertColorEqual(Color.layer(['blue', 'transparent'], blend='normal'), Color('blue'))
+        self.assertColorEqual(Color.layer(['transparent', 'blue'], blend='normal'), Color('blue'))
+
     def test_alpha(self):
         """Test normal blend mode with source alpha."""
 
