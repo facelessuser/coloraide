@@ -12,6 +12,11 @@ specification. Alpha composting is based on [Porter Duff compositing][porter-duf
 used to layer colors on top of each other applying the appropriate compositing, using the `normal` blend mode and the
 `source-over` Porter Duff operator by default.
 
+/// tip
+The compositing function does not currently manage gamut mapping, so it is recommended to ensure your colors are within
+the proper gamut before compositing the colors.
+///
+
 /// warning | Deprecated 4.0
 [`compose`](./api/index.md#compose) method was deprecated in favor of the new `layer` method and will be removed at some
 future time.
