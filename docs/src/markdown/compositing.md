@@ -8,9 +8,12 @@ overall compositing of colors. Compositing simply controls how colors are resolv
 other.
 
 ColorAide implements both alpha compositing and blending as described in the [Compositing and Blending Level 1][compositing-level-1]
-specification. Alpha composting is based on [Porter Duff compositing][porter-duff]. By default, the `layer` method is
-used to layer colors on top of each other applying the appropriate compositing, using the `normal` blend mode and the
-`source-over` Porter Duff operator by default.
+specification. Some support for [Compositing Level 2][compositing-level-2] is also implemented, but should be considerd
+experimental.
+
+Alpha composting is based on [Porter Duff compositing][porter-duff]. By default, the `layer` method is used to layer
+colors on top of each other applying the appropriate compositing, using the `normal` blend mode and the `source-over`
+Porter Duff operator by default.
 
 /// tip
 The compositing function does not currently manage gamut mapping, so it is recommended to ensure your colors are within
@@ -742,7 +745,7 @@ _Specified as `#!py3 'lighter'`_.
 
 ### Plus Lighter
 
-> [!example] Experimental implementation based on draft spec of [Compositing Level 2][compositing-level-2]]
+> [!example] Experimental implementation based on the draft spec of [Compositing Level 2][compositing-level-2]
 
 Display the sum of the source image and destination image and clamp the color components.
 
