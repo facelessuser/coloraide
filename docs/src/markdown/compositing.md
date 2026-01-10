@@ -747,7 +747,7 @@ _Specified as `#!py3 'lighter'`_.
 
 > [!example] Experimental implementation based on the draft spec of [Compositing Level 2][compositing-level-2]
 
-Display the sum of the source image and destination image and clamp the color components.
+Display the sum of the source image and destination image and clamps the components such that they don't exceed 1.
 
 Source | Destination | Result
 ------ | ----------- | ------
