@@ -1,10 +1,11 @@
 [brettel]: https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.496.7153&rep=rep1&type=pdf
 [catmull-observe]: https://observablehq.com/@mattdesl/perceptually-smooth-multi-color-linear-gradients
+[color-math]: https://github.com/gtaylor/python-colormath
 [colorio]: https://github.com/nschloe/colorio
 [colorjs]: https://github.com/LeaVerou/color.js
-[color-math]: https://github.com/gtaylor/python-colormath
 [colour-science]: https://github.com/colour-science/colour
 [compositing-level-1]: https://www.w3.org/TR/compositing-1/
+[compositing-level-2]: https://drafts.csswg.org/compositing-2/
 [css-color-hdr-1]: https://drafts.csswg.org/css-color-hdr/
 [css-spec-convert]: https://drafts.csswg.org/css-color/#color-conversion-code
 [de2000]: http://www.brucelindbloom.com/index.html?Math.html
@@ -22,6 +23,7 @@
 [lch-chroma]: https://colorjs.io/docs/gamut-mapping.html#so-how-does-colorjs-handle-all-this
 [machado]: https://www.inf.ufrgs.br/~oliveira/pubs_files/CVD_Simulation/CVD_Simulation.html#Reference
 [pillow]: https://pypi.org/project/Pillow/
+[plus-darker-fix]: https://github.com/w3c/fxtf-drafts/issues/447#issuecomment-1699293766
 [porter-duff]: https://www.w3.org/TR/compositing-1/#porterduffcompositingoperators
 [source-over]: https://www.w3.org/TR/compositing-1/#porterduffcompositingoperators_srcover
 [vienot]: http://vision.psychol.cam.ac.uk/jdmollon/papers/colourmaps.pdf

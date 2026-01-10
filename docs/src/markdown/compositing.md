@@ -250,8 +250,9 @@ The circles are all represented with CSS. We will now try and replicate the colo
 
 So in the code below, we work our way from the bottom of the stack to the top. Since the background is isolated from the
 `multiply` blending, in each region, we start by performing a `normal` blend on the bottom circle against the
-background. We then apply `multiply` blending on each color that is stacked on top. We've provided both the P3 and sRGB
-outputs to make it easy to compare in case your browser blends in one instead of the other.
+background. We then apply `multiply` blending on each color that is stacked on top. If a layer does not have a color in
+the particular region we are evaluating, we can use `#!color transparent` or omit it completely. We've provided both the
+P3 and sRGB outputs to make it easy to compare in case your browser blends in one instead of the other.
 
 <div style="background: white; display: inline-block; padding: 10px;">
 <span class="isolate blend-multiply">
@@ -263,46 +264,43 @@ outputs to make it easy to compare in case your browser blends in one instead of
 
 /// tab | Display P3
 ```py play
+bg = Color('white')
 c1 = Color('#07c7ed').set('alpha', 0.5)
 c2 = Color('#fc3d99').set('alpha', 0.5)
 c3 = Color('#f5d311').set('alpha', 0.5)
 
-cw2 = Color.layer([c2, 'white'], blend='normal', space='display-p3')
-cw3 = Color.layer([c3, 'white'], blend='normal', space='display-p3')
+cw1 = Color.layer([c1, bg], blend='normal', space='display-p3')
+cw2 = Color.layer([c2, bg], blend='normal', space='display-p3')
+cw3 = Color.layer([c3, bg], blend='normal', space='display-p3')
 
-r1 = Color.layer([c2, cw3], blend='multiply', space='display-p3')
-r2 = Color.layer([c1, cw2], blend='multiply', space='display-p3')
-r3 = Color.layer([c1, cw3], blend='multiply', space='display-p3')
+r1 = Color.layer([c1, cw2, 'transparent'], blend='multiply', space='display-p3')
+r2 = Color.layer(['transparent', c2, cw3], blend='multiply', space='display-p3')
+r3 = Color.layer([c1, 'transparent', cw3], blend='multiply', space='display-p3')
+r4 = Color.layer([c1, c2, cw3], blend='multiply', space='display-p3')
 
-r1, r2, r3
-
-Color.layer([c1, c2, cw3], blend='multiply', space='display-p3')
+bg, cw1, r1, cw2, r2, cw3, r3, r4
 ```
 ///
 
 /// tab | sRGB
 ```py play
+bg = Color('white')
 c1 = Color('#07c7ed').set('alpha', 0.5)
 c2 = Color('#fc3d99').set('alpha', 0.5)
 c3 = Color('#f5d311').set('alpha', 0.5)
 
-cw2 = Color.layer([c2, 'white'], blend='normal', space='srgb')
-cw3 = Color.layer([c3, 'white'], blend='normal', space='srgb')
+cw1 = Color.layer([c1, bg], blend='normal', space='srgb')
+cw2 = Color.layer([c2, bg], blend='normal', space='srgb')
+cw3 = Color.layer([c3, bg], blend='normal', space='srgb')
 
-r1 = Color.layer([c2, cw3], blend='multiply', space='srgb')
-r2 = Color.layer([c1, cw2], blend='multiply', space='srgb')
-r3 = Color.layer([c1, cw3], blend='multiply', space='srgb')
+r1 = Color.layer([c1, cw2, 'transparent'], blend='multiply', space='srgb')
+r2 = Color.layer(['transparent', c2, cw3], blend='multiply', space='srgb')
+r3 = Color.layer([c1, 'transparent', cw3], blend='multiply', space='srgb')
+r4 = Color.layer([c1, c2, cw3], blend='multiply', space='srgb')
 
-r1, r2, r3
-
-Color.layer([c1, c2, cw3], blend='multiply', space='srgb')
+bg, cw1, r1, cw2, r2, cw3, r3, r4
 ```
 ///
-
-Results may vary depending on the browser, but we can see (ignoring rounding differences) that the colors match up. This
-was performed on Chrome in macOS using a display that uses `display-p3`.
-
-![Color Meter](images/color_meter.gif)
 
 ## Blend Modes
 
@@ -740,6 +738,32 @@ Source | Destination | Result
 ![Source](images/compose_src.png){.trans-bg} | ![Destination](images/compose_dest.png){.trans-bg} |  ![Lighter](images/compose_lighter.png){.trans-bg}
 
 _Specified as `#!py3 'lighter'`_.
+
+
+### Plus Lighter
+
+> [!example] Experimental implementation based on draft spec of [Compositing Level 2][compositing-level-2]]
+
+Display the sum of the source image and destination image and clamp the color components.
+
+Source | Destination | Result
+------ | ----------- | ------
+![Source](images/compose_src.png){.trans-bg} | ![Destination](images/compose_dest.png){.trans-bg} |  ![Lighter](images/compose_plus-lighter.png){.trans-bg}
+
+_Specified as `#!py3 'plus-lighter'`_.
+
+
+### Plus Darker
+
+> [!example] Experimental implementation based on a [proposed update][plus-darker-fix] to the draft spec of [Compositing Level 2][compositing-level-2]
+
+The inverse of the `plus-lighter` operator.
+
+Source | Destination | Result
+------ | ----------- | ------
+![Source](images/compose_src.png){.trans-bg} | ![Destination](images/compose_dest.png){.trans-bg} |  ![Lighter](images/compose_plus-darker.png){.trans-bg}
+
+_Specified as `#!py3 'plus-darker'`_.
 
 --8<--
 compositing.md
