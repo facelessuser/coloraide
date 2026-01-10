@@ -658,7 +658,7 @@ Destination is placed over the source.
 
 Source | Destination | Result
 ------ | ----------- | ------
-![Source](images/compose_src.png){.trans-bg} | ![Destination](images/compose_dest.png){.trans-bg} |  ![Destination Over](images/compose_destination-over.png){.trans-bg}
+![Source](images/compose_src.png){.trans-bg} | ![Destination](images/compose_dest.png){.trans-bg} | ![Destination Over](images/compose_destination-over.png){.trans-bg}
 
 _Specified as `#!py3 'destination-over'`_.
 
@@ -668,7 +668,7 @@ The source that overlaps the destination, replaces the destination.
 
 Source | Destination | Result
 ------ | ----------- | ------
-![Source](images/compose_src.png){.trans-bg} | ![Destination](images/compose_dest.png){.trans-bg} |  ![Source In](images/compose_source-in.png){.trans-bg}
+![Source](images/compose_src.png){.trans-bg} | ![Destination](images/compose_dest.png){.trans-bg} | ![Source In](images/compose_source-in.png){.trans-bg}
 
 _Specified as `#!py3 'source-in'`_.
 
@@ -738,7 +738,7 @@ Display the sum of the source image and destination image.
 
 Source | Destination | Result
 ------ | ----------- | ------
-![Source](images/compose_src.png){.trans-bg} | ![Destination](images/compose_dest.png){.trans-bg} |  ![Lighter](images/compose_lighter.png){.trans-bg}
+![Source](images/compose_src.png){.trans-bg} | ![Destination](images/compose_dest.png){.trans-bg} | ![Lighter](images/compose_lighter.png){.trans-bg}
 
 _Specified as `#!py3 'lighter'`_.
 
@@ -751,7 +751,7 @@ Display the sum of the source image and destination image and clamps the compone
 
 Source | Destination | Result
 ------ | ----------- | ------
-![Source](images/compose_src.png){.trans-bg} | ![Destination](images/compose_dest.png){.trans-bg} |  ![Lighter](images/compose_plus-lighter.png){.trans-bg}
+![Source](images/compose_src.png){.trans-bg} | ![Destination](images/compose_dest.png){.trans-bg} | ![Lighter](images/compose_plus-lighter.png){.trans-bg}
 
 _Specified as `#!py3 'plus-lighter'`_.
 
@@ -764,7 +764,7 @@ The inverse of the `plus-lighter` operator.
 
 Source | Destination | Result
 ------ | ----------- | ------
-![Source](images/compose_src.png){.trans-bg} | ![Destination](images/compose_dest.png){.trans-bg} |  ![Lighter](images/compose_plus-darker.png){.trans-bg}
+![Source](images/compose_src.png){.trans-bg} | ![Destination](images/compose_dest.png){.trans-bg} | ![Lighter](images/compose_plus-darker.png){.trans-bg}
 
 _Specified as `#!py3 'plus-darker'`_.
 
