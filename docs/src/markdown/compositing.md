@@ -8,7 +8,7 @@ overall compositing of colors. Compositing simply controls how colors are resolv
 other.
 
 ColorAide implements both alpha compositing and blending as described in the [Compositing and Blending Level 1][compositing-level-1]
-specification. Some support for [Compositing Level 2][compositing-level-2] is also implemented, but should be considerd
+specification. Some support for [Compositing Level 2][compositing-level-2] is also implemented, but should be considered
 experimental.
 
 Alpha composting is based on [Porter Duff compositing][porter-duff]. By default, the `layer` method is used to layer
