@@ -217,6 +217,54 @@ class Lighter(PorterDuff):
         return 1.0
 
 
+class PlusDarker(PorterDuff):
+    """Plus darker."""
+
+    def fa(self) -> float:
+        """Calculate `Fa`."""
+
+        return 1.0
+
+    def fb(self) -> float:
+        """Calculate `Fb`."""
+
+        return 1.0
+
+    def co(self, cb: float, cs: float) -> float:
+        """Calculate premultiplied coordinate."""
+
+        return self.ao() - min(1.0, super().co(1.0 - cb, 1.0 - cs))
+
+    def ao(self) -> float:
+        """Calculate output alpha."""
+
+        return min(1.0, super().ao())
+
+
+class PlusLigher(PorterDuff):
+    """Plus lighter."""
+
+    def fa(self) -> float:
+        """Calculate `Fa`."""
+
+        return 1.0
+
+    def fb(self) -> float:
+        """Calculate `Fb`."""
+
+        return 1.0
+
+    def co(self, cb: float, cs: float) -> float:
+        """Calculate premultiplied coordinate."""
+
+        return min(1.0, super().co(cb, cs))
+
+    def ao(self) -> float:
+        """Calculate output alpha."""
+
+        return min(1.0, super().ao())
+
+
 SUPPORTED = {
     'clear': Clear,
     'copy': Copy,
@@ -230,7 +278,9 @@ SUPPORTED = {
     'source-atop': SourceAtop,
     'destination-atop': DestinationAtop,
     'xor': XOR,
-    'lighter': Lighter
+    'lighter': Lighter,
+    'plus-darker': PlusDarker,
+    'plus-lighter': PlusLigher
 }
 
 

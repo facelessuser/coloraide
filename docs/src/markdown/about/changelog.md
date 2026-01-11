@@ -3,6 +3,11 @@ icon: lucide/scroll-text
 ---
 # Changelog
 
+## 6.3
+
+-   **NEW**: Add Porter Duff operator `plus-darker` and `plus-lighter` from the CSS Compositing Level 2 spec, both
+    should be considered experimental and are subject to change.
+
 ## 6.2.1
 
 -   **FIX**: Skip blend step when compositing two colors when one or both are fully transparent.

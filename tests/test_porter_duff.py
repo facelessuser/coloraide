@@ -266,3 +266,37 @@ class TestPorterDuffModes(util.ColorAsserts, unittest.TestCase):
             Color.layer(['transparent', 'transparent'], operator='lighter'),
             Color('transparent')
         )
+
+    def test_plus_lighter(self):
+        """Test plus lighter."""
+
+        c1 = Color('#07c7ed')
+        c2 = Color('#fc3d99')
+        c3 = Color('#f5d311')
+
+        r1 = Color.layer([c1, c2, 'transparent'], operator='plus-lighter', space='srgb')
+        r2 = Color.layer(['transparent', c2, c3], operator='plus-lighter', space='srgb')
+        r3 = Color.layer([c1, 'transparent', c3], operator='plus-lighter', space='srgb')
+        r4 = Color.layer([c1, c2, c3], operator='plus-lighter', space='srgb')
+
+        self.assertColorEqual(r1, Color('rgb(255 255 255)'))
+        self.assertColorEqual(r2, Color('rgb(255 255 170)'))
+        self.assertColorEqual(r3, Color('rgb(252 255 254)'))
+        self.assertColorEqual(r4, Color('rgb(255 255 255)'))
+
+    def test_plus_darker(self):
+        """Test plus darker."""
+
+        c1 = Color('#07c7ed')
+        c2 = Color('#fc3d99')
+        c3 = Color('#f5d311')
+
+        r1 = Color.layer([c1, c2, 'transparent'], operator='plus-darker', space='srgb')
+        r2 = Color.layer(['transparent', c2, c3], operator='plus-darker', space='srgb')
+        r3 = Color.layer([c1, 'transparent', c3], operator='plus-darker', space='srgb')
+        r4 = Color.layer([c1, c2, c3], operator='plus-darker', space='srgb')
+
+        self.assertColorEqual(r1, Color('rgb(4 5 135)'))
+        self.assertColorEqual(r2, Color('rgb(242 17 0)'))
+        self.assertColorEqual(r3, Color('rgb(0 155 0)'))
+        self.assertColorEqual(r4, Color('rgb(0 0 0)'))
