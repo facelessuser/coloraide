@@ -32,7 +32,7 @@ from .types import (
     TensorLike, Array, Matrix, Tensor, Vector, VectorBool, MatrixBool, TensorBool, MatrixInt, ArrayType, VectorInt,  # noqa: F401
     Shape, DimHints, SupportsFloatOrInt
 )
-from typing import Callable, Sequence, Iterator, Any, Iterable, overload
+from typing import Callable, Sequence, Iterator, Any, Iterable, overload, cast
 
 EPS = sys.float_info.epsilon
 RTOL = 4 * EPS
@@ -85,8 +85,11 @@ QR_MODES = {'reduced', 'complete', 'r', 'raw'}
 ################################
 # General math
 ################################
-def sgn(x: float) -> float:
+def sgn(x: SupportsFloatOrInt) -> SupportsFloatOrInt:
     """Return the sign of a given value."""
+
+    if isinstance(x, int):
+        return 1 if x > 0 else -1 if x < 0 else 0
 
     # [1, infinity]
     if x > 0.0:
@@ -5244,7 +5247,7 @@ def roll(
             shift = sum(shift)
         p = math.prod(s)
         _sign = sgn(shift)
-        shift = int(shift % (p * _sign)) if p and _sign else 0
+        shift = shift % (p * _sign) if p and _sign else 0
         flat = ravel(a) if len(s) != 1 else [*a]  # type: ignore[misc]
         sh = -shift
         flat[:] = flat[sh:] + flat[:sh]
@@ -5260,11 +5263,12 @@ def roll(
     new_shift = []  # type: VectorInt
     new_axes = []  # type: VectorInt
     for i, j in broadcast(shift, axes):
+        i, j = cast(int, i), cast(int, j)
         if j < 0:
             j = l + j
         _sign = sgn(i)
-        new_shift.append(int(i % (s[j] * _sign)) if s[j] and _sign else 0)  # type: ignore[call-overload]
-        new_axes.append(j)  # type: ignore[arg-type]
+        new_shift.append((i % (s[j] * _sign)) if s[j] and _sign else 0)
+        new_axes.append(j)
 
     # Perform the roll across the specified axes
     for idx in ndindex(s[:-1] + (1,)):  # type: ignore[misc]
