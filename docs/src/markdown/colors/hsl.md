@@ -1,24 +1,20 @@
 # HSL
 
-/// success | The HSL color space is registered in `Color` by default
-///
+> [!success] The HSL color space is registered in `Color` by default
 
 /// html | div.info-container
-//// info | Properties
-    attrs: {class: inline end}
-
-**Name:** `hsl`
-
-**White Point:** D65 / 2˚
-
-**Coordinates:**
-
-Name | Range
----- | -----
-`h`  | [0, 360)
-`s`  | [0, 1]
-`l`  | [0, 1]
-////
+> [!info | inline | end] Properties
+> **Name:** `hsl`
+>
+> **White Point:** D65 / 2˚
+>
+> **Coordinates:**
+>
+> Name | Range
+> ---- | -----
+> `h`  | [0, 360)
+> `s`  | [0, 1]
+> `l`  | [0, 1]
 
 ![HSL 3D](../images/hsl-3d.png)
 //// figure-caption

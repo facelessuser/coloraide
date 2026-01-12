@@ -210,14 +210,13 @@ This can also be done with `#!py3 clip()`.
 Color('color(display-p3 1 1 0)').clip('srgb')
 ```
 
-/// warning | Indirectly Gamut Mapping a Color Space
-When indirectly gamut mapping in another color space, results may vary depending on what color space you are in and
-what color space you are using to fit the color. The operation may not get the color precisely in gamut. This is
-because we must convert the color to the gamut mapping space, apply the gamut mapping, and then convert it back to
-the original color. The process will be subject to any errors that occur in the [round trip](./advanced.md#round-trip-accuracy)
-to and from the targeted space. This is mainly mentioned as fitting in one color space and round tripping back may
-not give exact results and, in some cases, exceed "in gamut" thresholds.
-///
+> [!warning] Indirectly Gamut Mapping a Color Space
+> When indirectly gamut mapping in another color space, results may vary depending on what color space you are in and
+> what color space you are using to fit the color. The operation may not get the color precisely in gamut. This is
+> because we must convert the color to the gamut mapping space, apply the gamut mapping, and then convert it back to
+> the original color. The process will be subject to any errors that occur in the [round trip](./advanced.md#round-trip-accuracy)
+> to and from the targeted space. This is mainly mentioned as fitting in one color space and round tripping back may
+> not give exact results and, in some cases, exceed "in gamut" thresholds.
 
 There are actually many different ways to gamut map a color. Some are computationally expensive, some are quite simple,
 and many do really good in some cases and not so well in others. There is probably no perfect gamut mapping method, but
@@ -225,8 +224,7 @@ some are better than others.
 
 ### Clip
 
-/// success | The `clip` gamut mapping is registered in `Color` by default and cannot be unregistered
-///
+> [!success] The `clip` gamut mapping is registered in `Color` by default and cannot be unregistered
 
 Clipping is a simple and naive approach to gamut mapping. If the color space is bounded by a gamut, clip will compare
 each channel's value against the bounds for that channel and set the value to the limit it exceeds.
@@ -322,15 +320,13 @@ Steps([c.fit('srgb', method='oklch-chroma') for c in Color.steps(['oklch(90% 0.4
 
 #### LCh Chroma
 
-/// success | The `lch-chroma` gamut mapping is registered in `Color` by default
-///
+> [!success] The `lch-chroma` gamut mapping is registered in `Color` by default
 
 LCh Chroma applies MINDE Chroma Reduction within the CIELCh color space and is currently the default approach in
 ColorAide.
 
-/// note
-As most colors in ColorAide use a D65 white point by default, LCh D65 is used as the gamut mapping color space.
-///
+> [!note]
+> As most colors in ColorAide use a D65 white point by default, LCh D65 is used as the gamut mapping color space.
 
 CIELCh, is not necessarily the best perceptual color space available, but it is a generally well understood color space
 that has been available a long time. It does suffer from a purple shift when dealing with blue colors, but can generally
@@ -359,8 +355,7 @@ c.fit(method='lch-chroma', jnd=0.2)
 
 #### OkLCh Chroma
 
-/// success | The `lch-chroma` gamut mapping is registered in `Color` by default
-///
+> [!success] The `lch-chroma` gamut mapping is registered in `Color` by default
 
 The [CSS Color Level 4 specification](https://drafts.csswg.org/css-color/#binsearch) currently recommends using the
 perceptually uniform OkLCh color space with the MINDE Chroma Reduction approach.
@@ -385,27 +380,26 @@ c.fit(method='oklch-chroma', jnd=0.002)
 
 #### HCT Chroma
 
-/// failure | The `hct-chroma` gamut mapping is **not** registered in `Color` by default
-///
+> [!failure] The `hct-chroma` gamut mapping is **not** registered in `Color` by default
 
-/// warning
-This approach was specifically added to help produce tonal palettes, but with the recent addition of the [ray trace
-approach to chroma reduction in any perceptual space](#gamut-mapping-in-any-perceptual-space), it is
-recommended that users apply that approach as it performs a tight chroma reduction much quicker, and it doesn't require
-a special ∆E method.
 
-On occasions, MINDE approach can be slightly more accurate very close to white due to the way ray trace handles HCT's
-atypical achromatic response, but differences should be imperceptible to the eye at such lightness levels making the
-improved performance of the ray trace approach much more desirable.
-
-```py play
-c = Color('hct', [325, 24, 50])
-tones = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 100]
-Steps([c.clone().set('tone', tone).convert('srgb').to_string(hex=True, fit={'method': 'raytrace', 'pspace': 'hct'}) for tone in tones])
-```
-
-If more accuracy in HCT's atypical achromatic region is desired, the MINDE approach is available.
-///
+> [!warning]
+> This approach was specifically added to help produce tonal palettes, but with the recent addition of the [ray trace
+> approach to chroma reduction in any perceptual space](#gamut-mapping-in-any-perceptual-space), it is recommended that
+> users apply that approach as it performs a tight chroma reduction much quicker, and it doesn't require a special ∆E
+> method.
+>
+> On occasions, MINDE approach can be slightly more accurate very close to white due to the way ray trace handles HCT's
+> atypical achromatic response, but differences should be imperceptible to the eye at such lightness levels making the
+> improved performance of the ray trace approach much more desirable.
+>
+> ```py play
+> c = Color('hct', [325, 24, 50])
+> tones = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 100]
+> Steps([c.clone().set('tone', tone).convert('srgb').to_string(hex=True, fit={'method': 'raytrace', 'pspace': 'hct'}) for tone in tones])
+> ```
+>
+> If more accuracy in HCT's atypical achromatic region is desired, the MINDE approach is available.
 
 Much like the other LCh chroma reduction algorithms, HCT Chroma performs gamut mapping exactly like
 [LCh Chroma](#lch-chroma) with the exception that it uses the HCT color space as the working LCh color space.
@@ -447,15 +441,13 @@ Color.register([HCT(), DEHCT(), HCTChroma()])
 
 ### Ray Tracing Chroma Reduction
 
-/// warning | Experimental Gamut Mapping
-///
+> [!warning] Experimental Gamut Mapping
 
-/// New | New in 4.8
-The default perceptual space is now Oklab.
-
-Please see [Gamut Mapping in Any Perceptual Space](#gamut-mapping-in-any-perceptual-space) to learn how to use different
-perceptual spaces and how to set your own default.
-///
+> [!new] New in 4.8
+> The default perceptual space is now Oklab.
+>
+> Please see [Gamut Mapping in Any Perceptual Space](#gamut-mapping-in-any-perceptual-space) to learn how to use
+> different perceptual spaces and how to set your own default.
 
 ColorAide has developed a chroma reduction technique that employs ray tracing. Its aim is to provide faster chroma
 reduction for gamut mapping using constant lightness. This approach specifically targets RGB gamuts, or spaces that can
@@ -469,11 +461,10 @@ Assuming our anchor point is within bounds, a ray is cast from the inside of the
 current color. The intersection along this path with the RGB gamut surface is then found.  If the achromatic color
 exceeds the maximum or minimum lightness of the gamut, the respective maximum or minimum achromatic color is returned.
 
-/// note | Ray Trace Algorithm
-The ray trace algorithm is based on the [slab method](https://en.wikipedia.org/wiki/Slab_method). The intersection that
-is selected is the first one encountered when following the ray from the origin point in the direction of the specified
-end point.
-///
+> [!note] Ray Trace Algorithm
+> The ray trace algorithm is based on the [slab method](https://en.wikipedia.org/wiki/Slab_method). The intersection
+> that is selected is the first one encountered when following the ray from the origin point in the direction of the
+> specified end point.
 
 The intersection of the line and the gamut surface represents an approximation of the most saturated color for that
 lightness and hue, but because the RGB space is not perceptual, the initial approximation is likely to be off because
@@ -789,62 +780,61 @@ Steps(
 ```
 ///
 
-//// note
-Generally, adaptive lightness can be used within any perceptual space against any target gamut using the ray trace
-or MINDE chroma reduction approach. With that said, it should be noted that some spaces will not perform as well at
-high **ɑ** values due to their geometry regardless of whether the ray trace or MINDE chroma reduction approach is used.
-
-The one exception to the above statement is the Luv/LCH~uv~ color space which exhibited less accurate results in our
-testing when using the ray trace approach and high **ɑ** values that strayed too far from constant lightness. The dark
-blue region of Luv/LCH~uv~ created chroma reduction curves that pushed the ray trace algorithm too hard with adaptive
-lightness.
-
-While Luv/LCH~uv~ is currently the only space provided by ColorAide that had trouble with high **ɑ** values when using
-the ray trace algorithm, there may be others that have yet to be implemented. In these rare cases, it may be better to
-use MINDE chroma reduction which, while slower, has a straightforward algorithm that is less likely to have issues. For
-all others, ray trace will give the best performance with comparable results.
-
-/// tab | Ray Trace
-```py play
-Steps(
-    [
-        c.fit('srgb', method='raytrace', pspace='lchuv', adaptive=0.0)
-        for c in Color.steps(['color(--lchuv 10% 100 270)', 'color(--lchuv 90% 100 270)'], space='luv', steps=100)
-    ]
-)
-Steps(
-    [
-        c.fit('srgb', method='raytrace', pspace='lchuv', adaptive=0.5)
-        for c in Color.steps(['color(--lchuv 10% 100 270)', 'color(--lchuv 90% 100 270)'], space='luv', steps=100)
-    ]
-)
-```
-///
-
-/// tab | MINDE Chroma
-```py play
-Steps(
-    [
-        c.fit('srgb', method='minde-chroma', pspace='lchuv', adaptive=0.0, jnd=0)
-        for c in Color.steps(['color(--lchuv 10% 100 270)', 'color(--lchuv 90% 100 270)'], space='luv', steps=100)
-    ]
-)
-Steps(
-    [
-        c.fit('srgb', method='minde-chroma', pspace='lchuv', adaptive=0.5, jnd=0)
-        for c in Color.steps(['color(--lchuv 10% 100 270)', 'color(--lchuv 90% 100 270)'], space='luv', steps=100)
-    ]
-)
-```
-///
-////
+> [!note]
+> Generally, adaptive lightness can be used within any perceptual space against any target gamut using the ray trace
+> or MINDE chroma reduction approach. With that said, it should be noted that some spaces will not perform as well at
+> high **ɑ** values due to their geometry regardless of whether the ray trace or MINDE chroma reduction approach is
+> used.
+>
+> The one exception to the above statement is the Luv/LCH~uv~ color space which exhibited less accurate results in our
+> testing when using the ray trace approach and high **ɑ** values that strayed too far from constant lightness. The dark
+> blue region of Luv/LCH~uv~ created chroma reduction curves that pushed the ray trace algorithm too hard with adaptive
+> lightness.
+>
+> While Luv/LCH~uv~ is currently the only space provided by ColorAide that had trouble with high **ɑ** values when using
+> the ray trace algorithm, there may be others that have yet to be implemented. In these rare cases, it may be better to
+> use MINDE chroma reduction which, while slower, has a straightforward algorithm that is less likely to have issues.
+> For all others, ray trace will give the best performance with comparable results.
+>
+> /// tab | Ray Trace
+> ```py play
+> Steps(
+>     [
+>         c.fit('srgb', method='raytrace', pspace='lchuv', adaptive=0.0)
+>         for c in Color.steps(['color(--lchuv 10% 100 270)', 'color(--lchuv 90% 100 270)'], space='luv', steps=100)
+>     ]
+> )
+> Steps(
+>     [
+>         c.fit('srgb', method='raytrace', pspace='lchuv', adaptive=0.5)
+>         for c in Color.steps(['color(--lchuv 10% 100 270)', 'color(--lchuv 90% 100 270)'], space='luv', steps=100)
+>     ]
+> )
+> ```
+> ///
+>
+> /// tab | MINDE Chroma
+> ```py play
+> Steps(
+>     [
+>         c.fit('srgb', method='minde-chroma', pspace='lchuv', adaptive=0.0, jnd=0)
+>         for c in Color.steps(['color(--lchuv 10% 100 270)', 'color(--lchuv 90% 100 270)'], space='luv', steps=100)
+>     ]
+> )
+> Steps(
+>     [
+>         c.fit('srgb', method='minde-chroma', pspace='lchuv', adaptive=0.5, jnd=0)
+>         for c in Color.steps(['color(--lchuv 10% 100 270)', 'color(--lchuv 90% 100 270)'], space='luv', steps=100)
+>     ]
+> )
+> ```
+> ///
 
 ## Pointer's Gamut
 
-/// new | New 2.4
-///
+> [!new] New in 2.4
 
-The Pointer’s gamut is (an approximation of) the gamut of real surface colors as can be seen by the human eye, based on
+The Pointer's gamut is (an approximation of) the gamut of real surface colors as can be seen by the human eye, based on
 the research by Michael R. Pointer (1980). What this means is that every color that can be reflected by the surface of
 an object of any material should be is inside the Pointer’s gamut. This does not include, however, those that do not
 occur naturally, such as neon lights, etc.
@@ -885,6 +875,5 @@ color.fit_pointer_gamut()
 color.in_pointer_gamut()
 ```
 
-/// tip
-Much like `in_gamut()`, `in_pointer_gamut()` allows adjusting tolerance as well via the `tolerance` parameter.
-///
+> [!tip]
+> Much like `in_gamut()`, `in_pointer_gamut()` allows adjusting tolerance as well via the `tolerance` parameter.

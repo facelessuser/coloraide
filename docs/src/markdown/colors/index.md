@@ -7,12 +7,11 @@ ColorAide registers a subset of the offered color spaces by [default](#default-c
 spaces can be registered by subclassing the `Color` object and then registering any [additional](#color-space-map)
 required plugins, such as color spaces.
 
-/// tip | Everything but the Kitchen Sink
-It is not generally recommended to register all possible color spaces (and plugins in general). The suggested
-approach is to cherry pick additional color spaces as needed by simply subclassing `Color` and then registering the
-desired plugins, but if desired `coloraide.everything.ColorAll` already includes all plugins and can be imported to
-get access to every supported plugin.
-///
+> [!tip] Everything but the Kitchen Sink
+> It is not generally recommended to register all possible color spaces (and plugins in general). The suggested
+> approach is to cherry pick additional color spaces as needed by simply subclassing `Color` and then registering the
+> desired plugins, but if desired `coloraide.everything.ColorAll` already includes all plugins and can be imported to
+> get access to every supported plugin.
 
 ## Default Color Spaces
 

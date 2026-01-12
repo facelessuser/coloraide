@@ -1,28 +1,24 @@
 # Cubehelix
 
-/// failure | The Cubehelix color space is not registered in `Color` by default
-///
+> [!failure] The Cubehelix color space is not registered in `Color` by default
 
 /// html | div.info-container
-//// info | Properties
-    attrs: {class: inline end}
-
-**Name:** `cubehelix`
-
-**White Point:** D65 / 2˚
-
-**Coordinates:**
-
-Name | Range^\*^
----- | -----
-`h`  | [0, 360)
-`s`  | [0, 4.614]
-`l`  | [0, 1]
-
-^\*^ The maximum saturation represents how high saturation can go within the sRGB gamut, not that _all_ colors with that
-saturation will be valid in the sRGB gamut. As seen in the 3D rendering, while the coordinates are cylindrical, the
-shape of the space within a given gamut may not be a perfect cylinder.
-////
+> [!info | inline | end] Properties
+> **Name:** `cubehelix`
+>
+> **White Point:** D65 / 2˚
+>
+> **Coordinates:**
+>
+> Name | Range^\*^
+> ---- | -----
+> `h`  | [0, 360)
+> `s`  | [0, 4.614]
+> `l`  | [0, 1]
+>
+> ^\*^ The maximum saturation represents how high saturation can go within the sRGB gamut, not that _all_ colors with that
+> saturation will be valid in the sRGB gamut. As seen in the 3D rendering, while the coordinates are cylindrical, the
+> shape of the space within a given gamut may not be a perfect cylinder.
 
 ![Cubehelix](../images/cubehelix-3d.png)
 //// figure-caption

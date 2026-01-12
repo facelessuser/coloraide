@@ -1,32 +1,27 @@
 # ACEScct
 
-/// failure | The ACEScc color space is not registered in `Color` by default
-///
+> [!failure] The ACEScc color space is not registered in `Color` by default
 
 /// html | div.info-container
-//// info | Properties
-    attrs: {class: inline end}
-
-**Name:** `acescct`
-
-**White Point:** D60 / 2˚
-
-**Coordinates:**
-
-Name | Range^\*^
----- | -----
-`r`  | [-0.3584,\ 1.468]
-`g`  | [-0.3584,\ 1.468]
-`b`  | [-0.3584,\ 1.468]
-
-^\*^ Ranges are approximate and rounded to 3 decimal places.
-////
+> [!info | inline | end] Properties
+> **Name:** `acescct`
+>
+> **White Point:** D60 / 2˚
+>
+> **Coordinates:**
+>
+> Name | Range^\*^
+> ---- | -----
+> `r`  | [-0.3584,\ 1.468]
+> `g`  | [-0.3584,\ 1.468]
+> `b`  | [-0.3584,\ 1.468]
+>
+> ^\*^ Ranges are approximate and rounded to 3 decimal places.
 
 ACEScct is very similar to [ACEScc](./acescc.md) except that it adds a "toe" or a gamma curve in the dark region of the
 color space. This encoding is more appropriate for legacy color correction operators.
 
 _[Learn about ACEScct](https://docs.acescentral.com/specifications/acescct/)_
-
 ///
 
 ## Channel Aliases

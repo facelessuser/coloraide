@@ -1,24 +1,20 @@
 # ACEScg
 
-/// failure | The ACEScg color space is not registered in `Color` by default
-///
+> [!failure] The ACEScg color space is not registered in `Color` by default
 
 /// html | div.info-container
-//// info | Properties
-    attrs: {class: inline end}
-
-**Name:** `acescg`
-
-**White Point:** D60 / 2˚
-
-**Coordinates:**
-
-Name | Range
----- | -----
-`r`  | [0, 65504]
-`g`  | [0, 65504]
-`b`  | [0, 65504]
-////
+> [!info | inline | end] Properties
+> **Name:** `acescg`
+>
+> **White Point:** D60 / 2˚
+>
+> **Coordinates:**
+>
+> Name | Range
+> ---- | -----
+> `r`  | [0, 65504]
+> `g`  | [0, 65504]
+> `b`  | [0, 65504]
 
 ![ACEScg](../images/acescg.png)
 //// figure-caption

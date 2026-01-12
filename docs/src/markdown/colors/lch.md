@@ -1,27 +1,23 @@
 # LCh D50
 
-/// success | The LCh D50 color space is registered in `Color` by default
-///
+> [!success] The LCh D50 color space is registered in `Color` by default
 
 /// html | div.info-container
-//// info | Properties
-    attrs: {class: inline end}
-
-**Name:** `lch`
-
-**White Point:** D50 / 2˚
-
-**Coordinates:**
-
-Name | Range^\*^
----- | ---------
-`l`  | [0, 100]
-`c`  | [0, 150]
-`h`  | [0, 360)
-
-^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs in
-relation to the Display P3 color space.
-////
+> [!info | inline | end] Properties
+> **Name:** `lch`
+>
+> **White Point:** D50 / 2˚
+>
+> **Coordinates:**
+>
+> Name | Range^\*^
+> ---- | ---------
+> `l`  | [0, 100]
+> `c`  | [0, 150]
+> `h`  | [0, 360)
+>
+> ^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs in
+> relation to the Display P3 color space.
 
 ![CIELCh D50 3D](../images/lch-3d.png)
 //// figure-caption

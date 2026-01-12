@@ -67,16 +67,15 @@ from coloraide import cat
 Color('red').split_chromaticity(white=cat.WHITES['2deg']['D50'])
 ```
 
-/// tip
-If you ever need to get the white point from an already registered, supported color space, ColorAide makes these
-available via `white()`. The value is returned by default as the tristimulus values (XYZ coordinates), but it can also
-be returned as any of the supported chromaticity coordinate formats by specifying the desired output.
-
-```py play
-Color('red').white()
-Color('red').white('uv-1960')
-```
-///
+> [!tip]
+> If you ever need to get the white point from an already registered, supported color space, ColorAide makes these
+> available via `white()`. The value is returned by default as the tristimulus values (XYZ coordinates), but it can also
+> be returned as any of the supported chromaticity coordinate formats by specifying the desired output.
+>
+> ```py play
+> Color('red').white()
+> Color('red').white('uv-1960')
+> ```
 
 If all that is desired is the 2D chromaticity coordinates, you can also use the two, simple convenience methods: `xy()`
 and `uv()`. `xy()` will return chromaticity in the CIE 1931 xy system and `uv()` will return chromaticity within the
@@ -91,27 +90,24 @@ Color('red').uv('1960')
 
 The `white` parameter is also accepted by `xy()` and `uv()`.
 
-/// tip | Luminance
-ColorAide also allows for grabbing luminance via the `luminance()` method. It should be noted that by default this
-function returns luminance relative to the D65 white point as it is common for people to use luminance normalized like
-this, but if you'd like to quickly get luminance and have it relative to the current color's white point, just set
-`white` to `#!py None` and ColorAide will calculate the value relative to the current color.
+> [!tip] Luminance
+> ColorAide also allows for grabbing luminance via the `luminance()` method. It should be noted that by default this
+> function returns luminance relative to the D65 white point as it is common for people to use luminance normalized like
+> this, but if you'd like to quickly get luminance and have it relative to the current color's white point, just set
+> `white` to `#!py None` and ColorAide will calculate the value relative to the current color.
+>
+> ```py play
+> Color('red').luminance(white=None)
+> ```
 
-```py play
-Color('red').luminance(white=None)
-```
-///
-
-/// new | New 2.4
-- `split_chromaticity()` is new in 2.4.
-- Chromaticity specifier in `white()` is new in 2.4.
-- `white` parameter of `luminance()` is new in 2.4.
-///
+> [!new] New 2.4
+> - `split_chromaticity()` is new in 2.4.
+> - Chromaticity specifier in `white()` is new in 2.4.
+> - `white` parameter of `luminance()` is new in 2.4.
 
 ## Create Color From Chromaticity Coordinates
 
-/// new | New 2.4
-///
+> [!new] New 2.4
 
 ColorAide also provides an easy way to create colors from chromaticity coordinates. `chromaticity()` is a generalized
 method that takes a color space to create the color in and a set of chromaticity coordinates. The coordinates should be
@@ -140,13 +136,12 @@ Color.chromaticity('display-p3', uv, scale=True, scale_space='display-p3-linear'
 This generally preserves chromaticity, scaling luminance, but if a color is out of gamut, the chromaticity of the
 resultant color will be affected.
 
-/// tip
-There is no RGB color space that perfectly encompasses the entire visible gamut. No matter what scaling space is
-selected, colors outside the gamut of the scaling space will not exactly match the specified chromaticity coordinates.
-If exact values are needed, scaling should be avoided. If displaying the colors is desired, then sacrificing accuracy
-of the colors by scaling or some other gamut mapping method is necessary. Scaling/normalization is how we colorize all
-of our chromaticity diagrams in these documents.
-///
+> [!tip]
+> There is no RGB color space that perfectly encompasses the entire visible gamut. No matter what scaling space is
+> selected, colors outside the gamut of the scaling space will not exactly match the specified chromaticity coordinates.
+> If exact values are needed, scaling should be avoided. If displaying the colors is desired, then sacrificing accuracy
+> of the colors by scaling or some other gamut mapping method is necessary. Scaling/normalization is how we colorize all
+> of our chromaticity diagrams in these documents.
 
 It is important to be consistent with white point usage. If we wanted to create a color in sRGB with ProPhoto
 chromaticities, it is important that we create the color first under a color space that uses the same white point.
@@ -173,8 +168,7 @@ c1, c2.convert('prophoto-rgb')
 
 ## Converting Chromaticity Coordinates
 
-/// new | New 2.4
-///
+> [!new] New 2.4
 
 ColorAide normally expects you are working with chromaticity points that are compatible with at least one of the
 registered color spaces. In general, the API is set up with this expectation to make things easy for users. Normally,
@@ -192,19 +186,18 @@ Color.convert_chromaticity('uv-1960', 'xy-1931', Color('white').uv('1960'))
 Color.convert_chromaticity('xyz', 'xy-1931', Color('white').convert('xyz-d65').coords())
 ```
 
-/// tip
-When converting from XYZ tristimulus values to chromaticity values, the color `#!color black` resolves to `[0, 0]` in
-xy, uv, or u'v'. This does not align with other achromatic values within the color space if displaying in 3D. This
-isn't technically incorrect as any chromaticity pair with zero luminance will be equal to `#!color black` in XYZ.
-ColorAide normally accounts for this and aligns the point using the targeted color's white point, but when manually
-converting using `convert_chromaticity()`, such context is unavailable. If you are converting external XYZ values to
-chromaticity coordinates and would like to align, `#!color black` on the achromatic axis, simply pass in the white point
-for context.
-
-```py play
-black = Color('black')
-black.xy()
-Color.convert_chromaticity('xyz', 'xy-1931', black.convert('xyz-d65').coords())
-Color.convert_chromaticity('xyz', 'xy-1931', black.convert('xyz-d65').coords(), white=black.white('xy-1931'))
-```
-///
+> [!tip]
+> When converting from XYZ tristimulus values to chromaticity values, the color `#!color black` resolves to `[0, 0]` in
+> xy, uv, or u'v'. This does not align with other achromatic values within the color space if displaying in 3D. This
+> isn't technically incorrect as any chromaticity pair with zero luminance will be equal to `#!color black` in XYZ.
+> ColorAide normally accounts for this and aligns the point using the targeted color's white point, but when manually
+> converting using `convert_chromaticity()`, such context is unavailable. If you are converting external XYZ values to
+> chromaticity coordinates and would like to align, `#!color black` on the achromatic axis, simply pass in the white point
+> for context.
+>
+> ```py play
+> black = Color('black')
+> black.xy()
+> Color.convert_chromaticity('xyz', 'xy-1931', black.convert('xyz-d65').coords())
+> Color.convert_chromaticity('xyz', 'xy-1931', black.convert('xyz-d65').coords(), white=black.white('xy-1931'))
+> ```

@@ -1,29 +1,24 @@
 # CIE 1960 UCS
 
-/// new | New 2.4
-///
+> [!new] New 2.4
 
-/// failure | The CIE 1960 UCS color space is not registered in `Color` by default
-///
+> [!failure] The CIE 1960 UCS color space is not registered in `Color` by default
 
 /// html | div.info-container
-//// info | Properties
-    attrs: {class: inline end}
-
-**Name:** `ucs`
-
-**White Point:** D65 / 2˚
-
-**Coordinates:**
-
-Name | Range^\*^
----- | -----
-`u`  | [0.0, 1.0]
-`v`  | [0.0, 1.0]
-`w`  | [0.0, 1.0]
-
-^\*^ Space is not bound to the range and is used to define percentage inputs/outputs.
-////
+> [!info | inline | end] Properties
+> **Name:** `ucs`
+>
+> **White Point:** D65 / 2˚
+>
+> **Coordinates:**
+>
+> Name | Range^\*^
+> ---- | -----
+> `u`  | [0.0, 1.0]
+> `v`  | [0.0, 1.0]
+> `w`  | [0.0, 1.0]
+>
+> ^\*^ Space is not bound to the range and is used to define percentage inputs/outputs.
 
 ![xyY](../images/ucs-3d.png)
 //// figure-caption

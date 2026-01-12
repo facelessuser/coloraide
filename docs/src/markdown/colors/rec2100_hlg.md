@@ -1,24 +1,20 @@
 # REC. 2100 HLG
 
-/// success | The Rec. 2100 HLG is registered in `Color` by default
-///
+> [!success] The Rec. 2100 HLG is registered in `Color` by default
 
 /// html | div.info-container
-//// info | Properties
-    attrs: {class: inline end}
-
-**Name:** `rec2100-hlg`
-
-**White Point:** D65 / 2˚
-
-**Coordinates:**
-
-Name | Range
----- | -----
-`r`  | [0, 1]
-`g`  | [0, 1]
-`b`  | [0, 1]
-////
+> [!info | inline | end] Properties
+> **Name:** `rec2100-hlg`
+>
+> **White Point:** D65 / 2˚
+>
+> **Coordinates:**
+>
+> Name | Range
+> ---- | -----
+> `r`  | [0, 1]
+> `g`  | [0, 1]
+> `b`  | [0, 1]
 
 ![Rec. 2020](../images/rec2020.png)
 //// figure-caption

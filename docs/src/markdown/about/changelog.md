@@ -734,9 +734,8 @@ icon: lucide/scroll-text
 
 ## 1.0
 
-/// success | Stable Release!
-Checkout [migration guide](./releases/1.0.md) if you were an early adopter.
-///
+> [!important] Stable Release!
+> Checkout [migration guide](./releases/1.0.md) if you were an early adopter.
 
 -   **NEW**: Bezier interpolation dropped for B-spline which provides much better interpolation.
 -   **NEW**: All new interpolation methods now supports hue fix-ups: `shorter`, `longer`, `increasing`, `decreasing`,
@@ -746,15 +745,14 @@ Checkout [migration guide](./releases/1.0.md) if you were an early adopter.
 
 ## 1.0rc1
 
-/// warning | Plugin Refactor
-For more flexibility there was one final rework of plugins. Registering requires all plugins to be instantiated
-before being passed into `Color.register`, but this allows a user redefine some defaults of certain plugins.
-
-`coloraide.ColorAll` was moved to `coloraide.everythng.ColorAll` to avoid allocating plugins when they are not
-desired.
-
-In the process, we also renamed a number of plugin classes for consistency and predictability, details found below.
-///
+> [!warning] Plugin Refactor
+> For more flexibility there was one final rework of plugins. Registering requires all plugins to be instantiated
+> before being passed into `Color.register`, but this allows a user redefine some defaults of certain plugins.
+>
+> `coloraide.ColorAll` was moved to `coloraide.everythng.ColorAll` to avoid allocating plugins when they are not
+> desired.
+>
+> In the process, we also renamed a number of plugin classes for consistency and predictability, details found below.
 
 -   **NEW**: Updated some class names for consistency and predictability. `XyY` --> `xyY`, `Din99o` --> `DIN99o`, `SRGB`
     --> `sRGB`, and `ORGB` --> `oRGB`.
@@ -789,9 +787,8 @@ In the process, we also renamed a number of plugin classes for consistency and p
 
 ## 1.0b2
 
-/// warning | Breaking Changes
-1.0b2 only introduces one more last breaking change that was forgotten in 1.0b1.
-///
+> [!warning] Breaking Changes
+> 1.0b2 only introduces one more last breaking change that was forgotten in 1.0b1.
 
 -   **BREAK**: Remove `filters` parameter on new class instantiation.
 -   **NEW**: Added new migration guide to the documentation to help early adopters move to the 1.0 release.
@@ -803,12 +800,11 @@ In the process, we also renamed a number of plugin classes for consistency and p
 
 ## 1.0b1
 
-/// warning | Breaking Changes
-1.0b1 introduces a number of breaking changes. As we are very close to releasing the first stable release, we've
-taken opportunity to address any issues related to speed and usability. While this is unfortunate for early
-adopters, we feel that in the long run that these changes will make ColorAide a better library. We've also added new
-a new Bezier interpolation method and added many more color spaces!
-///
+> [!warning] Breaking Changes
+> 1.0b1 introduces a number of breaking changes. As we are very close to releasing the first stable release, we've
+> taken opportunity to address any issues related to speed and usability. While this is unfortunate for early
+> adopters, we feel that in the long run that these changes will make ColorAide a better library. We've also added new
+> a new Bezier interpolation method and added many more color spaces!
 
 -   **BREAK**: The `coloraide.Color` object now only registers a subset of the available color spaces and ∆E algorithms
     in order to create a lighter default color object. `coloraide.ColorAll` has been provided for a quick way to get
@@ -908,15 +904,14 @@ a new Bezier interpolation method and added many more color spaces!
 
 ## 0.17.0
 
-/// warning | Interpolations Are Now Premultiplied
-ColorAide has moved to make premultiplication the default for interpolation methods such as `mix`, `steps`, and
-`interpolate`. The aim is to provide more accurate interpolation when using transparent colors. In cases where
-premultiplication is not desired, it can be disabled by setting it to `#!py3 False`. There are real reasons to do so
-as it may be desirous to mimic an old implementation that has always used naive interpolation of transparent colors.
-
-Additionally, in the past, premultiplication was not really documented as it had not been fully tested.
-Premultiplication is now covered in the documentation.
-///
+> [!warning] Interpolations Are Now Premultiplied
+> ColorAide has moved to make premultiplication the default for interpolation methods such as `mix`, `steps`, and
+> `interpolate`. The aim is to provide more accurate interpolation when using transparent colors. In cases where
+> premultiplication is not desired, it can be disabled by setting it to `#!py3 False`. There are real reasons to do so
+> as it may be desirous to mimic an old implementation that has always used naive interpolation of transparent colors.
+>
+> Additionally, in the past, premultiplication was not really documented as it had not been fully tested.
+> Premultiplication is now covered in the documentation.
 
 -   **NEW**: All mixing/interpolation methods will use `#!py3 premultiply=True` by default.
 -   **NEW**: Allow aliases in interpolation's progress mappings.
@@ -926,29 +921,28 @@ Premultiplication is now covered in the documentation.
 
 ## 0.16.0
 
-/// warning | Deprecations
-In interest of speed, and due to the overhead inflicted on every class attribute access, we've decided to deprecate
-dynamic properties. This includes dynamic color properties (e.g. `Color.red`) and dynamic ∆E methods (e.g.
-`Color.delta_e_2000()`). As far as color channel coordinate access is concerned, we've reworked a faster more useful
-approach. ∆E already has a suitable replacement and will be the only approach moving forward.
-
-1.  Use of `delta_e_<method>` is deprecated. Users should use the already available `delta_e(color, method=name)`
-    approach when using non-default ∆E methods.
-
-2.  Color channel access has changed. Dynamic channel properties have been deprecated. Usage of `Color.coords()` has
-    also been deprecated. All channels can now easily be accessed with indexing. `Color.get()` and `Color.set()`
-    have not changed.
-
-    -   You can index with numbers: `Color[0]`.
-    -   You can index with channel names: `Color['red']`.
-    -   You can slice to get specific color coordinates: `Color[:-1]`.
-    -   You can get all coordinates: `Color[:]` or `list(Color)`.
-    -   You can even iterate coordinates: `[c for c in Color]`.
-    -   Indexing also supports assignment: `Color[0] = 1` or `Color[:3] = [1, 1, 1]`.
-
-Please consider updating usage to utilize the suggested approaches. The aforementioned methods will be removed
-sometime before the 1.0 release.
-///
+> [!warning] Deprecations
+> In interest of speed, and due to the overhead inflicted on every class attribute access, we've decided to deprecate
+> dynamic properties. This includes dynamic color properties (e.g. `Color.red`) and dynamic ∆E methods (e.g.
+> `Color.delta_e_2000()`). As far as color channel coordinate access is concerned, we've reworked a faster more useful
+> approach. ∆E already has a suitable replacement and will be the only approach moving forward.
+>
+> 1.  Use of `delta_e_<method>` is deprecated. Users should use the already available `delta_e(color, method=name)`
+>     approach when using non-default ∆E methods.
+>
+> 2.  Color channel access has changed. Dynamic channel properties have been deprecated. Usage of `Color.coords()` has
+>     also been deprecated. All channels can now easily be accessed with indexing. `Color.get()` and `Color.set()`
+>     have not changed.
+>
+>     -   You can index with numbers: `Color[0]`.
+>     -   You can index with channel names: `Color['red']`.
+>     -   You can slice to get specific color coordinates: `Color[:-1]`.
+>     -   You can get all coordinates: `Color[:]` or `list(Color)`.
+>     -   You can even iterate coordinates: `[c for c in Color]`.
+>     -   Indexing also supports assignment: `Color[0] = 1` or `Color[:3] = [1, 1, 1]`.
+>
+> Please consider updating usage to utilize the suggested approaches. The aforementioned methods will be removed
+> sometime before the 1.0 release.
 
 -   **NEW**: `Color` objects are now indexable and channels can be retrieved using either numbers or strings, e.g.,
     `#!py3 Color[0]` or `#!py3 Color['red']`. Slicing and assignments via slicing are also supported:
@@ -970,13 +964,12 @@ sometime before the 1.0 release.
 
 ## 0.15.0
 
-/// warning
-No changes in the public API have changed, but type annotations have. If you were importing type annotations, you
-will have to update them.
-
-Also, if any undocumented math related methods were accessed (for plugins or otherwise) they've been moved to
-`coloraide.algebra`
-///
+> [!warning]
+> No changes in the public API have changed, but type annotations have. If you were importing type annotations, you
+> will have to update them.
+>
+> Also, if any undocumented math related methods were accessed (for plugins or otherwise) they've been moved to
+> `coloraide.algebra`
 
 -   **NEW**: A number of performance improvements.
 -   **NEW**: Regenerate all matrices with our own matrix tools so that there is consistency between precision of
@@ -996,11 +989,10 @@ Also, if any undocumented math related methods were accessed (for plugins or oth
 
 ## 0.14.0
 
-/// note
-No changes should break existing color space plugins. Moved objects and references are still also available in old
-locations, and new functionality is implemented in such a way as to not break existing plugins, but plugins should
-be updated as sometime before the 1.0 release, such legacy access will be removed.
-///
+> [!note]
+> No changes should break existing color space plugins. Moved objects and references are still also available in old
+> locations, and new functionality is implemented in such a way as to not break existing plugins, but plugins should
+> be updated as sometime before the 1.0 release, such legacy access will be removed.
 
 -   **NEW**: Faster parsing. Instead of parsing `color(space ...)` each time it is evaluated for a different color
     space, parse it generically and then associate it with a given registered color space. If a color spaces wishes to
@@ -1045,47 +1037,47 @@ be updated as sometime before the 1.0 release, such legacy access will be remove
 
 ## 0.11.0
 
-/// warning | Breaking Changes
-1.  Prior to 0.11.0, if you specified a cylindrical space directly, ColorAide would normalize undefined hues the same
-    way that the conversion algorithm did. In the below case, saturation is zero, so the hue was declared undefined.
-
-    ```py
-    >>> Color('hsl(270 0% 50%)')
-    color(--hsl none 0 0.5 / 1)
-    ```
-
-    We should not have been doing this, and it made some cases of interpolation a bit confusing. It is no longer
-    done as the hues are in fact specified by the user, even if they are powerless in relation to contributing to
-    the rendered color. When a cylindrical color is converted or if a user declares the channel as undefined with
-    `none` or some other way, then the channel will be declared undefined, because in these cases, they truly are.
-
-    ```py
-    >>> Color('white').convert('hsl')
-    color(--hsl none 0 1 / 1)
-    >>> Color('color(--hsl none 0 0.5)')
-    color(--hsl none 0 0.5)
-    ```
-
-    If you are working directly in a cylindrical color space and ever wish to force the normalization of color hues
-    as undefined when the color meets the usual requirements as specified by the color space's current rules, just
-    call `normalize` on the color and it will apply the same logic that occurs during the conversion process.
-
-    ```py
-    >>> Color('hsl(270 0% 50%)').normalize()
-    color(--hsl none 0 0.5 / 1)
-    ```
-2.  If you relied on commas in CSS forms that did not support them, this behavior is no longer allowed. It was
-    thought that CSS may consider allowing comma formats in formats like `hwb()`, etc., and it was considered, but
-    ultimately the decision was to avoid adding such support. We've updated our input and output support to reflect
-    this. Color spaces can always be subclassed and have this support added back, if desired, but will not be shipped
-    as the default anymore.
-3.  The D65 form of Luv and LChuv is now the only supported Luv based color spaces by default now. D50 Luv and LChuv
-    have been dropped and `luv` and `lchuv` now refers to the D65 version. In most places, the D65 is the most common
-    used white space as most monitors are calibrated for this white point. The only reason CIELab and CIELCh are D50
-    by default is that CSS requires it. Anyone interested in using Luv with a different white point can easily
-    subclass the current Luv and create a new plugin color space that uses the new white point.
-4.  Renamed DIN99o LCh identifier to the short name of `lch99o`.
-///
+> [!warning] Breaking Changes
+> 1.  Prior to 0.11.0, if you specified a cylindrical space directly, ColorAide would normalize undefined hues the same
+>     way that the conversion algorithm did. In the below case, saturation is zero, so the hue was declared undefined.
+>
+>     ```py
+>     >>> Color('hsl(270 0% 50%)')
+>     color(--hsl none 0 0.5 / 1)
+>     ```
+>
+>     We should not have been doing this, and it made some cases of interpolation a bit confusing. It is no longer
+>     done as the hues are in fact specified by the user, even if they are powerless in relation to contributing to
+>     the rendered color. When a cylindrical color is converted or if a user declares the channel as undefined with
+>     `none` or some other way, then the channel will be declared undefined, because in these cases, they truly are.
+>
+>     ```py
+>     >>> Color('white').convert('hsl')
+>     color(--hsl none 0 1 / 1)
+>     >>> Color('color(--hsl none 0 0.5)')
+>     color(--hsl none 0 0.5)
+>     ```
+>
+>     If you are working directly in a cylindrical color space and ever wish to force the normalization of color hues
+>     as undefined when the color meets the usual requirements as specified by the color space's current rules, just
+>     call `normalize` on the color and it will apply the same logic that occurs during the conversion process.
+>
+>     ```py
+>     >>> Color('hsl(270 0% 50%)').normalize()
+>     color(--hsl none 0 0.5 / 1)
+>     ```
+>
+> 2.  If you relied on commas in CSS forms that did not support them, this behavior is no longer allowed. It was
+>     thought that CSS may consider allowing comma formats in formats like `hwb()`, etc., and it was considered, but
+>     ultimately the decision was to avoid adding such support. We've updated our input and output support to reflect
+>     this. Color spaces can always be subclassed and have this support added back, if desired, but will not be shipped
+>     as the default anymore.
+> 3.  The D65 form of Luv and LChuv is now the only supported Luv based color spaces by default now. D50 Luv and LChuv
+>     have been dropped and `luv` and `lchuv` now refers to the D65 version. In most places, the D65 is the most common
+>     used white space as most monitors are calibrated for this white point. The only reason CIELab and CIELCh are D50
+>     by default is that CSS requires it. Anyone interested in using Luv with a different white point can easily
+>     subclass the current Luv and create a new plugin color space that uses the new white point.
+> 4.  Renamed DIN99o LCh identifier to the short name of `lch99o`.
 
 -   **NEW**: ColorAide now only ships with the D65 version Luv and LChuv as D65, in most places is the expected white
     space. Now, the identifier `luv` and `lchuv` will refer to the D65 version of the respective color spaces. D50
@@ -1112,9 +1104,8 @@ be updated as sometime before the 1.0 release, such legacy access will be remove
 
 ## 0.9.0
 
-/// warning | Breaking Changes
-Custom gamut mapping plugins no longer return coordinates and require the method to update the passed in color.
-///
+> [!warning] Breaking Changes
+> Custom gamut mapping plugins no longer return coordinates and require the method to update the passed in color.
 
 -   **NEW**: Improved, faster gamut mapping algorithm.
 -   **NEW**: FIT plugins (gamut mapping) no longer return coordinates but should modify the color passed in.
@@ -1133,32 +1124,31 @@ Custom gamut mapping plugins no longer return coordinates and require the method
 
 ## 0.8.0
 
-/// warning | Breaking Changes
-The use of `xyz` as the color space name has been changed in favor of `xyz-d65`. This better matches the CSS
-specification. As we are still in a prerelease state, we have not provided any backwards compatibility.
-
-CSS color input strings in the form `#!css-color color(xyz x y z)` will continue to be accepted as CSS will allow
-both the `xyz` and the `xyz-d65` identifier, but output serialization will prefer the
-`#!css-color color(xyz-d65 x y z)` form as using `xyz` is an alias for `xyz-d65`.
-
-Again, this breaking change only affects operations where the color space "name" is used in the API to specify usage
-of a specific color space in order to create a color, convert, mutate, interpolate, etc.
-
-```python
-Color('red').convert('xyz')      # Bad
-Color('red').convert('xyz-d65')  # Okay
-
-Color('xyz' [0, 0, 0])      # Bad
-Color('xyz-d65' [0, 0, 0])  # Okay
-
-Color('red').interpolate('green', space='xyz')      # Bad
-Color('red').interpolate('green', space='xyz-d65')  # Okay
-
-# No changes to CSS inputs
-Color('color(xyz 0 0 0)')      # Okay
-Color('color(xyz-d65 0 0 0)')  # Okay
-```
-///
+> [!warning] Breaking Changes
+> The use of `xyz` as the color space name has been changed in favor of `xyz-d65`. This better matches the CSS
+> specification. As we are still in a prerelease state, we have not provided any backwards compatibility.
+>
+> CSS color input strings in the form `#!css-color color(xyz x y z)` will continue to be accepted as CSS will allow
+> both the `xyz` and the `xyz-d65` identifier, but output serialization will prefer the
+> `#!css-color color(xyz-d65 x y z)` form as using `xyz` is an alias for `xyz-d65`.
+>
+> Again, this breaking change only affects operations where the color space "name" is used in the API to specify usage
+> of a specific color space in order to create a color, convert, mutate, interpolate, etc.
+>
+> ```python
+> Color('red').convert('xyz')      # Bad
+> Color('red').convert('xyz-d65')  # Okay
+>
+> Color('xyz' [0, 0, 0])      # Bad
+> Color('xyz-d65' [0, 0, 0])  # Okay
+>
+> Color('red').interpolate('green', space='xyz')      # Bad
+> Color('red').interpolate('green', space='xyz-d65')  # Okay
+>
+> # No changes to CSS inputs
+> Color('color(xyz 0 0 0)')      # Okay
+> Color('color(xyz-d65 0 0 0)')  # Okay
+> ```
 
 -   **NEW**: Add the official CSS syntax `oklab()` and `oklch()` for the Oklab and OkLCh color spaces respectively.
 -   **NEW**: Custom fit plugin's `fit` method now allows additional `kwargs` in its signature. The API will accept
@@ -1212,10 +1202,9 @@ Color('color(xyz-d65 0 0 0)')  # Okay
 
 ## 0.3.0
 
-/// warning | Breaking Changes
-XYZ changes below will cause breakage as `xyz` now refers to XYZ with D65 instead of D50. Also, CSS identifiers
-changed per the recent specification change.
-///
+> [!warning] Breaking Changes
+> XYZ changes below will cause breakage as `xyz` now refers to XYZ with D65 instead of D50. Also, CSS identifiers
+> changed per the recent specification change.
 
 -   **NEW**: When calling `dir()` on `Color()`, ensure dynamic methods are in the list.
 -   **NEW**: `xyz` now refers to XYZ D65. CSS `#!css-color color()` function now specifies D65 color as either
@@ -1235,10 +1224,9 @@ changed per the recent specification change.
 
 First non-alpha prerelease. Notable changes from the last alpha listed below.
 
-/// warning | Breaking Changes
-There are some breaking changes if coming from the previous alpha releases. All sRGB cylindrical spaces' non-hue
-data ranges are no longer scaled to 0 - 100, but use 0 - 1. Hue ranges have not changed.
-///
+> [!warning] Breaking Changes
+> There are some breaking changes if coming from the previous alpha releases. All sRGB cylindrical spaces' non-hue
+> data ranges are no longer scaled to 0 - 100, but use 0 - 1. Hue ranges have not changed.
 
 -   **NEW**: By accepting HSL, HSV, and HWB as non-hue channels as 0-100, we do lose a little precision, so for 1.0, we
     are switching to accepting and returning raw data values between 0 - 1. We've kept hue between 0 - 360 as it is

@@ -1,24 +1,20 @@
 # Okhsl
 
-/// failure | The Okhsl color space is not registered in `Color` by default
-///
+> [!failure] The Okhsl color space is not registered in `Color` by default
 
 /// html | div.info-container
-//// info | Properties
-    attrs: {class: inline end}
-
-**Name:** `okhsl`
-
-**White Point:** D65 / 2˚
-
-**Coordinates:**
-
-Name | Range
----- | -----
-`h`  | [0, 360)
-`s`  | [0, 1]
-`l`  | [0, 1]
-////
+> [!info | inline | end] Properties
+> **Name:** `okhsl`
+>
+> **White Point:** D65 / 2˚
+>
+> **Coordinates:**
+>
+> Name | Range
+> ---- | -----
+> `h`  | [0, 360)
+> `s`  | [0, 1]
+> `l`  | [0, 1]
 
 ![Okhsl 3D](../images/okhsl-3d.png)
 //// figure-caption

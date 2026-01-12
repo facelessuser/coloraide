@@ -1,27 +1,23 @@
 # OkL~r~Ch
 
-/// failure | The OkL~r~Ch color space is not registered in `Color` by default
-///
+> [!failure] The OkL~r~Ch color space is not registered in `Color` by default
 
 /// html | div.info-container
-//// info | Properties
-    attrs: {class: inline end}
-
-**Name:** `oklrch`
-
-**White Point:** D65 / 2˚ / 2˚
-
-**Coordinates:**
-
-Name | Range^\*^
----- | ---------
-`l`  | [0, 1]
-`c`  | [0, 0.4]
-`h`  | [0, 360)
-
-^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs in
-relation to the Display P3 color space.
-////
+> [!info | inline | end] Properties
+> **Name:** `oklrch`
+>
+> **White Point:** D65 / 2˚ / 2˚
+>
+> **Coordinates:**
+>
+> Name | Range^\*^
+> ---- | ---------
+> `l`  | [0, 1]
+> `c`  | [0, 0.4]
+> `h`  | [0, 360)
+>
+> ^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs in
+> relation to the Display P3 color space.
 
 ![OkL~r~Ch](../images/oklrch-3d.png)
 //// figure-caption

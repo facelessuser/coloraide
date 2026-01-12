@@ -1,27 +1,23 @@
 # CAM02 LCD
 
-/// failure | The CAM02 LCD color space is not registered in `Color` by default
-///
+> [!failure] The CAM02 LCD color space is not registered in `Color` by default
 
 /// html | div.info-container
-//// info | Properties
-    attrs: {class: inline end}
-
-**Name:** `cam02-lcd`
-
-**White Point:** D65 / 2˚
-
-**Coordinates:**
-
-Name | Range^\*^
----- | -----
-`j`  | [0, 100]
-`a`  | [-75, 75]
-`b`  | [-75, 75]
-
-^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs in
-relation to the Display P3 color space.
-////
+> [!info | inline | end] Properties
+> **Name:** `cam02-lcd`
+>
+> **White Point:** D65 / 2˚
+>
+> **Coordinates:**
+>
+> Name | Range^\*^
+> ---- | -----
+> `j`  | [0, 100]
+> `a`  | [-75, 75]
+> `b`  | [-75, 75]
+>
+> ^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs in
+> relation to the Display P3 color space.
 
 ![CAM02 LCD](../images/cam02-lcd-3d.png)
 //// figure-caption

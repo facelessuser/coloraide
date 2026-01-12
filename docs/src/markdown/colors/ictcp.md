@@ -1,26 +1,22 @@
 # ICtCp
 
-/// success | The ICtCp color space is registered in `Color` by default
-///
+> [!success] The ICtCp color space is registered in `Color` by default
 
 /// html | div.info-container
-//// info | Properties
-    attrs: {class: inline end}
-
-**Name:** `ictcp`
-
-**White Point:** D65 / 2˚
-
-**Coordinates:**
-
-Name       | Range^\*^
----------- | ---------
-`i`        | [0, 1]
-`ct`       | [-0.5, 0.5]
-`cp`       | [-0.5, 0.5]
-
-^\*^ Space is not bound to the above, defined range but represents a practical range for HDR color spaces.
-////
+> [!info | inline | end] Properties
+> **Name:** `ictcp`
+>
+> **White Point:** D65 / 2˚
+>
+> **Coordinates:**
+>
+> Name       | Range^\*^
+> ---------- | ---------
+> `i`        | [0, 1]
+> `ct`       | [-0.5, 0.5]
+> `cp`       | [-0.5, 0.5]
+>
+> ^\*^ Space is not bound to the above, defined range but represents a practical range for HDR color spaces.
 
 ![ICtCp](../images/ictcp-3d.png)
 //// figure-caption

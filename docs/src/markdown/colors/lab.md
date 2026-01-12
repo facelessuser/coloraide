@@ -1,27 +1,23 @@
 # LAB D50
 
-/// success | The Lab D50 color space is registered in `Color` by default
-///
+> [!success] The Lab D50 color space is registered in `Color` by default
 
 /// html | div.info-container
-//// info | Properties
-    attrs: {class: inline end}
-
-**Name:** `lab`
-
-**White Point:** D50 / 2˚
-
-**Coordinates:**
-
-Name | Range^\*^
----- | ---------
-`l`  | [0, 100]
-`a`  | [-125, 125]
-`b`  | [-125, 125]
-
-^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs in
-relation to the Display P3 color space.
-////
+> [!info | inline | end] Properties
+> **Name:** `lab`
+>
+> **White Point:** D50 / 2˚
+>
+> **Coordinates:**
+>
+> Name | Range^\*^
+> ---- | ---------
+> `l`  | [0, 100]
+> `a`  | [-125, 125]
+> `b`  | [-125, 125]
+>
+> ^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs in
+> relation to the Display P3 color space.
 
 ![CIELab D50 3D](../images/lab-3d.png)
 //// figure-caption

@@ -1,29 +1,24 @@
 # Rec. 709 (OETF)
 
-/// new | New 2.4
-///
+> [!new] New 2.4
 
-/// failure | The Rec. 709 (OETF) color space is not registered in `Color` by default
-///
+> [!failure] The Rec. 709 (OETF) color space is not registered in `Color` by default
 
 /// html | div.info-container
-//// info | Properties
-    attrs: {class: inline end}
-
-**Name:** `rec709-oetf`
-
-**White Point:** D65 / 2˚
-
-**Coordinates:**
-
-Name | Range^\*^
----- | -----
-`r`  | [0, 1]
-`g`  | [0, 1]
-`b`  | [0, 1]
-
-^\*^ Range denotes _in gamut_ colors, but the color space supports an extended range beyond the gamut.
-////
+> [!info | inline | end] Properties
+> **Name:** `rec709-oetf`
+>
+> **White Point:** D65 / 2˚
+>
+> **Coordinates:**
+>
+> Name | Range^\*^
+> ---- | -----
+> `r`  | [0, 1]
+> `g`  | [0, 1]
+> `b`  | [0, 1]
+>
+> ^\*^ Range denotes _in gamut_ colors, but the color space supports an extended range beyond the gamut.
 
 ![sRGB](../images/rec709.png)
 //// figure-caption

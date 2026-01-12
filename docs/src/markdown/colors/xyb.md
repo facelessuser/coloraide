@@ -1,26 +1,22 @@
 # XYB
 
-/// failure | The XYB color space is not registered in `Color` by default
-///
+> [!failure] The XYB color space is not registered in `Color` by default
 
 /// html | div.info-container
-//// info | Properties
-    attrs: {class: inline end}
-
-**Name:** `xyb`
-
-**White Point:** D65 / 2˚
-
-**Coordinates:**
-
-Name | Range^\*^
----- | -----
-`x`  | [-0.05, 0.05]
-`y`  | [0.0, 0.845]
-`b`  | [-0.45, 0.45]
-
-^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs.
-////
+> [!info | inline | end] Properties
+> **Name:** `xyb`
+>
+> **White Point:** D65 / 2˚
+>
+> **Coordinates:**
+>
+> Name | Range^\*^
+> ---- | -----
+> `x`  | [-0.05, 0.05]
+> `y`  | [0.0, 0.845]
+> `b`  | [-0.45, 0.45]
+>
+> ^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs.
 
 ![XYB](../images/xyb-3d.png)
 //// figure-caption

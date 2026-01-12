@@ -1,27 +1,23 @@
 # RLAB
 
-/// failure | The RLAB color space is not registered in `Color` by default
-///
+> [!failure] The RLAB color space is not registered in `Color` by default
 
 /// html | div.info-container
-//// info | Properties
-    attrs: {class: inline end}
-
-**Name:** `rlab`
-
-**White Point:** D65 / 2˚
-
-**Coordinates:**
-
-Name | Range
----- | -----
-`l`  | [0, 100]
-`a`  | [-125, 125]
-`b`  | [-125, 125]
-
-^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs in
-relation to the Display P3 color space.
-////
+> [!info | inline | end] Properties
+> **Name:** `rlab`
+>
+> **White Point:** D65 / 2˚
+>
+> **Coordinates:**
+>
+> Name | Range
+> ---- | -----
+> `l`  | [0, 100]
+> `a`  | [-125, 125]
+> `b`  | [-125, 125]
+>
+> ^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs in
+> relation to the Display P3 color space.
 
 ![RLAB](../images/rlab-3d.png)
 //// figure-caption
@@ -83,11 +79,10 @@ Color('white').convert('rlab')
 Color('white').convert('rlab-custom')
 ```
 
-/// note
-If a `discounting` of anything other than "hard-copy" is used, you will notice the achromatic response to cause colors
-like white to not have value of zero chroma. This is because the eye is not fully adapted, and colors appear different
-with this context. This is not a bug, just the way viewing conditions can affect model.
-///
+> [!note]
+> If a `discounting` of anything other than "hard-copy" is used, you will notice the achromatic response to cause colors
+> like white to not have value of zero chroma. This is because the eye is not fully adapted, and colors appear different
+> with this context. This is not a bug, just the way viewing conditions can affect model.
 
 ## Channel Aliases
 

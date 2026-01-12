@@ -1,27 +1,23 @@
 # HCT
 
-/// failure | The HCT color space is not registered in `Color` by default
-///
+> [!failure] The HCT color space is not registered in `Color` by default
 
 /// html | div.info-container
-//// info | Properties
-    attrs: {class: inline end}
-
-**Name:** `hct`
-
-**White Point:** D65 / 2˚
-
-**Coordinates:**
-
-Name | Range^\*^
----- | -----
-`h`  | [0, 360)
-`c`  | [0, 145]
-`t`  | [0, 100]
-
-^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs in
-relation to the Display P3 color space.
-////
+> [!info | inline | end] Properties
+> **Name:** `hct`
+>
+> **White Point:** D65 / 2˚
+>
+> **Coordinates:**
+>
+> Name | Range^\*^
+> ---- | -----
+> `h`  | [0, 360)
+> `c`  | [0, 145]
+> `t`  | [0, 100]
+>
+> ^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs in
+> relation to the Display P3 color space.
 
 ![HCT](../images/hct-3d.png)
 //// figure-caption
@@ -52,12 +48,11 @@ create the space from both CIELAB and CAM16. We then provide a generic approxima
 precision to better support not only sRGB, but other wide gamut color spaces such as: Display P3, Rec. 2020, A98 RGB,
 etc.
 
-//// note | Conversion Limitations
-Extreme colors, like those in ProPhoto RGB that fall outside the visible spectrum, may be difficult to round trip
-with the same high accuracy as other colors well inside the visible spectrum. These colors naturally stress the CAM16
-color model and make approximation from HCT even more difficult. With that said, most color spaces within the visible
-spectrum should convert reasonably well.
-////
+> [!note] Conversion Limitations
+> Extreme colors, like those in ProPhoto RGB that fall outside the visible spectrum, may be difficult to round trip
+> with the same high accuracy as other colors well inside the visible spectrum. These colors naturally stress the CAM16
+> color model and make approximation from HCT even more difficult. With that said, most color spaces within the visible
+> spectrum should convert reasonably well.
 
 [Learn more](https://material.io/blog/science-of-color-design).
 ///

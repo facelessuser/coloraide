@@ -1,27 +1,23 @@
 # DIN99o
 
-/// failure | The DIN99o color space is not registered in `Color` by default
-///
+> [!failure] The DIN99o color space is not registered in `Color` by default
 
 /// html | div.info-container
-//// info | Properties
-    attrs: {class: inline end}
-
-**Name:** `din99o`
-
-**White Point:** D65 / 2˚
-
-**Coordinates:**
-
-Name | Range^\*^
----- | ---------
-`l`  | [0, 100]
-`a`  | [-55, 55]
-`b`  | [-55, 55]
-
-^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs in
-relation to the Display P3 color space.
-////
+> [!info | inline | end] Properties
+> **Name:** `din99o`
+>
+> **White Point:** D65 / 2˚
+>
+> **Coordinates:**
+>
+> Name | Range^\*^
+> ---- | ---------
+> `l`  | [0, 100]
+> `a`  | [-55, 55]
+> `b`  | [-55, 55]
+>
+> ^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs in
+> relation to the Display P3 color space.
 
 ![DIN99o](../images/din99o-3d.png)
 //// figure-caption

@@ -1,24 +1,20 @@
 # HSI
 
-/// failure | The HSI color space is not registered in `Color` by default
-///
+> [!failure] The HSI color space is not registered in `Color` by default
 
 /// html | div.info-container
-//// info | Properties
-    attrs: {class: inline end}
-
-**Name:** `hsi`
-
-**White Point:** D65 / 2˚
-
-**Coordinates:**
-
-Name | Range
----- | -----
-`h`  | [0, 360)
-`s`  | [0, 1]
-`i`  | [0, 1]
-////
+> [!info | inline | end] Properties
+> **Name:** `hsi`
+>
+> **White Point:** D65 / 2˚
+>
+> **Coordinates:**
+>
+> Name | Range
+> ---- | -----
+> `h`  | [0, 360)
+> `s`  | [0, 1]
+> `i`  | [0, 1]
 
 ![HSI](../images/hsi-3d.png)
 //// figure-caption

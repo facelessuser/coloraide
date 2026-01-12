@@ -1,26 +1,22 @@
 # oRGB
 
-/// failure | The oRGB color space is not registered in `Color` by default
-///
+> [!failure] The oRGB color space is not registered in `Color` by default
 
 /// html | div.info-container
-//// info | Properties
-    attrs: {class: inline end}
-
-**Name:** `orgb`
-
-**White Point:** D65 / 2˚
-
-**Coordinates:**
-
-Name  | Range^\*^
------ | -----
-`l`   | [0, 1]
-`cyb` | [-1, 1]
-`crg` | [-1, 1]
-
-^\*^ Range denotes _in gamut_ colors, but the color space supports an extended range beyond the gamut.
-////
+> [!info | inline | end] Properties
+> **Name:** `orgb`
+>
+> **White Point:** D65 / 2˚
+>
+> **Coordinates:**
+>
+> Name  | Range^\*^
+> ----- | -----
+> `l`   | [0, 1]
+> `cyb` | [-1, 1]
+> `crg` | [-1, 1]
+>
+> ^\*^ Range denotes _in gamut_ colors, but the color space supports an extended range beyond the gamut.
 
 ![oRGB](../images/orgb-3d.png)
 //// figure-caption

@@ -1,27 +1,23 @@
 # Oklab
 
-/// success | The Oklab color space is registered in `Color` by default
-///
+> [!success] The Oklab color space is registered in `Color` by default
 
 /// html | div.info-container
-//// info | Properties
-    attrs: {class: inline end}
-
-**Name:** `oklab`
-
-**White Point:** D65 / 2˚
-
-**Coordinates:**
-
-Name | Range^\*^
----- | ---------
-`l`  | [0, 1]
-`a`  | [-0.4, 0.4]
-`b`  | [-0.4, 0.4]
-
-^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs in
-relation to the Display P3 color space.
-////
+> [!info | inline | end] Properties
+> **Name:** `oklab`
+>
+> **White Point:** D65 / 2˚
+>
+> **Coordinates:**
+>
+> Name | Range^\*^
+> ---- | ---------
+> `l`  | [0, 1]
+> `a`  | [-0.4, 0.4]
+> `b`  | [-0.4, 0.4]
+>
+> ^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs in
+> relation to the Display P3 color space.
 
 ![Oklab](../images/oklab-3d.png)
 //// figure-caption

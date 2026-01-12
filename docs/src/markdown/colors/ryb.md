@@ -1,26 +1,20 @@
 # RYB
 
-/// failure | The RYB color space is not registered in `Color` by default
-///
+> [!failure] The RYB color space is not registered in `Color` by default
 
 /// html | div.info-container
-//// info | Properties
-    attrs: {class: inline end}
-
-**Name:** `ryb`
-
-**White Point:** D65 / 2˚
-
-**Coordinates:**
-
-Name | Range
----- | -----
-`r`  | [0, 1]
-`y`  | [0, 1]
-`b`  | [0, 1]
-
-////
-
+> [!info | inline | end] Properties
+> **Name:** `ryb`
+>
+> **White Point:** D65 / 2˚
+>
+> **Coordinates:**
+>
+> Name | Range
+> ---- | -----
+> `r`  | [0, 1]
+> `y`  | [0, 1]
+> `b`  | [0, 1]
 
 ```py play
 Wheel(Color('ryb', [1, 0, 0]).harmony('wheel', space='ryb'))
@@ -73,26 +67,21 @@ of colors outside the gamut will have poor conversions.
 
 ### RYB Biased
 
-/// failure | The RYB Biased color space is not registered in `Color` by default
-///
+> [!failure] The RYB Biased color space is not registered in `Color` by default
 
 /// html | div.info-container
-//// info | Properties
-    attrs: {class: inline end}
-
-**Name:** `ryb-biased`
-
-**White Point:** D65 / 2˚
-
-**Coordinates:**
-
-Name | Range
----- | -----
-`r`  | [0, 1]
-`y`  | [0, 1]
-`b`  | [0, 1]
-
-////
+> [!info | inline | end] Properties
+> **Name:** `ryb-biased`
+>
+> **White Point:** D65 / 2˚
+>
+> **Coordinates:**
+>
+> Name | Range
+> ---- | -----
+> `r`  | [0, 1]
+> `y`  | [0, 1]
+> `b`  | [0, 1]
 
 
 ```py play

@@ -1,27 +1,23 @@
 # ZCAM JMh
 
-/// failure | The ZCAM JMh color space is not registered in `Color` by default
-///
+> [!failure] The ZCAM JMh color space is not registered in `Color` by default
 
 /// html | div.info-container
-//// info | Properties
-    attrs: {class: inline end}
-
-**Name:** `zcam-jmh`
-
-**White Point:** D65 / 2˚
-
-**Coordinates:**
-
-Name | Range^\*^
----- | -----
-`jz`  | [0, 100]
-`mz`  | [0, 60]
-`hz`  | [0, 360)
-
-^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs in
-relation to the Display P3 color space.
-////
+> [!info | inline | end] Properties
+> **Name:** `zcam-jmh`
+>
+> **White Point:** D65 / 2˚
+>
+> **Coordinates:**
+>
+> Name | Range^\*^
+> ---- | -----
+> `jz`  | [0, 100]
+> `mz`  | [0, 60]
+> `hz`  | [0, 360)
+>
+> ^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs in
+> relation to the Display P3 color space.
 
 ![ZCAM JMh](../images/zcam-jmh-3d.png)
 //// figure-caption

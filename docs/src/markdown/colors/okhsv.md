@@ -1,24 +1,20 @@
 # Okhsv
 
-/// failure | The Okhsv color space is not registered in `Color` by default
-///
+> [!failure] The Okhsv color space is not registered in `Color` by default
 
 /// html | div.info-container
-//// info | Properties
-    attrs: {class: inline end}
-
-**Name:** `okhsv`
-
-**White Point:** D65 / 2˚
-
-**Coordinates:**
-
-Name | Range
----- | -----
-`h`  | [0, 360)
-`s`  | [0, 1]
-`v`  | [0, 1]
-////
+> [!info | inline | end] Properties
+> **Name:** `okhsv`
+>
+> **White Point:** D65 / 2˚
+>
+> **Coordinates:**
+>
+> Name | Range
+> ---- | -----
+> `h`  | [0, 360)
+> `s`  | [0, 1]
+> `v`  | [0, 1]
 
 ![Okhsv 3D](../images/okhsv-3d.png)
 //// figure-caption

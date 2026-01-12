@@ -87,8 +87,7 @@ color
 
 ### Access by Type
 
-/// new | New 2.0
-///
+> [!new] New 2.0
 
 When dealing with colors, you have two types of channels: color channels and an alpha channel. These values can be
 accessed and separated by [slicing](#access-by-slicing) as mentioned earlier, but some convenience functions have
@@ -133,8 +132,7 @@ color
 color.coords(precision=[2, 3, 5])
 ```
 
-/// new | New in 4.0: Precision Output Control
-///
+> [!new] New in 4.0: Precision Output Control
 
 ### Access By Functions
 
@@ -159,9 +157,9 @@ color.get('0')
 color.get('oklch.0')
 ```
 
-/// new | New in 2.14
-Parsing numerical representations of channels is new in 2.14
-///
+> [!new] New in 2.14
+> Parsing numerical representations of channels is new in 2.14
+
 
 Like `get()`, `set()` is a method that allows for the setting of any color channel via the color channel names. The
 value can be set via numerical values or functions with more complex logic.
@@ -239,17 +237,14 @@ color
 color.get(['alpha', 'oklch.lightness', 'oklch.hue'], precision=[5, 3, 0])
 ```
 
-/// warning | Indirect Channel Modifications
-Indirect channel modification is very useful, but keep in mind that it may give you access to color spaces that are
-incompatible due to gamut size. Additionally, the feature converts the color to the target color space, modifies it,
-and then converts it back making it susceptible to any possible [round trip errors](./advanced.md#round-trip-accuracy).
-///
+> [!warning] Indirect Channel Modifications
+> Indirect channel modification is very useful, but keep in mind that it may give you access to color spaces that are
+> incompatible due to gamut size. Additionally, the feature converts the color to the target color space, modifies it,
+> and then converts it back making it susceptible to any possible [round trip errors](./advanced.md#round-trip-accuracy).
 
-/// new | New in 1.5: Getting/Setting Multiple Channels
-///
+> [!new] New in 1.5: Getting/Setting Multiple Channels
 
-/// new | New in 4.0: Precision Output Control
-///
+> [!new] New in 4.0: Precision Output Control
 
 ## Undefined Values
 
@@ -352,10 +347,9 @@ c.get('red', nans=False)
 c.set('green', lambda x: x + 3, nans=False)
 ```
 
-/// note | `set()`
-In the context of `set()`, `nans` specifically ensures that when a callback function is provided that the input value
-is transformed into a real value opposed to an undefined value.
-///
+> [!note] `set()`
+> In the context of `set()`, `nans` specifically ensures that when a callback function is provided that the input value
+> is transformed into a real value opposed to an undefined value.
 
 We can also use `normalize()` to just set all channels to defined values, but keep mind, when an
 [achromatic color](#achromatic-colors) has a real hue, they will then influence interpolation results if interpolating
@@ -417,11 +411,10 @@ always be true.
     aces.in_gamut()
     ```
 
-    /// new | New 2.3
-    ACEScc, another color space that performs a logarithmic encoding of ACES, will also resolve undefined channels to a
-    non-zero value, not because zero is out of gamut, but to ensure consistency across all ACES color spaces which
-    resolve to zero or non-zero equivalent values.
-    ///
+    > [!new] New 2.3
+    > ACEScc, another color space that performs a logarithmic encoding of ACES, will also resolve undefined channels to a
+    > non-zero value, not because zero is out of gamut, but to ensure consistency across all ACES color spaces which
+    > resolve to zero or non-zero equivalent values.
 
 ## Achromatic Colors
 
@@ -432,8 +425,7 @@ ColorAide has some special handling of achromatic colors and a few ways to test 
 
 ### Checking For Achromatic Colors
 
-/// new | New 2.0
-///
+> [!new] New 2.0
 
 ColorAide generally respects an input color's defined channels, but during conversion, or if `normalize()` is called,
 cylindrical color spaces will have their hue set to undefined if the color is achromatic (or very close to achromatic).

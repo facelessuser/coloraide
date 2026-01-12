@@ -1,27 +1,23 @@
 # CAM02 UCS
 
-/// failure | The CAM02 UCS color space is not registered in `Color` by default
-///
+> [!failure] The CAM02 UCS color space is not registered in `Color` by default
 
 /// html | div.info-container
-//// info | Properties
-    attrs: {class: inline end}
-
-**Name:** `cam02-ucs`
-
-**White Point:** D65 / 2˚
-
-**Coordinates:**
-
-Name | Range^\*^
----- | -----
-`j`  | [0, 100]
-`a`  | [-50, 50]
-`b`  | [-50, 50]
-
-^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs in
-relation to the Display P3 color space.
-////
+> [!info | inline | end] Properties
+> **Name:** `cam02-ucs`
+>
+> **White Point:** D65 / 2˚
+>
+> **Coordinates:**
+>
+> Name | Range^\*^
+> ---- | -----
+> `j`  | [0, 100]
+> `a`  | [-50, 50]
+> `b`  | [-50, 50]
+>
+> ^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs in
+> relation to the Display P3 color space.
 
 ![CAM02 UCS](../images/cam02-ucs-3d.png)
 //// figure-caption

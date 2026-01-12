@@ -66,13 +66,12 @@ Steps([c.filter('sepia', 1).clip() for c in colors])
 Steps([c.filter('grayscale', 1).clip() for c in colors])
 ```
 
-/// tip
-`filter()` can output the results in any color space you need by setting `out_space`.
-
-```py play
-Color('#07c7ed').filter('grayscale', 1, out_space='hsl')
-```
-///
+> [!tip]
+> `filter()` can output the results in any color space you need by setting `out_space`.
+>
+> ```py play
+> Color('#07c7ed').filter('grayscale', 1, out_space='hsl')
+> ```
 
 ## Color Vision Deficiency Simulation
 
@@ -219,10 +218,9 @@ def confusion_line(c, cone):
     return Color.steps([low, high], steps=6, space='lms', out_space='srgb')
 ```
 
-/// note | Editing Examples
-The LMS code above is part of the same session as the examples below (as noted in the bottom right corner). If you want
-to edit the examples, run the LMS code above at least once.
-///
+> [!note] Editing Examples
+> The LMS code above is part of the same session as the examples below (as noted in the bottom right corner). If you
+> want to edit the examples, run the LMS code above at least once.
 
 Then We generate 3 different color series, each specifically targeting a specific deficiency. This is done by generating
 a series of colors that have all properties equal except that they have variance in a different cone response. The first
@@ -389,48 +387,47 @@ Steps([c.filter('sepia', 1, space='srgb-linear').clip() for c in colors])
 Steps([c.filter('sepia', 1, space='srgb').clip() for c in colors])
 ```
 
-/// tip | Processing Lots of Colors
-One logical application for filters is to apply them directly to images. If you are performing these operations on
-millions of pixels, you may notice that ColorAide, with all of its convenience, may not always be the fastest. There
-is a cost due to the overhead of convenience and a cost due to the pure Python approach as well. With that said,
-there are tricks that can dramatically make things much faster in most cases!
-
-`functools.lru_cache` is your friend in such cases. We actually process all the images on this page with ColorAide
-to demonstrate the filters. The key to making it a quick and painless process was to cache repetitive operations.
-When processing images, it is highly likely that you will be performing the same operations on thousands of
-identical pixels. Caching the work you've already done can speed this process up exponentially.
-
-There are certainly some images that could be constructed in such a way to elicit a worse case scenario where the
-cache would not be able to compensate as well, but for most images, caching dramatically reduces processing time.
-
-We can crawl the pixels in a file, and using a simple function like below, we will only process a pixel once (at
-least until our cache fills and we start having to overwrite existing colors).
-
-```py
-@lru_cache(maxsize=1024 * 1024)
-def apply_filter(name, amount, space, method, p, fit):
-    """Apply filter."""
-
-    has_alpha = len(p) > 3
-    color = Color('srgb', [x / 255 for x in p[:3]], p[3] / 255 if has_alpha else 1)
-    if method is not None:
-        # This is a CVD filter that allows specifying the method
-        color.filter(name, amount, space=space, in_place=True, method=method)
-    else:
-        # General filter.
-        color.filter(name, amount, space=space, in_place=True)
-    # Fit the color back into the color gamut and return the results
-    return tuple([int(x * 255) for x in color.fit(method=fit)[:3 if has_alpha else -1]])
-```
-
-When processing a 4608x2456 image (15,925,248 pixels) during our testing, it turned a ~7 minute process into a ~25
-second process^\*^. Using gamut mapping opposed to simple clipping only increases time by to about ~56 seconds. The
-much smaller images shown on this page process much, much faster.
-
-The full script can be viewed [here](https://github.com/facelessuser/coloraide/blob/master/tools/filter_img.py).
-
-\* _Tests were performed using the [Pillow][pillow] library. Results may vary depending on the size of the image,
-pixel configuration, number of unique pixels, etc. Cache size can be tweaked to optimize the results._
-///
+> [!tip] Processing Lots of Colors
+> One logical application for filters is to apply them directly to images. If you are performing these operations on
+> millions of pixels, you may notice that ColorAide, with all of its convenience, may not always be the fastest. There
+> is a cost due to the overhead of convenience and a cost due to the pure Python approach as well. With that said,
+> there are tricks that can dramatically make things much faster in most cases!
+>
+> `functools.lru_cache` is your friend in such cases. We actually process all the images on this page with ColorAide
+> to demonstrate the filters. The key to making it a quick and painless process was to cache repetitive operations.
+> When processing images, it is highly likely that you will be performing the same operations on thousands of
+> identical pixels. Caching the work you've already done can speed this process up exponentially.
+>
+> There are certainly some images that could be constructed in such a way to elicit a worse case scenario where the
+> cache would not be able to compensate as well, but for most images, caching dramatically reduces processing time.
+>
+> We can crawl the pixels in a file, and using a simple function like below, we will only process a pixel once (at
+> least until our cache fills and we start having to overwrite existing colors).
+>
+> ```py
+> @lru_cache(maxsize=1024 * 1024)
+> def apply_filter(name, amount, space, method, p, fit):
+>     """Apply filter."""
+>
+>     has_alpha = len(p) > 3
+>     color = Color('srgb', [x / 255 for x in p[:3]], p[3] / 255 if has_alpha else 1)
+>     if method is not None:
+>         # This is a CVD filter that allows specifying the method
+>         color.filter(name, amount, space=space, in_place=True, method=method)
+>     else:
+>         # General filter.
+>         color.filter(name, amount, space=space, in_place=True)
+>     # Fit the color back into the color gamut and return the results
+>     return tuple([int(x * 255) for x in color.fit(method=fit)[:3 if has_alpha else -1]])
+> ```
+>
+> When processing a 4608x2456 image (15,925,248 pixels) during our testing, it turned a ~7 minute process into a ~25
+> second process^\*^. Using gamut mapping opposed to simple clipping only increases time by to about ~56 seconds. The
+> much smaller images shown on this page process much, much faster.
+>
+> The full script can be viewed [here](https://github.com/facelessuser/coloraide/blob/master/tools/filter_img.py).
+>
+> \* _Tests were performed using the [Pillow][pillow] library. Results may vary depending on the size of the image,
+> pixel configuration, number of unique pixels, etc. Cache size can be tweaked to optimize the results._
 
 --8<-- "images.md"

@@ -1,26 +1,22 @@
 # Linear Display P3
 
-/// success | The Linear Display P3 color space is registered in `Color` by default
-///
+> [!success] The Linear Display P3 color space is registered in `Color` by default
 
 /// html | div.info-container
-//// info | Properties
-    attrs: {class: inline end}
-
-**Name:** `display-p3-linear`
-
-**White Point:** D65 / 2˚
-
-**Coordinates:**
-
-Name | Range^\*^
----- | -----
-`r`  | [0, 1]
-`g`  | [0, 1]
-`b`  | [0, 1]
-
-^\*^ Range denotes _in gamut_ colors, but the color space supports an extended range beyond the gamut.
-////
+> [!info | inline | end] Properties
+> **Name:** `display-p3-linear`
+>
+> **White Point:** D65 / 2˚
+>
+> **Coordinates:**
+>
+> Name | Range^\*^
+> ---- | -----
+> `r`  | [0, 1]
+> `g`  | [0, 1]
+> `b`  | [0, 1]
+>
+> ^\*^ Range denotes _in gamut_ colors, but the color space supports an extended range beyond the gamut.
 
 ![Display P3](../images/display-p3.png)
 //// figure-caption

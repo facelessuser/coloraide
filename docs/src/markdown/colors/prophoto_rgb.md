@@ -1,26 +1,22 @@
 # ProPhoto
 
-/// success | The ProPhoto color space is registered in `Color` by default
-///
+> [!success] The ProPhoto color space is registered in `Color` by default
 
 /// html | div.info-container
-//// info | Properties
-    attrs: {class: inline end}
-
-**Name:** `prophoto-rgb`
-
-**White Point:** D50 / 2˚
-
-**Coordinates:**
-
-Name | Range^\*^
----- | -----
-`r`  | [0, 1]
-`g`  | [0, 1]
-`b`  | [0, 1]
-
-^\*^ Range denotes _in gamut_ colors, but the color space supports an extended range beyond the gamut.
-////
+> [!info | inline | end] Properties
+> **Name:** `prophoto-rgb`
+>
+> **White Point:** D50 / 2˚
+>
+> **Coordinates:**
+>
+> Name | Range^\*^
+> ---- | -----
+> `r`  | [0, 1]
+> `g`  | [0, 1]
+> `b`  | [0, 1]
+>
+> ^\*^ Range denotes _in gamut_ colors, but the color space supports an extended range beyond the gamut.
 
 ![ProPhoto RGB](../images/prophoto-rgb.png)
 //// figure-caption

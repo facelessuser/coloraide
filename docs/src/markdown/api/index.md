@@ -1062,10 +1062,9 @@ Return
 
 ///
 
-/// warning | Deprecated 4.1
-`powerless` parameter has been deprecated in 4.1 and as it is now always enabled. The parameter no longer does anything
-and will be removed in the future.
-///
+> [!warning] Deprecated 4.1
+> `powerless` parameter has been deprecated in 4.1 and as it is now always enabled. The parameter no longer does anything
+> and will be removed in the future.
 
 ## `#!py Color.filter` {#cvd}
 
@@ -1187,9 +1186,8 @@ Return
 
 ## `#!py Color.compose` {#compose}
 
-/// warning | Deprecated 4.0
-`compose` method was deprecated in favor of the new [`layer`](#layer) method and will be removed at some future time.
-///
+> [!warning] Deprecated 4.0
+> `compose` method was deprecated in favor of the new [`layer`](#layer) method and will be removed at some future time.
 
 ```py
 def compose(

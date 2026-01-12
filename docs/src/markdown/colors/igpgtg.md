@@ -1,26 +1,22 @@
 # IgPgTg
 
-/// failure | The IgPgTg color space is not registered in `Color` by default
-///
+> [!failure] The IgPgTg color space is not registered in `Color` by default
 
 /// html | div.info-container
-//// info | Properties
-    attrs: {class: inline end}
-
-**Name:** `ipt`
-
-**White Point:** D65 / 2˚
-
-**Coordinates:**
-
-Name | Range
----- | -----
-`ig` | [0, 1]
-`pg` | [-1, 1]
-`tg` | [-1, 1]
-
-^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs.
-////
+> [!info | inline | end] Properties
+> **Name:** `ipt`
+>
+> **White Point:** D65 / 2˚
+>
+> **Coordinates:**
+>
+> Name | Range
+> ---- | -----
+> `ig` | [0, 1]
+> `pg` | [-1, 1]
+> `tg` | [-1, 1]
+>
+> ^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs.
 
 ![IgPgTg](../images/igpgtg-3d.png)
 //// figure-caption

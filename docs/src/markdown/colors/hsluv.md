@@ -1,24 +1,20 @@
 # HSLuv
 
-/// failure | The HSLuv color space is not registered in `Color` by default
-///
+> [!failure] The HSLuv color space is not registered in `Color` by default
 
 /// html | div.info-container
-//// info | Properties
-    attrs: {class: inline end}
-
-**Name:** `hsluv`
-
-**White Point:** D65 / 2˚
-
-**Coordinates:**
-
-Name | Range
----- | -----
-`h`  | [0, 360)
-`s`  | [0, 100]
-`l`  | [0, 100]
-////
+> [!info | inline | end] Properties
+> **Name:** `hsluv`
+>
+> **White Point:** D65 / 2˚
+>
+> **Coordinates:**
+>
+> Name | Range
+> ---- | -----
+> `h`  | [0, 360)
+> `s`  | [0, 100]
+> `l`  | [0, 100]
 
 ![HSLuv 3D](../images/hsluv-3d.png)
 //// figure-caption

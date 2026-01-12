@@ -1,27 +1,23 @@
 # Lab D65
 
-/// success | The Lab D65 color space is registered in `Color` by default
-///
+> [!success] The Lab D65 color space is registered in `Color` by default
 
 /// html | div.info-container
-//// info | Properties
-    attrs: {class: inline end}
-
-**Name:** `lab-d65`
-
-**White Point:** D65 / 2˚
-
-**Coordinates:**
-
-Name | Range^\*^
----- | ---------
-`l`  | [0, 100]
-`a`  | [-130, 130]
-`b`  | [-130, 130]
-
-^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs in
-relation to the Display P3 color space.
-////
+> [!info | inline | end] Properties
+> **Name:** `lab-d65`
+>
+> **White Point:** D65 / 2˚
+>
+> **Coordinates:**
+>
+> Name | Range^\*^
+> ---- | ---------
+> `l`  | [0, 100]
+> `a`  | [-130, 130]
+> `b`  | [-130, 130]
+>
+> ^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs in
+> relation to the Display P3 color space.
 
 ![CIELab D65 3D](../images/lab-d65-3d.png)
 //// figure-caption

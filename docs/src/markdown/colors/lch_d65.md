@@ -1,27 +1,23 @@
 # LCh D65
 
-/// success | The LCh D65 color space is registered in `Color` by default
-///
+> [!success] The LCh D65 color space is registered in `Color` by default
 
 /// html | div.info-container
-//// info | Properties
-    attrs: {class: inline end}
-
-**Name:** `lch-d65`
-
-**White Point:** D65 / 2˚
-
-**Coordinates:**
-
-Name | Range^\*^
----- | ---------
-`l`  | [0, 100]
-`c`  | [0, 160]
-`h`  | [0, 360)
-
-^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs in
-relation to the Display P3 color space.
-////
+> [!info | inline | end] Properties
+> **Name:** `lch-d65`
+>
+> **White Point:** D65 / 2˚
+>
+> **Coordinates:**
+>
+> Name | Range^\*^
+> ---- | ---------
+> `l`  | [0, 100]
+> `c`  | [0, 160]
+> `h`  | [0, 360)
+>
+> ^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs in
+> relation to the Display P3 color space.
 
 ![CIELCh D65 3D](../images/lch-d65-3d.png)
 //// figure-caption

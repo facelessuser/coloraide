@@ -1,24 +1,20 @@
 # HSV
 
-/// success | The HSV color space is registered in `Color` by default
-///
+> [!success] The HSV color space is registered in `Color` by default
 
 /// html | div.info-container
-//// info | Properties
-    attrs: {class: inline end}
-
-**Name:** `hsv`
-
-**White Point:** D65 / 2˚
-
-**Coordinates:**
-
-Name | Range
----- | -----
-`h`  | [0, 360)
-`s`  | [0, 1]
-`v`  | [0, 1]
-////
+> [!info | inline | end] Properties
+> **Name:** `hsv`
+>
+> **White Point:** D65 / 2˚
+>
+> **Coordinates:**
+>
+> Name | Range
+> ---- | -----
+> `h`  | [0, 360)
+> `s`  | [0, 1]
+> `v`  | [0, 1]
 
 ![HSV 3D](../images/hsv-3d.png)
 //// figure-caption

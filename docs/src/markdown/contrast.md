@@ -23,20 +23,19 @@ It should be noted that this luminance is relative to the XYZ D65 color space by
 in the WCAG 2.1. What this means is that luminance is equivalent to the Y value of XYZ D65. We follow this convention
 as many people expect it in this format.
 
-/// tip | Luminance and WCAG 2.1
-Luminance as described in the WCAG 2.1 spec is essentially the exact same as what the luminance method returns. The
-only difference is the lower precision by which they calculate the value:
-
-```py play
-r, g, b = Color('purple')[:-1]
-r = r / 12.92 if r <= 0.03928 else ((r + 0.055) / 1.055) ** 2.4
-g = g / 12.92 if g <= 0.03928 else ((g + 0.055) / 1.055) ** 2.4
-b = b / 12.92 if b <= 0.03928 else ((b + 0.055) / 1.055) ** 2.4
-l = (0.2126 * r + 0.7152 * g + 0.0722 * b)
-print(l)
-Color('purple').convert('xyz-d65')['y']
-```
-///
+> [!tip] Luminance and WCAG 2.1
+> Luminance as described in the WCAG 2.1 spec is essentially the exact same as what the luminance method returns. The
+> only difference is the lower precision by which they calculate the value:
+>
+> ```py play
+> r, g, b = Color('purple')[:-1]
+> r = r / 12.92 if r <= 0.03928 else ((r + 0.055) / 1.055) ** 2.4
+> g = g / 12.92 if g <= 0.03928 else ((g + 0.055) / 1.055) ** 2.4
+> b = b / 12.92 if b <= 0.03928 else ((b + 0.055) / 1.055) ** 2.4
+> l = (0.2126 * r + 0.7152 * g + 0.0722 * b)
+> print(l)
+> Color('purple').convert('xyz-d65')['y']
+> ```
 
 If you'd like to have luminance in relation to a given color's white point, you can set `white` to `#!py None`. If you'd
 like to get the luminance relative to some other white point, you can specify the white point as
@@ -49,9 +48,8 @@ Color('prophoto-rgb', [1, 0, 0]).luminance(white=None)
 Color('prophoto-rgb', [1, 0, 0]).luminance(white=cat.WHITES['2deg']['E'])
 ```
 
-/// new | New 2.4
-The `white` parameter is new in 2.4.
-///
+> [!new] New 2.4
+> The `white` parameter is new in 2.4.
 
 ## Contrast
 
@@ -87,8 +85,7 @@ Methods  | Symmetrical         | Description
 
 ### WCAG 2.1 Contrast Ratio
 
-/// success | The WCAG 2.1 contrast ratio is registered in `Color` by default
-///
+> [!success] The WCAG 2.1 contrast ratio is registered in `Color` by default
 
 ColorAide implements the color contrast ratio as outlined in the [WCAG 2.1 spec](https://www.w3.org/TR/WCAG21/#dfn-contrast-ratio).
 This is currently, the default contrast method. It is not without fault, but is currently the standard outlined for the
@@ -110,8 +107,7 @@ Color("blue").contrast("red", method='wcag21')
 
 ### Lstar Lightness Difference
 
-/// failure | The Lstar contrast method is **not** registered in `Color` by default
-///
+> [!failure] | The Lstar contrast method is **not** registered in `Color` by default
 
 Google's Material Design uses a new color space called [HCT](./colors/hct.md). It uses the hue and chroma from
 [CAM16](./colors/cam16.md) and the tone/lightness from CIELab. For contrast, they determined using tones that are

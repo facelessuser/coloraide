@@ -1,27 +1,23 @@
 # CAM16 UCS
 
-/// failure | The CAM16 UCS color space is not registered in `Color` by default
-///
+> [!failure] The CAM16 UCS color space is not registered in `Color` by default
 
 /// html | div.info-container
-//// info | Properties
-    attrs: {class: inline end}
-
-**Name:** `cam16-ucs`
-
-**White Point:** D65 / 2˚
-
-**Coordinates:**
-
-Name | Range^\*^
----- | -----
-`j`  | [0, 100]
-`a`  | [-50, 50]
-`b`  | [-50, 50]
-
-^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs in
-relation to the Display P3 color space.
-////
+> [!info | inline | end] Properties
+> **Name:** `cam16-ucs`
+>
+> **White Point:** D65 / 2˚
+>
+> **Coordinates:**
+>
+> Name | Range^\*^
+> ---- | -----
+> `j`  | [0, 100]
+> `a`  | [-50, 50]
+> `b`  | [-50, 50]
+>
+> ^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs in
+> relation to the Display P3 color space.
 
 ![CAM16 UCS](../images/cam16-ucs-3d.png)
 //// figure-caption

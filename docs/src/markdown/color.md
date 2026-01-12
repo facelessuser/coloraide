@@ -29,19 +29,17 @@ spaces and features that are needed, but if you just want to explore all that Co
 from coloraide.everything import ColorAll as Color
 ```
 
-/// tip | Custom Color Objects
-To add more plugins or tweak color defaults, see [Custom Color Classes](#custom-color-classes) for more.
-///
+> [!tip] Custom Color Objects
+> To add more plugins or tweak color defaults, see [Custom Color Classes](#custom-color-classes) for more.
 
 ## Creating Colors
 
 Once the `Color` class is imported, colors can be created using various forms of input, including: numerical inputs,
 dictionaries, CSS color strings, and even other `Color` instances.
 
-/// note
-Reference of supported color space IDs can be found [here](./colors/index.md#supported-color-space-ids).
-Reference of color spaces that registered by default can be found [here](./colors/index.md#default-color-spaces).
-///
+> [!note]
+> Reference of supported color space IDs can be found [here](./colors/index.md#supported-color-space-ids).
+> Reference of color spaces that registered by default can be found [here](./colors/index.md#default-color-spaces).
 
 ### Numerical Inputs
 
@@ -90,8 +88,7 @@ print(d)
 Color(d)
 ```
 
-/// new | New in 4.0: Precision Output Control
-///
+> [!new] New in 4.0: Precision Output Control
 
 ### String Inputs
 
@@ -139,10 +136,9 @@ color1
 color1.new("blue")
 ```
 
-/// tip
-If the `Color` class has be subclassed, this is an easy way to convert between the different subclasses, assuming
-the registered color spaces are compatible between the two different `Color` classes.
-///
+> [!tip]
+> If the `Color` class has be subclassed, this is an easy way to convert between the different subclasses, assuming
+> the registered color spaces are compatible between the two different `Color` classes.
 
 ## Random
 
@@ -203,10 +199,9 @@ Here we update the sRGB `#!color red` with the color `#!color lch(80% 50 130)`.
 Color("red").update("lch(80% 50 130)")
 ```
 
-/// note
-Reference of supported color space IDs can be found [here](./colors/index.md#supported-color-space-ids).
-Reference of color spaces that registered by default can be found [here](./colors/index.md#default-color-spaces).
-///
+> [!note]
+> Reference of supported color space IDs can be found [here](./colors/index.md#supported-color-space-ids).
+> Reference of color spaces that registered by default can be found [here](./colors/index.md#default-color-spaces).
 
 ## Mutating
 
@@ -234,13 +229,11 @@ call the `convert` method with the desired color space.
 Color('yellow').convert("lab")
 ```
 
-/// note
-Reference of supported color space IDs can be found [here](./colors/index.md#supported-color-space-ids).
-Reference of color spaces that registered by default can be found [here](./colors/index.md#default-color-spaces).
-///
+> [!note]
+> Reference of supported color space IDs can be found [here](./colors/index.md#supported-color-space-ids).
+> Reference of color spaces that registered by default can be found [here](./colors/index.md#default-color-spaces).
 
-/// note | Notes on [Round Trip Accuracy](./advanced.md#round-trip-accuracy)
-///
+> [!note] Notes on [Round Trip Accuracy](./advanced.md#round-trip-accuracy)
 
 ## Color Matching
 

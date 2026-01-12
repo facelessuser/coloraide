@@ -32,14 +32,12 @@ When in the default state, `alpha` will only be shown if the alpha channel has a
 
 ### Rounding
 
-/// new | New in 4.6
-///
+> [!new] New in 4.6
 
-/// note
-Rounding is done with "half up" logic to match CSS recommendations with their color syntax. Internally, as with most
-programming languages, all calculations use "half even" logic, or bankers rounding, to minimize floating point error.
-"Half up" is only used when serializing or explicitly requesting rounded coordinates through the API.
-///
+> [!note]
+> Rounding is done with "half up" logic to match CSS recommendations with their color syntax. Internally, as with most
+> programming languages, all calculations use "half even" logic, or bankers rounding, to minimize floating point error.
+> "Half up" is only used when serializing or explicitly requesting rounded coordinates through the API.
 
 There are various ways to approach rounding of data. ColorAide implements a few approaches in an attempt accommodate
 most needs. The following modes can be selected via the `rounding` parameter:
@@ -169,8 +167,7 @@ If a channel is omitted, the current default precision is assumed for that chann
 Color("rgb(30.3456% 75% 100% / 0.75)").to_string(precision=[0, 0, 0])
 ```
 
-/// new | New in 4.0: Per Channel Precision Control
-///
+> [!new] New in 4.0: Per Channel Precision Control
 
 ### Fit
 
@@ -264,9 +261,8 @@ Any omitted list values will be assumed `#!py False`.
 Color('rebeccapurple').convert('lab').to_string(alpha=True, percent=[True])
 ```
 
-/// new | New 2.12
-Boolean sequence support for `percent` added in 2.12.
-///
+> [!new] New 2.12
+> Boolean sequence support for `percent` added in 2.12.
 
 ## Format Specific Options
 

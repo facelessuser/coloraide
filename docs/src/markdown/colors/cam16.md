@@ -1,27 +1,23 @@
 # CAM16 JMh
 
-/// failure | The CAM16 JMh color space is not registered in `Color` by default
-///
+> [!failure] The CAM16 JMh color space is not registered in `Color` by default
 
 /// html | div.info-container
-//// info | Properties
-    attrs: {class: inline end}
-
-**Name:** `cam16-jmh`
-
-**White Point:** D65 / 2˚
-
-**Coordinates:**
-
-Name | Range^\*^
----- | -----
-`j`  | [0, 100]
-`m`  | [0, 105]
-`h`  | [0, 360)
-
-^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs in
-relation to the Display P3 color space.
-////
+> [!info | inline | end] Properties
+> **Name:** `cam16-jmh`
+>
+> **White Point:** D65 / 2˚
+>
+> **Coordinates:**
+>
+> Name | Range^\*^
+> ---- | -----
+> `j`  | [0, 100]
+> `m`  | [0, 105]
+> `h`  | [0, 360)
+>
+> ^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs in
+> relation to the Display P3 color space.
 
 ![CAM16 JMh](../images/cam16-jmh-3d.png)
 //// figure-caption

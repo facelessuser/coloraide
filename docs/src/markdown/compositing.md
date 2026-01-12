@@ -15,21 +15,17 @@ Alpha composting is based on [Porter Duff compositing][porter-duff]. By default,
 colors on top of each other applying the appropriate compositing, using the `normal` blend mode and the `source-over`
 Porter Duff operator by default.
 
-/// tip
-The compositing function does not currently manage gamut mapping, so it is recommended to ensure your colors are within
-the proper gamut before compositing the colors.
-///
+> [!tip]
+> The compositing function does not currently manage gamut mapping, so it is recommended to ensure your colors are within
+> the proper gamut before compositing the colors.
 
-/// warning | Deprecated 4.0
-[`compose`](./api/index.md#compose) method was deprecated in favor of the new `layer` method and will be removed at some
-future time.
-///
+> [!new] New in 4.0
+> A new `layer` method was added which uses a more intuitive name and aligns with how multiple colors are handled in
+> other similar APIs such as `average()`, `interpolate()`, etc.
 
-
-/// new | New in 4.0
-A new `layer` method was added which uses a more intuitive name and aligns with how multiple colors are handled in
-other similar APIs such as `average()`, `interpolate()`, etc.
-///
+> [!warning] Deprecated 4.0
+> [`compose`](./api/index.md#compose) method was deprecated in favor of the new `layer` method and will be removed at
+> some future time.
 
 ## Blending
 
@@ -76,18 +72,16 @@ Color.layer([c1, c2], blend='multiply', space="srgb")
 ```
 ///
 
-/// tip
-`layer()` can output the results in any color space you need by setting `out_space`.
+> [!tip]
+> `layer()` can output the results in any color space you need by setting `out_space`.
+>
+> ```py play
+> Color.layer(['#07c7ed', '#fc3d99'], blend='multiply', space='srgb', out_space='hsl')
+> ```
 
-```py play
-Color.layer(['#07c7ed', '#fc3d99'], blend='multiply', space='srgb', out_space='hsl')
-```
-///
-
-/// note | Display Differences
-As some browsers apply compositing based on the display's current color space, we've provided examples in both sRGB
-and Display P3 so that the examples can be compared on different displays. Which of the above matches your browser?
-///
+> [!note] Display Differences
+> As some browsers apply compositing based on the display's current color space, we've provided examples in both sRGB
+> and Display P3 so that the examples can be compared on different displays. Which of the above matches your browser?
 
 ColorAide allows for layering any number of colors as well, simply list of as many colors as you like ordered from left
 to right, left being the top most color.
@@ -166,10 +160,9 @@ Color.layer([c1, c2], space="srgb")
 ```
 ///
 
-/// note | Display Differences
-As some browsers apply compositing based on the display's current color space, we've provided examples in both sRGB
-and Display P3 so that the examples can be compared on different displays. Which of the above matches your browser?
-///
+> [!note] Display Differences
+> As some browsers apply compositing based on the display's current color space, we've provided examples in both sRGB
+> and Display P3 so that the examples can be compared on different displays. Which of the above matches your browser?
 
 While the average user will be content with the default alpha compositing, Porter Duff offers many other configurations.
 If desired, we can change the Porter Duff operator used and apply different composite logic. For instance, in this case

@@ -1,26 +1,22 @@
 # xyY
 
-/// failure | The xyY color space is not registered in `Color` by default
-///
+> [!failure] The xyY color space is not registered in `Color` by default
 
 /// html | div.info-container
-//// info | Properties
-    attrs: {class: inline end}
-
-**Name:** `xyy`
-
-**White Point:** D65 / 2˚
-
-**Coordinates:**
-
-Name | Range^\*^
----- | -----
-`x`  | [0, 1]
-`y`  | [0, 1]
-`Y`  | [0, 1]
-
-^\*^ Space is not bound to the range and is used to define percentage inputs/outputs.
-////
+> [!info | inline | end] Properties
+> **Name:** `xyy`
+>
+> **White Point:** D65 / 2˚
+>
+> **Coordinates:**
+>
+> Name | Range^\*^
+> ---- | -----
+> `x`  | [0, 1]
+> `y`  | [0, 1]
+> `Y`  | [0, 1]
+>
+> ^\*^ Space is not bound to the range and is used to define percentage inputs/outputs.
 
 ![xyY](../images/xyy-3d.png)
 //// figure-caption

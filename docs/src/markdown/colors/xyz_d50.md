@@ -1,26 +1,22 @@
 # XYZ D50
 
-/// success | The XYZ D50 color space is registered in `Color` by default
-///
+> [!success] The XYZ D50 color space is registered in `Color` by default
 
 /// html | div.info-container
-//// info | Properties
-    attrs: {class: inline end}
-
-**Name:** `xyz-d50`
-
-**White Point:** D50 / 2˚
-
-**Coordinates:**
-
-Name       | Range^\*^
----------- | ---------
-`x`        | [0, 1]
-`y`        | [0, 1]
-`z`        | [0, 1]
-
-^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs.
-////
+> [!info | inline | end] Properties
+> **Name:** `xyz-d50`
+>
+> **White Point:** D50 / 2˚
+>
+> **Coordinates:**
+>
+> Name       | Range^\*^
+> ---------- | ---------
+> `x`        | [0, 1]
+> `y`        | [0, 1]
+> `z`        | [0, 1]
+>
+> ^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs.
 
 ![XYZ D50 3D](../images/xyz-d50-3d.png)
 //// figure-caption

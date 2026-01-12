@@ -1,24 +1,20 @@
 # HWB
 
-/// success | The HWB color space is registered in `Color` by default
-///
+> [!success] The HWB color space is registered in `Color` by default
 
 /// html | div.info-container
-//// info | Properties
-    attrs: {class: inline end}
-
-**Name:** `hwb`
-
-**White Point:** D65 / 2˚
-
-**Coordinates:**
-
-Name | Range
----- | -----
-`h`  | [0, 360)
-`w`  | [0, 1]
-`b`  | [0, 1]
-////
+> [!info | inline | end] Properties
+> **Name:** `hwb`
+>
+> **White Point:** D65 / 2˚
+>
+> **Coordinates:**
+>
+> Name | Range
+> ---- | -----
+> `h`  | [0, 360)
+> `w`  | [0, 1]
+> `b`  | [0, 1]
 
 ![HWB 3D](../images/hwb-3d.png)
 //// figure-caption

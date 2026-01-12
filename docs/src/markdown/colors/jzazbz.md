@@ -1,27 +1,23 @@
 # Jzazbz
 
-/// success | The Jzazbz color space is registered in `Color` by default
-///
+> [!success] The Jzazbz color space is registered in `Color` by default
 
 /// html | div.info-container
-//// info | Properties
-    attrs: {class: inline end}
-
-**Name:** `jzazbz`
-
-**White Point:** D65 / 2˚
-
-**Coordinates:**
-
-Name | Range^\*^
----- | ---------
-`jz` | [0, 1]
-`az` | [-0.21, 0.21]
-`bz` | [-0.21, 0.21]
-
-^\*^ Space is not bound to the defined range above but represents a practical range for HDR color spaces. CSS uses a
-range of `jz` = [0, 1], `az` = [-1, 1] and `bz` = [1, 1] for percentage input and output.
-////
+> [!info | inline | end] Properties
+> **Name:** `jzazbz`
+>
+> **White Point:** D65 / 2˚
+>
+> **Coordinates:**
+>
+> Name | Range^\*^
+> ---- | ---------
+> `jz` | [0, 1]
+> `az` | [-0.21, 0.21]
+> `bz` | [-0.21, 0.21]
+>
+> ^\*^ Space is not bound to the defined range above but represents a practical range for HDR color spaces. CSS uses a
+> range of `jz` = [0, 1], `az` = [-1, 1] and `bz` = [1, 1] for percentage input and output.
 
 ![Jzazbz](../images/jzazbz-3d.png)
 //// figure-caption

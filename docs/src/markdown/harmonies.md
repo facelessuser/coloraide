@@ -108,20 +108,18 @@ Steps(Color('red').harmony('complement'))
 Steps(Color('ryb', [1, 0, 0]).harmony('complement', space='ryb'))
 ```
 
-/// tip | RYB Model
-The RYB model has a more limited color gamut than sRGB as the red, yellow and blue primaries cannot make all colors.
-Additionally, the red, yellow, and blue primaries are not the same as the ones in sRGB, so when using RYB to generate
-harmonies, make sure you are working directly within RYB to ensure you are not out of gamut.
-///
+> [!tip] RYB Model
+> The RYB model has a more limited color gamut than sRGB as the red, yellow and blue primaries cannot make all colors.
+> Additionally, the red, yellow, and blue primaries are not the same as the ones in sRGB, so when using RYB to generate
+> harmonies, make sure you are working directly within RYB to ensure you are not out of gamut.
 
-/// tip
-Regardless of what color space `harmony()` operates in, it can output the results in any color space you need by setting
-`out_space`.
-
-```py play
-Steps(Color('red').harmony('complement', out_space='srgb'))
-```
-///
+> [!tip]
+> Regardless of what color space `harmony()` operates in, it can output the results in any color space you need by
+> setting `out_space`.
+>
+> ```py play
+> Steps(Color('red').harmony('complement', out_space='srgb'))
+> ```
 
 ## Supported Harmonies
 
@@ -148,14 +146,12 @@ Steps(Color('red').harmony('mono'))
 Steps(Color('red').harmony('mono', count=8))
 ```
 
-/// note | Achromatic Colors
-Pure `#!color white` and `#!color black` will not be included in a monochromatic color harmony unless the color is
-achromatic.
-///
+> [!note] Achromatic Colors
+> Pure `#!color white` and `#!color black` will not be included in a monochromatic color harmony unless the color is
+> achromatic.
 
-/// new | New 3.3
-The `count` parameter is new in 3.3.
-///
+> [!new] New 3.3
+> The `count` parameter is new in 3.3.
 
 ### Complementary
 
@@ -236,9 +232,8 @@ Steps(Color('ryb', [1, 0, 0]).harmony('wheel', space='ryb', count=48))
 
 ## Changing the Default Harmony Color Space
 
-/// new | New 2.7
-Non-cylindrical space support was added in 2.7.
-///
+> [!new] New 2.7
+> Non-cylindrical space support was added in 2.7.
 
 If you'd like to change the `#!py3 Color()` class's default harmony color space, it can be done with
 [class override](./color.md#override-default-settings). Simply derive a new `#!py3 Color()` class from the original and
@@ -254,10 +249,9 @@ class Custom(Color):
 Steps(Custom('red').harmony('split'))
 ```
 
-/// warning
-Remember that every color space is different. Some may rotate hues in a different direction and some may just not be
-very compatible for extracting harmonies from.
-
-Additionally, a color space may not handle colors beyond its gamut well, for such color spaces, it is important to work
-within that spaces gamut opposed to picking colors outside of the gamut and relying on gamut mapping.
-///
+> [!warning]
+> Remember that every color space is different. Some may rotate hues in a different direction and some may just not be
+> very compatible for extracting harmonies from.
+>
+> Additionally, a color space may not handle colors beyond its gamut well, for such color spaces, it is important to work
+> within that spaces gamut opposed to picking colors outside of the gamut and relying on gamut mapping.

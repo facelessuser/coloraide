@@ -48,11 +48,10 @@ callback(gamut='${webspace}')
 
   const getContent = content => {
     return `
-/// new | This notebook is powered by [Pyodide](https://github.com/pyodide/pyodide). \
+> [!new] This notebook is powered by [Pyodide](https://github.com/pyodide/pyodide). \
 Learn more [here](\
 ?notebook=https://gist.githubusercontent.com/facelessuser/7c819668b5eb248ecb9ac608d91391cf/raw/playground.md\
 ). Preview, convert, interpolate, and explore!
-///
 
 \`\`\`\`\`\`\`\`py play
 ${content}

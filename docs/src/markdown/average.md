@@ -106,10 +106,9 @@ If more colors are provided than weights, colors without defined weights are ass
 Color.average(['orange', 'red', 'white'], [0, 1])
 ```
 
-/// note
-It should be noted that negative weights are not allowed and will be clipped to zero, which treats the colors as if it
-is not included at all.
-///
+> [!note]
+> It should be noted that negative weights are not allowed and will be clipped to zero, which treats the colors as if it
+> is not included at all.
 
 ## Averaging with Transparency
 

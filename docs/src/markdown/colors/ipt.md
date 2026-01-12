@@ -1,26 +1,22 @@
 # IPT
 
-/// failure | The IPT color space is not registered in `Color` by default
-///
+> [!failure] The IPT color space is not registered in `Color` by default
 
 /// html | div.info-container
-//// info | Properties
-    attrs: {class: inline end}
-
-**Name:** `ipt`
-
-**White Point:** D65 / 2˚
-
-**Coordinates:**
-
-Name | Range^\*^
----- | -----
-`i`  | [0, 1]
-`p`  | [-1, 1]
-`t`  | [-1, 1]
-
-^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs.
-////
+> [!info | inline | end] Properties
+> **Name:** `ipt`
+>
+> **White Point:** D65 / 2˚
+>
+> **Coordinates:**
+>
+> Name | Range^\*^
+> ---- | -----
+> `i`  | [0, 1]
+> `p`  | [-1, 1]
+> `t`  | [-1, 1]
+>
+> ^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs.
 
 ![IPT](../images/ipt-3d.png)
 //// figure-caption

@@ -1,26 +1,22 @@
 # A98 RGB
 
-/// success | The A98 RGB color space is registered in `Color` by default
-///
+> [!success] The A98 RGB color space is registered in `Color` by default
 
 /// html | div.info-container
-//// info | Properties
-    attrs: {class: inline end}
-
-**Name:** `a98-rgb`
-
-**White Point:** D65 / 2˚
-
-**Coordinates:**
-
-Name | Range^\*^
----- | -----
-`r`  | [0, 1]
-`g`  | [0, 1]
-`b`  | [0, 1]
-
-^\*^ Range denotes _in gamut_ colors, but the color space supports an extended range beyond the gamut.
-////
+> [!info | inline | end] Properties 
+> **Name:** `a98-rgb`
+>
+> **White Point:** D65 / 2˚
+>
+> **Coordinates:**
+>
+> Name | Range^\*^
+> ---- | -----
+> `r`  | [0, 1]
+> `g`  | [0, 1]
+> `b`  | [0, 1]
+>
+> ^\*^ Range denotes _in gamut_ colors, but the color space supports an extended range beyond the gamut.
 
 ![A98 RGB](../images/a98-rgb.png)
 //// figure-caption

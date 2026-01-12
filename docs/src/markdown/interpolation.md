@@ -11,8 +11,7 @@ ColorAide provides a number of useful utilities based on interpolation.
 
 ## Linear Interpolation
 
-/// success | Linear interpolation is registered in `Color` by Default
-///
+> [!success] Linear interpolation is registered in `Color` by Default
 
 One of the most common, and easiest ways to interpolate data between two points is to use linear interpolation. An easy
 way of thinking about this concept is to imagine drawing a straight line that connects two colors within a color space.
@@ -58,11 +57,9 @@ i = Color.interpolate(
 
 ### CSS Linear Interpolation
 
-/// new | New 2.11
-///
+> [!new] New 2.11
 
-/// success | CSS linear interpolation is registered in `Color` by Default
-///
+> [!success] CSS linear interpolation is registered in `Color` by Default
 
 While ColorAide supports CSS color syntax, it's goal is not to necessarily mirror CSS in all aspects, though often we
 do provide ways to emulate the behavior.
@@ -72,9 +69,8 @@ specifically, it deviates in how undefined hues are resolved during the interpol
 achromatic interpolation results. The difference in handling is subtle, but becomes quite observable when using the
 `longer` hue fix-up.
 
-/// note | Hue Interpolation
-Hue interpolation, along with fix-ups, is more generally covered in [Hue Interpolation](#hue-interpolation).
-///
+> [!note] | Hue Interpolation
+> Hue interpolation, along with fix-ups, is more generally covered in [Hue Interpolation](#hue-interpolation).
 
 Normally, two colors with defined hues will have a shorter and longer arc length between the two hue angles.
 
@@ -162,8 +158,7 @@ have pivot points and the transition may not be quite as smooth at these locatio
 
 ## Continuous Interpolation
 
-/// success | Continuous interpolation is registered in `Color` by Default
-///
+> [!success] | Continuous interpolation is registered in `Color` by Default
 
 In this document, we use the term "continuous" in two ways when talking about interpolation: continuous vs
 [discrete ](#discrete-interpolation) and the interpolation method whose literal name is `continuous`.
@@ -222,8 +217,7 @@ built off of the [`continuous` interpolation](#continuous-interpolation) approac
 
 ### B-Spline
 
-/// success | B-Spline interpolation is registered in `Color` by Default
-///
+> [!success] B-Spline interpolation is registered in `Color` by Default
 
 ![B-spline](images/bspline-interpolation.png)
 
@@ -240,8 +234,7 @@ Color.interpolate(['red', 'green', 'blue', 'orange'], method='bspline')
 
 ### Natural
 
-/// success | Natural interpolation is registered in `Color` by Default
-///
+> [!success] Natural interpolation is registered in `Color` by Default
 
 ![Natural](images/natural-interpolation.png)
 
@@ -261,8 +254,7 @@ Color.interpolate(['red', 'green', 'blue', 'orange'], method='natural')
 
 ### Monotone
 
-/// success | Monotone interpolation is registered in `Color` by Default
-///
+> [!success] Monotone interpolation is registered in `Color` by Default
 
 ![Monotone](images/monotone-interpolation.png)
 
@@ -276,8 +268,7 @@ Color.interpolate(['red', 'green', 'blue', 'orange'], method='monotone')
 
 ### Catmull-Rom
 
-/// failure | Catmull-Rom interpolation is not registered in `Color` by Default
-///
+> [!failure] Catmull-Rom interpolation is not registered in `Color` by Default
 
 ![Catmull-Rom](images/catmull-rom-interpolation.png)
 
@@ -302,8 +293,7 @@ Custom.interpolate(['red', 'green', 'blue', 'orange'], method='catrom')
 
 ## Discrete Interpolation
 
-/// new | New 2.5
-///
+> [!new] New 2.5
 
 So far, we've only shown examples of continuous interpolation methods. To clarify, we are using "continuous" in a
 slightly different way than we discussed [earlier](#continuous-interpolation). When we say "continuous" here, we simply
@@ -359,11 +349,10 @@ in a number of interesting ways: `shorter`, `longer`, `increasing`, `decreasing`
 identify all possible ways in which we can interpolate a hue and come from the
 [CSS level 4 specification](https://drafts.csswg.org/css-color-4/#hue-interpolation).
 
-/// note | Specified
-The `specified` fix-up was at one time specified in the CSS Color Level 4 specification, but is no longer mentioned
-there. While CSS no longer supports this hue fix-up, we still do. `specified` simply does not apply any hue fix-up and
-will use hues as _specified_, hence the name.
-///
+> [!note] Specified
+> The `specified` fix-up was at one time specified in the CSS Color Level 4 specification, but is no longer mentioned
+> there. While CSS no longer supports this hue fix-up, we still do. `specified` simply does not apply any hue fix-up and
+> will use hues as _specified_, hence the name.
 
 To help visualize the different hue methods, consider the following evaluation between `#!color hsl(270 50 40)` and
 `#!color hsl(780 100 40)`. Below we will demonstrate each of the different hue evaluations and explain what it is that
@@ -506,10 +495,9 @@ need to mimic the same behavior of a system that does not use premultiplied inte
 
 ## Mixing
 
-/// tip | Interpolation Options
-Any options not consumed by `mix` will be passed to the underlying `interpolation` function. This includes options
-like `hue`, `progress`, etc.
-///
+> [!tip] Interpolation Options
+> Any options not consumed by `mix` will be passed to the underlying `interpolation` function. This includes options
+> like `hue`, `progress`, etc.
 
 The `mix` function is built on top of the [`interpolate`](#linear-interpolation) function and provides a simple, quick, and
 intuitive simple mixing of two colors. Just pass in a color to mix with the base color, and you'll get an equal mix of
@@ -545,10 +533,9 @@ Mixing will always return a new color unless `in_place` is set `#!py3 True`.
 
 ## Steps
 
-/// tip | Interpolation Options
-Any options not consumed by `mix` will be passed to the underlying `interpolation` function. This includes options
-like `hue`, `progress`, etc.
-///
+> [!tip] Interpolation Options
+> Any options not consumed by `mix` will be passed to the underlying `interpolation` function. This includes options
+> like `hue`, `progress`, etc.
 
 The `steps` method provides an intuitive interface to create lists of discrete colors. Like mixing, it is also built on
 [`interpolate`](#linear-interpolation). Just provide two or more colors, and specify how many `steps` are wanted.
@@ -655,10 +642,9 @@ and setting the specified channels as undefined (internally set to `NaN`). When 
 has a `NaN`, the other color's channel will be used as the result, keeping that channel at a constant value. If both
 colors have a `NaN` for the same channel, then `NaN` will be returned.
 
-/// tip | Magic Behind NaN
-There are times when `NaN` values can happen naturally, such as with achromatic colors with hues. To learn more,
-check out [Undefined Handling/NaN Handling](#null-handling).
-///
+> [!tip] Magic Behind NaN
+> There are times when `NaN` values can happen naturally, such as with achromatic colors with hues. To learn more,
+> check out [Undefined Handling/NaN Handling](#null-handling).
 
 In the following example, we have a base color of `#!color lch(52% 58.1 22.7)` which we then interpolate with
 `#!color lch(56% 49.1 257.1)`. We then mask off the second color's channels except for `hue`. Applying this logic, we
@@ -702,41 +688,39 @@ unless [`extrapolate`](#extrapolation) is enabled and the user has manually inpu
 ColorAide provides 5 basic easing functions out of the box along with `cubic_bezier` which is used to create all of the
 aforementioned easing function except `linear`, which simply returns what is given as an input.
 
-/// tip | Create Your Own Cubic Bezier Easings Online: https://cubic-bezier.com
-///
+> [!tip] Create Your Own Cubic Bezier Easings Online: https://cubic-bezier.com
 
-/// details-tip | More Common Cubic Bezier Easings
-The following were all acquired from https://matthewlein.com/tools/ceaser.js.
-
-```py
-ease_in_quad = cubic_bezier(0.550, 0.085, 0.680, 0.530)
-ease_in_cubic = cubic_bezier(0.550, 0.055, 0.675, 0.190)
-ease_in_quart = cubic_bezier(0.895, 0.030, 0.685, 0.220)
-ease_in_quint = cubic_bezier(0.755, 0.050, 0.855, 0.060)
-ease_in_sine = cubic_bezier(0.470, 0.000, 0.745, 0.715)
-ease_in_expo = cubic_bezier(0.950, 0.050, 0.795, 0.035)
-ease_in_circ = cubic_bezier(0.600, 0.040, 0.980, 0.335)
-ease_in_back = cubic_bezier(0.600, -0.280, 0.735, 0.045)
-
-ease_out_quad = cubic_bezier(0.250, 0.460, 0.450, 0.940)
-ease_out_cubic = cubic_bezier(0.215, 0.610, 0.355, 1.000)
-ease_out_quart = cubic_bezier(0.165, 0.840, 0.440, 1.000)
-ease_out_quint = cubic_bezier(0.230, 1.000, 0.320, 1.000)
-ease_out_sine = cubic_bezier(0.390, 0.575, 0.565, 1.000)
-ease_out_expo = cubic_bezier(0.190, 1.000, 0.220, 1.000)
-ease_out_circ = cubic_bezier(0.075, 0.820, 0.165, 1.000)
-ease_out_back = cubic_bezier(0.175, 0.885, 0.320, 1.275)
-
-ease_in_out_quad = cubic_bezier(0.455, 0.030, 0.515, 0.955)
-ease_in_out_cubic = cubic_bezier(0.645, 0.045, 0.355, 1.000)
-ease_in_out_quart = cubic_bezier(0.770, 0.000, 0.175, 1.000)
-ease_in_out_quint = cubic_bezier(0.860, 0.000, 0.070, 1.000)
-ease_in_out_sine = cubic_bezier(0.445, 0.050, 0.550, 0.950)
-ease_in_out_expo = cubic_bezier(1.000, 0.000, 0.000, 1.000)
-ease_in_out_circ = cubic_bezier(0.785, 0.135, 0.150, 0.860)
-ease_in_out_back = cubic_bezier(0.680, -0.550, 0.265, 1.550)
-```
-///
+> [!tip]- | More Common Cubic Bezier Easings
+> The following were all acquired from https://matthewlein.com/tools/ceaser.js.
+>
+> ```py
+> ease_in_quad = cubic_bezier(0.550, 0.085, 0.680, 0.530)
+> ease_in_cubic = cubic_bezier(0.550, 0.055, 0.675, 0.190)
+> ease_in_quart = cubic_bezier(0.895, 0.030, 0.685, 0.220)
+> ease_in_quint = cubic_bezier(0.755, 0.050, 0.855, 0.060)
+> ease_in_sine = cubic_bezier(0.470, 0.000, 0.745, 0.715)
+> ease_in_expo = cubic_bezier(0.950, 0.050, 0.795, 0.035)
+> ease_in_circ = cubic_bezier(0.600, 0.040, 0.980, 0.335)
+> ease_in_back = cubic_bezier(0.600, -0.280, 0.735, 0.045)
+>
+> ease_out_quad = cubic_bezier(0.250, 0.460, 0.450, 0.940)
+> ease_out_cubic = cubic_bezier(0.215, 0.610, 0.355, 1.000)
+> ease_out_quart = cubic_bezier(0.165, 0.840, 0.440, 1.000)
+> ease_out_quint = cubic_bezier(0.230, 1.000, 0.320, 1.000)
+> ease_out_sine = cubic_bezier(0.390, 0.575, 0.565, 1.000)
+> ease_out_expo = cubic_bezier(0.190, 1.000, 0.220, 1.000)
+> ease_out_circ = cubic_bezier(0.075, 0.820, 0.165, 1.000)
+> ease_out_back = cubic_bezier(0.175, 0.885, 0.320, 1.275)
+>
+> ease_in_out_quad = cubic_bezier(0.455, 0.030, 0.515, 0.955)
+> ease_in_out_cubic = cubic_bezier(0.645, 0.045, 0.355, 1.000)
+> ease_in_out_quart = cubic_bezier(0.770, 0.000, 0.175, 1.000)
+> ease_in_out_quint = cubic_bezier(0.860, 0.000, 0.070, 1.000)
+> ease_in_out_sine = cubic_bezier(0.445, 0.050, 0.550, 0.950)
+> ease_in_out_expo = cubic_bezier(1.000, 0.000, 0.000, 1.000)
+> ease_in_out_circ = cubic_bezier(0.785, 0.135, 0.150, 0.860)
+> ease_in_out_back = cubic_bezier(0.680, -0.550, 0.265, 1.550)
+> ```
 
 /// tab | Linear
 ![Linear](./images/easing_linear.png)
@@ -848,8 +832,7 @@ Color.interpolate(['orange', hint(0.75), 'purple', 'green'])
 
 ## Padding
 
-/// new | New 2.6
-///
+> [!new] New 2.6
 
 Particularly when interpolating a color scale, it can be useful to "resize" the area of the color scale being evaluated.
 This can generally be done using the `padding` parameter. Consider the following example using the ColorBrewer scale
@@ -1021,12 +1004,11 @@ When performing linear interpolation, where only two color's channels are ever b
 if one color's channel has a `NaN`, the other color's channel will be used as the result. If both colors have a `NaN`
 for the same channel, then `NaN` will be returned.
 
-/// tip | Continuous NaN Handling
-`NaN` handling is a bit different for the [Continuous](#continuous-interpolation) and
-[Cubic Spline](#cubic-spline-interpolation) interpolation approaches. Linear only evaluates colors at a given time,
-while the others will take into consideration more than two colors. Because the context is much wider and more
-complicated, `NaN` values will often get context from both sides.
-///
+> [!tip] Continuous NaN Handling
+> `NaN` handling is a bit different for the [Continuous](#continuous-interpolation) and
+> [Cubic Spline](#cubic-spline-interpolation) interpolation approaches. Linear only evaluates colors at a given time,
+> while the others will take into consideration more than two colors. Because the context is much wider and more
+> complicated, `NaN` values will often get context from both sides.
 
 Notice that in this example, because white's saturation is zero, the hue is undefined. Because the hue is undefined,
 when the color is mixed with a second color (`#!color green`), the hue of the second color is used.
@@ -1055,10 +1037,9 @@ naturally occur and the various ways a user and manipulate them.
 
 ## Carrying-Forward
 
-/// warning | Experimental
-This feature is provided to give parity with CSS behavior. As the spec is still in flux, behavior is subject to change
-or feature could be removed entirely. Use at your own risk.
-///
+> [!warning] Experimental
+> This feature is provided to give parity with CSS behavior. As the spec is still in flux, behavior is subject to change
+> or feature could be removed entirely. Use at your own risk.
 
 CSS introduces the concept of carrying-forward undefined channels of like color spaces during conversion to the
 interpolating color space. The idea is to provide a sane handling to users who specified undefined channels for
@@ -1118,10 +1099,9 @@ Value        | `v`
 
 ## Powerless Hues
 
-/// warning | Experimental
-This feature is provided to give parity with CSS behavior. As the spec is still in flux, behavior is subject to change
-or feature could be removed entirely. Use at your own risk.
-///
+> [!warning] Experimental
+> This feature is provided to give parity with CSS behavior. As the spec is still in flux, behavior is subject to change
+> or feature could be removed entirely. Use at your own risk.
 
 Normally, ColorAide respects the user's explicitly defined hues. This gives the user power to do things like masking
 off all channels but the hue in order to interpolate only the hue channel.

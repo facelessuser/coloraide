@@ -3,8 +3,7 @@ icon: lucide/thermometer
 ---
 # Correlated Color Temperature
 
-/// new | New 2.4
-///
+> [!new] New 2.4
 
 Correlated color temperature (CCT) is a measurement of the average hue of light as it appears to the eye. It is
 expressed as the temperature (in Kelvins) something would need to be heated to glow at approximately the same color.
@@ -21,21 +20,20 @@ series of experiments in which subjects set the intensities of three colors requ
 (single wavelength) lights of equal energy that traverse the visible spectrum. CMFs contain the required data from such
 experiments and can be used to calculate a number of things, including the Planckian locus.
 
-/// tip | CMFs
-It should be noted that there isn't one set of CMFs. Over the years there have been multiple attempts to come up with
-the best CMFs and often done at both 2˚ and 10˚ viewing angles. ColorAide only provides CMFS provided by the CIE via
-`coloraide.cmfs`, the CIE 1931 2 Degree Standard Observer being the default as it is still the common approach even
-though better CMFs have been provided.
-
-CMFS                            |
-------------------------------- |
-`coloraide.cmfs.CIE_1931_2DEG`  |
-`coloraide.cmfs.CIE_1964_10DEG` |
-`coloraide.cmfs.CIE_2015_2DEG`  |
-`coloraide.cmfs.CIE_2015_10DEG` |
-
-External CMFs could be used as long as they are in the appropriate format and not at increments less than 1nm.
-///
+> [!tip] CMFs
+> It should be noted that there isn't one set of CMFs. Over the years there have been multiple attempts to come up with
+> the best CMFs and often done at both 2˚ and 10˚ viewing angles. ColorAide only provides CMFS provided by the CIE via
+> `coloraide.cmfs`, the CIE 1931 2 Degree Standard Observer being the default as it is still the common approach even
+> though better CMFs have been provided.
+>
+> CMFS                            |
+> ------------------------------- |
+> `coloraide.cmfs.CIE_1931_2DEG`  |
+> `coloraide.cmfs.CIE_1964_10DEG` |
+> `coloraide.cmfs.CIE_2015_2DEG`  |
+> `coloraide.cmfs.CIE_2015_10DEG` |
+>
+> External CMFs could be used as long as they are in the appropriate format and not at increments less than 1nm.
 
 ## CCT
 
@@ -152,8 +150,7 @@ Color.blackbody('srgb-linear', 2500, method='robertson-1968').cct(method='robert
 
 ### Robertson 1968
 
-/// success | The Robertson 1968 CCT algorithm is registered in `Color` by default
-///
+> [!success] The Robertson 1968 CCT algorithm is registered in `Color` by default
 
 The "Robertson 1968" approach was created by A. R. Robertson and is based on the CIE 2˚ Standard Observer with a range
 of 1667K - ∞. This approach uses a look up table containing 31 precalculated points along the black body curve and is
@@ -167,10 +164,9 @@ corrections), but it also uses the same approach to extend the lower range from 
 additional points.  There is no change in behavior from 1667K to ∞, but it will now properly resolve values as
 low as 1000K as well.
 
-/// tip | Practical Range
-While Robertson's technically supports a range out to infinity, it becomes increasingly less practical after 100000K due
-to increasingly less accurate results. Even some results below 100000K may already have fairly sizeable errors.
-///
+> [!tip] Practical Range
+> While Robertson's technically supports a range out to infinity, it becomes increasingly less practical after 100000K due
+> to increasingly less accurate results. Even some results below 100000K may already have fairly sizeable errors.
 
 ```py play
 color = Color.blackbody('srgb-linear', 5000, duv=0.02)
@@ -212,8 +208,7 @@ Steps([Color.blackbody('srgb', t) for t in range(1000, 15000, 50)])
 
 ### Ohno 2013
 
-/// success | The Ohno 2013 CCT algorithm is registered in `Color` by default
-///
+> [!success] The Ohno 2013 CCT algorithm is registered in `Color` by default
 
 This is an approach researched by Yoshi Ohno and aims to provide better accuracy. It uses a look up table similar to
 the Robertson method and employs a combined approach of a triangular solver and a parabolic solver. This can lead to

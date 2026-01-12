@@ -1,27 +1,23 @@
 # CMYK
 
-/// failure | The CMYK color space is not registered in `Color` by default
-///
+> [!failure] The CMYK color space is not registered in `Color` by default
 
 /// html | div.info-container
-//// info | Properties
-    attrs: {class: inline end}
-
-**Name:** `cmyk`
-
-**White Point:** D65 / 2˚
-
-**Coordinates:**
-
-Name | Range^\*^
----- | -----
-`c`  | [0, 1]
-`m`  | [0, 1]
-`y`  | [0, 1]
-`k`  | [0, 1]
-
-^\*^ Range denotes _in gamut_ colors, but the color space supports an extended range beyond the gamut.
-////
+> [!info | inline | end] Properties
+> **Name:** `cmyk`
+>
+> **White Point:** D65 / 2˚
+>
+> **Coordinates:**
+>
+> Name | Range^\*^
+> ---- | -----
+> `c`  | [0, 1]
+> `m`  | [0, 1]
+> `y`  | [0, 1]
+> `k`  | [0, 1]
+>
+> ^\*^ Range denotes _in gamut_ colors, but the color space supports an extended range beyond the gamut.
 
 The CMYK color model is a just like [CMY](./cmy.md) except that it adds an additional channel `k` to control blackness.
 

@@ -1,27 +1,23 @@
 # Msh
 
-/// failure | The Msh color space is not registered in `Color` by default
-///
+> [!failure] The Msh color space is not registered in `Color` by default
 
 /// html | div.info-container
-//// info | Properties
-    attrs: {class: inline end}
-
-**Name:** `msh`
-
-**White Point:** D65 / 2˚
-
-**Coordinates:**
-
-Name | Range^\*^
----- | ---------
-`m`  | [0, 179.95]
-`s`  | [0, 1.6]
-`h`  | [0, 6.283]
-
-^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs in
-relation to the Display P3 color space.
-////
+> [!info | inline | end] Properties
+> **Name:** `msh`
+>
+> **White Point:** D65 / 2˚
+>
+> **Coordinates:**
+>
+> Name | Range^\*^
+> ---- | ---------
+> `m`  | [0, 179.95]
+> `s`  | [0, 1.6]
+> `h`  | [0, 6.283]
+>
+> ^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs in
+> relation to the Display P3 color space.
 
 ![Msh 3D](../images/msh-3d.png)
 //// figure-caption

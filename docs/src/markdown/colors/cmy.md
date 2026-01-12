@@ -1,26 +1,22 @@
 # CMY
 
-/// failure | The CMY color space is not registered in `Color` by default
-///
+> [!failure] The CMY color space is not registered in `Color` by default
 
 /// html | div.info-container
-//// info | Properties
-    attrs: {class: inline end}
-
-**Name:** `cmy`
-
-**White Point:** D65 / 2˚
-
-**Coordinates:**
-
-Name | Range^\*^
----- | -----
-`c`  | [0, 1]
-`m`  | [0, 1]
-`y`  | [0, 1]
-
-^\*^ Range denotes _in gamut_ colors, but the color space supports an extended range beyond the gamut.
-////
+> [!info | inline | end] Properties
+> **Name:** `cmy`
+>
+> **White Point:** D65 / 2˚
+>
+> **Coordinates:**
+>
+> Name | Range^\*^
+> ---- | -----
+> `c`  | [0, 1]
+> `m`  | [0, 1]
+> `y`  | [0, 1]
+>
+> ^\*^ Range denotes _in gamut_ colors, but the color space supports an extended range beyond the gamut.
 
 ![CMY](../images/cmy-3d.png)
 //// figure-caption

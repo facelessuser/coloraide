@@ -1,24 +1,23 @@
 # Prismatic
 
-/// failure | The oRGB color space is not registered in `Color` by default
-///
+> [!failure] The oRGB color space is not registered in `Color` by default
 
 /// html | div.info-container
-//// info | Properties
-    attrs: {class: inline end}
-
-**Name:** `prismatic`
-
-**White Point:** D65 / 2˚
-
-**Coordinates:**
-
-Name | Range
----- | -----
-`l`  | [0, 1]
-`r`  | [0, 1]
-`g`  | [0, 1]
-`b`  | [0, 1]
+> //// info | Properties
+>     attrs: {class: inline end}
+>
+> **Name:** `prismatic`
+>
+> **White Point:** D65 / 2˚
+>
+> **Coordinates:**
+>
+> Name | Range
+> ---- | -----
+> `l`  | [0, 1]
+> `r`  | [0, 1]
+> `g`  | [0, 1]
+> `b`  | [0, 1]
 ////
 
 ![Prismatic](../images/prismatic.png)

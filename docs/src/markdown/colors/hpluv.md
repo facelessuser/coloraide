@@ -1,26 +1,22 @@
 # HPLuv
 
-/// failure | The HPLuv color space is not registered in `Color` by default
-///
+> [!failure] The HPLuv color space is not registered in `Color` by default
 
 /// html | div.info-container
-//// info | Properties
-    attrs: {class: inline end}
-
-**Name:** `hpluv`
-
-**Color CSS ID:** `--hpluv`
-
-**White Point:** D65 / 2˚
-
-**Coordinates:**
-
-Name | Range
----- | -----
-`h`  | [0, 360)
-`p`  | [0, 100]
-`l`  | [0, 100]
-////
+> [!info | inline | end] Properties
+> **Name:** `hpluv`
+>
+> **Color CSS ID:** `--hpluv`
+>
+> **White Point:** D65 / 2˚
+>
+> **Coordinates:**
+>
+> Name | Range
+> ---- | -----
+> `h`  | [0, 360)
+> `p`  | [0, 100]
+> `l`  | [0, 100]
 
 ![HPLuv 3D](../images/hpluv-3d.png)
 //// figure-caption
