@@ -3,11 +3,6 @@ import unittest
 from coloraide import Color
 from . import util
 
-# Colors that produce pretty distinct results
-REDISH = '#fc3d99'
-BLUISH = '#07c7ed'
-YELLOWISH = '#f5d311'
-
 
 class TestBlendModes(util.ColorAsserts, unittest.TestCase):
     """Test blend modes."""
@@ -222,10 +217,10 @@ class TestBlendModes(util.ColorAsserts, unittest.TestCase):
         self.assertColorEqual(r7, Color('rgb(0 19.305 0)'))
 
         # If source is  channel is 0, resultant channel will be 0
-        self.assertColorEqual(Color.layer(['black', REDISH], blend='color-burn'), Color('black'))
+        self.assertColorEqual(Color.layer(['black', '#fc3d99'], blend='color-burn'), Color('black'))
 
-        self.assertColorEqual(Color.layer([REDISH, 'black'], blend='color-burn'), Color('black'))
-        self.assertColorEqual(Color.layer([REDISH, 'white'], blend='color-burn'), Color('white'))
+        self.assertColorEqual(Color.layer(['#fc3d99', 'black'], blend='color-burn'), Color('black'))
+        self.assertColorEqual(Color.layer(['#fc3d99', 'white'], blend='color-burn'), Color('white'))
 
     def test_difference(self):
         """Test difference."""
@@ -364,6 +359,9 @@ class TestBlendModes(util.ColorAsserts, unittest.TestCase):
         self.assertColorEqual(r5, Color('rgb(237.54 209.06 46.543)'))
         self.assertColorEqual(r6, Color('rgb(245.4 211.1 15.403)'))
         self.assertColorEqual(r7, Color('rgb(245.4 211.1 15.403)'))
+
+        self.assertColorEqual(Color.layer(['#fc3d99', 'black'], blend='saturation'), Color('black'))
+        self.assertColorEqual(Color.layer(['#fc3d99', 'white'], blend='saturation'), Color('white'))
 
     def test_luminosity(self):
         """Test luminosity."""
