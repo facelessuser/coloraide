@@ -2812,7 +2812,8 @@ class TestAlgebra(unittest.TestCase):
 
         self.assertEqual(alg.sign(-3), -1)
         self.assertEqual(alg.sign(3), 1)
-        self.assertEqual(alg.sign(-0.0), 0.0)
+        self.assertEqual(alg.sign(-0.0), -0.0)
+        self.assertEqual(math.copysign(1, alg.sign(-0.0)), -1.0)
         self.assertEqual(alg.sign(0.0), 0.0)
         self.assertEqual(math.copysign(1, alg.sign(0.0)), 1.0)
         self.assertTrue(math.isnan(alg.sign(math.nan)))

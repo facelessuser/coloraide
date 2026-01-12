@@ -90,18 +90,7 @@ def sgn(x: SupportsFloatOrInt) -> SupportsFloatOrInt:
 
     if isinstance(x, int):
         return 1 if x > 0 else -1 if x < 0 else 0
-
-    # [1, infinity]
-    if x > 0.0:
-        return 1.0
-    # [-1, -infinity]
-    elif x < 0.0:
-        return -1.0
-    # +/- zero
-    elif x == 0.0:
-        return 0.0
-    # +/- NaN
-    return x
+    return 1.0 if x > 0.0 else -1.0 if x < 0 else x
 
 
 def order(x: float) -> int:
