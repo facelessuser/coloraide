@@ -34,161 +34,382 @@ class TestBlendModes(util.ColorAsserts, unittest.TestCase):
     def test_normal(self):
         """Test normal."""
 
-        self.assertColorEqual(Color.layer([REDISH, 'black'], blend='normal'), Color(REDISH))
-        self.assertColorEqual(Color.layer([REDISH, 'white'], blend='normal'), Color(REDISH))
-        self.assertColorEqual(Color.layer([REDISH, YELLOWISH], blend='normal'), Color(REDISH))
-        self.assertColorEqual(Color.layer([BLUISH, REDISH], blend='normal'), Color(BLUISH))
-        self.assertColorEqual(Color.layer([BLUISH, YELLOWISH], blend='normal'), Color(BLUISH))
+        c1 = Color('#07c7ed')
+        c2 = Color('#fc3d99')
+        c3 = Color('#f5d311')
+
+        r1 = Color.layer([c1, 'transparent', 'transparent'], blend='normal', space='srgb')
+        r2 = Color.layer(['transparent', c2, 'transparent'], blend='normal', space='srgb')
+        r3 = Color.layer(['transparent', 'transparent', c3], blend='normal', space='srgb')
+        r4 = Color.layer([c1, c2, 'transparent'], blend='normal', space='srgb')
+        r5 = Color.layer(['transparent', c2, c3], blend='normal', space='srgb')
+        r6 = Color.layer([c1, 'transparent', c3], blend='normal', space='srgb')
+        r7 = Color.layer([c1, c2, c3], blend='normal', space='srgb')
+
+        self.assertColorEqual(r1, Color('rgb(7 199 237)'))
+        self.assertColorEqual(r2, Color('rgb(252 61 153)'))
+        self.assertColorEqual(r3, Color('rgb(245 211 17)'))
+        self.assertColorEqual(r4, Color('rgb(7 199 237)'))
+        self.assertColorEqual(r5, Color('rgb(252 61 153)'))
+        self.assertColorEqual(r6, Color('rgb(7 199 237)'))
+        self.assertColorEqual(r7, Color('rgb(7 199 237)'))
 
     def test_multiply(self):
         """Test multiply."""
 
-        self.assertColorEqual(Color.layer([REDISH, 'black'], blend='multiply'), Color('black'))
-        self.assertColorEqual(Color.layer([REDISH, 'white'], blend='multiply'), Color(REDISH))
-        self.assertColorEqual(Color.layer([REDISH, YELLOWISH], blend='multiply'), Color('rgb(242.12 50.475 10.2)'))
-        self.assertColorEqual(Color.layer([BLUISH, REDISH], blend='multiply'), Color('rgb(6.9176 47.604 142.2)'))
-        self.assertColorEqual(Color.layer([BLUISH, YELLOWISH], blend='multiply'), Color('rgb(6.7255 164.66 15.8)'))
+        c1 = Color('#07c7ed')
+        c2 = Color('#fc3d99')
+        c3 = Color('#f5d311')
+
+        r1 = Color.layer([c1, 'transparent', 'transparent'], blend='multiply', space='srgb')
+        r2 = Color.layer(['transparent', c2, 'transparent'], blend='multiply', space='srgb')
+        r3 = Color.layer(['transparent', 'transparent', c3], blend='multiply', space='srgb')
+        r4 = Color.layer([c1, c2, 'transparent'], blend='multiply', space='srgb')
+        r5 = Color.layer(['transparent', c2, c3], blend='multiply', space='srgb')
+        r6 = Color.layer([c1, 'transparent', c3], blend='multiply', space='srgb')
+        r7 = Color.layer([c1, c2, c3], blend='multiply', space='srgb')
+
+        self.assertColorEqual(r1, Color('rgb(7 199 237)'))
+        self.assertColorEqual(r2, Color('rgb(252 61 153)'))
+        self.assertColorEqual(r3, Color('rgb(245 211 17)'))
+        self.assertColorEqual(r4, Color('rgb(6.9176 47.604 142.2)'))
+        self.assertColorEqual(r5, Color('rgb(242.12 50.475 10.2)'))
+        self.assertColorEqual(r6, Color('rgb(6.7255 164.66 15.8)'))
+        self.assertColorEqual(r7, Color('rgb(6.6464 39.39 9.48)'))
 
     def test_screen(self):
         """Test screen."""
 
-        self.assertColorEqual(Color.layer([REDISH, 'black'], blend='screen'), Color(REDISH))
-        self.assertColorEqual(Color.layer([REDISH, 'white'], blend='screen'), Color('white'))
-        self.assertColorEqual(Color.layer([REDISH, YELLOWISH], blend='screen'), Color('rgb(254.88 221.53 159.8)'))
-        self.assertColorEqual(Color.layer([BLUISH, REDISH], blend='screen'), Color('rgb(252.08 212.4 247.8)'))
-        self.assertColorEqual(Color.layer([BLUISH, YELLOWISH], blend='screen'), Color('rgb(245.27 245.34 238.2)'))
+        c1 = Color('#07c7ed')
+        c2 = Color('#fc3d99')
+        c3 = Color('#f5d311')
+
+        r1 = Color.layer([c1, 'transparent', 'transparent'], blend='screen', space='srgb')
+        r2 = Color.layer(['transparent', c2, 'transparent'], blend='screen', space='srgb')
+        r3 = Color.layer(['transparent', 'transparent', c3], blend='screen', space='srgb')
+        r4 = Color.layer([c1, c2, 'transparent'], blend='screen', space='srgb')
+        r5 = Color.layer(['transparent', c2, c3], blend='screen', space='srgb')
+        r6 = Color.layer([c1, 'transparent', c3], blend='screen', space='srgb')
+        r7 = Color.layer([c1, c2, c3], blend='screen', space='srgb')
+
+        self.assertColorEqual(r1, Color('rgb(7 199 237)'))
+        self.assertColorEqual(r2, Color('rgb(252 61 153)'))
+        self.assertColorEqual(r3, Color('rgb(245 211 17)'))
+        self.assertColorEqual(r4, Color('rgb(252.08 212.4 247.8)'))
+        self.assertColorEqual(r5, Color('rgb(254.88 221.53 159.8)'))
+        self.assertColorEqual(r6, Color('rgb(245.27 245.34 238.2)'))
+        self.assertColorEqual(r7, Color('rgb(254.89 247.65 248.28)'))
 
     def test_overlay(self):
         """Test overlay."""
 
-        self.assertColorEqual(Color.layer([REDISH, 'black'], blend='overlay'), Color('black'))
-        self.assertColorEqual(Color.layer([REDISH, 'white'], blend='overlay'), Color('white'))
-        self.assertColorEqual(Color.layer([REDISH, YELLOWISH], blend='overlay'), Color('rgb(254.76 188.05 20.4)'))
-        self.assertColorEqual(Color.layer([BLUISH, REDISH], blend='overlay'), Color('rgb(249.16 95.208 240.6)'))
-        self.assertColorEqual(Color.layer([BLUISH, YELLOWISH], blend='overlay'), Color('rgb(235.55 235.67 31.6)'))
+        c1 = Color('#07c7ed')
+        c2 = Color('#fc3d99')
+        c3 = Color('#f5d311')
+
+        r1 = Color.layer([c1, 'transparent', 'transparent'], blend='overlay', space='srgb')
+        r2 = Color.layer(['transparent', c2, 'transparent'], blend='overlay', space='srgb')
+        r3 = Color.layer(['transparent', 'transparent', c3], blend='overlay', space='srgb')
+        r4 = Color.layer([c1, c2, 'transparent'], blend='overlay', space='srgb')
+        r5 = Color.layer(['transparent', c2, c3], blend='overlay', space='srgb')
+        r6 = Color.layer([c1, 'transparent', c3], blend='overlay', space='srgb')
+        r7 = Color.layer([c1, c2, c3], blend='overlay', space='srgb')
+
+        self.assertColorEqual(r1, Color('rgb(7 199 237)'))
+        self.assertColorEqual(r2, Color('rgb(252 61 153)'))
+        self.assertColorEqual(r3, Color('rgb(245 211 17)'))
+        self.assertColorEqual(r4, Color('rgb(249.16 95.208 240.6)'))
+        self.assertColorEqual(r5, Color('rgb(254.76 188.05 20.4)'))
+        self.assertColorEqual(r6, Color('rgb(235.55 235.67 31.6)'))
+        self.assertColorEqual(r7, Color('rgb(254.54 225.59 37.92)'))
 
     def test_darken(self):
         """Test darken."""
 
-        self.assertColorEqual(Color.layer([REDISH, 'black'], blend='darken'), Color('black'))
-        self.assertColorEqual(Color.layer([REDISH, 'white'], blend='darken'), Color('rgb(252 61 153)'))
-        self.assertColorEqual(Color.layer([REDISH, YELLOWISH], blend='darken'), Color('rgb(245 61 17)'))
-        self.assertColorEqual(Color.layer([BLUISH, REDISH], blend='darken'), Color('rgb(7 61 153)'))
-        self.assertColorEqual(Color.layer([BLUISH, YELLOWISH], blend='darken'), Color('rgb(7 199 17)'))
+        c1 = Color('#07c7ed')
+        c2 = Color('#fc3d99')
+        c3 = Color('#f5d311')
+
+        r1 = Color.layer([c1, 'transparent', 'transparent'], blend='darken', space='srgb')
+        r2 = Color.layer(['transparent', c2, 'transparent'], blend='darken', space='srgb')
+        r3 = Color.layer(['transparent', 'transparent', c3], blend='darken', space='srgb')
+        r4 = Color.layer([c1, c2, 'transparent'], blend='darken', space='srgb')
+        r5 = Color.layer(['transparent', c2, c3], blend='darken', space='srgb')
+        r6 = Color.layer([c1, 'transparent', c3], blend='darken', space='srgb')
+        r7 = Color.layer([c1, c2, c3], blend='darken', space='srgb')
+
+        self.assertColorEqual(r1, Color('rgb(7 199 237)'))
+        self.assertColorEqual(r2, Color('rgb(252 61 153)'))
+        self.assertColorEqual(r3, Color('rgb(245 211 17)'))
+        self.assertColorEqual(r4, Color('rgb(7 61 153)'))
+        self.assertColorEqual(r5, Color('rgb(245 61 17)'))
+        self.assertColorEqual(r6, Color('rgb(7 199 17)'))
+        self.assertColorEqual(r7, Color('rgb(7 61 17)'))
 
     def test_lighten(self):
         """Test lighten."""
 
-        self.assertColorEqual(Color.layer([REDISH, 'black'], blend='lighten'), Color('rgb(252 61 153)'))
-        self.assertColorEqual(Color.layer([REDISH, 'white'], blend='lighten'), Color('white'))
-        self.assertColorEqual(Color.layer([REDISH, YELLOWISH], blend='lighten'), Color('rgb(252 211 153)'))
-        self.assertColorEqual(Color.layer([BLUISH, REDISH], blend='lighten'), Color('rgb(252 199 237)'))
-        self.assertColorEqual(Color.layer([BLUISH, YELLOWISH], blend='lighten'), Color('rgb(245 211 237)'))
+        c1 = Color('#07c7ed')
+        c2 = Color('#fc3d99')
+        c3 = Color('#f5d311')
+
+        r1 = Color.layer([c1, 'transparent', 'transparent'], blend='lighten', space='srgb')
+        r2 = Color.layer(['transparent', c2, 'transparent'], blend='lighten', space='srgb')
+        r3 = Color.layer(['transparent', 'transparent', c3], blend='lighten', space='srgb')
+        r4 = Color.layer([c1, c2, 'transparent'], blend='lighten', space='srgb')
+        r5 = Color.layer(['transparent', c2, c3], blend='lighten', space='srgb')
+        r6 = Color.layer([c1, 'transparent', c3], blend='lighten', space='srgb')
+        r7 = Color.layer([c1, c2, c3], blend='lighten', space='srgb')
+
+        self.assertColorEqual(r1, Color('rgb(7 199 237)'))
+        self.assertColorEqual(r2, Color('rgb(252 61 153)'))
+        self.assertColorEqual(r3, Color('rgb(245 211 17)'))
+        self.assertColorEqual(r4, Color('rgb(252 199 237)'))
+        self.assertColorEqual(r5, Color('rgb(252 211 153)'))
+        self.assertColorEqual(r6, Color('rgb(245 211 237)'))
+        self.assertColorEqual(r7, Color('rgb(252 211 237)'))
 
     def test_color_dodge(self):
         """Test color dodge."""
 
-        self.assertColorEqual(Color.layer([REDISH, 'black'], blend='color-dodge'), Color('black'))
-        self.assertColorEqual(Color.layer([REDISH, 'white'], blend='color-dodge'), Color('white'))
-        self.assertColorEqual(Color.layer([REDISH, YELLOWISH], blend='color-dodge'), Color('rgb(255 255 42.5)'))
-        self.assertColorEqual(Color.layer([BLUISH, REDISH], blend='color-dodge'), Color('rgb(255 255 255)'))
-        self.assertColorEqual(Color.layer([BLUISH, YELLOWISH], blend='color-dodge'), Color('rgb(251.92 255 240.83)'))
+        c1 = Color('#07c7ed')
+        c2 = Color('#fc3d99')
+        c3 = Color('#f5d311')
+
+        r1 = Color.layer([c1, 'transparent', 'transparent'], blend='color-dodge', space='srgb')
+        r2 = Color.layer(['transparent', c2, 'transparent'], blend='color-dodge', space='srgb')
+        r3 = Color.layer(['transparent', 'transparent', c3], blend='color-dodge', space='srgb')
+        r4 = Color.layer([c1, c2, 'transparent'], blend='color-dodge', space='srgb')
+        r5 = Color.layer(['transparent', c2, c3], blend='color-dodge', space='srgb')
+        r6 = Color.layer([c1, 'transparent', c3], blend='color-dodge', space='srgb')
+        r7 = Color.layer([c1, c2, c3], blend='color-dodge', space='srgb')
+
+        self.assertColorEqual(r1, Color('rgb(7 199 237)'))
+        self.assertColorEqual(r2, Color('rgb(252 61 153)'))
+        self.assertColorEqual(r3, Color('rgb(245 211 17)'))
+        self.assertColorEqual(r4, Color('rgb(255 255 255)'))
+        self.assertColorEqual(r5, Color('rgb(255 255 42.5)'))
+        self.assertColorEqual(r6, Color('rgb(251.92 255 240.83)'))
+        self.assertColorEqual(r7, Color('rgb(255 255 255)'))
 
         # If source channel is 1 resultant channel will be 1
-        self.assertColorEqual(Color.layer(['white', REDISH], blend='color-dodge'), Color('white'))
+        self.assertColorEqual(Color.layer(['#fc3d99', 'black'], blend='color-dodge'), Color('black'))
+
+        self.assertColorEqual(Color.layer(['#fc3d99', 'white'], blend='color-dodge'), Color('white'))
+        self.assertColorEqual(Color.layer(['white', '#fc3d99'], blend='color-dodge'), Color('white'))
 
     def test_color_burn(self):
         """Test color burn."""
 
-        self.assertColorEqual(Color.layer([REDISH, 'black'], blend='color-burn'), Color('black'))
-        self.assertColorEqual(Color.layer([REDISH, 'white'], blend='color-burn'), Color('white'))
-        self.assertColorEqual(Color.layer([REDISH, YELLOWISH], blend='color-burn'), Color('rgb(244.88 71.066 0)'))
-        self.assertColorEqual(Color.layer([BLUISH, REDISH], blend='color-burn'), Color('rgb(145.71 6.407 145.25)'))
-        self.assertColorEqual(Color.layer([BLUISH, YELLOWISH], blend='color-burn'), Color('rgb(0 198.62 0)'))
+        c1 = Color('#07c7ed')
+        c2 = Color('#fc3d99')
+        c3 = Color('#f5d311')
+
+        r1 = Color.layer([c1, 'transparent', 'transparent'], blend='color-burn', space='srgb')
+        r2 = Color.layer(['transparent', c2, 'transparent'], blend='color-burn', space='srgb')
+        r3 = Color.layer(['transparent', 'transparent', c3], blend='color-burn', space='srgb')
+        r4 = Color.layer([c1, c2, 'transparent'], blend='color-burn', space='srgb')
+        r5 = Color.layer(['transparent', c2, c3], blend='color-burn', space='srgb')
+        r6 = Color.layer([c1, 'transparent', c3], blend='color-burn', space='srgb')
+        r7 = Color.layer([c1, c2, c3], blend='color-burn', space='srgb')
+
+        self.assertColorEqual(r1, Color('rgb(7 199 237)'))
+        self.assertColorEqual(r2, Color('rgb(252 61 153)'))
+        self.assertColorEqual(r3, Color('rgb(245 211 17)'))
+        self.assertColorEqual(r4, Color('rgb(145.71 6.407 145.25)'))
+        self.assertColorEqual(r5, Color('rgb(244.88 71.066 0)'))
+        self.assertColorEqual(r6, Color('rgb(0 198.62 0)'))
+        self.assertColorEqual(r7, Color('rgb(0 19.305 0)'))
 
         # If source is  channel is 0, resultant channel will be 0
         self.assertColorEqual(Color.layer(['black', REDISH], blend='color-burn'), Color('black'))
 
+        self.assertColorEqual(Color.layer([REDISH, 'black'], blend='color-burn'), Color('black'))
+        self.assertColorEqual(Color.layer([REDISH, 'white'], blend='color-burn'), Color('white'))
+
     def test_difference(self):
         """Test difference."""
 
-        self.assertColorEqual(Color.layer([REDISH, 'black'], blend='difference'), Color('rgb(252 61 153)'))
-        self.assertColorEqual(Color.layer([REDISH, 'white'], blend='difference'), Color('rgb(3 194 102)'))
-        self.assertColorEqual(Color.layer([REDISH, YELLOWISH], blend='difference'), Color('rgb(7 150 136)'))
-        self.assertColorEqual(Color.layer([BLUISH, REDISH], blend='difference'), Color('rgb(245 138 84)'))
-        self.assertColorEqual(Color.layer([BLUISH, YELLOWISH], blend='difference'), Color('rgb(238 12 220)'))
+        c1 = Color('#07c7ed')
+        c2 = Color('#fc3d99')
+        c3 = Color('#f5d311')
+
+        r1 = Color.layer([c1, 'transparent', 'transparent'], blend='difference', space='srgb')
+        r2 = Color.layer(['transparent', c2, 'transparent'], blend='difference', space='srgb')
+        r3 = Color.layer(['transparent', 'transparent', c3], blend='difference', space='srgb')
+        r4 = Color.layer([c1, c2, 'transparent'], blend='difference', space='srgb')
+        r5 = Color.layer(['transparent', c2, c3], blend='difference', space='srgb')
+        r6 = Color.layer([c1, 'transparent', c3], blend='difference', space='srgb')
+        r7 = Color.layer([c1, c2, c3], blend='difference', space='srgb')
+
+        self.assertColorEqual(r1, Color('rgb(7 199 237)'))
+        self.assertColorEqual(r2, Color('rgb(252 61 153)'))
+        self.assertColorEqual(r3, Color('rgb(245 211 17)'))
+        self.assertColorEqual(r4, Color('rgb(245 138 84)'))
+        self.assertColorEqual(r5, Color('rgb(7 150 136)'))
+        self.assertColorEqual(r6, Color('rgb(238 12 220)'))
+        self.assertColorEqual(r7, Color('rgb(0 49 101)'))
 
     def test_exclusion(self):
         """Test exclusion."""
 
-        self.assertColorEqual(Color.layer([REDISH, 'black'], blend='exclusion'), Color('rgb(252 61 153)'))
-        self.assertColorEqual(Color.layer([REDISH, 'white'], blend='exclusion'), Color('rgb(3 194 102)'))
-        self.assertColorEqual(Color.layer([REDISH, YELLOWISH], blend='exclusion'), Color('rgb(12.765 171.05 149.6)'))
-        self.assertColorEqual(Color.layer([BLUISH, REDISH], blend='exclusion'), Color('rgb(245.16 164.79 105.6)'))
-        self.assertColorEqual(Color.layer([BLUISH, YELLOWISH], blend='exclusion'), Color('rgb(238.55 80.675 222.4)'))
+        c1 = Color('#07c7ed')
+        c2 = Color('#fc3d99')
+        c3 = Color('#f5d311')
+
+        r1 = Color.layer([c1, 'transparent', 'transparent'], blend='exclusion', space='srgb')
+        r2 = Color.layer(['transparent', c2, 'transparent'], blend='exclusion', space='srgb')
+        r3 = Color.layer(['transparent', 'transparent', c3], blend='exclusion', space='srgb')
+        r4 = Color.layer([c1, c2, 'transparent'], blend='exclusion', space='srgb')
+        r5 = Color.layer(['transparent', c2, c3], blend='exclusion', space='srgb')
+        r6 = Color.layer([c1, 'transparent', c3], blend='exclusion', space='srgb')
+        r7 = Color.layer([c1, c2, c3], blend='exclusion', space='srgb')
+
+        self.assertColorEqual(r1, Color('rgb(7 199 237)'))
+        self.assertColorEqual(r2, Color('rgb(252 61 153)'))
+        self.assertColorEqual(r3, Color('rgb(245 211 17)'))
+        self.assertColorEqual(r4, Color('rgb(245.16 164.79 105.6)'))
+        self.assertColorEqual(r5, Color('rgb(12.765 171.05 149.6)'))
+        self.assertColorEqual(r6, Color('rgb(238.55 80.675 222.4)'))
+        self.assertColorEqual(r7, Color('rgb(19.064 103.08 108.52)'))
 
     def test_color_hard_light(self):
         """Test hard light."""
 
-        self.assertColorEqual(Color.layer([REDISH, 'black'], blend='hard-light'), Color('rgb(249 0 51)'))
-        self.assertColorEqual(Color.layer([REDISH, 'white'], blend='hard-light'), Color('rgb(255 122 255)'))
-        self.assertColorEqual(Color.layer([REDISH, YELLOWISH], blend='hard-light'), Color('rgb(254.76 100.95 64.6)'))
-        self.assertColorEqual(Color.layer([BLUISH, REDISH], blend='hard-light'), Color('rgb(13.835 169.79 240.6)'))
-        self.assertColorEqual(Color.layer([BLUISH, YELLOWISH], blend='hard-light'), Color('rgb(13.451 235.67 221.4)'))
+        c1 = Color('#07c7ed')
+        c2 = Color('#fc3d99')
+        c3 = Color('#f5d311')
+
+        r1 = Color.layer([c1, 'transparent', 'transparent'], blend='hard-light', space='srgb')
+        r2 = Color.layer(['transparent', c2, 'transparent'], blend='hard-light', space='srgb')
+        r3 = Color.layer(['transparent', 'transparent', c3], blend='hard-light', space='srgb')
+        r4 = Color.layer([c1, c2, 'transparent'], blend='hard-light', space='srgb')
+        r5 = Color.layer(['transparent', c2, c3], blend='hard-light', space='srgb')
+        r6 = Color.layer([c1, 'transparent', c3], blend='hard-light', space='srgb')
+        r7 = Color.layer([c1, c2, c3], blend='hard-light', space='srgb')
+
+        self.assertColorEqual(r1, Color('rgb(7 199 237)'))
+        self.assertColorEqual(r2, Color('rgb(252 61 153)'))
+        self.assertColorEqual(r3, Color('rgb(245 211 17)'))
+        self.assertColorEqual(r4, Color('rgb(13.835 169.79 240.6)'))
+        self.assertColorEqual(r5, Color('rgb(254.76 100.95 64.6)'))
+        self.assertColorEqual(r6, Color('rgb(13.451 235.67 221.4)'))
+        self.assertColorEqual(r7, Color('rgb(13.987 187.34 228.12)'))
 
     def test_color_soft_light(self):
         """Test soft light."""
 
-        self.assertColorEqual(Color.layer([REDISH, 'black'], blend='soft-light'), Color('black'))
-        self.assertColorEqual(Color.layer([REDISH, 'white'], blend='soft-light'), Color('white'))
-        self.assertColorEqual(
-            Color.layer([REDISH, YELLOWISH], blend='soft-light'),
-            Color('rgb(249.83 192.01 24.722)')
-        )
-        self.assertColorEqual(Color.layer([BLUISH, REDISH], blend='soft-light'), Color('rgb(249.2 96.747 191.24)'))
-        self.assertColorEqual(
-            Color.layer([BLUISH, YELLOWISH], blend='soft-light'),
-            Color('rgb(235.92 222.75 50.158)')
-        )
+        c1 = Color('#07c7ed')
+        c2 = Color('#fc3d99')
+        c3 = Color('#f5d311')
+
+        r1 = Color.layer([c1, 'transparent', 'transparent'], blend='soft-light', space='srgb')
+        r2 = Color.layer(['transparent', c2, 'transparent'], blend='soft-light', space='srgb')
+        r3 = Color.layer(['transparent', 'transparent', c3], blend='soft-light', space='srgb')
+        r4 = Color.layer([c1, c2, 'transparent'], blend='soft-light', space='srgb')
+        r5 = Color.layer(['transparent', c2, c3], blend='soft-light', space='srgb')
+        r6 = Color.layer([c1, 'transparent', c3], blend='soft-light', space='srgb')
+        r7 = Color.layer([c1, c2, c3], blend='soft-light', space='srgb')
+
+        self.assertColorEqual(r1, Color('rgb(7 199 237)'))
+        self.assertColorEqual(r2, Color('rgb(252 61 153)'))
+        self.assertColorEqual(r3, Color('rgb(245 211 17)'))
+        self.assertColorEqual(r4, Color('rgb(249.2 96.747 191.24)'))
+        self.assertColorEqual(r5, Color('rgb(249.83 192.01 24.722)'))
+        self.assertColorEqual(r6, Color('rgb(235.92 222.75 50.158)'))
+        self.assertColorEqual(r7, Color('rgb(245.05 208.42 66.909)'))
 
     def test_hue(self):
         """Test hue."""
 
-        self.assertColorEqual(Color.layer([REDISH, 'black'], blend='hue'), Color('black'))
-        self.assertColorEqual(Color.layer([REDISH, 'white'], blend='hue'), Color('white'))
-        self.assertColorEqual(Color.layer([REDISH, YELLOWISH], blend='hue'), Color('rgb(255 168.4 210.11)'))
-        self.assertColorEqual(Color.layer([BLUISH, REDISH], blend='hue'), Color('rgb(13.23 172.67 204.23)'))
-        self.assertColorEqual(Color.layer([BLUISH, YELLOWISH], blend='hue'), Color('rgb(113.71 231.66 255)'))
+        c1 = Color('#07c7ed')
+        c2 = Color('#fc3d99')
+        c3 = Color('#f5d311')
+
+        r1 = Color.layer([c1, 'transparent', 'transparent'], blend='hue', space='srgb')
+        r2 = Color.layer(['transparent', c2, 'transparent'], blend='hue', space='srgb')
+        r3 = Color.layer(['transparent', 'transparent', c3], blend='hue', space='srgb')
+        r4 = Color.layer([c1, c2, 'transparent'], blend='hue', space='srgb')
+        r5 = Color.layer(['transparent', c2, c3], blend='hue', space='srgb')
+        r6 = Color.layer([c1, 'transparent', c3], blend='hue', space='srgb')
+        r7 = Color.layer([c1, c2, c3], blend='hue', space='srgb')
+
+        self.assertColorEqual(r1, Color('rgb(7 199 237)'))
+        self.assertColorEqual(r2, Color('rgb(252 61 153)'))
+        self.assertColorEqual(r3, Color('rgb(245 211 17)'))
+        self.assertColorEqual(r4, Color('rgb(13.23 172.67 204.23)'))
+        self.assertColorEqual(r5, Color('rgb(255 168.4 210.11)'))
+        self.assertColorEqual(r6, Color('rgb(113.71 231.66 255)'))
+        self.assertColorEqual(r7, Color('rgb(146.74 219.03 233.34)'))
 
     def test_saturation(self):
         """Test hue."""
 
-        self.assertColorEqual(Color.layer([REDISH, 'black'], blend='saturation'), Color('black'))
-        self.assertColorEqual(Color.layer([REDISH, 'white'], blend='saturation'), Color('white'))
-        self.assertColorEqual(
-            Color.layer([REDISH, YELLOWISH], blend='saturation'),
-            Color('rgb(237.54 209.06 46.543)')
-        )
-        self.assertColorEqual(Color.layer([BLUISH, REDISH], blend='saturation'), Color('rgb(255 59.357 153.59)'))
-        self.assertColorEqual(Color.layer([BLUISH, YELLOWISH], blend='saturation'), Color('rgb(245.4 211.1 15.403)'))
+        c1 = Color('#07c7ed')
+        c2 = Color('#fc3d99')
+        c3 = Color('#f5d311')
+
+        r1 = Color.layer([c1, 'transparent', 'transparent'], blend='saturation', space='srgb')
+        r2 = Color.layer(['transparent', c2, 'transparent'], blend='saturation', space='srgb')
+        r3 = Color.layer(['transparent', 'transparent', c3], blend='saturation', space='srgb')
+        r4 = Color.layer([c1, c2, 'transparent'], blend='saturation', space='srgb')
+        r5 = Color.layer(['transparent', c2, c3], blend='saturation', space='srgb')
+        r6 = Color.layer([c1, 'transparent', c3], blend='saturation', space='srgb')
+        r7 = Color.layer([c1, c2, c3], blend='saturation', space='srgb')
+
+        self.assertColorEqual(r1, Color('rgb(7 199 237)'))
+        self.assertColorEqual(r2, Color('rgb(252 61 153)'))
+        self.assertColorEqual(r3, Color('rgb(245 211 17)'))
+        self.assertColorEqual(r4, Color('rgb(255 59.357 153.59)'))
+        self.assertColorEqual(r5, Color('rgb(237.54 209.06 46.543)'))
+        self.assertColorEqual(r6, Color('rgb(245.4 211.1 15.403)'))
+        self.assertColorEqual(r7, Color('rgb(245.4 211.1 15.403)'))
 
     def test_luminosity(self):
         """Test luminosity."""
 
-        self.assertColorEqual(Color.layer([REDISH, 'black'], blend='luminosity'), Color('rgb(128.6 128.6 128.6)'))
-        self.assertColorEqual(Color.layer([REDISH, 'white'], blend='luminosity'), Color('rgb(128.6 128.6 128.6)'))
-        self.assertColorEqual(Color.layer([REDISH, YELLOWISH], blend='luminosity'), Color('rgb(161.06 137.04 0)'))
-        self.assertColorEqual(Color.layer([BLUISH, REDISH], blend='luminosity'), Color('rgb(255 86.175 167.49)'))
-        self.assertColorEqual(Color.layer([BLUISH, YELLOWISH], blend='luminosity'), Color('rgb(182.76 155.5 0)'))
+        c1 = Color('#07c7ed')
+        c2 = Color('#fc3d99')
+        c3 = Color('#f5d311')
+
+        r1 = Color.layer([c1, 'transparent', 'transparent'], blend='luminosity', space='srgb')
+        r2 = Color.layer(['transparent', c2, 'transparent'], blend='luminosity', space='srgb')
+        r3 = Color.layer(['transparent', 'transparent', c3], blend='luminosity', space='srgb')
+        r4 = Color.layer([c1, c2, 'transparent'], blend='luminosity', space='srgb')
+        r5 = Color.layer(['transparent', c2, c3], blend='luminosity', space='srgb')
+        r6 = Color.layer([c1, 'transparent', c3], blend='luminosity', space='srgb')
+        r7 = Color.layer([c1, c2, c3], blend='luminosity', space='srgb')
+
+        self.assertColorEqual(r1, Color('rgb(7 199 237)'))
+        self.assertColorEqual(r2, Color('rgb(252 61 153)'))
+        self.assertColorEqual(r3, Color('rgb(245 211 17)'))
+        self.assertColorEqual(r4, Color('rgb(255 86.175 167.49)'))
+        self.assertColorEqual(r5, Color('rgb(161.06 137.04 0)'))
+        self.assertColorEqual(r6, Color('rgb(182.76 155.5 0)'))
+        self.assertColorEqual(r7, Color('rgb(178.38 154.37 17.327)'))
 
     def test_color(self):
         """Test color."""
 
-        self.assertColorEqual(Color.layer([REDISH, 'black'], blend='color'), Color('black'))
-        self.assertColorEqual(Color.layer([REDISH, 'white'], blend='color'), Color('white'))
-        self.assertColorEqual(Color.layer([REDISH, YELLOWISH], blend='color'), Color('rgb(255 168.4 210.11)'))
-        self.assertColorEqual(Color.layer([BLUISH, REDISH], blend='color'), Color('rgb(0 177.73 212.9)'))
-        self.assertColorEqual(Color.layer([BLUISH, YELLOWISH], blend='color'), Color('rgb(113.71 231.66 255)'))
+        c1 = Color('#07c7ed')
+        c2 = Color('#fc3d99')
+        c3 = Color('#f5d311')
+
+        r1 = Color.layer([c1, 'transparent', 'transparent'], blend='color', space='srgb')
+        r2 = Color.layer(['transparent', c2, 'transparent'], blend='color', space='srgb')
+        r3 = Color.layer(['transparent', 'transparent', c3], blend='color', space='srgb')
+        r4 = Color.layer([c1, c2, 'transparent'], blend='color', space='srgb')
+        r5 = Color.layer(['transparent', c2, c3], blend='color', space='srgb')
+        r6 = Color.layer([c1, 'transparent', c3], blend='color', space='srgb')
+        r7 = Color.layer([c1, c2, c3], blend='color', space='srgb')
+
+        self.assertColorEqual(r1, Color('rgb(7 199 237)'))
+        self.assertColorEqual(r2, Color('rgb(252 61 153)'))
+        self.assertColorEqual(r3, Color('rgb(245 211 17)'))
+        self.assertColorEqual(r4, Color('rgb(0 177.73 212.9)'))
+        self.assertColorEqual(r5, Color('rgb(255 168.4 210.11)'))
+        self.assertColorEqual(r6, Color('rgb(113.71 231.66 255)'))
+        self.assertColorEqual(r7, Color('rgb(113.71 231.66 255)'))
 
 
 class TestBlend(util.ColorAsserts, unittest.TestCase):
