@@ -1184,72 +1184,6 @@ Return
 -   Returns a list of [`Color`](#color) objects.
 ///
 
-## `#!py Color.compose` {#compose}
-
-> [!warning] Deprecated 4.0
-> `compose` method was deprecated in favor of the new [`layer`](#layer) method and will be removed at some future time.
-
-```py
-def compose(
-    self,
-    backdrop: ColorInput | Sequence[ColorInput],
-    *,
-    blend: str | bool = True,
-    operator: str | bool = True,
-    space: str | None = None,
-    out_space: str | None = None,
-    in_place: bool = False
-) -> Self:
-    ...
-```
-
-/// define
-Description
-
--   Apply compositing which consists of a [blend mode](../compositing.md#blend-modes) and a [Porter Duff operator](../compositing.md#compositing-operators)
-    for alpha compositing. The current color is treated as the source (top layer) and the provided color as the backdrop
-    (bottom layer). Colors will be composited in the `srgb` color space unless otherwise specified.
-
-    Compositing should generally be applied in RGB-ish color spaces (sRGB, Display P3, A98 RGB, etc.). The algorithm is
-    designed only for RGB-ish colors. Non-RGB-ish colors are likely to provide nonsense results.
-
-    Supported blend modes are:
-
-    Blend Modes  | &nbsp;       | &nbsp;       | &nbsp;
-    ------------ | ------------ | ------------ | ------------
-    `normal`     | `multiply`   | `darken`     | `lighten`
-    `burn`       | `dodge`      | `screen`     | `overlay`
-    `hard-light` | `exclusion`  | `difference` | `soft-light`
-    `hue`        | `saturation` | `luminosity` | `color`
-    `color`      | `hue`        | `saturation` | `luminosity`
-
-    Supported Port Duff operators are:
-
-    Operators          | &nbsp;        | &nbsp;             | &nbsp;
-    ------------------ | ------------- | ------------------ | ------------
-    `clear`            | `copy`        | `destination`      |`source-over`
-    `destination-over` | `source-in`   | `destination-in`   | `source-out`
-    `destination-out`  | `source-atop` | `destination-atop` | `xor`
-    `lighter`          | &nbsp;        | &nbsp;             | &nbsp;
-
-Parameters
-
-- 
-    Parameters  | Defaults       | Description
-    ----------- | -------------- | -----------
-    `backdrop`  |                | A background color or sequence of background colors represented with strings, [`Color`](#color) objects, and/or dictionaries representing a color.
-    `blend`     | `#!py3 None`   | A blend mode to use to use when compositing. Values should be a string specifying the name of the blend mode to use. If `#!py None`, [`normal`](../compositing.md#normal) will be used. If `#!py False`, blending will be skipped.
-    `operator`  | `#!py3 None`   | A Porter Duff operator to use for alpha compositing. Values should be a string specifying the name of the operator to use. If `#!py None`, [`source-over`](../compositing.md#source-over) will be used. If `#!py False`, alpha compositing will be skipped.
-    `space`     | `#!py3 None`   | A color space to perform the overlay in. If `#!py None`, the base color's space will be used.
-    `out_space` | `#!py None`    | Color space that the new color should be in. If `#!py None`, the return color will be in the same color space as specified by `space`.
-    `in_place`  | `#!py3 False`  | Boolean used to determine if the current color should be modified "in place" or a new [`Color`](#color) object should be returned.
-
-Return
-
--   Returns a reference to the new [`Color`](#color) object or a reference to the current [`Color`](#color) if
-    `in_place` is `#!py3 True`.
-///
-
 ## `#!py Color.layer` {#layer}
 
 ```py
@@ -1265,6 +1199,10 @@ def layer(
 ) -> Self:
     ...
 ```
+
+> [!warning] Deprecated 7.0
+> Using a `#!py bool` for `blend` and `operator` has been deprecated. A specific string should be used and acceptance
+> of boolean values will cease to work in the future.
 
 /// define
 Description

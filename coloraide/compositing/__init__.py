@@ -16,7 +16,7 @@ def apply_compositing(
     color1: Vector,
     color2: Vector,
     blender: blend_modes.Blend | None,
-    pduff: type[porter_duff.PorterDuff] | None
+    operator: type[porter_duff.PorterDuff] | None
 ) -> Vector:
     """Perform the actual blending."""
 
@@ -32,8 +32,8 @@ def apply_compositing(
     # Browsers auto clamp the alpha channel, as does ColorAide,
     # so result alpha must be clamped to undo premultiplication like the browser.
     compositor = None  # type: porter_duff.PorterDuff | None
-    if pduff is not None:
-        compositor = pduff(cba, csa)
+    if operator is not None:
+        compositor = operator(cba, csa)
         cra = alg.clamp(compositor.ao(), 0.0, 1.0)
 
     # Apply alpha compositing
@@ -54,8 +54,8 @@ def apply_compositing(
 def compose(
     color_cls: type[AnyColor],
     colors: Sequence[ColorInput],
-    blend: str | bool = True,
-    operator: str | bool = True,
+    blend: str | None = 'normal',
+    operator: str | None = 'source-over',
     space: str | None = None,
     out_space: str | None = None
 ) -> AnyColor:
@@ -75,23 +75,15 @@ def compose(
         raise ValueError(f"Can only compose in an RGBish color space, not {type(color_cls.CS_MAP[space])}")
 
     # Setup the blender
-    blender = None  # blend_modes.Blend | None
-    if isinstance(blend, str):
-        blender = blend_modes.get_blender(blend)
-    elif blend is True:
-        blender = blend_modes.get_blender('normal')
+    blender = blend if blend is None else blend_modes.get_blender(blend)
 
     # Setup the Porter Duff operator
-    if operator is True:
-        operator = 'source-over'
-    pduff = None  # type: type[porter_duff.PorterDuff] | None
-    if isinstance(operator, str):
-        pduff = porter_duff.compositor(operator)
+    op = operator if operator is None else porter_duff.compositor(operator)
 
     # Apply blending and alpha compositing to the colors from right to left
     dest = color_cls._handle_color_input(colors[-1]).convert(space).normalize(nans=False)[:]
     for x in range(len(colors) - 2, -1, -1):
         src = color_cls._handle_color_input(colors[x]).convert(space).normalize(nans=False)[:]
-        dest = apply_compositing(src, dest, blender, pduff)
+        dest = apply_compositing(src, dest, blender, op)
 
     return color_cls(space, dest[:-1], dest[-1]).convert(out_space, in_place=True)

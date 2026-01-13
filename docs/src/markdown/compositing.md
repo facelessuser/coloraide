@@ -19,14 +19,6 @@ Porter Duff operator by default.
 > The compositing function does not currently manage gamut mapping, so it is recommended to ensure your colors are within
 > the proper gamut before compositing the colors.
 
-> [!new] New in 4.0
-> A new `layer` method was added which uses a more intuitive name and aligns with how multiple colors are handled in
-> other similar APIs such as `average()`, `interpolate()`, etc.
-
-> [!warning] Deprecated 4.0
-> [`compose`](./api/index.md#compose) method was deprecated in favor of the new `layer` method and will be removed at
-> some future time.
-
 ## Blending
 
 Blending is the aspect of compositing that calculates the mixing of colors where the source element and backdrop
@@ -111,9 +103,6 @@ c1, c2, c3
 Color.layer([c1, c2, c3], blend='multiply', space="srgb")
 ```
 ///
-
-Lastly, if for any reason, it is desired to layer the colors with the blending step disabled (e.g. just run alpha
-compositing), then you can simply set `blend` to `#!py3 False`.
 
 [`multiply`](#multiply) is just one of many blend modes that are offered in ColorAide, check out
 [Blend Modes](#blend-modes) to learn about other blend modes.
@@ -228,9 +217,6 @@ c1, c2, c3, bg
 Color.layer([c1, c2, c3, bg], blend='normal', space="srgb")
 ```
 ///
-
-Lastly, if for any reason, it is desired to layer colors with alpha compositing disabled (e.g. just run blending), then
-you can simply set `operator` to `#!py3 False`.
 
 Check out [Compositing Operators](#compositing-operators) to learn about the many variations that are supported.
 

@@ -3,10 +3,13 @@ icon: lucide/scroll-text
 ---
 # Changelog
 
-## 6.3
+## 7.0
 
 -   **NEW**: Add Porter Duff operator `plus-darker` and `plus-lighter` from the CSS Compositing Level 2 spec, both
     should be considered experimental and are subject to change.
+-   **NEW**: Usage of boolean to disable blend mode or Porter Duff operator in `layer` has been deprecated. Only
+    specific modes should be specified moving forward.
+-   **NEW**: Remove the previously deprecated `compose` function.
 
 ## 6.2.1
 

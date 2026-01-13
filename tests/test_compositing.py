@@ -2,11 +2,13 @@
 import unittest
 from coloraide import Color, NaN
 from . import util
+import pytest
 
 
 class TestCompositing(util.ColorAsserts, unittest.TestCase):
     """Test compositing."""
 
+    @pytest.mark.filterwarnings("ignore")
     def test_disable_compose(self):
         """Test that we can disable either blend or alpha compositing."""
 
