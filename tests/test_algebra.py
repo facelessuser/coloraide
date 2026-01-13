@@ -2198,8 +2198,8 @@ class TestAlgebra(unittest.TestCase):
         with self.assertRaises(TypeError):
             log([10, 100], base=[10, math.e])
 
-    def test_vectorize1(self):
-        """Test `vectorize1`."""
+    def test_vectorize2(self):
+        """Test `vectorize2`."""
 
         cbrt = alg.vectorize2(lambda x: alg.nth_root(x, 3), params=1)
 
@@ -2250,9 +2250,6 @@ class TestAlgebra(unittest.TestCase):
                     [[8, 27, 27], [8, 27, 27], [8, 27, 27]]
                 ]
             )
-
-    def test_vectorize2(self):
-        """Test `vectorize2`."""
 
         log = alg.vectorize2(math.log)
 

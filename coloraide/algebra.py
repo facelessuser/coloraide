@@ -26,7 +26,6 @@ import math
 import operator
 import functools
 import itertools as it
-from .deprecate import deprecated
 from .types import (
     ArrayLike, MatrixLike, EmptyShape, VectorShape, MatrixShape, TensorShape, ArrayShape, VectorLike,
     TensorLike, Array, Matrix, Tensor, Vector, VectorBool, MatrixBool, TensorBool, MatrixInt, ArrayType, VectorInt,  # noqa: F401
@@ -2655,13 +2654,6 @@ def vectorize2(
     elif params == 1:
         return (_vectorize1_x3 if only_x3 else _vectorize1)(pyfunc, doc)
     raise ValueError("'vectorize2' does not support dimensions greater than 2 or less than 1")
-
-
-@deprecated("'vectorize1' is deprecated, use 'vectorize2(func, doc, params=1)' for the equivalent")
-def vectorize1(pyfunc: Callable[..., Any], doc: str | None = None) -> Callable[..., Any]:  # pragma: no cover
-    """An optimized version of vectorize that is hard coded to broadcast only the first input."""
-
-    return vectorize2(pyfunc, doc, params=1)
 
 
 @overload
