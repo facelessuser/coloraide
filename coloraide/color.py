@@ -19,7 +19,7 @@ from . import temperature
 from . import util
 from . import algebra as alg
 from .channels import ANGLE_DEG, ANGLE_RAD, ANGLE_GRAD, ANGLE_TURN, ANGLE_NULL
-from .deprecate import deprecated, warn_deprecated
+from .deprecate import warn_deprecated
 from itertools import zip_longest as zipl
 from .css import parse
 from .types import VectorLike, Vector, ColorInput
