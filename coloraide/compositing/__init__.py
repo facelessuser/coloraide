@@ -16,33 +16,29 @@ def apply_compositing(
     color1: Vector,
     color2: Vector,
     blender: blend_modes.Blend | None,
-    operator: str | bool
+    pduff: type[porter_duff.PorterDuff] | None
 ) -> Vector:
     """Perform the actual blending."""
 
     # Get the color coordinates
-    csa = color1[-1]
+    cra = csa = color1[-1]
     cba = color2[-1]
-    coords1 = color1[:-1]
     coords2 = color2[:-1]
+    # Blend color channels if given a blender and both colors are not fully transparent
+    coords1 = blender.blend(coords2, color1[:-1]) if blender and csa and cba else color1[:-1]
 
-    # Setup compositing
+    # Setup alpha compositing with the current opacity values.
+    # Calculate the new opacity.
+    # Browsers auto clamp the alpha channel, as does ColorAide,
+    # so result alpha must be clamped to undo premultiplication like the browser.
     compositor = None  # type: porter_duff.PorterDuff | None
-    cra = csa
-    if operator is True:
-        operator = 'source-over'
-    if isinstance(operator, str):
-        compositor = porter_duff.compositor(operator)(cba, csa)
-        # Colors automatically clamp alpha, so to properly undo premultiplication, clamp alpha so we match browsers.
+    if pduff is not None:
+        compositor = pduff(cba, csa)
         cra = alg.clamp(compositor.ao(), 0.0, 1.0)
 
-    # If one color is transparent, skip blending
-    if not csa or not cba:
-        blender = None
-
-    # Blend each channel and apply alpha compositing.
+    # Apply alpha compositing
     i = 0
-    for cb, cr in zip(coords2, blender.blend(coords2, coords1) if blender else coords1):
+    for cb, cr in zip(coords2, coords1):
         if compositor:
             color1[i] = compositor.co(cb, cr)
             if cra not in (0, 1):
@@ -50,8 +46,8 @@ def apply_compositing(
         else:
             color1[i] = cr
         i += 1
-
     color1[-1] = cra
+
     return color1
 
 
@@ -68,13 +64,6 @@ def compose(
     if not colors:  # pragma: no cover
         raise ValueError('At least one color is required for compositing.')
 
-    # We need to go ahead and grab the blender as we need to check what type of blender it is.
-    blender = None  # blend_modes.Blend | None
-    if isinstance(blend, str):
-        blender = blend_modes.get_blender(blend)
-    elif blend is True:
-        blender = blend_modes.get_blender('normal')
-
     # If we are doing non-separable, we are converting to a special space that
     # can only be done from sRGB, so we have to force sRGB anyway.
     if space is None:
@@ -85,9 +74,24 @@ def compose(
     if not isinstance(color_cls.CS_MAP[space], RGBish):
         raise ValueError(f"Can only compose in an RGBish color space, not {type(color_cls.CS_MAP[space])}")
 
+    # Setup the blender
+    blender = None  # blend_modes.Blend | None
+    if isinstance(blend, str):
+        blender = blend_modes.get_blender(blend)
+    elif blend is True:
+        blender = blend_modes.get_blender('normal')
+
+    # Setup the Porter Duff operator
+    if operator is True:
+        operator = 'source-over'
+    pduff = None  # type: type[porter_duff.PorterDuff] | None
+    if isinstance(operator, str):
+        pduff = porter_duff.compositor(operator)
+
+    # Apply blending and alpha compositing to the colors from right to left
     dest = color_cls._handle_color_input(colors[-1]).convert(space).normalize(nans=False)[:]
     for x in range(len(colors) - 2, -1, -1):
         src = color_cls._handle_color_input(colors[x]).convert(space).normalize(nans=False)[:]
-        dest = apply_compositing(src, dest, blender, operator)
+        dest = apply_compositing(src, dest, blender, pduff)
 
     return color_cls(space, dest[:-1], dest[-1]).convert(out_space, in_place=True)
