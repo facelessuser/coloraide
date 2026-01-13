@@ -1033,7 +1033,6 @@ def average(
     space: str | None = None,
     out_space: str | None = None,
     premultiplied: bool = True,
-    powerelss: bool | None = None
     **kwargs: Any
 ) -> Self:
     ...
@@ -1054,7 +1053,6 @@ Parameters
     `space`          | `#!py None` | An optional string to specify what color space the colors should be averaged in. If none is provided, Oklab is assumed.
     `out_space`      | `#!py None` | Color space that the new color should be in. If `#!py None`, the return color will be in the same color space as specified via `space`.
     `premultiplied`  | `#!py True` | Specify whether colors should be premultiplied during the averaging process.
-    `powerless`      | `#!py None` | Treat explicitly defined hues as powerless when the color is considered achromatic. If `#!py None`, will use the class default which is `#!py False` by default.
 
 Return
 

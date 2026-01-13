@@ -9,7 +9,8 @@ icon: lucide/scroll-text
     should be considered experimental and are subject to change.
 -   **NEW**: Usage of boolean to disable blend mode or Porter Duff operator in `layer` has been deprecated. Only
     specific modes should be specified moving forward.
--   **NEW**: Remove the previously deprecated `compose` function.
+-   **NEW**: Remove the previously deprecated `compose()` function.
+-   **NEW**: Deprecated `powerless` parameter in `average()` has been removed.
 
 ## 6.2.1
 

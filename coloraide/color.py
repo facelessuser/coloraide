@@ -1172,7 +1172,6 @@ class Color(metaclass=ColorMeta):
         space: str | None = None,
         out_space: str | None = None,
         premultiplied: bool = True,
-        powerless: bool | None = None,
         **kwargs: Any
     ) -> Self:
         """Average the colors."""
@@ -1182,9 +1181,6 @@ class Color(metaclass=ColorMeta):
 
         if out_space is None:
             out_space = space
-
-        if powerless is not None:  # pragma: no cover
-            warn_deprecated("The use of 'powerless' with 'average()' is deprecated as it is now always enabled")
 
         return average.average(
             cls,
