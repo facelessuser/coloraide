@@ -16,8 +16,8 @@ colors on top of each other applying the appropriate compositing, using the `nor
 Porter Duff operator by default.
 
 > [!tip]
-> The compositing function does not currently manage gamut mapping, so it is recommended to ensure your colors are within
-> the proper gamut before compositing the colors.
+> The compositing function does not currently manage gamut mapping, so it is recommended to ensure your colors are
+> within the proper gamut before compositing the colors, and also after if that is important.
 
 ## Blending
 
