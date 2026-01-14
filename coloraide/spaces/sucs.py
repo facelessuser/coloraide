@@ -49,7 +49,7 @@ class sUCS(LCh):
     NAME = "sucs"
     SERIALIZE = ("--sucs",)
     CHANNEL_ALIASES = {
-        "lightness": "i",
+        "intensity": "i",
         "chroma": 'c',
         "hue": 'h'
     }

@@ -31,6 +31,12 @@ The IPT color appearance model excels at providing a formulation for hue where a
 perceived hue independent of the values of lightness and chroma (which is the general ideal for any color appearance
 model, but hard to achieve). It is therefore well-suited for gamut mapping implementations.
 
+> [!note]
+> The D65 white point we use is the same one that IPT was defined to use: `#!py [0.9504, 1.0, 1.0889]`. This is the only
+> D65 white point that will provide a clean transform from the white point to an LMS of `#!py [1.0, 1.0, 1.0]`, without
+> adapting the transform to accomodate a different white point. It's possible that not all implementations use this D65
+> white point and will not have clean conversions.
+
 [Learn more](https://www.researchgate.net/publication/21677980_Development_and_Testing_of_a_Color_Space_IPT_with_Improved_Hue_Uniformity.).
 ///
 
