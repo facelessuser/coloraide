@@ -54,6 +54,56 @@ spaces uses JMh.
 [Learn more](https://opg.optica.org/oe/fulltext.cfm?uri=oe-29-4-6036&id=447640).
 ///
 
+## Viewing Conditions
+
+sCAM is a color appearance model and can be configured with different viewing environments. An sCAM color space will
+also have an associated environment object. This environment object determines the viewing conditions. Colors will
+appear different based on the viewing conditions.
+
+Viewing\ Conditions    | Description
+---------------------- | -----------
+White                  | This is the white point and output white and should be the same as defined in the color class. This is provided as (x, y) chromaticity coordinates. sCAM expects and was designed for this to be D65.
+Adapting\ Luminance    | The luminance of the adapting field (`La`). The units are in cd/m2.
+Background\ Luminance  | The background luminance (`Yb`) the relative luminance of the nearby background (out to 10°), relative to the reference white's luminance (`Y`).
+Surround               | A description of the peripheral area. Use "dark" for a movie theater, "dim" for e.g. viewing a bright television in a dimly lit room, or "average" for surface colors.
+Discounting            | Discounts the illuminant. If true, the eye is assumed to be fully adapted to the illuminant. Otherwise, the degree of discounting is based on other parameters. When the eye is not fully adapted, it can affect the way colors appear and the chromatic response.
+
+ColorAide must provide some defaults, so sCAM comes with a default set of viewing conditions that uses a D65 white
+point, an adapting luminance of 64 lux or a value of ~4 cd/m^2^, it uses the "gray world" assumption and sets the
+background to 20, an "average" surround and leaves discounting set to `#!py False`.
+
+The default settings do not have to be used and a new sCAM variant with different viewing conditions can be created.
+When doing this, the space should be derived from the default
+
+```py play
+from coloraide import Color as Base
+from coloraide.spaces.scam import sCAMJMh, Environment
+from coloraide.cat import WHITES
+from coloraide import util
+import math
+
+cdm2 = 1000 / math.pi
+
+class CustomSCAMJMh(sCAMJMh):
+    NAME = "scam-custom"
+    SERIALIZE = ("--scam-custom",)
+    WHITE = WHITES['2deg']['D65']
+    ENV = Environment(
+        white=WHITE,
+        adapting_luminance=cdm2,
+        background_luminance=100,
+        surround='average',
+        discounting=False
+    )
+
+class Color(Base): ...
+
+Color.register([sCAMJMh(), CustomSCAMJMh()])
+
+Color('red').convert('scam-jmh')
+Color('red').convert('scam-custom')
+```
+
 ## Channel Aliases
 
 Channels | Aliases

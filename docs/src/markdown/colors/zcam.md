@@ -63,7 +63,7 @@ Viewing\ Conditions    | Description
 White                  | This is the white point and output white and should be the same as defined in the color class. This is provided as (x, y) chromaticity coordinates. ZCAM expects and was designed for this to be D65.
 Reference\ White       | The absolute reference white where `Yw` is scaled to the luminance.
 Adapting\ Luminance    | The luminance of the adapting field (`La`). The units are in cd/m2.
-Background\ Luminance  | The background luminance (`Yb`) the relative luminance of the nearby background (out to 10°), relative to the reference white's luminance (`Y`). Usually 20 providing a gray world assumption.
+Background\ Luminance  | The background luminance (`Yb`) the relative luminance of the nearby background (out to 10°), relative to the reference white's luminance (`Y`).
 Surround               | A description of the peripheral area. Use "dark" for a movie theater, "dim" for e.g. viewing a bright television in a dimly lit room, or "average" for surface colors.
 Discounting            | Discounts the illuminant. If true, the eye is assumed to be fully adapted to the illuminant. Otherwise, the degree of discounting is based on other parameters. When the eye is not fully adapted, it can affect the way colors appear and the chromatic response.
 
