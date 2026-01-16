@@ -25,7 +25,7 @@ The sRGB gamut represented within the sUCS color space.
 ////
 
 The sUCS (simple Uniform Color Space) is a new uniform color space developed as the base on which [sCAM](./scam_jmh.md)
-(simple Color Apperance Model) was built upon. The structure of sUCS is based on the structure of [IPT](./ipt.md) and
+(simple Color Appearance Model) was built upon. The structure of sUCS is based on the structure of [IPT](./ipt.md) and
 [CAM16-UCS](./cam16-ucs.md) for their hue linearity, and space uniformity, respectively.
 
 [Learn more](https://opg.optica.org/oe/fulltext.cfm?uri=oe-29-4-6036&id=447640).

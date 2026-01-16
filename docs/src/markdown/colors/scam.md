@@ -28,7 +28,7 @@ A color appearance model (CAM) is a mathematical model that seeks to describe th
 vision, i.e. viewing conditions under which the appearance of a color does not tally with the corresponding physical
 measurement of the stimulus source.
 
-The simple Color Apperance Model (sCAM) is a CAM model that is built on top of the simple Uniform Color Space (sUCS)
+The simple Color Appearance Model (sCAM) is a CAM model that is built on top of the simple Uniform Color Space (sUCS)
 whose structure is based on that of [IPT](./ipt.md) and [CAM16-UCS](./cam16-ucs.md) for their hue linearity, and
 space uniformity, respectively. The model has a simple structure but provides comprehensive functions for color related
 applications.
