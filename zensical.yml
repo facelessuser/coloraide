@@ -147,6 +147,7 @@ nav:
         - ZCAM JMh: colors/zcam.md
         - Msh: colors/msh.md
         - sUCS: colors/sucs.md
+        - sCAM: colors/scam.md
 
       - ACES Spaces:
         - ACES 2065-1: colors/aces2065_1.md

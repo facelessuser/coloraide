@@ -28,12 +28,6 @@ The sUCS (simple Uniform Color Space) is a new uniform color space developed as 
 (simple Color Apperance Model) was built upon. The structure of sUCS is based on the structure of [IPT](./ipt.md) and
 [CAM16-UCS](./cam16-ucs.md) for their hue linearity, and space uniformity, respectively.
 
-> [!note]
-> Since sUCS uses the IPT LMS transfrom, the D65 white point we use is the same one that IPT was defined to use:
-> `#!py [0.9504, 1.0, 1.0889]`. This is the only D65 white point that will provide a clean transform from the white
-> point to an LMS of `#!py [1.0, 1.0, 1.0]`, without adapting the transform to accomodate a different white point. It's
-> possible that other implementations may not use this D65 white point and will not have clean conversions.
-
 [Learn more](https://opg.optica.org/oe/fulltext.cfm?uri=oe-29-4-6036&id=447640).
 ///
 
@@ -58,8 +52,8 @@ The string representation of the color object and the default string output use 
 `#!css-color color(--sucs i c h / a)` form.
 
 ```py play
-Color("sucs", [54.706, 55.669, 29.936], 1)
-Color("sucs", [54.635, 15.852, 29.936], 1).to_string()
+Color("sucs", [54.706, 55.669, 29.937], 1)
+Color("sucs", [74.256, 44.701, 67.919], 1).to_string()
 ```
 
 ## Registering
