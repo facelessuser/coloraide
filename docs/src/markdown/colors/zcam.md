@@ -49,7 +49,7 @@ Hz   | Hue Quadrature
 A color space can be constructed by using a subset of these attributes: JzCzhz, JzMzhz, QzMzhz, etc. The provided color
 spaces uses JzMzhz.
 
-[Learn more](https://opg.optica.org/oe/fulltext.cfm?uri=oe-29-4-6036&id=447640).
+[Learn more](https://opg.optica.org/oe/fulltext.cfm?uri=oe-29-4-6036).
 ///
 
 ## Viewing Conditions

@@ -2,7 +2,7 @@
 ZCAM.
 
 ```
-- ZCAM: https://opg.optica.org/oe/fulltext.cfm?uri=oe-29-4-6036&id=447640.
+- ZCAM: https://opg.optica.org/oe/fulltext.cfm?uri=oe-29-4-6036.
 - Supplemental ZCAM (inverse transform): https://opticapublishing.figshare.com/articles/journal_contribution/\
   Supplementary_document_for_ZCAM_a_psychophysical_model_for_colour_appearance_prediction_-_5022171_pdf/13640927.
 - Two-stage chromatic adaptation by Qiyan Zhai and Ming R. Luo using CAM02: https://opg.optica.org/oe/\
