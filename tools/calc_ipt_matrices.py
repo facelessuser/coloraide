@@ -8,6 +8,7 @@ import os
 
 sys.path.insert(0, os.getcwd())
 
+from tools.calc_xyz_transform import white_d65  # noqa: E402
 from coloraide import algebra as alg  # noqa: E402
 
 # IPT provides 2 matrices, the forward and reverse transform.
@@ -37,12 +38,20 @@ m2 = [
     [0.8056, 0.3572, -1.1628]
 ]
 
+# IPT was originally created using the white point `[0.9504, 1.0, 1.0889]`,
+# but we don't use that white point. While we could use specifically for IPT,
+# we can adapt the matrix for our specific white point as shown below.
+
+lms = alg.solve(m1, white_d65)
+lms2xyz = alg.multiply(m1, lms)
+xyz2lms = alg.inv(lms2xyz)
+
 
 if __name__ == "__main__":
     print('===== XYZ to LMS =====')
-    alg.pprint(alg.inv(m1))
+    alg.pprint(xyz2lms)
     print('===== LMS to XYZ =====')
-    alg.pprint(m1)
+    alg.pprint(lms2xyz)
     print('===== LMS P to IPT =====')
     alg.pprint(m2)
     print('===== IPT to LMS P =====')

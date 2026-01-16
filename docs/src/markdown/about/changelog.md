@@ -11,6 +11,8 @@ icon: lucide/scroll-text
     specific modes should be specified moving forward.
 -   **NEW**: Remove the previously deprecated `compose()` function.
 -   **NEW**: Deprecated `powerless` parameter in `average()` has been removed.
+-   **NEW**: Adapt IPT's XYZ to LMS matrix to ColorAide's specific D65 white point instead of using an alternative D65
+    white point.
 
 ## 6.2.1
 

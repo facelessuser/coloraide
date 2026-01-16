@@ -8,20 +8,21 @@ from __future__ import annotations
 from .lab import Lab
 from ..channels import Channel, FLG_MIRROR_PERCENT
 from .. import algebra as alg
-from .. import util
+from ..cat import WHITES
 from ..types import Vector
 
-# IPT matrices for LMS conversion with better accuracy for 64 bit doubles
+# IPT matrices for LMS conversion with better accuracy for 64 bit doubles,
+# but also adapted for our specific white point.
 XYZ_TO_LMS = [
-    [0.40021823485770675, 0.7075142362766385, -0.08070681117219487],
-    [-0.2279857874604858, 1.1499981023974668, 0.061235733313416064],
-    [0.0, 0.0, 0.918357975939021]
+    [0.40021437220265654, 0.7075074077935767, -0.0807060322407405],
+    [-0.22798649207313385, 1.1500016565804587, 0.061235922568512555],
+    [0.0, 0.0, 0.9182249511582473]
 ]
 
 LMS_TO_XYZ = [
-    [1.8502, -1.1383, 0.2385],
-    [0.3668, 0.6439, -0.0107],
-    [0.0, 0.0, 1.0889]
+    [1.8502178571407482, -1.1382964819820247, 0.23853455189294792],
+    [0.3668035401574027, 0.6438980099694507, -0.01070155012685343],
+    [0.0, 0.0, 1.0890577507598784]
 ]
 
 LMS_P_TO_IPT = [
@@ -71,7 +72,7 @@ class IPT(Lab):
     # The D65 white point used in the paper was different than what we use.
     # We use chromaticity points (0.31270, 0.3290) which gives us an XYZ of ~[0.9505, 1.0000, 1.0890]
     # IPT uses XYZ of [0.9504, 1.0, 1.0889] which yields chromaticity points ~(0.3127035830618893, 0.32902313032606195)
-    WHITE = tuple(util.xyz_to_xyY([0.9504, 1.0, 1.0889])[:-1])  # type: ignore[assignment]
+    WHITE = WHITES['2deg']['D65']
 
     def lightness_name(self) -> str:
         """Get lightness name."""
