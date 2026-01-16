@@ -101,8 +101,8 @@ def inverse_eotf_st2084(
 
     adjusted = []
     for c in values:
-        c = alg.spow(c / 10000, m1)
-        adjusted.append(alg.spow((c1 + c2 * c) / (1 + c3 * c), m2))
+        c = alg.spow(c / 10000.0, m1)
+        adjusted.append(alg.spow((c1 + c2 * c) / (1.0 + c3 * c), m2))
     return adjusted
 
 
@@ -116,13 +116,13 @@ def eotf_st2084(
 ) -> Vector:
     """Perceptual quantizer (SMPTE ST 2084) - EOTF."""
 
-    im1 = 1 / m1
-    im2 = 1 / m2
+    im1 = 1.0 / m1
+    im2 = 1.0 / m2
 
     adjusted = []
     for c in values:
         c = alg.spow(c, im2)
-        adjusted.append(10000 * alg.spow(max((c - c1), 0) / (c2 - c3 * c), im1))
+        adjusted.append(10000.0 * alg.spow(max((c - c1), 0.0) / (c2 - c3 * c), im1))
     return adjusted
 
 
@@ -158,13 +158,13 @@ def scale1(coords: Vector) -> Vector:
     return [c * 0.01 for c in coords]
 
 
-def xyz_to_absxyz(xyzd65: VectorLike, yw: float = 100) -> Vector:
+def xyz_to_absxyz(xyzd65: VectorLike, yw: float = 100.0) -> Vector:
     """XYZ to Absolute XYZ."""
 
     return [c * yw for c in xyzd65]
 
 
-def absxyz_to_xyz(absxyzd65: VectorLike, yw: float = 100) -> Vector:
+def absxyz_to_xyz(absxyzd65: VectorLike, yw: float = 100.0) -> Vector:
     """Absolute XYZ to XYZ."""
 
     return [c / yw for c in absxyzd65]

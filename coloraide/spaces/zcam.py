@@ -395,12 +395,10 @@ class ZCAMJMh(LCh):
     }
     WHITE = WHITES['2deg']['D65']
     DYNAMIC_RANGE = 'hdr'
-
-    # Assuming sRGB which has a lux of 64
     ENV = Environment(
-        # D65 white point.
+        # This must be a D65 white point, and will be scaled by 100 to be "absolute".
         white=WHITE,
-        # The reference white in XYZ scaled by 100
+        # The absolute XYZ reference white
         reference_white=util.xyz_to_absxyz(util.xy_to_xyz(WHITE), 100),
         # Assuming sRGB which has a lux of 64: `((E * R) / PI)` where `R = 1`.
         # Divided by 5 (or multiplied by 20%) assuming gray world.
@@ -414,7 +412,7 @@ class ZCAMJMh(LCh):
     )
     CHANNELS = (
         Channel("jz", 0.0, 100.0),
-        Channel("mz", 0, 60.0),
+        Channel("mz", 0.0, 60.0),
         Channel("hz", flags=FLG_ANGLE)
     )
 
