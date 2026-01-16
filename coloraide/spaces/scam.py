@@ -9,7 +9,7 @@ from .. import util
 from .. import algebra as alg
 from .lch import LCh
 from ..channels import Channel, FLG_ANGLE
-from .cam16 import hue_quadrature, inv_hue_quadrature, M16, M16_INV
+from .cam16 import M16, M16_INV, hue_quadrature, inv_hue_quadrature
 from .sucs import xyz_to_sucs, sucs_to_xyz
 from ..cat import WHITES
 from ..types import Vector, VectorLike
@@ -172,7 +172,7 @@ def scam_to_xyz(
     if h is not None:
         h = h % 360
     elif H is not None:
-        h = inv_hue_quadrature(H)
+        h = inv_hue_quadrature(H, HUE_QUADRATURE)
 
     # Calculate `I` from one of the lightness derived coordinates.
     Ia = 0.0
@@ -202,7 +202,7 @@ def scam_to_xyz(
     return adapt(xyz, env.output_white, env.input_white, env.d)
 
 
-def xyz_to_scam(xyz: Vector, env: Environment, calc_hue_quadrature: bool = True) -> Vector:
+def xyz_to_scam(xyz: Vector, env: Environment, calc_hue_quadrature: bool = False) -> Vector:
     """From XYZ to sCAM."""
 
     # Apply chromatic adaptation
@@ -236,7 +236,7 @@ def xyz_to_scam(xyz: Vector, env: Environment, calc_hue_quadrature: bool = True)
     K = 100 - V
 
     # Hue quadrature if required
-    H = hue_quadrature(h) if calc_hue_quadrature else alg.NaN
+    H = hue_quadrature(h, HUE_QUADRATURE) if calc_hue_quadrature else alg.NaN
 
     return [Ia, C, h, Q, M, D, V, W, K, H]
 

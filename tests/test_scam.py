@@ -153,7 +153,7 @@ class TestSCAMApperanceModel(util.ColorAsserts, unittest.TestCase):
 
     COORDS = sCAMCoords(
         54.635215259160006, 55.6689281833851, 29.93650277259878, 184.71839737681037, 15.852250348849166,
-        108.89322562877724, 110.82461568476299, -8.893225628777245, -10.824615684762989, 12.489087680555642
+        108.89322562877724, 110.82461568476299, -8.893225628777245, -10.824615684762989, 19.613811267787895
     )
 
     def test_no_lightness(self):
@@ -255,7 +255,7 @@ class TestSCAMApperanceModel(util.ColorAsserts, unittest.TestCase):
 
         xyz = Color('pink').convert('xyz-d65')
         coords = sCAMCoords(*xyz_to_scam(xyz.coords(), sCAMJMh.ENV, True))
-        self.assertCompare(388.02182, coords[-1])
+        self.assertCompare(393.28263, coords[-1])
         xyz2 = scam_to_xyz(J=coords.J, M=coords.M, H=coords.H, env=sCAMJMh.ENV)
         for a, b in zip(xyz, xyz2):
             self.assertCompare(a, b, 12)

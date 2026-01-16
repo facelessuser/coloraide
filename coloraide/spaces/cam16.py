@@ -48,7 +48,7 @@ HUE_QUADRATURE = {
 }
 
 
-def hue_quadrature(h: float) -> float:
+def hue_quadrature(h: float, hquad: dict[str, tuple[float, float, float, float, float]] = HUE_QUADRATURE) -> float:
     """
     Hue to hue quadrature.
 
@@ -56,13 +56,13 @@ def hue_quadrature(h: float) -> float:
     """
 
     hp = util.constrain_hue(h)
-    if hp <= HUE_QUADRATURE['h'][0]:
+    if hp <= hquad['h'][0]:
         hp += 360
 
-    i = bisect.bisect_left(HUE_QUADRATURE['h'], hp) - 1
-    hi, hii = HUE_QUADRATURE['h'][i:i + 2]
-    ei, eii = HUE_QUADRATURE['e'][i:i + 2]
-    Hi = HUE_QUADRATURE['H'][i]
+    i = bisect.bisect_left(hquad['h'], hp) - 1
+    hi, hii = hquad['h'][i:i + 2]
+    ei, eii = hquad['e'][i:i + 2]
+    Hi = hquad['H'][i]
 
     t = (hp - hi) / ei
     return Hi + (100 * t) / (t + (hii - hp) / eii)
@@ -74,14 +74,14 @@ def eccentricity(h: float) -> float:
     return 0.25 * (math.cos(h + 2) + 3.8)
 
 
-def inv_hue_quadrature(H: float) -> float:
+def inv_hue_quadrature(H: float, hquad: dict[str, tuple[float, float, float, float, float]] = HUE_QUADRATURE) -> float:
     """Hue quadrature to hue."""
 
     Hp = (H % 400 + 400) % 400
     i = math.floor(0.01 * Hp)
     Hp = Hp % 100
-    hi, hii = HUE_QUADRATURE['h'][i:i + 2]
-    ei, eii = HUE_QUADRATURE['e'][i:i + 2]
+    hi, hii = hquad['h'][i:i + 2]
+    ei, eii = hquad['e'][i:i + 2]
 
     return util.constrain_hue((Hp * (eii * hi - ei * hii) - 100 * hi * eii) / (Hp * (eii - ei) - 100 * eii))
 
