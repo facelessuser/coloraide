@@ -43,7 +43,7 @@ def xyz_to_sucs(xyz: Vector) -> Vector:
 
 
 class sUCS(LCh):
-    """sUCS class (JMh)."""
+    """sUCS class."""
 
     BASE = "xyz-d65"
     NAME = "sucs"
