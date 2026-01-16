@@ -13,6 +13,8 @@ icon: lucide/scroll-text
 -   **NEW**: Deprecated `powerless` parameter in `average()` has been removed.
 -   **NEW**: Adapt IPT's XYZ to LMS matrix to ColorAide's specific D65 white point instead of using an alternative D65
     white point.
+-   **FIX**: Fix regression where when an undefined hue was serialized, the hue could be displayed as `none` but
+    followed by an angle unit type.
 
 ## 6.2.1
 
