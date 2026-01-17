@@ -57,7 +57,7 @@ class TestZCAMJMh(util.ColorAssertsPyTest):
 
 
 class TestZCAMJMhPoperties(util.ColorAsserts, unittest.TestCase):
-    """Test CAM16 JMh properties."""
+    """Test ZCAM JMh properties."""
 
     def test_names(self):
         """Test LCh-ish names."""

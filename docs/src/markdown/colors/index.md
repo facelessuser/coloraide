@@ -103,6 +103,10 @@ flowchart LR
 
     xyz-d65 --- hct
 
+    xyz-d65 --- sucs
+
+    xyz-d65 --- scam-jmh
+
     xyz-d65 --- aces2065-1
 
     xyz-d65 --- acescg --- acescc
@@ -186,6 +190,8 @@ flowchart LR
     ryb(RYB)
     srgb(sRGB)
     srgb-linear(Linear sRGB)
+    scam-jmh(sCAM JMh)
+    sucs(sUCS)
     ucs(CIE 1960 UCS)
     xyb(XYB)
     xyy(xyY)
@@ -257,6 +263,8 @@ flowchart LR
     click ryb "./ryb/" _self
     click srgb "./srgb/" _self
     click srgb-linear "./srgb_linear/" _self
+    click scam-jmh "./scam/" _self
+    click sucs "./sucs" _self
     click ucs "./ucs/" _self
     click xyb "./xyb/" _self
     click xyy "./xyy/" _self
@@ -337,6 +345,8 @@ Color Space                                     | ID
 [RLAB](./rlab.md)                               | `rlab`
 [RYB](./ryb.md)                                 | `ryb`
 [sRGB](./srgb.md)                               | `srgb`
+[sCAM JMh](./scam.md)                           | `scam-jmh`
+[sUCS](./sucs.md)                               | `sucs`
 [UCS](./ucs.md)                                 | `ucs`
 [XYB](./xyb.md)                                 | `xyb`
 [xyY](./xyy.md)                                 | `xyy`

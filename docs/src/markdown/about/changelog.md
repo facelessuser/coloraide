@@ -5,6 +5,7 @@ icon: lucide/scroll-text
 
 ## 7.0
 
+-   **NEW**: Add the `sucs` and `scam-jmh` color space.
 -   **NEW**: Add Porter Duff operator `plus-darker` and `plus-lighter` from the CSS Compositing Level 2 spec, both
     should be considered experimental and are subject to change.
 -   **NEW**: Usage of boolean to disable blend mode or Porter Duff operator in `layer` has been deprecated. Only
