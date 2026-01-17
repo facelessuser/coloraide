@@ -1,7 +1,7 @@
 """
 The IgPgTg color space.
 
-https://www.ingentaconnect.com/content/ist/jpi/2020/00000003/00000002/art00002#
+https://library.imaging.org/cic/articles/28/1/art00040
 """
 from __future__ import annotations
 from .ipt import IPT

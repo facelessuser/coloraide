@@ -184,3 +184,51 @@ Color('darkgray').convert('xyz-d65').convert('hsl')[:-1]
 This problem can exist in various scenarios in pretty much all cylindrical color spaces. Some have tighter algorithms
 and may give really good results with sRGB, but then when converting from some other color space we'll see maybe not as
 tight a translation to and from.
+
+## Which White Point is the Correct White Point?
+
+Color spaces are often relative to specific white points. One may use D50, another D65, or even D60. This is normal, but
+if you were to search around to find out how a specific white point is defined, in some cases, you may find conflicting
+definitions.
+
+Let's take D65 as an example. ColorAide currently uses the definition of D65 that CSS has adopted. This D65
+interpretation uses xy chromaticity points rounded to 4 decimals.
+
+```py play
+from coloraide.cat import WHITES
+from coloraide import util
+
+util.xy_to_xyz(WHITES['2deg']['D65'])
+```
+
+Some may use the same points rounded to 5 decimals.
+
+```py play
+from coloraide import util
+
+util.xy_to_xyz((0.31272, 0.32903))
+```
+
+Some may use a variant that is calculated with higher precision and the XYZ coordinates themselves are rounded:
+
+```py play
+[0.95047, 1.00000, 1.08883]
+```
+
+The point is that there are many color spaces or algorithms that will state a specific white point, but use different
+variants compared to other algorithms. There isn't anything inherently good or bad about picking one convention vs
+another, but when mixing algorithms it is important to be consistent or adapt the algorithms or the colors used in the
+algorithm to account for the differences.
+
+If you were to do a search for how to convert XYZ D65 values to sRGB, you might find slightly different transform
+matrices, each assuming a different D65 white point.
+
+As previously stated, when talking about D65, ColorAide uses a white point generated from xy chromaticity points that
+are rounded to 4 decimals. While it's impossible to say which white point is the best choice for D65, or any other white
+point, ColorAide tries to be consistent with its usage.
+
+Using D65 as an example, ColorAide, when possible, calculates transformation matrices from scratch with the specific
+white point that we use. If an algorithm was created with an assumption of a different D65 variant, we may adapt the
+matrices to accommodate our white point, or chromatically adapt the input colors from our D65 to the alternative D65
+white point before applying the algorithm. In some cases, we may have no idea what D65 definition was used in an
+algorithm and must assume one and accept that there may be some noise.
