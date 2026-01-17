@@ -38,10 +38,14 @@ m2 = [
     [0.8056, 0.3572, -1.1628]
 ]
 
-# IPT was originally created using the white point `[0.9504, 1.0, 1.0889]`,
-# but we don't use that white point. While we could use specifically for IPT,
-# we can adapt the matrix for our specific white point as shown below.
-
+# IPT XYZ <-> LMS transform was originally created and optimized for the
+# white point `[0.9504, 1.0, 1.0889]`, but our library uses `color(xyz-d65 0.95046 1 1.0891 / 1)`,
+# but without rounding. While we could use the IPT white point, chromatically adapting ours
+# to theirs, we've decided to just adapt the XYZ <-> LMS matrix. This could be done in two ways,
+# combine the XYZ <-> LMS matrix with a Bradford adaptation matrix, or just adapt the matrix
+# to yield an LMS of [1, 1, 1] when given our white point. Since the IPT matrices are
+# only accurate up to 16 bit anyway and the white points are so close, the end result is
+# comparable either way, both yielding the same IPT values up to 16 bit.
 lms = alg.solve(m1, white_d65)
 lms2xyz = alg.multiply(m1, lms)
 xyz2lms = alg.inv(lms2xyz)

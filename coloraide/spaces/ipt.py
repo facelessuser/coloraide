@@ -11,8 +11,12 @@ from .. import algebra as alg
 from ..cat import WHITES
 from ..types import Vector
 
-# IPT matrices for LMS conversion with better accuracy for 64 bit doubles,
-# but also adapted for our specific D65 white point.
+# IPT matrices are only provided with around 16 bit accuracy.
+# We've provided matrices for cleaner conversions for 64 bit doubles
+# that maintain the accuracy within the first 16 bits.
+# Additionally, we've adapted the matrices to accommodate our D65 white point
+# which is slightly different than the one used in the IPT paper with comparable
+# 16 bit results.
 XYZ_TO_LMS = [
     [0.40021437220265654, 0.7075074077935767, -0.0807060322407405],
     [-0.22798649207313385, 1.1500016565804587, 0.061235922568512555],
