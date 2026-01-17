@@ -12,7 +12,7 @@ from ..cat import WHITES
 from ..types import Vector
 
 # IPT matrices for LMS conversion with better accuracy for 64 bit doubles,
-# but also adapted for our specific white point.
+# but also adapted for our specific D65 white point.
 XYZ_TO_LMS = [
     [0.40021437220265654, 0.7075074077935767, -0.0807060322407405],
     [-0.22798649207313385, 1.1500016565804587, 0.061235922568512555],
@@ -68,10 +68,6 @@ class IPT(Lab):
         "protan": "p",
         "tritan": "t"
     }
-
-    # The D65 white point used in the paper was different than what we use.
-    # We use chromaticity points (0.31270, 0.3290) which gives us an XYZ of ~[0.9505, 1.0000, 1.0890]
-    # IPT uses XYZ of [0.9504, 1.0, 1.0889] which yields chromaticity points ~(0.3127035830618893, 0.32902313032606195)
     WHITE = WHITES['2deg']['D65']
 
     def lightness_name(self) -> str:
