@@ -35,7 +35,7 @@ def sucs_to_xyz(ich: Vector) -> Vector:
 def xyz_to_sucs(xyz: Vector) -> Vector:
     """From XYZ to sUCS."""
 
-    lms_p = [math.copysign(abs(i) ** 0.43, i) for i in alg.matmul_x3(XYZ_TO_LMS, xyz, dims=alg.D2_D1)]
+    lms_p = [alg.spow(i, 0.43) for i in alg.matmul_x3(XYZ_TO_LMS, xyz, dims=alg.D2_D1)]
     i, a, b = alg.matmul_x3(TO_IAB, lms_p, dims=alg.D2_D1)
     c = (1 / 0.0252) * math.log(1 + 0.0447 * math.sqrt(a ** 2 + b ** 2))
     h = math.atan2(b, a) % math.tau
