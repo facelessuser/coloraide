@@ -127,8 +127,8 @@ The string representation of the color object and the default string output use 
 `#!css-color color(--cam16-jmh j m h / a)` form.
 
 ```py play
-Color("cam16-jmh", [59.178, 40.82, 21.153], 1)
-Color("cam16-jmh", [78.364, 9.6945, 28.629], 1).to_string()
+Color("cam16-jmh", [46.026, 81.254, 27.393], 1)
+Color("cam16-jmh", [68.056, 43.51, 71.293], 1).to_string()
 ```
 
 ## Registering
