@@ -198,6 +198,7 @@ interpretation uses xy chromaticity points rounded to 4 decimals.
 from coloraide.cat import WHITES
 from coloraide import util
 
+WHITES['2deg']['D65']
 util.xy_to_xyz(WHITES['2deg']['D65'])
 ```
 
@@ -209,26 +210,36 @@ from coloraide import util
 util.xy_to_xyz((0.31272, 0.32903))
 ```
 
-Some may use a variant that is calculated with higher precision and the XYZ coordinates themselves are rounded:
+Some may use a variant that is calculated differently and may round the result some number of decimals.
 
 ```py play
 [0.95047, 1.00000, 1.08883]
 ```
 
-The point is that there are many color spaces or algorithms that will state a specific white point, but use different
-variants compared to other algorithms. There isn't anything inherently good or bad about picking one convention vs
-another, but when mixing algorithms it is important to be consistent or adapt the algorithms or the colors used in the
-algorithm to account for the differences.
+The point is that when color algorithms are developed, an assumption of what the definition of specific white points has
+to made, and the people who write these algorithms can often make very different assumptions. Some papers on new color
+space may even make general claims of using a D65 white point without ever specifying precisely what was used.
 
 If you were to do a search for how to convert XYZ D65 values to sRGB, you might find slightly different transform
-matrices, each assuming a different D65 white point.
+matrices, each assuming a different D65 white point, further, the final matrix may be rounded to 16 bits or 32 bits.
+Without knowing the specific white points used in a given algorithm, it is easy to piece together color logic that uses
+a different definition of a given white point at different stages of manipulation. This can often introduce noise.
 
-As previously stated, when talking about D65, ColorAide uses a white point generated from xy chromaticity points that
-are rounded to 4 decimals. While it's impossible to say which white point is the best choice for D65, or any other white
-point, ColorAide tries to be consistent with its usage.
+ColorAide, like all libraries, must make assumptions regarding all the white points it uses. We noted that previously
+that, when talking about D65, ColorAide uses a white point generated from xy chromaticity points that are rounded to 4
+decimals. This isn't a statement about what is more accurate, but simply noting that it is a fairly common convention,
+and we've adopted it.
 
-Using D65 as an example, ColorAide, when possible, calculates transformation matrices from scratch with the specific
-white point that we use. If an algorithm was created with an assumption of a different D65 variant, we may adapt the
-matrices to accommodate our white point, or chromatically adapt the input colors from our D65 to the alternative D65
-white point before applying the algorithm. In some cases, we may have no idea what D65 definition was used in an
-algorithm and must assume one and accept that there may be some noise.
+In order to reduce noise introduced in conversion to various color spaces, ColorAide chromatically adapts one white
+point to another whenever it changes, even if we are switching from one definition of a D65 white point to another
+definition of the same D65 white point. This also implies that a color space may claim it has a D65 white point, but
+that white point may be different from another color space that claims a D65 white point. It is also possible that
+ColorAide may opt to adapt the algorithm to accommodate our definition of D65 to allow a consistent white point between
+spaces and avoid extra chromatic adaptations. Whatever is decided, a color space assuming an input directly from XYZ
+will state what the white point assumption is, and if the incoming XYZ differs from that assumption, chromatic
+adaptation will occur. This helps to ensure cleaner conversions between spaces.
+
+There are times when we may have only the name of a white point, but no specifics to determine what the precise values
+of the white point used was. An algorithm may also have low precision values (16 bit vs the 64 bit values that are
+often used in ColorAide) making it difficult infer what the original white used was. In these cases, we often must make
+an assumption and accept any noise that is introduced.

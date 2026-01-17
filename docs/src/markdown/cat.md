@@ -93,7 +93,7 @@ manual, auto
 ```
 
 ColorAide, currently defines the following illuminants for both 2˚ observer and 10˚ observer, but most people are
-probably only concerned with D65 and D50 (2˚ degree observer) which are the only the illuminants used in the default
+probably only concerned with D65 and D50 (2˚ observer) which are the only the illuminants used in the default
 color spaces provided by ColorAide. Illuminants are not restricted to what is listed below, but those are the ones
 available by default.
 
@@ -110,6 +110,19 @@ Illuminants |
 `F2`        |
 `F7`        |
 `F11`       |
+
+Additionally, we have a few additional ones defined for 2˚ observer.
+
+Illuminants     |
+--------------- |
+`ACES-D60`      |
+`ASTM-E308-D65` |
+
+> [!note]
+> It may be noted that different libraries or even color science papers may use different definitions of a specific
+> white point. As noted above, we have `D65` and `ASTM-E308-D65` which are both D65 white points from different papers.
+> To learn how we handle such tings you can read [here](./advanced.md#which-white-point-is-the-correct-white-point) to
+> learn more.
 
 ## Supported CATs
 

@@ -13,7 +13,8 @@ icon: lucide/scroll-text
 -   **NEW**: Remove the previously deprecated `compose()` function.
 -   **NEW**: Deprecated `powerless` parameter in `average()` has been removed.
 -   **NEW**: Adapt IPT's XYZ to LMS matrix to ColorAide's specific D65 white point instead of using an alternative D65
-    white point.
+    white point. This helps with consistency across other spaces like `sucs` and `scam` that also use an IPT
+    transformation.
 -   **FIX**: Fix regression where when an undefined hue was serialized, the hue could be displayed as `none` but
     followed by an angle unit type.
 
