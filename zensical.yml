@@ -347,7 +347,7 @@ markdown_extensions:
       callouts: true
 
 extra_css:
-  - assets/pymdownx-extras/extra-928cef6c86.css
+  - assets/pymdownx-extras/extra-95634471d6.css
   - assets/coloraide-extras/extra-9834ec5592.css
   - https://cdn.jsdelivr.net/npm/ace-builds@1.43.0/css/ace.css
 extra_javascript:
