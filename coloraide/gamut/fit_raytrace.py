@@ -342,19 +342,19 @@ class RayTrace(Fit):
                 coords = cs.from_base(mapcolor[:-1]) if coerced else mapcolor[:-1]
                 intersection = raytrace_box(anchor, coords, bmin=bmin, bmax=bmax)
 
+                # If we cannot find an intersection, reset to last good color and quit
+                if not intersection:
+                    mapcolor[:-1] = last
+                    break
+
                 # Adjust anchor point closer to surface to improve results.
                 if i and all((bmin[r] + offset) < coords[r] < (bmax[r] - offset) for r in range(3)):
                     anchor = coords
 
                 # Update color with the intersection point on the RGB surface.
-                if intersection:
-                    last = cs.to_base(intersection) if coerced else intersection
-                    mapcolor[:-1] = last
-                    continue
-
-                # If we cannot find an intersection, reset to last good color
+                last = cs.to_base(intersection) if coerced else intersection
                 mapcolor[:-1] = last
-                break  # pragma: no cover
+                continue
 
             # Remove noise from floating point conversion.
             if coerced:

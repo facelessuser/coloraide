@@ -214,9 +214,9 @@ def simulate_raytrace_gamut_mapping(args):
             end = fit.to_polar(achroma[:-1], a, b)
             end[b] = start[b]
 
-        last = None
         offset = 1e-15
         mapcolor.convert(space, in_place=True)
+        last = mapcolor[:-1]
         for i in range(4):
             if i:
                 mapcolor.convert(pspace, in_place=True, norm=False)
@@ -247,21 +247,18 @@ def simulate_raytrace_gamut_mapping(args):
             print('-->', anchor, coords)
             intersection = fit.raytrace_box(anchor, coords, bmin=bmin, bmax=bmax)
             print('===', intersection)
+
+            if not intersection:
+                mapcolor[:-1] = last
+                break
+
             if i and all((bmin[r] + offset) <= coords[r] <= (bmax[r] - offset) for r in range(3)):
                 anchor = coords
 
-            if intersection:
-                points.append(mapcolor[:-1])
-                points.append(intersection)
-                points.append(anchor)
-                last = cs.to_base(intersection) if coerced else intersection
-                mapcolor[:-1] = last
-                continue
-
-            if last is not None:
-                mapcolor[:-1] = last
-
-            break
+            points.append(mapcolor[:-1])
+            points.append(intersection)
+            points.append(anchor)
+            mapcolor[:-1] = last = cs.to_base(intersection) if coerced else intersection
 
         print('Final:', mapcolor.convert(pspace, norm=False))
         if coerced:
