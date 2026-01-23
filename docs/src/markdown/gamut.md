@@ -443,12 +443,6 @@ Color.register([HCT(), DEHCT(), HCTChroma()])
 
 > [!warning] Experimental Gamut Mapping
 
-> [!new] New in 4.8
-> The default perceptual space is now Oklab.
->
-> Please see [Gamut Mapping in Any Perceptual Space](#gamut-mapping-in-any-perceptual-space) to learn how to use
-> different perceptual spaces and how to set your own default.
-
 ColorAide has developed a chroma reduction technique that employs ray tracing. Its aim is to provide faster chroma
 reduction for gamut mapping using constant lightness. This approach specifically targets RGB gamuts, or spaces that can
 be represented with RGB gamuts. Additionally, if ColorAide can detect a linear version of the targeted RGB gamut, that
