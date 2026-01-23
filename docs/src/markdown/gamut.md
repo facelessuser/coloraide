@@ -238,9 +238,9 @@ c = Color('srgb', [2, 1, 1.5])
 c.clip()
 ```
 
-Clipping is unique to all other clipping methods in that it has its own dedicated method `clip()` method and that its
-method name `clip` is reserved. While not always the best approach for all gamut mapping needs in general, clip is very
-important and its speed and simplicity are of great value.
+Clipping is unique to all other clipping methods in that it has its own dedicated method `clip()` and its method name
+`clip` is reserved. While not always the best approach for all gamut mapping needs, clip is very important and its speed
+and simplicity are of great value.
 
 ### MINDE Chroma Reduction
 
@@ -250,9 +250,9 @@ when performed within a perceptual space, it can preserve perceptual hue and lig
 colorfulness/chroma. Pure chroma reduction may not always be desirable when gamut mapping images as some colorfulness
 will be lost.
 
-MINDE is an approach that tries to find the in gamut color with the shortest distance to out of gamut color. This can
-be better at finding an in gamut color with closer colorfulness but often comes at the cost of larger hue shifts and
-variances in lightness.
+MINDE is an approach that tries to find the in gamut color with the shortest distance to the out of gamut color. This
+can be better at finding an in gamut color with closer colorfulness than a pure chroma reduction approach, but often
+comes at the cost of larger hue shifts and variances in lightness.
 
 Combining both chroma reduction and something similar to MINDE can allow you to reduce the chroma of a color, but along
 the way, if there is a color near the chroma reduction path below the "just noticeable difference" (JND) in color
@@ -266,7 +266,7 @@ enough to the JND, the clipped color will be returned.
 Visually, MINDE chroma reduction will allow a color that has decent constant lightness and will allow some hue shift
 as long as it is under what is noticeable by the eye. This doesn't mean no hue shift, and in certain regions, such as
 very dark colors or very light colors, hue shift can be greater because it is more difficult to notice in such lightness
-ranges. Every perceptual space is different and some do better than others and may allow for a larger or smaller JND
+ranges. Every perceptual space is different and some do better than others and may allow for larger or smaller JND 
 limits, so the JND is relative to the color space and the ∆E color distancing algorithm used.
 
 Preserving lightness in this way is useful when creating tones or mixing and interpolating colors. A constant lightness
@@ -275,8 +275,8 @@ can also be useful when trying to control contrast.
 Computationally, chroma reduction is slower to compute than clipping. Chroma reduction by bisecting can have varying
 performance as it is unknown how many iterations will be required to reduce the color into the gamut. Additionally, by
 combining the reduction with MINDE, the algorithm takes additional performance hits has it must now perform costly
-color distancing checks. Using a perceptual space with more uniform color distancing can reducing the complexity
-required to determine the color distance and, in turn, can speed up the process.
+color distancing checks. Using a perceptual space with more uniform color distancing can reduce the complexity required
+to determine the color distance and, in turn, can speed up the process.
 
 Lastly, all provided MINDE chroma reduction methods allow the controlling of the JND. This is useful if you want to
 adjust how close to the gamut boundary you approach before clipping. A larger JND may provide even more colorful colors
@@ -302,7 +302,7 @@ As a final note, it should be noted that most color spaces that have a defined g
 And when they are gamut mapped, they are done so in those RGB spaces. For instance, HSL which represents the sRGB gamut
 in a cylindrical form will be gamut mapped in sRGB (though simple clipping may be done directly in HSL).
 
-There are a few color spaces/models that do not have a clearly defined gamuts. One such case is HPLuv, which is only
+There are a few color spaces/models that do not have clearly defined gamuts. One such case is HPLuv, which is only
 defined as a cylindrical color space that represent only a subset of the sRGB color space. Additionally Okhsl and Okhsv
 are two cylindrical color spaces based on the perceptual Oklab color space that are meant to target the sRGB gamut, but
 are only a loose approximation which can actually slightly clip the sRGB gamut while simultaneously containing a few
