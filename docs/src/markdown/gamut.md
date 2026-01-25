@@ -274,9 +274,9 @@ can also be useful when trying to control contrast.
 
 Computationally, chroma reduction is slower to compute than clipping. Chroma reduction by bisecting can have varying
 performance as it is unknown how many iterations will be required to reduce the color into the gamut. Additionally, by
-combining the reduction with MINDE, the algorithm takes additional performance hits has it must now perform costly
-color distancing checks. Using a perceptual space with more uniform color distancing can reduce the complexity required
-to determine the color distance and, in turn, can speed up the process.
+combining the reduction with MINDE, the algorithm takes additional performance hits as it must now perform costly color
+distancing checks. Using a perceptual space with more uniform color distancing can reduce the complexity required to
+determine the color distance and, in turn, can speed up the process.
 
 Lastly, all provided MINDE chroma reduction methods allow the controlling of the JND. This is useful if you want to
 adjust how close to the gamut boundary you approach before clipping. A larger JND may provide even more colorful colors
