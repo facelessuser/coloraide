@@ -305,7 +305,7 @@ def simulate_raytrace_gamut_mapping(args):
 
     # Plot the color space
     fig = plt3d.plot_gamut_in_space(
-        space if mode == 'gamut' else pspace,
+        space if mode == 'rgb' else pspace,
         {args.gamut_rgb: {'opacity': 0.2, 'resolution': 100}},
         title=args.title,
         gmap=gmap,
@@ -317,7 +317,7 @@ def simulate_raytrace_gamut_mapping(args):
     if args.gamut_interp:
         plot_interpolation(
             fig,
-            space if mode == 'gamut' else pspace,
+            space if mode == 'rgb' else pspace,
             first.to_string(fit=False) + ';' + achroma.to_string(fit=False),
             pspace,
             'linear',
@@ -364,7 +364,7 @@ if __name__ == "__main__":
         '--gamut-interp', action='store_true', help="Show interpolation of color along constant lightness and hue."
     )
     parser.add_argument(
-        '--gamut-perspective', default='gamut', help="Display from which perspective: gamut - perceptual"
+        '--gamut-perspective', default='rgb', help="Display from which perspective: rgb - perceptual"
     )
     parser.add_argument(
         '--gmap',
