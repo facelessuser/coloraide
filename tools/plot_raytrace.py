@@ -12,6 +12,7 @@ import tools.gamut_3d_plotly as plt3d  # noqa: E402
 from coloraide.gamut import fit_raytrace as fit  # noqa: E402
 from coloraide.everything import ColorAll as Color  # noqa: E402
 from coloraide import algebra as alg  # noqa: E402
+from coloraide.channels import ANGLE_DEG  # noqa: E402
 
 
 def plot_interpolation(
@@ -68,7 +69,7 @@ def plot_interpolation(
 
     trace = go.Scatter3d(
         x=x, y=y, z=z,
-        mode = 'markers',
+        mode='markers',
         marker={'color': cmap},
         showlegend=False
     )
@@ -137,6 +138,7 @@ def simulate_raytrace_gamut_mapping(args):
     gmap = json.loads(args.gmap)
     gmap['method'] = 'raytrace'
 
+    mode = args.gamut_perspective
     pspace = gmap.get('pspace', 'oklch')
     adaptive = gmap.get('adaptive', 0.0)
 
@@ -271,6 +273,21 @@ def simulate_raytrace_gamut_mapping(args):
             color.update(space, [alg.clamp(x, bmin[e], bmax[e]) for e, x in enumerate(mapcolor[:-1])], mapcolor[-1])
         print('Clipped RGB:', color.convert(space))
 
+    if mode == 'perceptual':
+        for e, p in enumerate(points):
+            temp = Color(space, p).convert(pspace, norm=False)
+            indexes = temp._space.indexes()
+            if polar:
+                if temp._space.channels[indexes[2]] != ANGLE_DEG:
+                    h = (temp[indexes[2]] * (360 / temp._space.channels[indexes[2]].high))
+                else:
+                    h = temp[indexes[2]]
+                a, b = alg.polar_to_rect(temp[indexes[1]], h)
+                points[e] = [a, b, temp[indexes[0]]]
+            else:
+                indexes[:] = indexes[1], indexes[2], indexes[0]
+                points[e] = [temp[i] for i in indexes]
+
     x, y, z = zip(*points)
     data = []
     i = 0
@@ -288,7 +305,7 @@ def simulate_raytrace_gamut_mapping(args):
 
     # Plot the color space
     fig = plt3d.plot_gamut_in_space(
-        space,
+        space if mode == 'gamut' else pspace,
         {args.gamut_rgb: {'opacity': 0.2, 'resolution': 100}},
         title=args.title,
         gmap=gmap,
@@ -300,7 +317,7 @@ def simulate_raytrace_gamut_mapping(args):
     if args.gamut_interp:
         plot_interpolation(
             fig,
-            space,
+            space if mode == 'gamut' else pspace,
             first.to_string(fit=False) + ';' + achroma.to_string(fit=False),
             pspace,
             'linear',
@@ -345,6 +362,9 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         '--gamut-interp', action='store_true', help="Show interpolation of color along constant lightness and hue."
+    )
+    parser.add_argument(
+        '--gamut-perspective', default='gamut', help="Display from which perspective: gamut - perceptual"
     )
     parser.add_argument(
         '--gmap',
