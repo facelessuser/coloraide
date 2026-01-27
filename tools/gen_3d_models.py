@@ -87,25 +87,25 @@ models = {
     'xyy': {'title': TEMPLATE.format('xyY'), 'filename': 'xyy-3d.png'},
     'xyz-d50': {'title': TEMPLATE.format('XYZ D50'), 'filename': 'xyz-d50-3d.png'},
     'xyz-d65': {'title': TEMPLATE.format('XYZ D65'), 'filename': 'xyz-d65-3d.png'},
-    'ycbcr-709': {
-        'title': "Rec. 709 Gamut Plotted in Y'CbCr ITU-R BT.709 Color Space",
-        'filename': 'ycbcr-709-3d.png', 'gamut': 'rec709'
+    'ycbcr2020-10bit': {
+        'title': "Rec. 2020 Gamut Plotted in YCbCr (10 BIT) ITU-R BT.2020 Color Space",
+        'filename': 'ycbcr2020-10bit-3d.png', 'gamut': 'rec2020'
+    },
+    'ycbcr709-10bit': {
+        'title': "Rec. 709 Gamut Plotted in Y'CbCr (10 BIT) ITU-R BT.709 Color Space",
+        'filename': 'ycbcr709-10bit-3d.png', 'gamut': 'rec709'
+    },
+    'ycbcr709-8bit': {
+        'title': "Rec. 709 Gamut Plotted in YCbCr (8 BIT) ITU-R BT.709 Color Space",
+        'filename': 'ycbcr709-8bit-3d.png', 'gamut': 'rec709'
     },
     'ypbpr2020': {
         'title': "Rec. 2020 Gamut Plotted in YPbPr ITU-R BT.2020 Color Space",
         'filename': 'ypbpr2020-3d.png', 'gamut': 'rec2020'
     },
-    'ycbcr2020-10bit': {
-        'title': "Rec. 2020 Gamut Plotted in YCbCr (10 BIT) ITU-R BT.2020 Color Space",
-        'filename': 'ycbcr2020-10bit-3d.png', 'gamut': 'rec2020'
-    },
     'ypbpr709': {
         'title': "Rec. 709 Gamut Plotted in YPbPr ITU-R BT.709 Color Space",
         'filename': 'ypbpr709-3d.png', 'gamut': 'rec709'
-    }
-    'ycbcr709-8bit': {
-        'title': "Rec. 709 Gamut Plotted in YCbCr (8 BIT) ITU-R BT.709 Color Space",
-        'filename': 'ycbcr709-8bit-3d.png', 'gamut': 'rec709'
     },
     'zcam-jmh': {'title': TEMPLATE.format('ZCAM JMh'), 'filename': 'zcam-jmh-3d.png', 'azim': 320}
 }
