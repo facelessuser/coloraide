@@ -267,6 +267,7 @@ XYZ
 Y'CbCr
 YCbCr
 YCbCr
+YPbPr
 Yoshi
 ZCAM
 ZD
@@ -399,6 +400,7 @@ rgb
 sCAM
 sRGB
 sUCS
+sYCC
 seperable
 severities
 smoothstep
