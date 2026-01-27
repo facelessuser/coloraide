@@ -441,7 +441,7 @@ Color.register([HCT(), DEHCT(), HCTChroma()])
 
 ### Ray Tracing Chroma Reduction
 
-> [!warning] Experimental Gamut Mapping
+> [!warning] Experimental
 
 ColorAide has developed a chroma reduction technique that employs ray tracing. Its aim is to provide faster chroma
 reduction for gamut mapping using constant lightness. This approach specifically targets RGB gamuts, or spaces that can
@@ -667,6 +667,8 @@ Color.register(HCTChroma(), overwrite=True)
 ///
 
 ### Adaptive Lightness
+
+> [!warning] Experimental
 
 Both MINDE chroma reduction and ray trace chroma reduction support adaptive lightness. This is an option to allow for
 a non-constant lightness chroma reduction. Adaptive lightness allows us to essentially choose a dynamic anchor point
