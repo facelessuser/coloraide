@@ -1,6 +1,6 @@
 """Delta E OK."""
 from __future__ import annotations
-from ..distance import DeltaE, distance_euclidean
+from . import DeltaE, distance_euclidean
 from ..types import AnyColor
 from typing import Any
 

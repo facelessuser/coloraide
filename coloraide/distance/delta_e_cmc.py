@@ -1,6 +1,6 @@
 """Delta E CMC."""
 from __future__ import annotations
-from ..distance import DeltaE
+from . import DeltaE
 from ..spaces.lab import CIELab
 import math
 from ..types import AnyColor

@@ -1,7 +1,7 @@
 """Uncalibrated, naive CMY color space."""
 from __future__ import annotations
 from .. import util
-from ..spaces import Prism, Space
+from . import Prism, Space
 from .srgb import sRGB
 from ..channels import Channel
 from ..cat import WHITES

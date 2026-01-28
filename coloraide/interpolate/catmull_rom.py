@@ -5,7 +5,7 @@ http://www2.cs.uregina.ca/~anima/408/Notes/Interpolation/Parameterized-Curves-Su
 """
 from __future__ import annotations
 from .bspline import InterpolatorBSpline
-from ..interpolate import Interpolator, Interpolate
+from . import Interpolator, Interpolate
 from .. import algebra as alg
 from .. types import AnyColor
 from typing import Any

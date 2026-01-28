@@ -6,7 +6,7 @@ Used for color contrast in Google's HCT.
 https://material.io/blog/science-of-color-design
 """
 from __future__ import annotations
-from ..contrast import ColorContrast
+from . import ColorContrast
 from ..types import AnyColor
 from typing import Any
 

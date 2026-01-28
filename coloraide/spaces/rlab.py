@@ -8,7 +8,7 @@ from __future__ import annotations
 import math
 from ..cat import WHITES
 from .. import util
-from ..spaces.lab import Lab
+from .lab import Lab
 from .. import algebra as alg
 from ..types import Vector, VectorLike, Matrix
 from ..channels import Channel, FLG_MIRROR_PERCENT

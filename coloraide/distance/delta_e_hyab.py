@@ -1,6 +1,6 @@
 """HyAB distance."""
 from __future__ import annotations
-from ..distance import DeltaE
+from . import DeltaE
 import math
 from ..spaces import Labish
 from ..types import AnyColor

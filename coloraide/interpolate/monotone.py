@@ -1,7 +1,7 @@
 """Monotone interpolation based on a Hermite interpolation spline."""
 from __future__ import annotations
 from .bspline import InterpolatorBSpline
-from ..interpolate import Interpolator, Interpolate
+from . import Interpolator, Interpolate
 from .. import algebra as alg
 from .. types import AnyColor
 from typing import Any

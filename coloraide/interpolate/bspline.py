@@ -8,7 +8,7 @@ http://www2.cs.uregina.ca/~anima/408/Notes/Interpolation/UniformBSpline.htm
 from __future__ import annotations
 from .. import algebra as alg
 from .continuous import InterpolatorContinuous
-from ..interpolate import Interpolator, Interpolate
+from . import Interpolator, Interpolate
 from ..types import Vector, AnyColor
 from typing import Any
 

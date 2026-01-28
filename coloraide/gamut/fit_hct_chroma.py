@@ -1,6 +1,6 @@
 """HCT gamut mapping."""
 from __future__ import annotations
-from ..gamut.fit_minde_chroma import MINDEChroma
+from .fit_minde_chroma import MINDEChroma
 
 
 class HCTChroma(MINDEChroma):

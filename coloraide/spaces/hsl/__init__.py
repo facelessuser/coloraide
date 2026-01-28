@@ -1,7 +1,7 @@
 """HSL class."""
 from __future__ import annotations
 from ... import algebra as alg
-from ...spaces import HSLish, Space
+from .. import HSLish, Space
 from ...cat import WHITES
 from ...channels import Channel, FLG_ANGLE
 from ... import util

@@ -7,7 +7,7 @@ http://bahamas10.github.io/ryb/assets/ryb.pdf
 from __future__ import annotations
 import math
 from .. import util
-from ..spaces import Prism, Space
+from . import Prism, Space
 from .. import algebra as alg
 from ..channels import Channel
 from ..cat import WHITES

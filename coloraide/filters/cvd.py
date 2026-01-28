@@ -1,7 +1,7 @@
 """Color vision deficiency."""
 from __future__ import annotations
 from .. import algebra as alg
-from ..filters import Filter
+from . import Filter
 from ..types import Vector, Matrix
 from typing import Any, Callable, TYPE_CHECKING
 

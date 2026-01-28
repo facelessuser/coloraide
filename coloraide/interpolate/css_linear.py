@@ -1,7 +1,7 @@
 """Piecewise linear interpolation."""
 from __future__ import annotations
 from .linear import InterpolatorLinear
-from ..interpolate import Interpolator, Interpolate
+from . import Interpolator, Interpolate
 from ..types import AnyColor
 from ..deprecate import deprecated
 from typing import Any

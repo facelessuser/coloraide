@@ -10,7 +10,7 @@ from .. import cat
 from .. import cmfs
 from .. import util
 from .. import algebra as alg
-from ..temperature import CCT
+from . import CCT
 from ..types import Vector, VectorLike, AnyColor
 from typing import Any
 

@@ -5,7 +5,7 @@ https://kb.portrait.com/help/ictcp-color-difference-metric
 """
 from __future__ import annotations
 import math
-from ..distance import DeltaE
+from . import DeltaE
 from ..types import AnyColor
 from typing import Any
 

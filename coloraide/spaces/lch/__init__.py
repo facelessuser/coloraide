@@ -1,7 +1,7 @@
 """LCh class."""
 from __future__ import annotations
 from ... import algebra as alg
-from ...spaces import Space, LChish
+from .. import Space, LChish
 from ...cat import WHITES
 from ...channels import Channel, FLG_ANGLE
 from ... import util

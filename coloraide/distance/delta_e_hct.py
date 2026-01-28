@@ -1,7 +1,7 @@
 """Delta E CAM16."""
 from __future__ import annotations
 import math
-from ..distance import DeltaE
+from . import DeltaE
 from ..spaces.cam16_ucs import COEFFICENTS
 from ..types import VectorLike, AnyColor
 from typing import Any, TYPE_CHECKING

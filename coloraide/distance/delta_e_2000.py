@@ -1,7 +1,7 @@
 """Delta E 2000."""
 from __future__ import annotations
 import math
-from ..distance import DeltaE
+from . import DeltaE
 from ..spaces.lab import CIELab
 from ..types import AnyColor
 from typing import Any

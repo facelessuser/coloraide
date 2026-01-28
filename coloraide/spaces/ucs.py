@@ -4,7 +4,7 @@ CIE 1960 UCS color class.
 http://en.wikipedia.org/wiki/CIE_1960_color_space#Relation_to_CIE_XYZ
 """
 from __future__ import annotations
-from ..spaces import Prism, Luminant, Space
+from . import Prism, Luminant, Space
 from ..channels import Channel
 from ..cat import WHITES
 from ..types import Vector

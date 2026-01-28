@@ -4,7 +4,7 @@ Natural B-Spline interpolation.
 https://www.math.ucla.edu/~baker/149.1.02w/handouts/dd_splines.pdf.
 """
 from __future__ import annotations
-from .. interpolate import Interpolate, Interpolator
+from . import Interpolate, Interpolator
 from .bspline import InterpolatorBSpline
 from .. import algebra as alg
 from .. types import AnyColor

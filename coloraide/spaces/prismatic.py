@@ -8,7 +8,7 @@ https://studylib.net/doc/14656976/the-prismatic-color-space-for-rgb-computations
 """
 from __future__ import annotations
 from .. import util
-from ..spaces import Space, Luminant
+from . import Space, Luminant
 from ..channels import Channel
 from ..cat import WHITES
 from ..types import Vector

@@ -1,7 +1,7 @@
 """HSV class."""
 from __future__ import annotations
 from .. import algebra as alg
-from ..spaces import Space, HSVish
+from . import Space, HSVish
 from ..cat import WHITES
 from ..channels import Channel, FLG_ANGLE
 from .. import util

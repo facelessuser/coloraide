@@ -4,7 +4,7 @@ HWB class.
 http://alvyray.com/Papers/CG/HWB_JGTv208.pdf
 """
 from __future__ import annotations
-from ...spaces import Space, HWBish
+from .. import Space, HWBish
 from ... import util
 from ...cat import WHITES
 from ...channels import Channel, FLG_ANGLE

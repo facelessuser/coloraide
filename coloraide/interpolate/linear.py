@@ -2,7 +2,7 @@
 from __future__ import annotations
 import math
 from .. import algebra as alg
-from ..interpolate import Interpolator, Interpolate
+from . import Interpolator, Interpolate
 from ..types import Vector, AnyColor
 from typing import Any
 

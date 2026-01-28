@@ -5,7 +5,7 @@ https://support.hunterlab.com/hc/en-us/articles/203997095-Hunter-Lab-Color-Scale
 """
 from __future__ import annotations
 from ..cat import WHITES
-from ..spaces.lab import Lab
+from .lab import Lab
 from .. import algebra as alg
 from .. import util
 from ..types import Vector, VectorLike

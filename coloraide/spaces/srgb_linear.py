@@ -2,7 +2,7 @@
 from __future__ import annotations
 from .. import util
 from ..cat import WHITES
-from ..spaces import RGBish, Space
+from . import RGBish, Space
 from ..channels import Channel
 from .. import algebra as alg
 from ..types import Vector

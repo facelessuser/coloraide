@@ -4,7 +4,7 @@ WCAG 2.1 contrast ratio.
 https://www.w3.org/TR/WCAG20/#contrast-ratiodef
 """
 from __future__ import annotations
-from ..contrast import ColorContrast
+from . import ColorContrast
 from ..types import AnyColor
 from typing import Any
 

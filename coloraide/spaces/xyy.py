@@ -4,7 +4,7 @@ The xyY color space.
 https://en.wikipedia.org/wiki/CIE_1931_color_space#CIE_xy_chromaticity_diagram_and_the_CIE_xyY_color_space
 """
 from __future__ import annotations
-from ..spaces import Space, Prism, Luminant
+from . import Space, Prism, Luminant
 from ..channels import Channel
 from ..cat import WHITES
 from .. import util

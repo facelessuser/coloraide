@@ -5,7 +5,7 @@ https://ds.jpeg.org/whitepapers/jpeg-xl-whitepaper.pdf
 """
 from __future__ import annotations
 from .. import algebra as alg
-from ..spaces.lab import Lab
+from .lab import Lab
 from ..types import Vector
 from ..cat import WHITES
 from ..channels import Channel, FLG_MIRROR_PERCENT

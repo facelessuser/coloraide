@@ -6,7 +6,7 @@ https://www.oscars.org/science-technology/aces/aces-documentation
 from __future__ import annotations
 import math
 from ..channels import Channel
-from ..spaces.srgb_linear import sRGBLinear
+from .srgb_linear import sRGBLinear
 from ..cat import WHITES
 from ..types import Vector
 

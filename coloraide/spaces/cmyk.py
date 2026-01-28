@@ -5,7 +5,7 @@ https://www.w3.org/TR/css-color-5/#cmyk-rgb
 """
 from __future__ import annotations
 from .. import util
-from ..spaces import Space
+from . import Space
 from ..channels import Channel
 from ..cat import WHITES
 from ..types import Vector

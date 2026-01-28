@@ -8,7 +8,7 @@ import math
 from functools import lru_cache
 from .. import util
 from .. import algebra as alg
-from ..gamut import Fit
+from . import Fit
 from ..cat import WHITES
 from ..spaces import Prism, Luminant, Space, HSLish, HSVish, HWBish
 from ..spaces.hsl import hsl_to_srgb, srgb_to_hsl

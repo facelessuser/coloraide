@@ -1,7 +1,7 @@
 """Fit by compressing chroma in LCh."""
 from __future__ import annotations
 import functools
-from ..gamut import Fit, clip_channels
+from . import Fit, clip_channels
 from ..cat import WHITES
 from .. import util
 import math

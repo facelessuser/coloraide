@@ -1,7 +1,7 @@
 """XYZ D65 class."""
 from __future__ import annotations
 import math
-from ..spaces import Space, RGBish
+from . import Space, RGBish
 from ..cat import WHITES
 from ..channels import Channel
 from .. import util

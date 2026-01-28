@@ -1,7 +1,7 @@
 """Provide filters as described by the https://www.w3.org/TR/filter-effects-1/."""
 from __future__ import annotations
 import math
-from ..filters import Filter
+from . import Filter
 from .. import algebra as alg
 from typing import Any, TYPE_CHECKING
 

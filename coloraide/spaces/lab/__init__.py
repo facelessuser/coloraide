@@ -5,7 +5,7 @@ https://ia802802.us.archive.org/23/items/gov.law.cie.15.2004/cie.15.2004.pdf
 http://www.brucelindbloom.com/Eqn_Lab_to_XYZ.html
 """
 from __future__ import annotations
-from ...spaces import Space, Labish
+from .. import Space, Labish
 from ...cat import WHITES
 from ...channels import Channel, FLG_MIRROR_PERCENT
 from ... import util
