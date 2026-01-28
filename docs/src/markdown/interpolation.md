@@ -1037,7 +1037,7 @@ naturally occur and the various ways a user and manipulate them.
 
 ## Carrying-Forward
 
-> [!warning] Experimental
+> [!example] Experimental
 > This feature is provided to give parity with CSS behavior. As the spec is still in flux, behavior is subject to change
 > or feature could be removed entirely. Use at your own risk.
 
@@ -1099,7 +1099,7 @@ Value        | `v`
 
 ## Powerless Hues
 
-> [!warning] Experimental
+> [!example] Experimental
 > This feature is provided to give parity with CSS behavior. As the spec is still in flux, behavior is subject to change
 > or feature could be removed entirely. Use at your own risk.
 
