@@ -3,6 +3,12 @@ icon: lucide/scroll-text
 ---
 # Changelog
 
+## 8.0
+
+-   **NEW**: Align interpolation approach with CSS. Only noticeable difference will be when interpolating achromatic
+    colors using the `longer` hue approach. This affects all interpolation methods except `css-linear`. `css-linear`
+    is now deprecated because it behaves exactly like `linear`.
+
 ## 7.0
 
 -   **NEW**: Add the `sucs` and `scam-jmh` color space.

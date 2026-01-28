@@ -55,85 +55,6 @@ i = Color.interpolate(
 )
 ```
 
-### CSS Linear Interpolation
-
-> [!new] New 2.11
-
-> [!success] CSS linear interpolation is registered in `Color` by Default
-
-While ColorAide supports CSS color syntax, it's goal is not to necessarily mirror CSS in all aspects, though often we
-do provide ways to emulate the behavior.
-
-The default linear interpolation that ColorAide uses by default deviates from how CSS handles interpolation. More
-specifically, it deviates in how undefined hues are resolved during the interpolation steps which directly affects
-achromatic interpolation results. The difference in handling is subtle, but becomes quite observable when using the
-`longer` hue fix-up.
-
-> [!note] | Hue Interpolation
-> Hue interpolation, along with fix-ups, is more generally covered in [Hue Interpolation](#hue-interpolation).
-
-Normally, two colors with defined hues will have a shorter and longer arc length between the two hue angles.
-
-/// tab | Shorter
-![Shorter Hue](images/hue-shorter.png)
-
-```py play
-Color.interpolate(['hsl(0 75% 50%)', 'hsl(240 75% 50%)'], space='hsl', hue='shorter')
-```
-///
-
-/// tab | Longer
-![Longer Hue](images/hue-longer.png)
-
-```py play
-Color.interpolate(['hsl(0 75% 50%)', 'hsl(240 75% 50%)'], space='hsl', hue='longer')
-```
-///
-
-ColorAide and CSS apply hue fix-ups to ensure proper interpolation occurs along a given hue arc in the desired way.
-ColorAide's default linear interpolation waits until _after_ hue fix-ups are applied when resolve undefined hues while
-CSS resolves undefined hues _before_ hue fix-ups are applied.
-
-In ColorAide's approach, if only one hue is defined, an arc length does not exist between the undefined hue and the
-defined hue. This means that during interpolation, the undefined hue will simply inherit the hue from the defined hue
-during the interpolation calculation.
-
-CSS, on the other hand, resolves the undefined hue _before_ hue fix-ups are applied which forces the hue to be defined
-before during hue fix-ups and creates a _pseudo_ arc length between the undefined and defined hue. This subtle
-difference makes a large impact when evaluating `longer` hue interpolations. Instead of interpolating an undefined hue
-and a defined hue, CSS actually interpolates between either a `shorter` angel difference of 0˚ or a `longer` angle
-difference of 360˚.
-
-/// tab | CSS Longer
-![CSS Longer](images/css-hue-longer.png)
-
-```py play
-Color.interpolate(['hsl(0 75 50)', 'hsl(none 0 50)'], space='hsl', method='css-linear', hue='longer')
-```
-///
-
-/// tab | ColorAide Longer
-![ColorAide Longer](images/coloraide-hue-longer.png)
-
-```py play
-Color.interpolate(['hsl(0 75 50)', 'hsl(none 0 50)'], space='hsl', method='linear', hue='longer')
-```
-///
-
-There may be arguments as to why some feel CSS's approach is more or less appropriate, but our desire is only to clarify
-the differences and make known why our default is the way it is. If a CSS compatible linear interpolation is needed,
-then `css-linear` can be specified as the interpolation `method`. If `css-linear` is desired as the default approach,
-the `Color` object can be subclassed and configured to do so.
-
-```py play
-from coloraide import Color as Base
-
-class Color(Base):
-    INTERPOLATOR = 'css-linear'
-
-Color.interpolate(['red', 'transparent', 'blue'], space='hsl', hue='longer')
-```
-
 ## Piecewise Interpolation
 
 Piecewise interpolation takes the idea of linear interpolation and then applies it to multiple colors. As drawing a
@@ -425,29 +346,6 @@ Color.interpolate(
     space='hsl',
     hue="specified"
 )
-```
-///
-
-In general, achromatic colors cannot have an arc length between them and other color. When applying linear interpolation
-between an achromatic color (or a color which simply does not define the hue), the applied hue fix-up will have little
-effect. With that said, when using [CSS linear interpolation](#css-linear-interpolation), the algorithm is a little
-different and it essentially creates pseudo arcs between color pairs with undefined hues and defined hues. Only with the
-`longer` hue fix-up does this become apparent. Below we compare CSS linear interpolation to our default linear
-interpolation.
-
-/// tab | CSS Longer Interpolation
-![CSS Longer](images/css-hue-longer.png)
-
-```py play
-Color.interpolate(['hsl(0 75 50)', 'hsl(none 0 50)'], space='hsl', method='css-linear', hue='longer')
-```
-///
-
-/// tab | Default Longer Interpolation
-![ColorAide Longer](images/coloraide-hue-longer.png)
-
-```py play
-Color.interpolate(['hsl(0 75 50)', 'hsl(none 0 50)'], space='hsl', method='linear', hue='longer')
 ```
 ///
 
@@ -1107,7 +1005,11 @@ Normally, ColorAide respects the user's explicitly defined hues. This gives the 
 off all channels but the hue in order to interpolate only the hue channel.
 
 ```py play
-Color.interpolate(['oklch(none none 0)', 'oklch(0.75 0.2 360)'], space='oklch', hue='specified')
+Color.interpolate(
+    ['oklch(none none 0)', 'oklch(0.75 0.2 360)'],
+    space='oklch',
+    hue='longer'
+)
 ```
 
 But when doing this, a user must explicitly define the hue as achromatic if they want the hue to be ignored. Conversions
@@ -1124,14 +1026,31 @@ achromatic hues, so even if they erroneously define a hue, the hue will automati
 interpolating. ColorAide implements this behavior via the `powerless` option.
 
 ```py play
-Color.interpolate(['oklch(1 0 0)', 'oklch(0.75 0.2 180)'], space='oklch', powerless=True)
-Color.interpolate(['oklch(1 0 None)', 'oklch(0.75 0.2 180)'], space='oklch', powerless=True)
+Color.interpolate(
+    ['oklch(1 0 0)', 'oklch(0.75 0.2 180)'],
+    space='oklch',
+    powerless=True
+)
+Color.interpolate(
+    ['oklch(1 0 None)', 'oklch(0.75 0.2 180)'],
+    space='oklch',
+    powerless=True
+)
 ```
 
 The one downside is that control over the hue will be diminished to some degree as ColorAide will no longer respect
 a user's explicit hue if the color is determined to be achromatic.
 
 ```py play
-Color.interpolate(['oklch(none none 0)', 'oklch(0.75 0.2 360)'], space='oklch', hue='specified')
-Color.interpolate(['oklch(none none 0)', 'oklch(0.75 0.2 360)'], space='oklch', hue='specified', powerless=True)
+Color.interpolate(
+    ['oklch(none none 0)', 'oklch(0.75 0.2 360)'],
+    space='oklch',
+    hue='specified'
+)
+Color.interpolate(
+    ['oklch(none none 0)', 'oklch(0.75 0.2 360)'],
+    space='oklch',
+    hue='specified',
+    powerless=True
+)
 ```

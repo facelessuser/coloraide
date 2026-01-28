@@ -30,7 +30,7 @@ opaqueness beyond the range of [0, 1]. ColorAide clamps alpha on every set.
 
 ### What is Supported?
 
-There are four features that allow ColorAide to mimic CSS behavior. All four features can be used on demand via special
+There are four features that allow ColorAide to mimic CSS behavior. All three features can be used on demand via special
 parameters when using the appropriate, related functions, but if desired, they can be forced to be enabled for a `Color`
 class. It should be noted that while all of these are defined in the CSS spec, some may not actually be implemented at
 this time. The four features are as follows:
@@ -39,12 +39,6 @@ this time. The four features are as follows:
     hue preservation, but the space does become a bit more distorted at very wide gamuts and can cause sane gamut
     mapping to break down. Gamut mapping colors that fall within the Rec. 2020 and Display P3 range should work
     reasonably well.
-
-2.  The `css-linear` interpolator follows CSS interpolation logic which differs from ColorAide's default interpolation
-    logic. CSS specifically treats interpolation between achromatic hues and non-achromatic hues as if there is a hue
-    arc. This means that when using `longer` hue fix-ups when interpolating between a color with a undefined hue and a
-    color with a defined hue, you will interpolate a full 360 degrees. We do not agree with this approach and feel in
-    both `shorter` and `longer` hue fix-ups that there should be no arc to interpolate along.
 
 3.  CSS defines a concept of auto powerless handling in CSS will force hues to be interpolated as powerless if under
     certain circumstances. This usually happens when a color space's chroma/saturation components are zero. While this
@@ -77,7 +71,6 @@ from coloraide import Color as Base
 
 class Color(base):
     FIT = 'oklch-chroma'
-    INTERPOLATOR = 'css-linear'
     POWERLESS = True
     CARRYFORWARD = True
 ```
