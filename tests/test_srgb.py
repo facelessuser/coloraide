@@ -107,9 +107,9 @@ class TestsRGBSerialize(util.ColorAssertsPyTest):
         ('rgb(none 128 10)', {}, 'rgb(0 128 10)'),
         ('rgb(none 128 10)', {'none': True}, 'rgb(none 128 10)'),
         # Test fit
-        ('rgb(260 0 0 )', {}, 'rgb(255 0 0)'),
+        ('rgb(260 0 0 )', {}, 'rgb(255 33.116 23.151)'),
         ('rgb(260 0 0 )', {'fit': False}, 'rgb(260 0 0)'),
-        ('rgb(260 0 0 )', {'hex': True}, '#ff0000'),
+        ('rgb(260 0 0 )', {'hex': True}, '#ff2117'),
         # Test legacy
         ('rgb(255 0 0)', {'comma': True}, 'rgb(255, 0, 0)'),
         # Test legacy alpha
@@ -125,7 +125,7 @@ class TestsRGBSerialize(util.ColorAssertsPyTest):
         ('rgb(0 255 25.5)', {'color': True, 'alpha': True}, 'color(srgb 0 1 0.1 / 1)'),
         ('rgb(0 255 25.5 / 0.5)', {'color': True, 'alpha': False}, 'color(srgb 0 1 0.1)'),
         # Test Fit
-        ('color(srgb 1.2 0.2 0)', {'color': True}, 'color(srgb 1 0.42056 0.2633)'),
+        ('color(srgb 1.2 0.2 0)', {'color': True}, 'color(srgb 1 0.49075 0.40204)'),
         (
             'color(srgb 1.2 0.2 0)',
             {'color': True, 'fit': {'method': 'raytrace', 'pspace': 'lch-d65'}},

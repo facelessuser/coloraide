@@ -50,7 +50,7 @@ class TestRec2020OETFSerialize(util.ColorAssertsPyTest):
         ('color(--rec2020-oetf none 0.3 0.75)', {}, 'color(--rec2020-oetf 0 0.3 0.75)'),
         ('color(--rec2020-oetf none 0.3 0.75)', {'none': True}, 'color(--rec2020-oetf none 0.3 0.75)'),
         # Test Fit
-        ('color(--rec2020-oetf 1.2 0.2 0)', {}, 'color(--rec2020-oetf 1 0.41739 0.13711)'),
+        ('color(--rec2020-oetf 1.2 0.2 0)', {}, 'color(--rec2020-oetf 1 0.51268 0.39569)'),
         (
             'color(--rec2020-oetf 1.2 0.2 0)',
             {'color': True, 'fit': {'method': 'raytrace', 'pspace': 'lch-d65'}},

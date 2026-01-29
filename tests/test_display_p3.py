@@ -50,7 +50,7 @@ class TestDisplayP3Serialize(util.ColorAssertsPyTest):
         ('color(display-p3 none 0.3 0.75)', {}, 'color(display-p3 0 0.3 0.75)'),
         ('color(display-p3 none 0.3 0.75)', {'none': True}, 'color(display-p3 none 0.3 0.75)'),
         # Test Fit
-        ('color(display-p3 1.2 0.2 0)', {}, 'color(display-p3 1 0.4425 0.20621)'),
+        ('color(display-p3 1.2 0.2 0)', {}, 'color(display-p3 1 0.51741 0.421)'),
         (
             'color(display-p3 1.2 0.2 0)',
             {'color': True, 'fit': {'method': 'raytrace', 'pspace': 'lch-d65'}},

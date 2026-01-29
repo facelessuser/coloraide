@@ -50,7 +50,7 @@ class TestRec709OETFSerialize(util.ColorAssertsPyTest):
         ('color(--rec709-oetf none 0.3 0.75)', {}, 'color(--rec709-oetf 0 0.3 0.75)'),
         ('color(--rec709-oetf none 0.3 0.75)', {'none': True}, 'color(--rec709-oetf none 0.3 0.75)'),
         # Test Fit
-        ('color(--rec709-oetf 1.2 0.2 0)', {}, 'color(--rec709-oetf 1 0.37065 0.18538)'),
+        ('color(--rec709-oetf 1.2 0.2 0)', {}, 'color(--rec709-oetf 1 0.4397 0.32755)'),
         (
             'color(--rec709-oetf 1.2 0.2 0)',
             {'color': True, 'fit': {'method': 'raytrace', 'pspace': 'lch-d65'}},

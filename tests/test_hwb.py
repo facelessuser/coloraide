@@ -68,7 +68,7 @@ class TestHWBSerialize(util.ColorAssertsPyTest):
         ('hwb(none 30% 50%)', {}, 'hwb(0 30 50)'),
         ('hwb(none 30% 50%)', {'none': True}, 'hwb(none 30 50)'),
         # Test fit
-        ('hwb(20 0% -55%)', {}, 'hwb(18.749 76.608 0)'),
+        ('hwb(20 0% -55%)', {}, 'hwb(14.248 86.61 0)'),
         ('hwb(20 0% -55%)', {'fit': False}, 'hwb(20 0 -55)'),
         # Test color
         ('hwb(none 30% 50% / 0.5)', {'color': True}, 'color(--hwb 0 0.3 0.5 / 0.5)'),

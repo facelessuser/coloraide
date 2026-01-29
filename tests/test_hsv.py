@@ -50,7 +50,7 @@ class TestHSVSerialize(util.ColorAssertsPyTest):
         ('color(--hsv 50 0.3 none)', {}, 'color(--hsv 50 0.3 0)'),
         ('color(--hsv 50 0.3 none)', {'none': True}, 'color(--hsv 50 0.3 none)'),
         # Test Fit (not bound)
-        ('color(--hsv 50 1.1 0.5)', {}, 'color(--hsv 49 1 0.5)'),
+        ('color(--hsv 50 1.1 0.5)', {}, 'color(--hsv 49.409 1 0.49682)'),
         ('color(--hsv 50 1.1 0.5)', {'fit': False}, 'color(--hsv 50 1.1 0.5)'),
         ('color(--hsv 180 -1 1)', {}, 'color(--hsv 0 0 1)')
     ]

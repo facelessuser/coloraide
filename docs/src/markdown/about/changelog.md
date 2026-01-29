@@ -5,6 +5,9 @@ icon: lucide/scroll-text
 
 ## 8.0
 
+-   **NEW**: The `raytrace` gamut mapping algorithm is now the default and performs gamut mapping in OkLCh. The old
+    approach can be used via the [`lch-chroma`](https://facelessuser.github.io/coloraide/gamut/#lch-chroma). To change
+    the default see ["override default settings](https://facelessuser.github.io/coloraide/color/#override-default-settings).
 -   **NEW**: Align interpolation approach with CSS. Only noticeable difference will be when interpolating achromatic
     colors using the `longer` hue approach. This affects all interpolation methods except `css-linear`. `css-linear`
     is now deprecated because it behaves exactly like `linear`.
