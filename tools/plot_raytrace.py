@@ -89,6 +89,8 @@ def raytrace(args):
     for ray in args.ray:
         start, end = ([float(v.strip()) for v in c.split(',')] for c in [r.strip()[1:-1] for r in ray.split('->')])
         intersect = fit.raytrace_box(start, end, bmin=bmin, bmax=bmax)
+        print('Ray:', ray)
+        print('Intersect:', intersect)
         px, py, pz = zip(start, end) if not intersect else zip(start, intersect, end)
         data.append(
             go.Scatter3d(
