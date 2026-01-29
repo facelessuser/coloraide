@@ -177,7 +177,7 @@ def raytrace_box(
 
         # Non parallel case
         if d:
-            inv_d = 1 / d
+            inv_d = 1.0 / d
             t1 = (bn - a) * inv_d
             t2 = (bx - a) * inv_d
             tnear = max(min(t1, t2), tnear)
@@ -192,14 +192,11 @@ def raytrace_box(
         return []
 
     # Favor the intersection first in the direction start -> end
-    if tnear < 0:
+    if tnear < 0.0:
         tnear = tfar
 
-    # An infinitesimally small point was used, not a ray.
-    # The origin is the intersection. Our use case will
-    # discard such scenarios, but others may wish to set
-    # intersection to origin.
-    if math.isinf(tnear):
+    # Point is very close to the surface, so `tnear` could be very large.
+    if tnear > 10.0:
         return []
 
     # Calculate intersection interpolation.

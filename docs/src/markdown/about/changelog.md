@@ -8,6 +8,8 @@ icon: lucide/scroll-text
 -   **NEW**: Align interpolation approach with CSS. Only noticeable difference will be when interpolating achromatic
     colors using the `longer` hue approach. This affects all interpolation methods except `css-linear`. `css-linear`
     is now deprecated because it behaves exactly like `linear`.
+-   **FIX**: Fix an issue with `raytrace` gamut mapping where a color very close to the gamut surface could cause an
+    unexpected result.
 
 ## 7.0
 
