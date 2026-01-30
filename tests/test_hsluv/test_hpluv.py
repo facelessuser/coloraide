@@ -41,9 +41,9 @@ class TestHPLuvSerialize(util.ColorAssertsPyTest):
         ('color(--hpluv 50 30 none)', {}, 'color(--hpluv 50 30 0)'),
         ('color(--hpluv 50 30 none)', {'none': True}, 'color(--hpluv 50 30 none)'),
         # Test Fit (not bound)
-        ('color(--hpluv 50 110 50)', {}, 'color(--hpluv 50 100 50)'),
+        ('color(--hpluv 50 110 50)', {}, 'color(--hpluv 50.737 100 50.044)'),
         ('color(--hpluv 50 110 50)', {'fit': False}, 'color(--hpluv 50 110 50)'),
-        ('color(--hpluv 192.18 -426.75 53.237)', {}, 'color(--hpluv 23.879 100 53.237)')
+        ('color(--hpluv 192.18 -426.75 53.237)', {}, 'color(--hpluv 20.101 100 55.857)')
     ]
 
     @pytest.mark.parametrize('color1,options,color2', COLORS)

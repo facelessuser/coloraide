@@ -50,7 +50,7 @@ class TestLinearA98RGBSerialize(util.ColorAssertsPyTest):
         ('color(--a98-rgb-linear none 0.3 0.75)', {}, 'color(--a98-rgb-linear 0 0.3 0.75)'),
         ('color(--a98-rgb-linear none 0.3 0.75)', {'none': True}, 'color(--a98-rgb-linear none 0.3 0.75)'),
         # Test Fit
-        ('color(--a98-rgb-linear 1.2 0.2 0)', {}, 'color(--a98-rgb-linear 1 0.24676 0.03174)'),
+        ('color(--a98-rgb-linear 1.2 0.2 0)', {}, 'color(--a98-rgb-linear 1 0.30425 0.11074)'),
         ('color(--a98-rgb-linear 1.2 0.2 0)', {'fit': False}, 'color(--a98-rgb-linear 1.2 0.2 0)')
     ]
 

@@ -50,7 +50,7 @@ class TestCMYKSerialize(util.ColorAssertsPyTest):
         ('color(--cmyk none 0.3 0.75 0.5)', {}, 'color(--cmyk 0 0.3 0.75 0.5)'),
         ('color(--cmyk none 0.3 0.75 0.5)', {'none': True}, 'color(--cmyk none 0.3 0.75 0.5)'),
         # Test Fit
-        ('color(--cmyk 1.2 0.2 0 0.5)', {}, 'color(--cmyk 1 0.2 0 0.5)'),
+        ('color(--cmyk 1.2 0.2 0 0.5)', {}, 'color(--cmyk 1 0.18419 0 0.51373)'),
         ('color(--cmyk 1.2 0.2 0 0.5)', {'fit': False}, 'color(--cmyk 1.2 0.2 0 0.5)')
     ]
 

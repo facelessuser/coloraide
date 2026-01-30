@@ -30,20 +30,32 @@ opaqueness beyond the range of [0, 1]. ColorAide clamps alpha on every set.
 
 ### What is Supported?
 
-There are four features that allow ColorAide to mimic CSS behavior. All three features can be used on demand via special
-parameters when using the appropriate, related functions, but if desired, they can be forced to be enabled for a `Color`
-class. It should be noted that while all of these are defined in the CSS spec, some may not actually be implemented at
-this time. The four features are as follows:
+There are three features that allow ColorAide to mimic CSS behavior. All three features can be used on demand via
+special parameters when using the appropriate, related functions, but if desired, they can be forced to be enabled for a
+`Color` class. It should be noted that while all of these are defined in the CSS spec, some may not actually be
+implemented at this time. The four features are as follows:
 
-1.  Gamut mapping with `oklch-chroma` is the current CSS recommended approach. It provides a color space with better
-    hue preservation, but the space does become a bit more distorted at very wide gamuts and can cause sane gamut
-    mapping to break down. Gamut mapping colors that fall within the Rec. 2020 and Display P3 range should work
-    reasonably well.
+1.  Using chroma reduction in OkLCh is the recommend CSS approach. There are multiple algorithms that are suggested in
+    the CSS spec, and  ColorAide uses the `raytrace` approach that we developed. ColorAide also offers `oklch-chroma`
+    which uses the MINDE approach. These are the defaults for ColorAide, and while the `raytrace` approach is the
+    default, either approach can be used, and if one approach is preferred over the other, the default approach can be
+    changed by subclassing `Color`.
 
-3.  CSS defines a concept of auto powerless handling in CSS will force hues to be interpolated as powerless if under
+    It should be noted that current browsers have not yet implemented these and still only clip colors, but that will
+    likely change in the future. If you want to mimic current browsers, you can subclass `Color` by using `clip` or
+    changing the default to `clip`.
+
+    There is a further change being discussed that could change the CSS recommendation to gamut map with one of the
+    aforementioned algorithms to `rec2020`, and then clip to `rec2020`, `display-p3`, or `srgb`. It can be noted this
+    assumes gamuts that fit inside `rec2020` which ColorAide has a number that do not. It is unlikely that ColorAide
+    will implement an approach so highly tailored to only three gamuts, and it would be suggested to just apply
+    `#!py color.fit('rec2020').clip('srgb')` which would do exactly what they are proposing. We will likely re-evaluate
+    our stance if/when such a change finally makes it to the CSS spec.
+
+2.  CSS defines a concept of auto powerless handling in CSS will force hues to be interpolated as powerless if under
     certain circumstances. This usually happens when a color space's chroma/saturation components are zero. While this
     behavior does make general sense, and ensures that a user is always treating achromatic colors as achromatic, it
-    cripples the user's control of how a color is interpolated.
+    cripples the user's control of how a color is interpolated, but may be preferred depending on how you use colors.
 
     ColorAide, by default, respects what the user has explicitly specified. If a user has a component set as undefined,
     it is treated as undefined, if it is explicitly set to a numerical value, it is treated defined. This makes
@@ -54,7 +66,7 @@ this time. The four features are as follows:
     With all of this said, there are times when a user may want to force powerless hues, even when not explicitly
     defined, in these cases ColorAide can enforce this behavior during interpolation via the `powerless` parameter.
 
-4.  CSS also defines the idea of carrying forward undefined values during interpolation. Essentially, if a user
+3.  CSS also defines the idea of carrying forward undefined values during interpolation. Essentially, if a user
     specifies an undefined component, but interpolation is performed in a different color space, after conversion, if
     the two color spaces have compatible components, the undefined values will be carried forward to the like
     components. This means that an undefined hue in HSL would be carried forward to LCh. A red component in sRGB would
@@ -70,7 +82,18 @@ base `Color` class. All four features can be forced as enabled by default as sho
 from coloraide import Color as Base
 
 class Color(base):
-    FIT = 'oklch-chroma'
+    POWERLESS = True
+    CARRYFORWARD = True
+```
+
+To change the gamut mapping algorithm to either current browser approach (clipping) or to use the other suggested gamut
+mapping algorithm, see below.
+
+```py
+from coloraide import Color as Base
+
+class Color(base):
+    FIT = "clip"  # or "oklch-chroma"
     POWERLESS = True
     CARRYFORWARD = True
 ```

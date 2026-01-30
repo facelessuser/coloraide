@@ -242,7 +242,106 @@ Clipping is unique to all other clipping methods in that it has its own dedicate
 `clip` is reserved. While not always the best approach for all gamut mapping needs, clip is very important and its speed
 and simplicity are of great value.
 
+### Ray Tracing Chroma Reduction
+
+> [!new] 8.0 the `raytrace` is now the default approach
+> Ray trace is the default gamut mapping algorithm unless otherwise changed, and can be performed by simply calling
+> `fit()` or by calling `fit(method='raytrace')` or using it in functions that offer a `fit` parameter
+> `to_string(fit='raytrace')`.
+
+> [!success] The `raytrace` gamut mapping is registered in `Color` by default.
+
+ColorAide has developed a chroma reduction technique that employs ray tracing. Its aim is to provide a reasonably fast
+reduction of chroma for gamut mapping using constant hue and lightness. This approach specifically targets RGB gamuts,
+or spaces that can be represented with RGB gamuts. Additionally, if ColorAide can detect a linear version of the
+targeted RGB gamut, that version will be used automatically for best results. Currently, ColorAide can gamut map all
+officially supported color spaces as they either have an RGB gamut or can be coerced into one.
+
+The ray trace approach works by taking a given color and converting it to a perceptual Lab-ish or LCh-ish color space
+(the default being OkLCh) and then calculates the achromatic version of the color which will be our anchor point.  If
+the achromatic color exceeds the maximum or minimum lightness of the gamut, the respective maximum or minimum achromatic
+color is returned. Assuming our anchor point is within bounds, a ray is cast from the inside of the cube, from the
+anchor point to the current color. The intersection along this path with the RGB gamut surface is then found.
+
+> [!note] Ray Trace Algorithm
+> The ray trace algorithm is based on the [slab method](https://en.wikipedia.org/wiki/Slab_method). The intersection
+> that is selected is the first one encountered when following the ray from the origin point in the direction of the
+> specified end point.
+
+The intersection of the line and the gamut surface represents an approximation of the most saturated color for that
+lightness and hue, but because the RGB space is not perceptual, the initial approximation is likely to be off because
+decreasing chroma and holding lightness and hue constant in a perceptual space will create a curved path through the
+RGB space. In order to converge on a point as close as possible to the actual, most saturated color with the given hue
+and lightness, we must refine our result with a few additional iterations.
+
+In order to converge on the actual chroma reduced color we seek, we can take the first intersection we find and correct
+the color in the perceptual color space by projecting the point back onto the chroma reduction path, correcting the
+color's hue and lightness. The corrected color becomes our new current color and should be a much closer color on the
+reduced chroma line. We can repeat this process a few more times, each time finding a better, closer color on the path.
+After about three _additional_ iterations (a combined total of four for the entire process), we will be close enough
+where we can stop. Finally, we can then clip off floating point math errors. With this, we will now have a more accurate
+approximation of the color we seek.
+
+![Ray Trace Gamut Mapping Example](images/raytrace-gma.png)
+
+One final improvement is that during the correction step, where we adjust the surface point back onto the chroma
+reduction path, if we find a point below the gamut surface, we can adjust our anchor to be this new point, closer to the
+gamut surface, which in some spaces will help to converge closer to our ideal color than they would without the
+adjustment.
+
+![Ray Trace Gamut Mapping Example](images/raytrace-gma-improve.png)
+
+The results are comparable to MINDE using a low JND, but resolves much faster and within more predictable, consistent
+time.
+
+```py play
+Color('oklch(90% 0.8 270)').fit('srgb', method='raytrace', pspace='lch-d65')
+Color('oklch(90% 0.8 270)').fit('srgb', method='minde-chroma', pspace='lch-d65', jnd=0)
+```
+
+Generally, the ray trace approach is faster than MINDE Chroma, but it also requires an RGB gamut as a target. A non-RGB
+gamut may not work if it does not have an RGB gamut it can redirect to. Additionally, ray trace is a geometric approach
+that relies on a reasonable relationship between the RGB cube and how the chroma reduction curve bends through that RGB
+space. Some perceptual space and RGB space dynamics may not play nice together and in some cases could have less
+desirable results. In general though, results should be pretty good.
+
+As noted earlier, this method specifically targets RGB gamuts. This is because the ray tracing is performed on a simple
+RGB cube which is easy to calculate. ColorAide maps almost all colors to an RGB gamut, if they have one. And those
+gamuts are often associated with a linear RGB counterpart (which is preferred when gamut mapping), but there are a few
+color spaces/models that do not map to an obvious RGB gamut. If possible, these will be coerced into a cube, if 
+possible; results will vary depending on the space.
+
+A space like HPLuv, which does not have an RGB gamut defined in ColorAide, can actually be converted into a cube with
+decent gamut mapping behavior.
+
+```py play
+Steps([c.fit('hpluv', method='raytrace') for c in Color.steps(['oklch(90% 0.4 0)', 'oklch(90% 0.4 360)'], steps=100, space='oklch', hue='longer')])
+```
+
+Spaces like Okhsl and Okhsv, which are only approximations of the sRGB gamut, do not have a perfect sRGB gamut. These
+spaces are redirected to sRGB by default, and coercing these to cubes only works well for Okhsv, and only up to the
+capabilities of the color spaces to transform colors that are very wide. It should be noted though that the MINDE
+approach doesn't do much better. In these cases, manually specifying sRGB is usually the best approach.
+
+/// tab | Ray Trace
+```py play
+Steps([c.fit('okhsl', method='raytrace') for c in Color.steps(['oklch(90% 0.4 0)', 'oklch(90% 0.4 360)'], steps=100, space='oklch', hue='longer')])
+Steps([c.fit('okhsv', method='raytrace') for c in Color.steps(['oklch(90% 0.4 0)', 'oklch(90% 0.4 360)'], steps=100, space='oklch', hue='longer')])
+Steps([c.fit('srgb', method='raytrace') for c in Color.steps(['oklch(90% 0.4 0)', 'oklch(90% 0.4 360)'], steps=100, space='oklch', hue='longer')])
+```
+///
+
+/// tab | MINDE
+```py play
+Steps([c.fit('okhsl', method='minde-chroma') for c in Color.steps(['oklch(90% 0.4 0)', 'oklch(90% 0.4 360)'], steps=100, space='oklch', hue='longer')])
+Steps([c.fit('okhsv', method='minde-chroma') for c in Color.steps(['oklch(90% 0.4 0)', 'oklch(90% 0.4 360)'], steps=100, space='oklch', hue='longer')])
+Steps([c.fit('srgb', method='minde-chroma') for c in Color.steps(['oklch(90% 0.4 0)', 'oklch(90% 0.4 360)'], steps=100, space='oklch', hue='longer')])
+```
+///
+
 ### MINDE Chroma Reduction
+
+> [!success] The `minde-chroma` gamut mapping is registered in `Color` by default.
 
 Chroma reduction is an approach that reduces the chroma in a polar color space until the color is within the gamut of a
 targeted color space. Pure chroma reduction has the advantage of preserving as much lightness and hue as possible, and
@@ -266,23 +365,26 @@ enough to the JND, the clipped color will be returned.
 Visually, MINDE chroma reduction will allow a color that has decent constant lightness and will allow some hue shift
 as long as it is under what is noticeable by the eye. This doesn't mean no hue shift, and in certain regions, such as
 very dark colors or very light colors, hue shift can be greater because it is more difficult to notice in such lightness
-ranges. Every perceptual space is different and some do better than others and may allow for larger or smaller JND 
-limits, so the JND is relative to the color space and the ∆E color distancing algorithm used.
+ranges.
 
 Preserving lightness in this way is useful when creating tones or mixing and interpolating colors. A constant lightness
 can also be useful when trying to control contrast.
 
-Computationally, chroma reduction is slower to compute than clipping. Chroma reduction by bisecting can have varying
-performance as it is unknown how many iterations will be required to reduce the color into the gamut. Additionally, by
-combining the reduction with MINDE, the algorithm takes additional performance hits as it must now perform costly color
-distancing checks. Using a perceptual space with more uniform color distancing can reduce the complexity required to
-determine the color distance and, in turn, can speed up the process.
+MINDE chroma reduction is computationally slower than clipping or the alternative [ray tracing](#ray-tracing-chroma-reduction)
+approach. Chroma reduction by bisecting can have varying performance as it is unknown how many iterations will be
+required to reduce the color into the gamut. Additionally, by combining the reduction with MINDE, the algorithm takes
+additional performance hits as it must now perform costly color distancing checks.
 
-Lastly, all provided MINDE chroma reduction methods allow the controlling of the JND. This is useful if you want to
-adjust how close to the gamut boundary you approach before clipping. A larger JND may provide even more colorful colors
-while a lower JND will provide more accurate colors (relative to the perceptual space). If desired, setting the JND to 0
-can improve performance by bypassing the MINDE logic altogether, but keep in mind that some perceptual spaces can have
-a geometry that can cause overly under-saturated colors just due to how the colors are distributed in the color space.
+What the MINDE chroma reduction method lacks in speed, it makes up for in robustness. It isn't finicky about the type of
+gamut it works on, and the algorithm is generally fairly simple. If you are want to gamut map in a perceptual space
+that ray trace has a hard time with, it is likely MINDE can handle it, most of the time ray trace can handle things
+just as well.
+
+Lastly, MINDE chroma reduction allows for the controlling of the JND. This is useful if you want to adjust how close to
+the gamut boundary you are before clipping. A larger JND may provide even more colorful colors while a lower JND will
+provide more accurate colors (relative to the perceptual space). If desired, setting the JND to 0 can improve
+performance by bypassing the MINDE logic altogether, but keep in mind that some perceptual spaces can have a geometry
+that can cause overly under-saturated colors just due to how the colors are distributed in the color space.
 
 Consider the color `#!color color(display-p3 1 1 0)`. If we were to gamut map it in CIELCh with a very low JND, we can
 see that the odd shape of CIELCh in the yellow region can cause us to get a very desaturated color. By using the default
@@ -298,20 +400,11 @@ noticeable difference.
 ![JND 2](images/jnd-2.png)
 ///
 
-As a final note, it should be noted that most color spaces that have a defined gamut are tied to specific RGB gamuts.
-And when they are gamut mapped, they are done so in those RGB spaces. For instance, HSL which represents the sRGB gamut
-in a cylindrical form will be gamut mapped in sRGB (though simple clipping may be done directly in HSL).
-
-There are a few color spaces/models that do not have clearly defined gamuts. One such case is HPLuv, which is only
-defined as a cylindrical color space that represent only a subset of the sRGB color space. Additionally Okhsl and Okhsv
+While MINDE chroma reduction is pretty robust, there can still be some gamuts it has a hard time with. Okhsl and Okhsv
 are two cylindrical color spaces based on the perceptual Oklab color space that are meant to target the sRGB gamut, but
 are only a loose approximation which can actually slightly clip the sRGB gamut while simultaneously containing a few
-colors that exceed the sRGB gamut. ColorAide will not automatically associate these color spaces with an RGB gamut. In
-the case of HPLuv, there is no specifically defined RGB gamut, and in the case of Okhsl and Okhsv, sRGB is the closest,
-but does not precisely represent the colors in Okhsl and Okhsv.
-
-Gamut mapping in HPLuv usually provides fine results, but you may find that gamut mapping Okhsl may not provide the
-intended results. When gamut mapping such spaces, you may want to use the closest RGB gamut.
+colors that exceed the sRGB gamut. You may find that Okhsl will not provide the intended results. When gamut mapping
+such spaces, you may want to use the closest RGB gamut.
 
 ```py play
 Steps([c.fit('okhsl', method='oklch-chroma') for c in Color.steps(['oklch(90% 0.4 0)', 'oklch(90% 0.4 360)'], steps=100, space='oklch', hue='longer')])
@@ -322,8 +415,7 @@ Steps([c.fit('srgb', method='oklch-chroma') for c in Color.steps(['oklch(90% 0.4
 
 > [!success] The `lch-chroma` gamut mapping is registered in `Color` by default
 
-LCh Chroma applies MINDE Chroma Reduction within the CIELCh color space and is currently the default approach in
-ColorAide.
+LCh Chroma applies MINDE Chroma Reduction within the CIELCh color space.
 
 > [!note]
 > As most colors in ColorAide use a D65 white point by default, LCh D65 is used as the gamut mapping color space.
@@ -336,9 +428,6 @@ CSS originally proposed MINDE Chroma Reduction with CIELCh, but has later change
 entire choice in algorithms could change as well in the future. We do offer an [OkLCh variant](#oklch-chroma), but we
 currently still use CIELCh due to its consistency even with colors far outside the gamut. If you are working within
 reasonable gamuts, OkLCh may be a better choice.
-
-LCh Chroma is the default gamut mapping algorithm unless otherwise changed, and can be performed by simply calling
-`fit()` or by calling `fit(method='lch-chroma')`.
 
 ```py play
 c = Color('srgb', [2, -1, 0])
@@ -437,81 +526,6 @@ from coloraide.spaces.hct import HCT
 class Color(Base): ...
 
 Color.register([HCT(), DEHCT(), HCTChroma()])
-```
-
-### Ray Tracing Chroma Reduction
-
-> [!example] Experimental
-
-ColorAide has developed a chroma reduction technique that employs ray tracing. Its aim is to provide faster chroma
-reduction for gamut mapping using constant lightness. This approach specifically targets RGB gamuts, or spaces that can
-be represented with RGB gamuts. Additionally, if ColorAide can detect a linear version of the targeted RGB gamut, that
-version will be used automatically for best results. Currently, ColorAide can gamut map all officially supported color
-spaces as they either have an RGB gamut or can be coerced into one.
-
-The ray trace approach works by taking a given color and converting it to a perceptual Lab-ish or LCh-ish color space
-(the default being OkLCh) and then calculates the achromatic version of the color which will be our anchor point.  If
-the achromatic color exceeds the maximum or minimum lightness of the gamut, the respective maximum or minimum achromatic
-color is returned. Assuming our anchor point is within bounds, a ray is cast from the inside of the cube, from the
-anchor point to the current color. The intersection along this path with the RGB gamut surface is then found.
-
-> [!note] Ray Trace Algorithm
-> The ray trace algorithm is based on the [slab method](https://en.wikipedia.org/wiki/Slab_method). The intersection
-> that is selected is the first one encountered when following the ray from the origin point in the direction of the
-> specified end point.
-
-The intersection of the line and the gamut surface represents an approximation of the most saturated color for that
-lightness and hue, but because the RGB space is not perceptual, the initial approximation is likely to be off because
-decreasing chroma and holding lightness and hue constant in a perceptual space will create a curved path through the
-RGB space. In order to converge on a point as close as possible to the actual, most saturated color with the given hue
-and lightness, we must refine our result with a few additional iterations.
-
-In order to converge on the actual chroma reduced color we seek, we can take the first intersection we find and correct
-the color in the perceptual color space by projecting the point back onto the chroma reduction path, correcting the
-color's hue and lightness. The corrected color becomes our new current color and should be a much closer color on the
-reduced chroma line. We can repeat this process a few more times, each time finding a better, closer color on the path.
-After about three _additional_ iterations (a combined total of four for the entire process), we will be close enough
-where we can stop. Finally, we can then clip off floating point math errors. With this, we will now have a more accurate
-approximation of the color we seek.
-
-![Ray Trace Gamut Mapping Example](images/raytrace-gma.png)
-
-One final improvement is that during the correction step, where we adjust the surface point back onto the chroma
-reduction path, if we find a point below the gamut surface, we can adjust our anchor to be this new point, closer to the
-gamut surface, which in some spaces will help to converge closer to our ideal color than they would without the
-adjustment.
-
-![Ray Trace Gamut Mapping Example](images/raytrace-gma-improve.png)
-
-The results are comparable to MINDE using a low JND, but resolves much faster and within more predictable, consistent
-time.
-
-```py play
-Color('oklch(90% 0.8 270)').fit('srgb', method='raytrace', pspace='lch-d65')
-Color('oklch(90% 0.8 270)').fit('srgb', method='lch-chroma', jnd=0)
-```
-
-As noted earlier, this method specifically targets RGB gamuts. This is because the ray tracing is performed on a simple
-RGB cube which is easy to calculate. ColorAide maps almost all colors to an RGB gamut, if they have one. And those
-gamuts are often associated with a linear RGB counterpart which is preferred when gamut mapping, but there are a few
-color spaces/models that do not map to an obvious RGB gamut.
-
-HPLuv, which is only defined as a cylindrical color space that represent only a subset of the sRGB color space, has no
-defined RGB gamut on which to operate on. Additionally Okhsl and Okhsv are two cylindrical color spaces, based on the
-perceptual Oklab color space, that are meant to target the sRGB gamut, but are only a loose approximation which actually
-can slightly clip the sRGB gamut while simultaneously containing a few colors that exceed the sRGB gamut.
-
-ColorAide will _not_ automatically associate HPLuv, Okhsl or Okhsv with an RGB gamut as there is not one that precisely
-represents any of these colors. With that said, ColorAide _will_ translate these spaces into a cube shape to apply gamut
-mapping on them if they are specifically used. In the case of HPLuv, results are usually fine, but you may find that
-gamut mapping Okhsl may not provide the intended results. It should be noted that the currently suggested CSS gamut
-mapping algorithm (`oklch-chroma`) does not do much better, so, for Okhsl and Okhsv, it is better to use the closest RGB
-gamut.
-
-```py play
-Steps([c.fit('okhsl', method='raytrace') for c in Color.steps(['oklch(90% 0.4 0)', 'oklch(90% 0.4 360)'], steps=100, space='oklch', hue='longer')])
-Steps([c.fit('okhsl', method='oklch-chroma') for c in Color.steps(['oklch(90% 0.4 0)', 'oklch(90% 0.4 360)'], steps=100, space='oklch', hue='longer')])
-Steps([c.fit('srgb', method='raytrace') for c in Color.steps(['oklch(90% 0.4 0)', 'oklch(90% 0.4 360)'], steps=100, space='oklch', hue='longer')])
 ```
 
 ### Gamut Mapping in Any Perceptual Space
@@ -621,7 +635,8 @@ tones = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 100]
 Steps([c.clone().set('tone', tone).convert('srgb').to_string(hex=True, fit='hct-raytrace') for tone in tones])
 ```
 
-If we want to make ray tracing the default algorithm for all gamut mapping, we can simply set `FIT` to our method.
+If we want to make ray tracing in HCT the default algorithm for all gamut mapping, we can simply set `FIT` to our
+method.
 
 ```py
 class Color(Base):
@@ -656,7 +671,8 @@ tones = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 100]
 Steps([c.clone().set('tone', tone).convert('srgb').to_string(hex=True, fit='hct-chroma') for tone in tones])
 ```
 
-If we want to make ray tracing the default algorithm for all gamut mapping, we can simply set `FIT` to our method.
+If we want to make ray tracing in HCT the default algorithm for all gamut mapping, we can simply set `FIT` to our
+method.
 
 ```py
 class Color(Base):

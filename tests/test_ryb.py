@@ -69,7 +69,7 @@ class TestRYBSerialize(util.ColorAssertsPyTest):
         ('color(--ryb none 0.3 0.75)', {}, 'color(--ryb 0 0.3 0.75)'),
         ('color(--ryb none 0.3 0.75)', {'none': True}, 'color(--ryb none 0.3 0.75)'),
         # Test Fit
-        ('color(--ryb 1.2 0.2 0)', {}, 'color(--ryb 1 0.77965 0.18526)'),
+        ('color(--ryb 1.2 0.2 0)', {}, 'color(--ryb 1 0.41366 0.07841)'),
         ('color(--ryb 1.2 0.2 0)', {'fit': False}, 'color(--ryb 1.2 0.2 0)')
     ]
 
