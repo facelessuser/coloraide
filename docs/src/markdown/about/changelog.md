@@ -8,6 +8,8 @@ icon: lucide/scroll-text
 -   **NEW**: Align interpolation approach with CSS. Only noticeable difference will be when interpolating achromatic
     colors using the `longer` hue approach. This affects all interpolation methods except `css-linear`. `css-linear`
     is now deprecated because it behaves exactly like `linear`.
+-   **FIX**: Clamp negative inputs for `rec2100-pq` like CSS does as the PQ algorithm is not well suited to these
+    values.
 -   **FIX**: Fix an issue where very small rays in the `raytrace` gamut mapping can cause unexpected results.
 
 ## 7.0

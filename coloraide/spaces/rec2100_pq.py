@@ -34,4 +34,4 @@ class Rec2100PQ(sRGBLinear):
     def from_base(self, coords: Vector) -> Vector:
         """From base to Rec. 2100 PQ."""
 
-        return util.inverse_eotf_st2084([c * YW for c in coords])
+        return util.inverse_eotf_st2084([max(c * YW, 0.0) for c in coords])
