@@ -422,7 +422,7 @@ class TestRayTrace(util.ColorAsserts, unittest.TestCase):
         # When the intersect is not found, the last good intersect will be selected.
         self.assertColorEqual(
             Color('lch-d65', [0.1, 50, 270]).fit('srgb', method='raytrace', pspace='hct', adaptive=0.05),
-            Color('color(--lch-d65 0.1002 0.46923 14.39)')
+            Color('color(--lch-d65 0.08441 0.22909 34.545)')
         )
 
     def test_ray_trace_very_close_to_gamut(self):

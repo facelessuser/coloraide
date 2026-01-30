@@ -176,7 +176,7 @@ def raytrace_box(
         bx = bmax[i]
 
         # Non parallel case
-        if d:
+        if abs(d) > 1e-15:
             inv_d = 1.0 / d
             t1 = (bn - a) * inv_d
             t2 = (bx - a) * inv_d
@@ -195,8 +195,8 @@ def raytrace_box(
     if tnear < 0.0:
         tnear = tfar
 
-    # Point is very close to the surface, so `tnear` could be very large.
-    if tnear > 10.0:
+    # Point is  close to the surface, so `tnear` could be very large.
+    if not math.isfinite(tnear):
         return []
 
     # Calculate intersection interpolation.
