@@ -141,36 +141,50 @@ exclude_lines = [
     "@overload"
 ]
 
-[tool.tox]
-legacy_tox_ini = """
-    [tox]
-    isolated_build = true
-    envlist=
-        py39,py310,py311,py312,py313,py314,
-        lint
+[tool.hatch.envs.dev]
+dependencies = [
+    "pytest",
+    "pytest-cov",
+    "coverage",
+    "mypy",
+    "ruff",
+    "build"
+]
 
-    [testenv]
-    passenv=LANG
-    deps=
-        -r requirements/test.txt
-    commands=
-        "{envpython}" -m mypy
-        "{envpython}" -m pytest --cov coloraide --cov-append tests
-        "{envpython}" -m coverage html -d {envtmpdir}/coverage
-        "{envpython}" -m coverage xml
-        "{envpython}" -m coverage report --show-missing
+[tool.hatch.envs.docs]
+dependencies = [
+    "zensical",
+    "markdown",
+    "pymdown-extensions",
+    "pymdown_lexers @ git+https://github.com/facelessuser/pymdown-lexers.git",
+    "pyspelling",
+    "build",
+    "python-minifier"
+]
 
-    [testenv:lint]
-    deps=
-        -r requirements/lint.txt
-    commands=
-        "{envbindir}"/ruff check .
+[[tool.hatch.envs.dev.matrix]]
+python = ["3.9", "3.10", "3.11", "3.12", "3.13", "3.14"]
 
-    [testenv:documents]
-    deps=
-        -r requirements/docs.txt
-    commands=
-        "{envpython}" tools/buildwheel.py
-        "{envpython}" -m zensical.main build -f zensical.yml --clean --strict
-        "{envbindir}"/pyspelling
-"""
+[tool.hatch.envs.dev.scripts]
+types = "mypy"
+tests = "pytest --cov coloraide --cov-append --cov-report term-missing --cov-report xml --cov-report html:.cov tests"
+lint = 'ruff check .'
+
+[tool.hatch.envs.docs.scripts]
+spellcheck = [
+    "python tools/buildwheel.py",
+    "python -m zensical.main build -f zensical.yml --clean --strict; pyspelling"
+]
+clean = [
+    "python tools/buildwheel.py",
+    "python -m zensical.main build -f zensical.yml --clean"
+]
+serve = [
+    "python tools/buildwheel.py",
+    "python -m zensical.main serve -f zensical.yml"
+]
+build = [
+    "python tools/buildwheel.py",
+    "npm run build",
+    "python -m zensical.main build -f zensical.yml --clean"
+]

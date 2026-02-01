@@ -30,10 +30,11 @@ jobs:
         allow-prereleases: true
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip setuptools tox coverage
+        python -m pip install --upgrade pip setuptools hatch
     - name: Test
       run: |
-        python -m tox -e py
+        hatch run +py=${{ matrix.python-version }} dev:mypy
+        hatch run +py=${{ matrix.python-version }} dev:tests
     - name: Upload Results
       if: success()
       uses: codecov/codecov-action@v4
@@ -63,10 +64,10 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip setuptools tox
+        python -m pip install --upgrade pip setuptools hatch
     - name: Lint
       run: |
-        python -m tox
+        python -m hatch run +py=${{ matrix.python-version }} dev:lint
 
   documents:
     strategy:
@@ -91,14 +92,11 @@ jobs:
         node-version: '22'
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip setuptools
-        python -m pip install -r requirements/dev.txt
+        python -m pip install --upgrade pip setuptools hatch
         npm install --legacy-peer-deps
     - name: Install Aspell
       run: |
         sudo apt-get install aspell aspell-en
     - name: Build documents
       run: |
-        python tools/buildwheel.py
-        npm run build
-        python -m tox
+        python -m hatch run docs:spellcheck
