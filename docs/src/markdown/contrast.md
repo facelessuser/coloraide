@@ -107,7 +107,7 @@ Color("blue").contrast("red", method='wcag21')
 
 ### Lstar Lightness Difference
 
-> [!failure] | The Lstar contrast method is **not** registered in `Color` by default
+> [!failure] The Lstar contrast method is **not** registered in `Color` by default
 
 Google's Material Design uses a new color space called [HCT](./colors/hct.md). It uses the hue and chroma from
 [CAM16](./colors/cam16.md) and the tone/lightness from CIELab. For contrast, they determined using tones that are

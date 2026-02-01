@@ -124,7 +124,7 @@ Parameter | Graphic\ Arts | Textiles
 
 ### Delta E CIEDE2000
 
-> [!success] | The ∆E^\*^~00~ distancing algorithm is registered in `Color` by default
+> [!success] The ∆E^\*^~00~ distancing algorithm is registered in `Color` by default
 
 Delta\ E                                 | Symmetrical           | Name            | Parameters
 ---------------------------------------- | --------------------- | --------------- | ----------
@@ -218,7 +218,7 @@ Color.register([DIN99o(), DE99o()])
 
 ### Delta E CAM16
 
-> [!failure] | The ∆E~cam16~ distancing algorithm is **not** registered in `Color` by default
+> [!failure] The ∆E~cam16~ distancing algorithm is **not** registered in `Color` by default
 
 Delta\ E                                 | Symmetrical           | Name            | Parameters
 ---------------------------------------- | --------------------- | --------------- | --------------------

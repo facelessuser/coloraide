@@ -79,7 +79,7 @@ have pivot points and the transition may not be quite as smooth at these locatio
 
 ## Continuous Interpolation
 
-> [!success] | Continuous interpolation is registered in `Color` by Default
+> [!success] Continuous interpolation is registered in `Color` by Default
 
 In this document, we use the term "continuous" in two ways when talking about interpolation: continuous vs
 [discrete ](#discrete-interpolation) and the interpolation method whose literal name is `continuous`.
