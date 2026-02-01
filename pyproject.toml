@@ -166,11 +166,11 @@ dependencies = [
 python = ["3.9", "3.10", "3.11", "3.12", "3.13", "3.14"]
 
 [tool.hatch.envs.test.scripts]
-test = 'python -m mypy; python -m pytest --cov coloraide --cov-append --cov-report term-missing --cov-report xml --cov-report html:.cov tests'
+test = 'mypy; python -m pytest --cov coloraide --cov-append --cov-report term-missing --cov-report xml --cov-report html:.cov tests'
 lint = 'python -m ruff check .'
 
 [tool.hatch.envs.docs.scripts]
-spellcheck = "python -m tools/buildwheel.py; python3 -m zensical.main build -f zensical.yml --clean --strict; pyspelling"
-clean = "python -m tools/buildwheel.py; python3 -m zensical.main build -f zensical.yml --clean"
-serve = "python -m tools/buildwheel.py; python3 -m zensical.main serve -f zensical.yml"
-build = "python -m tools/buildwheel.py; npm run build; python3 -m zensical.main build -f zensical.yml --clean"
+spellcheck = "python -m tools/buildwheel.py; python -m zensical.main build -f zensical.yml --clean --strict; pyspelling"
+clean = "python -m tools/buildwheel.py; python -m zensical.main build -f zensical.yml --clean"
+serve = "python -m tools/buildwheel.py; python -m zensical.main serve -f zensical.yml"
+build = "python -m tools/buildwheel.py; npm run build; python -m zensical.main build -f zensical.yml --clean"
