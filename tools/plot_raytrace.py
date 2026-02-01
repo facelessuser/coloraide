@@ -9,7 +9,7 @@ import json
 sys.path.insert(0, os.getcwd())
 
 import tools.gamut_3d_plotly as plt3d  # noqa: E402
-from coloraide.gamut import fit_raytrace as fit  # noqa: E402
+from coloraide.gamut import fit_raytrace as fit, clip_channels  # noqa: E402
 from coloraide.everything import ColorAll as Color  # noqa: E402
 from coloraide import algebra as alg  # noqa: E402
 from coloraide.channels import ANGLE_DEG  # noqa: E402
@@ -153,20 +153,22 @@ def simulate_raytrace_gamut_mapping(args):
         coerced = True
         cs = fit.coerce_to_rgb(cs)
 
-    bmax = [chan.high for chan in cs.CHANNELS]
+    mx = cs.CHANNELS[0].high
 
     linear = cs.linear()
     if linear and linear in color.CS_MAP:
         subtractive = cs.SUBTRACTIVE
         cs = color.CS_MAP[linear]
         if subtractive != cs.SUBTRACTIVE:
-            bmax = color.new(space, [chan.low for chan in cs.CHANNELS]).convert(linear, in_place=True)[:-1]
+            mx = color.new(space, [cs.CHANNELS[0].low] * 3).convert(linear, in_place=True)[0]
         else:
-            bmax = color.new(space, bmax).convert(linear, in_place=True)[:-1]
+            mx = color.new(space, [mx] * 3).convert(linear, in_place=True)[0]
         space = linear
     print('Target RGB Space:', space)
 
-    bmin = [chan.low for chan in cs.CHANNELS]
+    bmax = [mx] * 3
+    mn = cs.CHANNELS[0].low
+    bmin = [mn] * 3
 
     orig = color.space()
     mapcolor = color.convert(pspace, norm=False) if orig != pspace else color.clone().normalize(nans=False)
@@ -218,7 +220,9 @@ def simulate_raytrace_gamut_mapping(args):
             end = fit.to_polar(achroma[:-1], a, b)
             end[b] = start[b]
 
-        offset = 1e-6
+        low = mn + 1e-6
+        high = mx + 1e-6
+
         mapcolor.convert(space, in_place=True)
         last = mapcolor[:-1]
         for i in range(4):
@@ -256,7 +260,7 @@ def simulate_raytrace_gamut_mapping(args):
                 mapcolor[:-1] = last
                 break
 
-            if i and all((bmin[r] + offset) <= coords[r] <= (bmax[r] - offset) for r in range(3)):
+            if i and all(low < x < high for x in coords):
                 anchor = coords
 
             points.append(mapcolor[:-1])
@@ -265,14 +269,7 @@ def simulate_raytrace_gamut_mapping(args):
             mapcolor[:-1] = last = cs.to_base(intersection) if coerced else intersection
 
         print('Final:', mapcolor.convert(pspace, norm=False))
-        if coerced:
-            color.update(
-                space,
-                cs.to_base([alg.clamp(x, bmin[e], bmax[e]) for e, x in enumerate(cs.from_base(mapcolor[:-1]))]),
-                mapcolor[-1]
-            )
-        else:
-            color.update(space, [alg.clamp(x, bmin[e], bmax[e]) for e, x in enumerate(mapcolor[:-1])], mapcolor[-1])
+        clip_channels(color.update(space, mapcolor[:-1], mapcolor[-1]))
         print('Clipped RGB:', color.convert(space))
 
     if mode == 'perceptual':

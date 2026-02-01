@@ -237,7 +237,6 @@ class RayTrace(Fit):
 
         # Get the maximum cube size, usually `[1.0, 1.0, 1.0]`
         mx = cs.CHANNELS[0].high
-        mn = cs.CHANNELS[0].low
 
         # If there is a linear version of the RGB space, results will be better if we use that.
         # Recalculate the bounding box relative to the linear version.
@@ -249,11 +248,11 @@ class RayTrace(Fit):
                 mx = color.new(space, [cs.CHANNELS[0].low] * 3).convert(linear, in_place=True)[0]
             else:
                 mx = color.new(space, [mx] * 3).convert(linear, in_place=True)[0]
-            mn = cs.CHANNELS[0].low
             space = linear
 
         # Get the minimum bounds
         bmax = [mx] * 3
+        mn = cs.CHANNELS[0].low
         bmin = [mn] * 3
 
         orig = color.space()
