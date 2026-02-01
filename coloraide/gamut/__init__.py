@@ -24,7 +24,7 @@ def clip_channels(color: Color, nans: bool = True) -> bool:
         chan = cs.channels[i]
 
         # Ignore angles, undefined, or unbounded channels
-        if not chan.bound or math.isnan(value) or chan.flags & FLG_ANGLE:
+        if not chan.bound or chan.flags & FLG_ANGLE or math.isnan(value):
             color[i] = value
             continue
 
