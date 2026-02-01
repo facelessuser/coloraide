@@ -141,7 +141,7 @@ exclude_lines = [
     "@overload"
 ]
 
-[tool.hatch.envs.test]
+[tool.hatch.envs.dev]
 dependencies = [
     "pytest",
     "pytest-cov",
@@ -162,14 +162,12 @@ dependencies = [
     "python-minifier"
 ]
 
-[[tool.hatch.envs.test.matrix]]
+[[tool.hatch.envs.dev.matrix]]
 python = ["3.9", "3.10", "3.11", "3.12", "3.13", "3.14"]
 
-[tool.hatch.envs.test.scripts]
-test = [
-    "mypy",
-    "pytest --cov coloraide --cov-append --cov-report term-missing --cov-report xml --cov-report html:.cov tests"
-]
+[tool.hatch.envs.dev.scripts]
+types = "mypy"
+tests = "pytest --cov coloraide --cov-append --cov-report term-missing --cov-report xml --cov-report html:.cov tests"
 lint = 'ruff check .'
 
 [tool.hatch.envs.docs.scripts]
