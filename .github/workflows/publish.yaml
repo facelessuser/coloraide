@@ -38,7 +38,7 @@ jobs:
           python -m pip install --upgrade pip build hatch
           npm install --legacy-peer-deps
       - run: |
-          python -m hatch docs:build
+          python -m hatch run docs:build
       - uses: actions/upload-pages-artifact@v3
         with:
           path: site
