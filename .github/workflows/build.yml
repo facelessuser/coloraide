@@ -33,7 +33,7 @@ jobs:
         python -m pip install --upgrade pip setuptools hatch
     - name: Test
       run: |
-        python -m hatch run test.${{ matrix.python-version }}:test
+        python -m hatch run test.py${{ matrix.python-version }}:test
     - name: Upload Results
       if: success()
       uses: codecov/codecov-action@v4
@@ -66,7 +66,7 @@ jobs:
         python -m pip install --upgrade pip setuptools hatch
     - name: Lint
       run: |
-        python -m hatch run test.${{ matrix.python-version }}:lint
+        python -m hatch run test.py${{ matrix.python-version }}:lint
 
   documents:
     strategy:
