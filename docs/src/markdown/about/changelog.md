@@ -3,6 +3,11 @@ icon: lucide/scroll-text
 ---
 # Changelog
 
+## 8.0.1
+
+-   **FIX**: `raytrace` should match the same flow as `minde-chroma` in respect to checking lightness and then checking
+    if the color is in gamut.
+
 ## 8.0
 
 -   **NEW**: The `raytrace` gamut mapping algorithm is now the default and performs gamut mapping in OkLCh which
