@@ -1,6 +1,0 @@
-zensical
-markdown
-pymdown-extensions
-pymdown_lexers @ git+https://github.com/facelessuser/pymdown-lexers.git
-pyspelling
-build
