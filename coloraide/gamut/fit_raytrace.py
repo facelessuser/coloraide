@@ -8,7 +8,7 @@ import math
 from functools import lru_cache
 from .. import util
 from .. import algebra as alg
-from . import Fit
+from . import Fit, clip_channels
 from ..cat import WHITES
 from ..spaces import Prism, Luminant, Space, HSLish, HSVish, HWBish
 from ..spaces.hsl import hsl_to_srgb, srgb_to_hsl
@@ -236,7 +236,8 @@ class RayTrace(Fit):
             cs = coerce_to_rgb(cs)
 
         # Get the maximum cube size, usually `[1.0, 1.0, 1.0]`
-        bmax = [chan.high for chan in cs.CHANNELS]
+        mx = cs.CHANNELS[0].high
+        mn = cs.CHANNELS[0].low
 
         # If there is a linear version of the RGB space, results will be better if we use that.
         # Recalculate the bounding box relative to the linear version.
@@ -245,13 +246,15 @@ class RayTrace(Fit):
             subtractive = cs.SUBTRACTIVE
             cs = color.CS_MAP[linear]
             if subtractive != cs.SUBTRACTIVE:
-                bmax = color.new(space, [chan.low for chan in cs.CHANNELS]).convert(linear, in_place=True)[:-1]
+                mx = color.new(space, [cs.CHANNELS[0].low] * 3).convert(linear, in_place=True)[0]
             else:
-                bmax = color.new(space, bmax).convert(linear, in_place=True)[:-1]
+                mx = color.new(space, [mx] * 3).convert(linear, in_place=True)[0]
+            mn = cs.CHANNELS[0].low
             space = linear
 
         # Get the minimum bounds
-        bmin = [chan.low for chan in cs.CHANNELS]
+        bmax = [mx] * 3
+        bmin = [mn] * 3
 
         orig = color.space()
         mapcolor = color.convert(pspace, norm=False) if orig != pspace else color.clone().normalize(nans=False)
@@ -306,7 +309,8 @@ class RayTrace(Fit):
 
             # Offset is required for some perceptual spaces that are sensitive
             # to anchors that get too close to the surface.
-            offset = 1e-6
+            low = mn + 1e-6
+            high = mx + 1e-6
 
             # Use an iterative process of casting rays to find the intersect with the RGB gamut
             # and correcting the intersection onto the LCh chroma reduction path.
@@ -345,7 +349,7 @@ class RayTrace(Fit):
                     break
 
                 # Adjust anchor point closer to surface to improve results.
-                if i and all((bmin[r] + offset) < coords[r] < (bmax[r] - offset) for r in range(3)):
+                if i and all(low < x < high for x in coords):
                     anchor = coords
 
                 # Update color with the intersection point on the RGB surface.
@@ -354,11 +358,4 @@ class RayTrace(Fit):
                 continue
 
             # Remove noise from floating point conversion.
-            if coerced:
-                color.update(
-                    space,
-                    cs.to_base([alg.clamp(x, bmin[e], bmax[e]) for e, x in enumerate(cs.from_base(mapcolor[:-1]))]),
-                    mapcolor[-1]
-                )
-            else:
-                color.update(space, [alg.clamp(x, bmin[e], bmax[e]) for e, x in enumerate(mapcolor[:-1])], mapcolor[-1])
+            clip_channels(color.update(space, mapcolor[:-1], mapcolor[-1]))
