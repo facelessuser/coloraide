@@ -33,13 +33,12 @@ opaqueness beyond the range of [0, 1]. ColorAide clamps alpha on every set.
 There are three features that allow ColorAide to mimic CSS behavior. All three features can be used on demand via
 special parameters when using the appropriate, related functions, but if desired, they can be forced to be enabled for a
 `Color` class. It should be noted that while all of these are defined in the CSS spec, some may not actually be
-implemented at this time. The four features are as follows:
+implemented at this time. The three features are as follows:
 
 1.  Using chroma reduction in OkLCh is the recommend CSS approach. There are multiple algorithms that are suggested in
-    the CSS spec, and  ColorAide uses the `raytrace` approach that we developed. ColorAide also offers `oklch-chroma`
-    which uses the MINDE approach. These are the defaults for ColorAide, and while the `raytrace` approach is the
-    default, either approach can be used, and if one approach is preferred over the other, the default approach can be
-    changed by subclassing `Color`.
+    the CSS spec, and  ColorAide uses the `raytrace` approach that we developed. ColorAide also offers `minde-chroma`
+    which uses the MINDE chroma reduction approach. While the `raytrace` approach is the default, either approach can be
+    used, and if one approach is preferred over the other, the default approach can be changed by subclassing `Color`.
 
     It should be noted that current browsers have not yet implemented these and still only clip colors, but that will
     likely change in the future. If you want to mimic current browsers, you can subclass `Color` by using `clip` or
@@ -93,7 +92,7 @@ mapping algorithm, see below.
 from coloraide import Color as Base
 
 class Color(base):
-    FIT = "clip"  # or "oklch-chroma"
+    FIT = "clip"  # or "minde-chroma"
     POWERLESS = True
     CARRYFORWARD = True
 ```
