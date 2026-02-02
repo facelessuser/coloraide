@@ -176,7 +176,7 @@ def raytrace_box(
         bx = bmax[i]
 
         # Non parallel case
-        if abs(d) > 1e-14:
+        if abs(d) > alg.ATOL:
             inv_d = 1.0 / d
             t1 = (bn - a) * inv_d
             t2 = (bx - a) * inv_d
