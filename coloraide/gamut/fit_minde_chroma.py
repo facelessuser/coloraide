@@ -64,7 +64,7 @@ class MINDEChroma(Fit):
         polar = color.CS_MAP[pspace].is_polar()
         orig = color.space()
         mapcolor = color.convert(pspace, norm=False) if orig != pspace else color.clone().normalize(nans=False)
-        gamutcolor = color.convert(space, norm=False) if orig != space else color.clone().normalize(nans=False)
+        gamutcolor = mapcolor.convert(space, norm=False)
         if polar:
             l, c, h = mapcolor._space.indexes()
         else:
@@ -103,7 +103,7 @@ class MINDEChroma(Fit):
         clip_channels(gamutcolor)
 
         # Adjust chroma if we are not under the JND yet.
-        if not jnd or mapcolor.delta_e(gamutcolor, **de_options) >= jnd:
+        if not jnd or mapcolor.delta_e(gamutcolor, **de_options) > jnd:
             # Perform "in gamut" checks until we know our lower bound is no longer in gamut.
             lower_in_gamut = True
 

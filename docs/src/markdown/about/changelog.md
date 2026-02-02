@@ -3,6 +3,11 @@ icon: lucide/scroll-text
 ---
 # Changelog
 
+## 8.0.2
+
+-   **FIX**: Restrict `raytrace` ray size a little more.
+-   **FIX**: Fix a case where `minde-chroma` could process an already in gamut color.
+
 ## 8.0.1
 
 -   **FIX**: `raytrace` should match the same flow as `minde-chroma` in respect to checking lightness and then checking

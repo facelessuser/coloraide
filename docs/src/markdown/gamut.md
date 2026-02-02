@@ -551,8 +551,8 @@ variant uses CIELCh D65 and uses ∆E~2000~ with a JND of 2. We can manually per
 perceptual space with `psapce`, the ∆E configuration via `de_options`, and the JND with `jnd`.
 
 ``` py play
-gma_lch = {'pspace': 'lch-d65', 'de_options': {'method': '2000'}, 'jnd': 2}
-gma_oklch = {'pspace': 'oklch', 'de_options': {'method': 'ok'}, 'jnd': 0.02}
+gma_lch = {'method': 'minde-chroma', 'pspace': 'lch-d65', 'de_options': {'method': '2000'}, 'jnd': 2}
+gma_oklch = {'method': 'minde-chroma', 'pspace': 'oklch', 'de_options': {'method': 'ok'}, 'jnd': 0.02}
 
 Steps([c.fit('srgb', **gma_lch) for c in Color.steps(['oklch(90% 0.4 0)', 'oklch(90% 0.4 360)'], steps=100, space='oklch', hue='longer')])
 Steps([c.fit('srgb', **gma_oklch) for c in Color.steps(['oklch(90% 0.4 0)', 'oklch(90% 0.4 360)'], steps=100, space='oklch', hue='longer')])
