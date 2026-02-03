@@ -6,7 +6,12 @@ ColorAide is a pure Python, object oriented approach to colors.
 
 ```py play
 from coloraide import Color
-Color.steps(['lch(75% 50 0)', 'lch(75% 50 300)'], steps=8, space='lch', hue='longer')
+Color.steps(
+    ['oklch(75% 30% 0)', 'oklch(75% 30% 360)'],
+    steps=8,
+    space='oklch',
+    hue='longer'
+)
 ```
 
 ColorAide particularly has a focus on the following:

@@ -13,7 +13,7 @@ ColorAide provides a number of useful utilities based on interpolation.
 
 > [!success] Linear interpolation is registered in `Color` by Default
 
-One of the most common, and easiest ways to interpolate data between two points is to use linear interpolation. An easy
+One of the most common, and easiest, ways to interpolate data between two points is to use linear interpolation. An easy
 way of thinking about this concept is to imagine drawing a straight line that connects two colors within a color space.
 We could then navigate along that line and return colors at different points to simulate mixing colors at various
 percentages or return the whole range and create a continuous, smooth gradient.
@@ -42,7 +42,7 @@ step through values of `0.0`, `0.1`, `0.2`, etc. This returns colors at various 
 the two colors, `0` returning `#!color rebeccapurple` and `1` returning `#!color lch(85% 100 85)`.
 
 ```py play
-i = Color.interpolate(["rebeccapurple", "lch(85% 100 85)"], space='lch')
+i = Color.interpolate(["rebeccapurple", "lch(85% 60 85)"], space='lch')
 [i(x / 10).to_string() for x in range(10 + 1)]
 ```
 
@@ -50,7 +50,7 @@ If we create enough steps, we can create a gradient.
 
 ```py play
 i = Color.interpolate(
-    ["rebeccapurple", "lch(85% 100 85)"],
+    ["rebeccapurple", "lch(85% 60 85)"],
     space='lch'
 )
 ```
@@ -105,11 +105,11 @@ Color.interpolate(colors, space='oklab', method='linear')
 Color.interpolate(colors, space='oklab', method='continuous')
 ```
 
-Now, if have colors on the side that are not between two defined colors, all those colors will adopt the defined value
-of the first color on either the right or left that is defined. In the example below, we have a single color with all
-components defined, but all the colors to the left are missing the lightness. Again, in the normal `linear` approach, we
-see a discontinuity, but with the `continous` approach, all colors with the undefined lightness will assume the
-lightness of the defined color.
+Now, if we have colors on the side that are not between two defined colors, all those colors will adopt the defined
+value of the first color on either the right or left that is defined. In the example below, we have a single color with
+all components defined, but all the colors to the left are missing the lightness. Again, in the normal `linear`
+approach, we see a discontinuity, but with the `continous` approach, all colors with the undefined lightness will assume
+the lightness of the defined color.
 
 ```py play
 colors = [

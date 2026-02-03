@@ -185,8 +185,8 @@ Even more interesting is that, like `get()`, you can modify a channel in another
 ```py play
 color = Color("orange")
 color
-color.set('oklab.lightness', 0.50)
-color.set('oklab.0', 0.2)
+color.set('hsl.lightness', 0.80)
+color.set('hsl.0', 0.2)
 ```
 
 When getting/setting a color channel in a different color space than the current color space, the underlying color must
@@ -201,7 +201,7 @@ To get multiple channels, simply provide a list of channels.
 ```py play
 color = Color('orange')
 color
-color.get(['oklch.lightness', 'oklch.hue', 'alpha'])
+color.get(['hsl.lightness', 'hsl.hue', 'alpha'])
 ```
 
 To set multiple channels, pass a single dictionary containing the channel names and values.
@@ -344,7 +344,7 @@ the `nans` option to ensure read operations return a defined value.
 c = Color('srgb', [])
 c
 c.get('red', nans=False)
-c.set('green', lambda x: x + 3, nans=False)
+c.set('green', lambda x: x + 0.5, nans=False)
 ```
 
 > [!note] `set()`
