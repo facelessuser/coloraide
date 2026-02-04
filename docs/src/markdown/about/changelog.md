@@ -3,6 +3,10 @@ icon: lucide/scroll-text
 ---
 # Changelog
 
+## 8.0.3
+
+-   **FIX**: Fix an internal issue related to Pointer Gamut calculations.
+
 ## 8.0.2
 
 -   **FIX**: Restrict `raytrace` ray size a little more.

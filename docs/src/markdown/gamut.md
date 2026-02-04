@@ -858,6 +858,17 @@ showing the maximum range of the gamut. The actual boundary will be different at
 
 ![Pointer's Gamut lightness Levels](images/pointer-gamut-lightness.png)
 
+When viewed in 3D, we can see a lot more of sRGB is sticking out.
+
+![Pointer's Gamut in 3D](images/srgb-pointer-3d.png)
+
+The original gamut's data is described in LCh using illuminant C. Using this color space, we can estimate the chroma
+limit for any color based on it's lightness and hue. We can then reduce the chroma, preserving the lightness and hue.
+The image below shows the out of Pointer's gamut color `#!color red` (indicated by the `x`) which is clamped to the
+Pointer's gamut by reducing the chroma (indicated by the dot).
+
+![Pointer's Gamut Fitted](images/pointer-gamut-fit.png)
+
 The gamuts previously discussed are bound by a color space's limits, but the Pointer's gamut applies to colors more
 generally and was created from observed data via research. Because it doesn't quite fit with the color space gamut API,
 ColorAide exposes two special functions to test if a color is in the Pointer's gamut and to fit a color to the gamut.
@@ -868,14 +879,6 @@ To test if a color is within the gamut, simply call `in_pointer_gamut()`:
 Color('red').in_pointer_gamut()
 Color('orange').in_pointer_gamut()
 ```
-
-ColorAide also provides a way to fit a color to the Pointer's gamut. The original gamut's data is described in LCh using
-illuminant C. Using this color space, we can estimate the chroma limit for any color based on it's lightness and hue.
-We can then reduce the chroma, preserving the lightness and hue. The image below shows the out of Pointer's gamut color
-`#!color red` (indicated by the `x`) which is clamped to the Pointer's gamut by reducing the chroma (indicated by the
-dot).
-
-![Pointer's Gamut Fitted](images/pointer-gamut-fit.png)
 
 ColorAide provides the `fit_pointer_gamut()` method to perform this "fitting" of the color.
 

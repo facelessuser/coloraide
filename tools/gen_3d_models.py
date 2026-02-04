@@ -11,15 +11,17 @@ LOCATION = 'docs/src/markdown/images'
 TEMPLATE = 'sRGB Gamut Plotted in {} Color Space'
 
 
-def plot_model(name, title, filename, gamut='srgb', elev=45, azim=-60.0):
+def plot_model(name, title, filename, gamut='srgb', space=None, elev=45, azim=-60.0):
     """Generate the models."""
 
     width = 800
     height = 800
 
     print(f'===> Generating {name} model...')
+    if space is None:
+        space = name
     fig = diagrams.plot_gamut_in_space(
-        name,
+        space,
         gamuts={gamut: {}},
         title=title,
         size=(width, height),
@@ -74,6 +76,9 @@ models = {
     'oklrab': {'title': TEMPLATE.format('Oklrab'), 'filename': 'oklrab-3d.png'},
     'oklrch': {'title': TEMPLATE.format('OkLrCh'), 'filename': 'oklrch-3d.png', 'azim': 300},
     'orgb': {'title': TEMPLATE.format('oRGB'), 'filename': 'orgb-3d.png', 'azim': -90, 'elev': 80},
+    'pointer': {
+        'title': "Pointer's Gamut Plotted in Luv", 'filename': 'pointer-3d.png', 'space': 'luv', 'gamut': 'pointer'
+    },
     'rlab': {'title': TEMPLATE.format('RLAB'), 'filename': 'rlab-3d.png'},
     'ryb': {'title': 'RYB Color Space', 'filename': 'ryb-3d.png', 'gamut': 'ryb'},
     'ryb-biased': {'title': 'RYB Color Space (Biased)', 'filename': 'ryb-biased-3d.png', 'gamut': 'ryb-biased'},

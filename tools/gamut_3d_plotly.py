@@ -18,6 +18,8 @@ from coloraide.channels import ANGLE_DEG
 from coloraide.spaces import HSLish, HSVish, HWBish, Labish, LChish, RGBish  # noqa: E402
 from coloraide import algebra as alg  # noqa: E402
 from coloraide.color import POSTFIX  # noqa: E402
+from coloraide.gamut.pointer import pointer_gamut_boundary, WHITE_POINT_SC
+from coloraide import util
 
 FORCE_OWN_GAMUT = {'ryb', 'ryb-biased'}
 
@@ -267,7 +269,7 @@ def store_coords(c, x, y, z, flags):
         z.append(c[2])
 
 
-def render_space_cyl(fig, space, gamut, resolution, opacity, edges, faces, ecolor, fcolor, gmap, filters):
+def render_space_cyl(fig, space, gamut, resolution, opacity, edges, faces, ecolor, fcolor, gmap, filters, point):
     """Renders the color space using an HSL cylinder that is then mapped to the given space."""
 
     target = Color.CS_MAP[space]
@@ -331,6 +333,8 @@ def render_space_cyl(fig, space, gamut, resolution, opacity, edges, faces, ecolo
             u.append(c[2])
             v.append(c['hue'])
             c.convert(space, norm=False, in_place=True)
+            if point:
+                c.fit_pointer_gamut()
 
             store_coords(c, x, y, z, flags)
 
@@ -352,13 +356,75 @@ def render_space_cyl(fig, space, gamut, resolution, opacity, edges, faces, ecolo
     create3d(fig, x, y, z, tri, cmap, edges, faces, ecolor, fcolor, opacity, filters)
 
     # Generate tops for spaces that do not normally get tops automatically.
-    if flags['is_hwbish'] or (flags['is_cyl'] and not flags['is_lchish']) or isinstance(cs, HSVish):
+    if (flags['is_hwbish'] or (flags['is_cyl'] and not flags['is_lchish']) or isinstance(cs, HSVish)) and not point:
         cyl_disc(
-            fig, ColorCyl, space, gspace, 'top', resolution, opacity, edges, faces, ecolor, fcolor, gmap, flags, filters
+            fig, ColorCyl, space, gspace, 'top', resolution, opacity, edges,
+            faces, ecolor, fcolor, gmap, flags, filters
         )
-    cyl_disc(
-        fig, ColorCyl, space, gspace, 'bottom', resolution, opacity, edges, faces, ecolor, fcolor, gmap, flags, filters
-    )
+
+    if not point:
+        cyl_disc(
+            fig, ColorCyl, space, gspace, 'bottom', resolution, opacity, edges,
+            faces, ecolor, fcolor, gmap, flags, filters
+        )
+
+    return fig
+
+
+def render_pointer_gamut(fig, space, resolution, opacity, edges, faces, ecolor, fcolor, gmap, filters):
+    """Render the Pointer gamut in 3d."""
+
+    target = Color.CS_MAP[space]
+    flags = {
+        'is_cyl': target.is_polar(),
+        'is_labish': isinstance(target, Labish),
+        'is_lchish': isinstance(target, LChish),
+        'is_hslish': isinstance(target, HSLish),
+        'is_hwbish': isinstance(target, HWBish),
+        'is_hsvish': isinstance(target, HSVish)
+    }
+
+    # Render the two halves of the cylinder
+    u = []
+    v = []
+    x = []
+    y = []
+    z = []
+    cmap = []
+
+    for l in [90] + alg.linspace(90 - 1e-8, 15 + 1e-8, max(3, (resolution // 2) * 2 + 1)) + [15]:
+        b = [
+            Color(
+                'xyz-d65',
+                Color.chromatic_adaptation(WHITE_POINT_SC, Color.CS_MAP['xyz-d65'].WHITE, util.xy_to_xyz(i[0:2], i[2]))
+            ).convert('lch-d65', norm=False, in_place=True).set('c', lambda j, l=l: 1e-8 if l in (15, 90) else j)
+            for i in pointer_gamut_boundary(l)
+        ]
+        b.append(b[0].clone())
+        b[0]['hue'] = b[0]['hue'] - 360
+        for c in Color.steps(b, steps=max(3, (resolution // 2) * 2 + 1), space='lch-d65', hue='specified'):
+            u.append(c['l'])
+            v.append(c['hue'])
+            c.convert(space, norm=False, in_place=True)
+
+            store_coords(c, x, y, z, flags)
+
+            # Adjust gamut to fit the display space
+            s = c.convert('srgb')
+            if not s.in_gamut():
+                s.fit(**gmap)
+            else:
+                s.clip()
+
+            if filters:
+                s.filter(filters[0], **filters[1], in_place=True, out_space=s.space()).clip()
+
+            cmap.append(s.to_string(hex=True))
+
+    # Calculate the triangles
+    tri = Delaunay([*zip(u, v)])
+
+    create3d(fig, x, y, z, tri, cmap, edges, faces, ecolor, fcolor, opacity, filters)
 
     return fig
 
@@ -476,6 +542,7 @@ def plot_gamut_in_space(
         resolution = config.get('resolution', 200)
         edges = config.get('edges', False)
         ecolor = None
+        point = config.get('pointer', False)
         if isinstance(edges, str):
             c = Color(edges).convert('srgb').fit(**gmap)
             if filters:
@@ -491,7 +558,10 @@ def plot_gamut_in_space(
             fcolor = c.to_string(hex=True, alpha=False)
             faces = True
 
-        render_space_cyl(fig, space, gamut, resolution, opacity, edges, faces, ecolor, fcolor, gmap, filters)
+        if gamut == 'pointer':
+            render_pointer_gamut(fig, space, resolution, opacity, edges, faces, ecolor, fcolor, gmap, filters)
+        else:
+            render_space_cyl(fig, space, gamut, resolution, opacity, edges, faces, ecolor, fcolor, gmap, filters, point)
 
     return fig
 

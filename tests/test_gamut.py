@@ -543,9 +543,9 @@ class TestPointerGamut(util.ColorAsserts, unittest.TestCase):
         boundary = gamut.pointer.pointer_gamut_boundary(50)
         # Test a sample of the values
         test = [boundary[0], boundary[5], boundary[8]]
-        expected = [[0.47971142940104206, 0.2384179501289976, 18.418651851244416],
-                    [0.634800855490809, 0.35129621215430396, 18.418651851244416],
-                    [0.49892034937725527, 0.45347791373057683, 18.418651851244416]]
+        expected = [[0.47971142940104206, 0.2384179501289976, 0.18418651851244416],
+                    [0.634800855490809, 0.35129621215430396, 0.18418651851244416],
+                    [0.49892034937725527, 0.45347791373057683, 0.18418651851244416]]
 
         for coords1, coords2 in zip(test, expected):
             [self.assertCompare(a, b) for a, b in zip(coords1, coords2)]
@@ -556,9 +556,9 @@ class TestPointerGamut(util.ColorAsserts, unittest.TestCase):
         boundary = gamut.pointer.pointer_gamut_boundary()
         # Test a sample of the values
         test = [boundary[0], boundary[5], boundary[8]]
-        expected = [[0.5076988072583095, 0.2255929648510513, 11.250973799663784],
-                    [0.634800855490809, 0.35129621215430396, 18.418651851244416],
-                    [0.5260711281340981, 0.462168144862833, 48.2781043708229]]
+        expected = [[0.5076988072583095, 0.2255929648510513, 0.11250973799663784],
+                    [0.634800855490809, 0.35129621215430396, 0.18418651851244416],
+                    [0.5260711281340981, 0.462168144862833, 0.482781043708229]]
 
         for coords1, coords2 in zip(test, expected):
             [self.assertCompare(a, b) for a, b in zip(coords1, coords2)]

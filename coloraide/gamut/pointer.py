@@ -17,7 +17,7 @@ if TYPE_CHECKING:  #pragma: no cover
     from ..color import Color
 
 # White point C as defined in the Pointer data spreadsheet
-XYZ_W = (98.0722647623506, 100.0, 118.225418982695)
+XYZ_W = alg.divide((98.0722647623506, 100.0, 118.225418982695), 100)
 WHITE_POINT_SC = tuple(util.xyz_to_xyY(XYZ_W)[:-1])  # type: VectorLike
 # Rows: hue 0 - 350 at steps of 10
 # Columns: lightness 15 - 90 at steps of 5
