@@ -499,13 +499,18 @@ def plot_gamut_in_space(
     if not is_cyl:
         xaxis = str(names[axm[0]])
     else:
-        max_angle = target.channels[target.hue_index()].angle
+        max_angle = target.channels[target.hue_index()].high
         if max_angle == 360:
             xaxis = f"{names[axm[0]]} (0˚ - 360˚)"
+        elif max_angle == math.tau:
+            xaxis = f"{names[axm[0]]} (0 rad - 2π rad)"
         else:
             min_angle = target.channels[target.hue_index()].low
             type_angle = target.channels[target.hue_index()].angle
-            xaxis = f"{names[axm[0]]} ({min_angle}{POSTFIX[type_angle]} - {max_angle}{POSTFIX[type_angle]})"
+            xaxis = (
+                f"{names[axm[0]]} ({alg.round_to(min_angle, 5)} {POSTFIX[type_angle]} - "
+                f"{alg.round_to(max_angle, 5)} {POSTFIX[type_angle]})"
+            )
 
     yaxis = str(names[axm[1]])
     zaxis = str(names[axm[2]])
