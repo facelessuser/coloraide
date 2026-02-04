@@ -253,7 +253,7 @@ color.get(['alpha', 'oklch.lightness', 'oklch.hue'], precision=[5, 3, 0])
 If you'd like to quickly change over to another space to temporarily work with it in another space, you also can utilize
 the `within()` method.
 
-```py
+```py play
 color = Color("orange")
 color
 with color.within('hsl') as c:
@@ -262,8 +262,35 @@ with color.within('hsl') as c:
 color
 ```
 
+Achromatic hue normalization happens automatically, so an achromatic hue will be given an undefined value if the color
+is achromatic. You can prevent hue normalization to ensure you have an actual number to work with by using the `norm`
+parameter to turn off hue normalization. This handles both the conversion to the target space and when returning.
+
+```py play
+color = Color("gray")
+color
+with color.within('oklch', norm=False) as c:
+    c['chroma'] = 0.1
+    c['hue'] += 180
+color
+```
+
+If it is desired to take control over both the input conversion and the final output conversion separately, `norm_out`
+can be used to prevent the hue normalization when exiting the context.
+
+``` py play
+color = Color("orange").convert('hsl')
+color
+with color.within('oklch', norm_out=False) as c:
+    c['chroma'] = 0
+color
+```
+
 Colors are converted to the specified space and, when leaving the context, the color is back in its original space. This
 assumes no uncaught exceptions are thrown when operating with the colors as this provides no exception handling.
+
+Both `norm` and `norm_out` can be used simultaneously. If only `norm` is used, then both assume the same value. The
+default assumption is hue normalization is set to `#!py True`.
 
 > [!tip]
 > This is a convenience function, and though computationally faster than `get()` and `set()` relative getting/setting
