@@ -84,7 +84,7 @@ class HSV(HSVish, Space):
 
         super().__init__(**kwargs)
         order = alg.order(round(self.channels[self.indexes()[2]].high, 5))
-        self.achromatic_threshold = (1 * 10.0 ** order) / 1_000_000
+        self.achromatic_threshold = max((1 * 10.0 ** order) / 1_000_000, 1e-12)
 
     def lightness_name(self) -> str:
         """Get lightness name."""

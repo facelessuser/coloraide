@@ -381,7 +381,7 @@ def cyl_disc(
 
     # Using a lightness of 0 can sometimes cause the bottom not to show with certain resolutions, so use a very
     # small value instead.
-    zpos = 1e-14 if location == 'bottom' else 1.0 * factor
+    zpos = alg.ATOL if location == 'bottom' else 1.0 * factor
 
     x = []
     y = []
@@ -400,7 +400,7 @@ def cyl_disc(
         space=gamut,
         hue='specified'
     )
-    s2 = ColorCyl(gamut, [alg.NaN, 1e-16, alg.NaN])
+    s2 = ColorCyl(gamut, [alg.NaN, alg.ATOL, alg.NaN])
 
     # Interpolate concentric circles to the center of the disc
     step = int(resolution / 2)
@@ -532,7 +532,7 @@ def render_space_cyl(fig, space, gamut, resolution, opacity, edges, faces, ecolo
     )
     # A generic color at the bottom of the space which we can rotate for
     # interpolation by changing the hue.
-    s2 = ColorCyl(gspace, [alg.NaN, 1 * factor, 1e-14])
+    s2 = ColorCyl(gspace, [alg.NaN, 1 * factor, alg.ATOL])
 
     # Create a 3D mesh by interpolating ring at each lightness down the cylinder side.
     # Include at least 3 points of lightness: lightest, darkest, and mid, which in
@@ -602,12 +602,12 @@ def render_pointer_gamut(fig, space, resolution, opacity, edges, faces, ecolor, 
     z = []
     cmap = []
 
-    for l in [90] + alg.linspace(90 - 1e-8, 15 + 1e-8, max(3, (resolution // 2) * 2 + 1)) + [15]:
+    for l in [90] + alg.linspace(90 - alg.ATOL, 15 + alg.ATOL, max(3, (resolution // 2) * 2 + 1)) + [15]:
         b = [
             Color(
                 'xyz-d65',
                 Color.chromatic_adaptation(WHITE_POINT_SC, Color.CS_MAP['xyz-d65'].WHITE, util.xy_to_xyz(i[0:2], i[2]))
-            ).convert('lch-d65', norm=False, in_place=True).set('c', lambda j, l=l: 1e-8 if l in (15, 90) else j)
+            ).convert('lch-d65', norm=False, in_place=True).set('c', lambda j, l=l: alg.ATOL if l in (15, 90) else j)
             for i in pointer_gamut_boundary(l)
         ]
         b.append(b[0].clone())

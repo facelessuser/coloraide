@@ -557,7 +557,7 @@ def ilerp2d(
     *,
     vertices_t: Matrix | None = None,
     max_iter: int = 20,
-    tol: float = 1e-14
+    tol: float = ATOL
 ) -> Vector:
     """
     Inverse interpolation of a 2D point.
@@ -648,7 +648,7 @@ def ilerp3d(
     *,
     vertices_t: Matrix | None = None,
     max_iter: int = 20,
-    tol: float = 1e-14
+    tol: float = ATOL
 ) -> Vector:
     """
     Inverse trilinear interpolation.
@@ -4978,7 +4978,7 @@ def inner(a: float | ArrayLike, b: float | ArrayLike) -> float | Array:
 def fnnls(
     A: MatrixLike,
     b: VectorLike,
-    epsilon: float = 1e-12,
+    epsilon: float = ATOL,
     max_iters: int = 0
 ) -> tuple[Vector, float]:
     """

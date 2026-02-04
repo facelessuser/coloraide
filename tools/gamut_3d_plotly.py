@@ -21,7 +21,7 @@ from coloraide.color import POSTFIX  # noqa: E402
 from coloraide.gamut.pointer import pointer_gamut_boundary, WHITE_POINT_SC
 from coloraide import util
 
-FORCE_OWN_GAMUT = {'ryb', 'ryb-biased'}
+FORCE_OWN_GAMUT = {} # {'ryb', 'ryb-biased'}
 
 
 def get_face_color(cmap, simplex, filters):
@@ -171,7 +171,7 @@ def cyl_disc(
 
     # Using a lightness of 0 can sometimes cause the bottom not to show with certain resolutions, so use a very
     # small value instead.
-    zpos = 1e-14 if location == 'bottom' else 1.0 * factor
+    zpos = alg.ATOL if location == 'bottom' else 1.0 * factor
 
     x = []
     y = []
@@ -190,7 +190,7 @@ def cyl_disc(
         space=gamut,
         hue='specified'
     )
-    s2 = ColorCyl(gamut, [alg.NaN, 1e-16, alg.NaN])
+    s2 = ColorCyl(gamut, [alg.NaN, alg.ATOL, alg.NaN])
 
     # Interpolate concentric circles to the center of the disc
     step = int(resolution / 2)
@@ -322,7 +322,7 @@ def render_space_cyl(fig, space, gamut, resolution, opacity, edges, faces, ecolo
     )
     # A generic color at the bottom of the space which we can rotate for
     # interpolation by changing the hue.
-    s2 = ColorCyl(gspace, [alg.NaN, 1 * factor, 1e-14])
+    s2 = ColorCyl(gspace, [alg.NaN, 1 * factor, alg.ATOL])
 
     # Create a 3D mesh by interpolating ring at each lightness down the cylinder side.
     # Include at least 3 points of lightness: lightest, darkest, and mid, which in
