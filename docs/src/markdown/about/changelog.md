@@ -5,6 +5,7 @@ icon: lucide/scroll-text
 
 ## 8.0.3
 
+-   **NEW**: Allow relative color manipulation using context manager function `within`.
 -   **FIX**: Fix an internal issue related to Pointer Gamut calculations.
 
 ## 8.0.2

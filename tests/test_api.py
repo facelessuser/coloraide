@@ -180,6 +180,29 @@ class TestMisc(util.ColorAsserts, unittest.TestCase):
         d = c1.to_dict(precision=[2, 2, 2, 3], rounding='decimal')
         self.assertEqual(d, {'alpha': 0.751, 'coords': [29.69, 56.11, -36.29], 'space': 'lab'})
 
+    def test_context_manager(self):
+        """Test access by context manager."""
+
+        color = Color("orange")
+        a = color.clone()
+        with a.within('hsl') as c:
+            c['lightness'] = 0.80
+            c['hue'] = 0.2
+        b = color.clone().set({'hsl.lightness': 0.80, 'hsl.hue': 0.2})
+        self.assertColorEqual(a, b)
+
+    def test_context_manager_no_normalize(self):
+        """Test access by context manager."""
+
+        color = Color("gray")
+        a = color.clone()
+        with a.within('hsl') as c:
+            self.assertTrue(math.isnan(c['hue']))
+
+        b = color.clone()
+        with b.within('hsl', norm=False) as c:
+            self.assertTrue(not math.isnan(c['hue']))
+
     def test_dict_input(self):
         """Test dictionary inputs."""
 

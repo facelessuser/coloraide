@@ -246,6 +246,34 @@ color.get(['alpha', 'oklch.lightness', 'oklch.hue'], precision=[5, 3, 0])
 
 > [!new] New in 4.0: Precision Output Control
 
+### Access By Context Manager
+
+> [!new] New in 8.1.0
+
+If you'd like to quickly change over to another space to temporarily work with it in another space, you also can utilize
+the `within()` method.
+
+```py
+color = Color("orange")
+color
+with color.within('hsl') as c:
+    c['lightness'] = 0.80
+    c['hue'] = 0.2
+color
+```
+
+Colors are converted to the specified space and, when leaving the context, the color is back in its original space. This
+assumes no uncaught exceptions are thrown when operating with the colors as this provides no exception handling.
+
+> [!tip]
+> This is a convenience function, and though computationally faster than `get()` and `set()` relative getting/setting
+> manually calling conversion is computationally faster still. But when convenience is preferable to speed, these can
+> be useful, and an easy way to change a color in a different space without cloning or forgetting to convert the color
+> back.
+>
+> `get()` and `set()` are still handy if you want to [force](#forcing-defined-values) resolution of undefined values or
+> controlling precision.
+
 ## Undefined Values
 
 Colors can sometimes have undefined channels. This can actually happen in a number of ways. In almost all cases,

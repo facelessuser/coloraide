@@ -5,6 +5,7 @@ import abc
 import functools
 import random
 import math
+from contextlib import contextmanager
 from . import cat
 from . import distance
 from . import convert
@@ -646,6 +647,22 @@ class Color(metaclass=ColorMeta):
             this.fit(**(fit if isinstance(fit, dict) else {'method': None if fit is True else fit}))
 
         return this
+
+    @contextmanager
+    def within(
+        self,
+        space: str,
+        *,
+        norm: bool = True,
+        norm_out: bool | None = None
+    ) -> Iterator[Self]:
+        """Manipulate the color within the provided space while under context."""
+
+        n1 = norm
+        n2 = n1 if norm_out is None else norm_out
+        orig_space = self._space.NAME
+        yield self.convert(space, norm=n1, in_place=True)
+        self.convert(orig_space, norm=n2, in_place=True)
 
     def is_achromatic(self) -> bool:
         """Test if color is achromatic."""
