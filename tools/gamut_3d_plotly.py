@@ -21,7 +21,7 @@ from coloraide.color import POSTFIX  # noqa: E402
 from coloraide.gamut.pointer import pointer_gamut_boundary, WHITE_POINT_SC
 from coloraide import util
 
-FORCE_OWN_GAMUT = {} # {'ryb', 'ryb-biased'}
+FORCE_OWN_GAMUT = {'ryb', 'ryb-biased'}
 
 
 def get_face_color(cmap, simplex, filters):
