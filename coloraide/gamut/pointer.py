@@ -21,9 +21,9 @@ XYZ_W = alg.divide((98.0722647623506, 100.0, 118.225418982695), 100)
 WHITE_POINT_SC = tuple(util.xyz_to_xyY(XYZ_W)[:-1])  # type: VectorLike
 # Rows: hue 0 - 360 at steps of 10
 # Columns: lightness 15 - 90 at steps of 5
-LCH_L = [*range(15, 91, 5)]
-LCH_H = [*range(0, 361, 10)]
-GAMUT = [
+LIGHTNESS = [*range(15, 91, 5)]
+HUE = [*range(0, 361, 10)]
+LUT = [
     [10, 30, 43, 56, 68, 77, 79, 77, 72, 65, 57, 50, 40, 30, 19, 8],
     [15, 30, 45, 56, 64, 70, 73, 73, 71, 65, 57, 48, 39, 30, 18, 7],
     [14, 34, 49, 61, 69, 74, 76, 76, 74, 68, 61, 51, 40, 30, 19, 9],
@@ -90,19 +90,19 @@ def closest_lightness(l: float) -> tuple[int, float]:
     """Calculate the two closest lightness values and return the first index and interpolation factor."""
 
     # Handle too low lightness inside tolerance
-    if l <= LCH_L[0]:
+    if l <= LIGHTNESS[0]:
         li = 0
         lf = 0.0
 
     # Handle too high lightness inside tolerance
-    elif l >= LCH_L[-1]:
-        li = len(LCH_L) - 2
+    elif l >= LIGHTNESS[-1]:
+        li = len(LIGHTNESS) - 2
         lf = 1.0
 
-    # Handle lightness with gamut
+    # Handle lightness within gamut
     else:
-        li = bisect.bisect(LCH_L, l) - 1
-        l1, l2 = LCH_L[li:li + 2]
+        li = bisect.bisect(LIGHTNESS, l) - 1
+        l1, l2 = LIGHTNESS[li:li + 2]
         lf = 1 - (l2 - l) / (l2 - l1)
 
     return li, lf
@@ -111,9 +111,21 @@ def closest_lightness(l: float) -> tuple[int, float]:
 def closest_hue(h: float) -> tuple[int, float]:
     """Calculate the two closest hues and return the first index and interpolation factor."""
 
-    hi = bisect.bisect(LCH_H, h) - 1
-    h1, h2 = LCH_H[hi:hi + 2]
-    hf = 1 - (h2 - h) / (h2 - h1)
+    # Handle hue at the start
+    if h == HUE[0]:  # pragma: no cover
+        hi = 0
+        hf = 0.0
+
+    # Handle hue at the end
+    elif h == HUE[-1]:  # pragma: no cover
+        hi = len(HUE) - 2
+        hf = 1.0
+
+    # Handle all other hues
+    else:
+        hi = bisect.bisect(HUE, h) - 1
+        h1, h2 = HUE[hi:hi + 2]
+        hf = 1 - (h2 - h) / (h2 - h1)
 
     return hi, hf
 
@@ -128,10 +140,7 @@ def get_chroma_limit(l: float, h: float) -> float:
     hi, hf = closest_hue(h)
 
     # Interpolate the chroma limit by interpolating chroma values for the closest lightness values and hues.
-    if hi == len(LCH_H) - 1:
-        row1, row2 = GAMUT[-1], GAMUT[0]
-    else:
-        row1, row2 = GAMUT[hi:hi + 2]
+    row1, row2 = LUT[hi:hi + 2]
     return alg.lerp(alg.lerp(row1[li], row1[li + 1], lf), alg.lerp(row2[li], row2[li + 1], lf), hf)
 
 
@@ -142,8 +151,8 @@ def fit_pointer_gamut(color: AnyColor) -> AnyColor:
     l, c, h = to_lch_sc(color)
 
     # Clamp lightness
-    new_l = max(LCH_L[0], l)
-    new_l = min(LCH_L[-1], new_l)
+    new_l = max(LIGHTNESS[0], l)
+    new_l = min(LIGHTNESS[-1], new_l)
 
     new_c = min(c, get_chroma_limit(l, h))
 
@@ -167,7 +176,7 @@ def in_pointer_gamut(color: Color, tolerance: float) -> bool:
     l, c, h = to_lch_sc(color)
 
     # If lightness exceeds the acceptable range, then we are not in gamut
-    if (l < (LCH_L[0] - tolerance)) or (l > (LCH_L[-1] + tolerance)):
+    if (l < (LIGHTNESS[0] - tolerance)) or (l > (LIGHTNESS[-1] + tolerance)):
         return False
 
     # Test that the color does not exceed the max chroma
@@ -186,11 +195,11 @@ def pointer_gamut_boundary(lightness: float | None = None) -> Matrix:
     # For each hue, find the lightness/chroma point that is furthest away from the white point.
     if lightness is None:
         max_gamut = []  # type: Matrix
-        for i, h in enumerate(LCH_H[:-1]):
+        for i, h in enumerate(HUE[:-1]):
             max_dxy = 0.0
             max_xyy = [0.0, 0.0, 0.0]
-            for j, l in enumerate(LCH_L):
-                xyy = lch_sc_to_xyY([l, GAMUT[i][j], h])
+            for j, l in enumerate(LIGHTNESS):
+                xyy = lch_sc_to_xyY([l, LUT[i][j], h])
                 dxy = math.sqrt((WHITE_POINT_SC[0] - xyy[0]) ** 2 + (WHITE_POINT_SC[1] - xyy[1]) ** 2)
                 if dxy > max_dxy:
                     max_dxy = dxy
@@ -200,11 +209,11 @@ def pointer_gamut_boundary(lightness: float | None = None) -> Matrix:
 
     # Pointer gamut boundary at a given lightness
     # Return all the points for a given lightness
-    elif LCH_L[0] <= lightness <= LCH_L[-1]:
+    elif LIGHTNESS[0] <= lightness <= LIGHTNESS[-1]:
         li, lf = closest_lightness(lightness)
-        chroma = [alg.lerp(row[li], row[li + 1], lf) for row in GAMUT[:-1]]
-        return [lch_sc_to_xyY([lightness, c, h]) for c, h in zip(chroma, LCH_H)]
+        chroma = [alg.lerp(row[li], row[li + 1], lf) for row in LUT[:-1]]
+        return [lch_sc_to_xyY([lightness, c, h]) for c, h in zip(chroma, HUE)]
 
     # Lightness exceeds threshold
     else:
-        raise ValueError(f'Lightness must be between {LCH_L[0]} and {LCH_L[-1]}, but was {lightness}')
+        raise ValueError(f'Lightness must be between {LIGHTNESS[0]} and {LIGHTNESS[-1]}, but was {lightness}')

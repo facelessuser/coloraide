@@ -20,7 +20,7 @@ from . import temperature
 from . import util
 from . import algebra as alg
 from .channels import ANGLE_DEG, ANGLE_RAD, ANGLE_GRAD, ANGLE_TURN, ANGLE_NULL
-from .deprecate import warn_deprecated
+from .deprecate import warn_deprecated, deprecated
 from itertools import zip_longest as zipl
 from .css import parse
 from .types import VectorLike, Vector, ColorInput
@@ -83,7 +83,7 @@ from .temperature import CCT
 from .temperature.ohno_2013 import Ohno2013
 from .temperature.robertson_1968 import Robertson1968
 from .types import Plugin
-from typing import Iterator, overload, Sequence, Iterable, Any, Callable, Mapping
+from typing import Iterator, overload, Sequence, Iterable, Any, Callable, Mapping, cast
 if (3, 11) <= sys.version_info:
     from typing import Self
 else:
@@ -375,6 +375,8 @@ class Color(metaclass=ColorMeta):
                 mapping = cls.CS_MAP
                 reset_convert_cache = True
                 p = i
+                if p.NAME in gamut.SPECIAL_GAMUTS:
+                    raise ValueError(f"Color space name '{p.NAME}' conflicts with the an internal, special gamut")
             elif isinstance(i, DeltaE):
                 mapping = cls.DE_MAP
                 p = i
@@ -1001,6 +1003,10 @@ class Color(metaclass=ColorMeta):
         if method == 'clip':
             return self.clip(space)
 
+        # Handle special gamut requests
+        if space in gamut.SPECIAL_GAMUTS:
+            return cast(Self, gamut.SPECIAL_GAMUTS[space]['fit'](self))
+
         # If within gamut, just normalize hue range by calling clip.
         if self.in_gamut(space, tolerance=0):
             self.clip(space)
@@ -1028,6 +1034,10 @@ class Color(metaclass=ColorMeta):
         if space is None:
             space = self.space()
 
+        # Handle special gamut requests
+        if space in gamut.SPECIAL_GAMUTS:
+            return cast(bool, gamut.SPECIAL_GAMUTS[space]['check'](self, tolerance=tolerance))
+
         # Check if gamut is in the provided space
         c = self.convert(space, norm=False) if space is not None and space != self.space() else self
 
@@ -1042,12 +1052,14 @@ class Color(metaclass=ColorMeta):
 
         return gamut.verify(c, tolerance)
 
-    def in_pointer_gamut(self, *, tolerance: float = util.DEF_FIT_TOLERANCE) -> bool:
+    @deprecated("`color.in_pointer_gamut()` has been deprecated in favor of using `color.in_gamut('pointer-gamut')`")
+    def in_pointer_gamut(self, *, tolerance: float = util.DEF_FIT_TOLERANCE) -> bool:  # pragma: no cover
         """Check if in pointer gamut."""
 
         return gamut.pointer.in_pointer_gamut(self, tolerance)
 
-    def fit_pointer_gamut(self) -> Self:
+    @deprecated("`color.fit_pointer_gamut()` has been deprecated in favor of using `color.fit('pointer-gamut')`")
+    def fit_pointer_gamut(self) -> Self:  # pragma: no cover
         """Check if in pointer gamut."""
 
         return gamut.pointer.fit_pointer_gamut(self)

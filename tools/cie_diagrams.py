@@ -277,7 +277,7 @@ class DiagramOptions:
             if self.viewed_chromaticity is None:
                 self.chromaticity = ('xy-' + mode) if mode == '1931' else ('uv-' + mode)
             else:
-                self.chromaticity = ('xy-1931')
+                self.chromaticity = 'xy-1931'
             self.viewed_chromaticity = self.chromaticity
 
         self.mode = mode
@@ -330,7 +330,7 @@ def cie_diagram(
     mode="1931", observer="2deg", colorize=True, opacity=1, rgb_spaces=None,
     white_points=None, title='', show_labels=True, axis=True,
     show_legend=True, overlay_legend=True, black_body=False, isotherms=False, cct=None, pointer=False,
-    height=600, width=800
+    macadam_limits=False, height=600, width=800
 ):
     """CIE diagram."""
 
@@ -372,8 +372,7 @@ def cie_diagram(
 
     spectral_locus = SpectralLocus(xs, ys, wavelength)
     annotations = get_spectral_locus_labels(spectral_locus, opt.spectral_locus_labels, opt.label_distance, opt)
-
-    xs, ys = spectral_locus.steps(len(xs) * 2)
+    xs, ys = spectral_locus.steps(int(len(xs) * 1.5))
 
     # Draw the bottom purple line
     interp = alg.interpolate([[xs[-1], ys[-1]], [xs[0], ys[0]]])
@@ -402,7 +401,7 @@ def cie_diagram(
                 x, y = Color.convert_chromaticity('xy-1931', opt.chromaticity, pt[:-1])[:-1]
                 if sx:
                     interp = alg.interpolate([[sx[-1], sy[-1]], [x, y]])
-                    _sx, _sy = zip(*[interp(i / 50) for i in range(1, 51)])
+                    _sx, _sy = zip(*[interp(i / 25) for i in range(1, 26)])
                     sx.extend(_sx)
                     sy.extend(_sy)
                     xy.extend([convert_chromaticity((a, b), opt) for a, b in zip(_sx, _sy)])
@@ -410,6 +409,40 @@ def cie_diagram(
                     sx.append(x)
                     sy.append(y)
                     xy.append(convert_chromaticity((x, y), opt))
+
+            _x, _y = zip(*xy)
+            spaces.append(
+                (
+                    sx,
+                    sy,
+                    color,
+                    label,
+                    Polygon2D(sx, sy),
+                    _x,
+                    _y
+                )
+            )
+
+    # Rösch-MacAdam gamut
+    if macadam_limits:
+        for p in macadam_limits:
+            bounds, color = p.split(':')
+            sx = []
+            sy = []
+            xy = []
+            if bounds == 'max':
+                pts = gamut.visible_spectrum.macadam_limits()
+                label = 'visible spectrum'
+            else:
+                l = min(1, max(0, float(bounds)))
+                pts = gamut.visible_spectrum.macadam_limits(l)
+                label = f'MacAdam Limit Y={round(l, 2)}'
+            pts.append(pts[0])
+            for pt in pts:
+                x, y = Color.convert_chromaticity('xy-1931', opt.chromaticity, pt[:-1])[:-1]
+                sx.append(x)
+                sy.append(y)
+                xy.append(convert_chromaticity((x, y), opt))
 
             _x, _y = zip(*xy)
             spaces.append(
@@ -754,6 +787,11 @@ def main():
         help="Show Pointer gamut by specifying an L* value and a color for the boundary '30:color'. "
              "'max' can be used show the maximum gamut instead of the gamut at a specific lightness 'max:color'."
     )
+    parser.add_argument(
+        '--macadam-limits', '-M', action='append',
+        help="Show MacAdam limits, relative to D65, by specifying an L* value and a color for the boundary '30:color'. "
+             "'max' can be used show the entire visible spectrum 'max:color'."
+    )
     parser.add_argument('--rgb', '-r', action='append', help="An RGB space to show on diagram: 'space:color'.")
     parser.add_argument('--title', '-t', default='', help="Override title with your own.")
     parser.add_argument('--no-axis', '-x', action="store_true", help="Disable display axis.")
@@ -785,6 +823,7 @@ def main():
         isotherms=args.isotherms,
         cct=args.cct,
         pointer=args.pointer,
+        macadam_limits=args.macadam_limits,
         height=args.height,
         width=args.width
     )

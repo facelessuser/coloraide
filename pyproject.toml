@@ -87,7 +87,8 @@ line-length = 120
 target-version = "py311"
 
 extend-exclude = [
-    "tools/oklab_srgb_gamut_approximation.py"
+    "tools/oklab_srgb_gamut_approximation.py",
+    "coloraide/gamut/rosch_macadam_solid.py"
 ]
 
 lint.select = [
@@ -133,7 +134,8 @@ lint.ignore = [
 omit = [
     "coloraide/spaces/cam16_jmh.py",
     "coloraide/spaces/zcam_jmh.py",
-    "coloraide/deprecate.py"
+    "coloraide/deprecate.py",
+    "coloraide/sds.py"
 ]
 
 exclude_lines = [

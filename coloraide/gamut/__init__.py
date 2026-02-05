@@ -4,13 +4,25 @@ import math
 from ..channels import FLG_ANGLE
 from abc import ABCMeta, abstractmethod
 from ..types import Plugin
-from typing import Any, TYPE_CHECKING
+from typing import Any, TYPE_CHECKING, Callable  # noqa: F401
 from . import pointer
+from . import visible_spectrum
 
 if TYPE_CHECKING:  #pragma: no cover
     from ..color import Color
 
-__all__ = ('clip_channels', 'verify', 'Fit', 'pointer')
+__all__ = ('clip_channels', 'verify', 'Fit', 'pointer', 'visible_spectrum')
+
+SPECIAL_GAMUTS = {
+    'pointer-gamut': {
+        'check': pointer.in_pointer_gamut,
+        'fit': pointer.fit_pointer_gamut
+    },
+    'macadam-limits': {
+        'check': visible_spectrum.in_macadam_limits,
+        'fit': visible_spectrum.fit_macadam_limits
+    }
+}   # type: dict[str, dict[str, Callable[..., Any]]]
 
 
 def clip_channels(color: Color, nans: bool = True) -> bool:

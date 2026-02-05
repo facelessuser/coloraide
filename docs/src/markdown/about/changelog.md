@@ -6,6 +6,11 @@ icon: lucide/scroll-text
 ## 8.1
 
 -   **NEW**: Allow relative color manipulation using context manager function `within`.
+-   **NEW**: Add new special gamut `macadam-limits` for evaluating a color within these limits via `in_gamut()` or
+    clamping to these limits via `fit()`.
+-   **NEW**: Add new special gamut `pointer-gamut` for evaluating a color within these limits via `in_gamut()` or
+    clamping to these limits via `fit()`. `in_pointer_gamut()` and `fit_pointer_gamut()` are deprecated and will be
+    removed at some future time.
 -   **FIX**: Fix an internal issue related to Pointer Gamut calculations.
 -   **FIX**: Ensure consistency with checks close to zero for various algorithms.
 
