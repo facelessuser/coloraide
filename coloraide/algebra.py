@@ -262,7 +262,7 @@ def polar_to_rect(c: float, h: float) -> tuple[float, float]:
 
 
 def solve_bisect(
-    low:float,
+    low: float,
     high: float,
     f: Callable[..., float],
     args: tuple[Any] | tuple[()] = (),

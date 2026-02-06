@@ -42,24 +42,9 @@ from .lch import LCh
 from ..cat import WHITES
 from ..channels import Channel, FLG_ANGLE
 from .cam16 import Environment, cam_to_xyz, xyz_to_cam
-from .lab import EPSILON, KAPPA, KE
+from .lab import y_to_lstar, lstar_to_y
 from ..types import Vector
 import math
-
-
-def y_to_lstar(y: float) -> float:
-    """Convert XYZ Y to Lab L*."""
-
-    fy = alg.nth_root(y, 3) if y > EPSILON else (KAPPA * y + 16) / 116
-    return (116.0 * fy) - 16.0
-
-
-def lstar_to_y(lstar: float) -> float:
-    """Convert Lab L* to XYZ Y."""
-
-    fy = (lstar + 16) / 116
-    y = fy ** 3 if lstar > KE else lstar / KAPPA
-    return y
 
 
 def hct_to_xyz(coords: Vector, env: Environment) -> Vector:

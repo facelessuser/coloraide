@@ -19,6 +19,21 @@ KAPPA = 24389 / 27
 KE = 8  # KAPPA * EPSILON = 8
 
 
+def y_to_lstar(y: float) -> float:
+    """Convert XYZ Y to Lab L*."""
+
+    fy = alg.nth_root(y, 3) if y > EPSILON else (KAPPA * y + 16) / 116
+    return (116.0 * fy) - 16.0
+
+
+def lstar_to_y(lstar: float) -> float:
+    """Convert Lab L* to XYZ Y."""
+
+    fy = (lstar + 16) / 116
+    y = fy ** 3 if lstar > KE else lstar / KAPPA
+    return y
+
+
 def lab_to_xyz(lab: Vector, white: VectorLike) -> Vector:
     """Convert CIE Lab to XYZ using the reference white."""
 
