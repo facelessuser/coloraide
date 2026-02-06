@@ -228,7 +228,7 @@ from coloraide.channels import ANGLE_DEG
 from coloraide.spaces import HSLish, HSVish, HWBish, Labish, LChish, RGBish
 from coloraide import algebra as alg
 from coloraide.color import POSTFIX
-from coloraide.gamut.pointer import pointer_gamut_boundary, WHITE_POINT_SC
+from coloraide.gamut import pointer
 from coloraide import util
 
 FORCE_OWN_GAMUT = {'ryb', 'ryb-biased'}
@@ -288,7 +288,7 @@ def create_custom_hsl(gamut):
             # Scale and offset the values such that channels are between 0 - 1
             coords[0] = (coords[0] - self.OFFSET_1) / (self.SCALE_1 - self.OFFSET_1)
             coords[1] = (coords[1] - self.OFFSET_2) / (self.SCALE_2 - self.OFFSET_2)
-            coords[2] = (coords[2] - self.OFFSET_3) / (self.SCALE_2 - self.OFFSET_3)
+            coords[2] = (coords[2] - self.OFFSET_3) / (self.SCALE_3 - self.OFFSET_3)
             # Convert to HSL
             return hsl.from_base(coords)
 
@@ -368,7 +368,8 @@ def cyl_disc(
     fcolor,
     gmap,
     flags,
-    filters
+    filters,
+    limit
 ):
     """
     Plot cylindrical disc on either top or bottom of an RGB cylinder.
@@ -413,6 +414,8 @@ def cyl_disc(
             u.append(c[radius])
             v.append(c[hue])
             c.convert(space, norm=False, in_place=True)
+            if limit['pointer']:
+                c.fit_pointer_gamut()
 
             store_coords(c, x, y, z, flags)
 
@@ -479,7 +482,7 @@ def store_coords(c, x, y, z, flags):
         z.append(c[2])
 
 
-def render_space_cyl(fig, space, gamut, resolution, opacity, edges, faces, ecolor, fcolor, gmap, filters, point):
+def render_space_cyl(fig, space, gamut, resolution, opacity, edges, faces, ecolor, fcolor, gmap, filters, limit):
     """Renders the color space using an HSL cylinder that is then mapped to the given space."""
 
     target = Color.CS_MAP[space]
@@ -543,7 +546,7 @@ def render_space_cyl(fig, space, gamut, resolution, opacity, edges, faces, ecolo
             u.append(c[2])
             v.append(c['hue'])
             c.convert(space, norm=False, in_place=True)
-            if point:
+            if limit['pointer']:
                 c.fit_pointer_gamut()
 
             store_coords(c, x, y, z, flags)
@@ -565,23 +568,24 @@ def render_space_cyl(fig, space, gamut, resolution, opacity, edges, faces, ecolo
 
     create3d(fig, x, y, z, tri, cmap, edges, faces, ecolor, fcolor, opacity, filters)
 
+    limit_p = limit['pointer']
+
     # Generate tops for spaces that do not normally get tops automatically.
-    if (flags['is_hwbish'] or (flags['is_cyl'] and not flags['is_lchish']) or isinstance(cs, HSVish)) and not point:
+    if (flags['is_hwbish'] or (flags['is_cyl'] and not flags['is_lchish']) or isinstance(cs, HSVish)):
         cyl_disc(
             fig, ColorCyl, space, gspace, 'top', resolution, opacity, edges,
-            faces, ecolor, fcolor, gmap, flags, filters
+            faces, ecolor, fcolor, gmap, flags, filters, limit
         )
 
-    if not point:
-        cyl_disc(
-            fig, ColorCyl, space, gspace, 'bottom', resolution, opacity, edges,
-            faces, ecolor, fcolor, gmap, flags, filters
-        )
+    cyl_disc(
+        fig, ColorCyl, space, gspace, 'bottom', resolution, opacity, edges,
+        faces, ecolor, fcolor, gmap, flags, filters, limit
+    )
 
     return fig
 
 
-def render_pointer_gamut(fig, space, resolution, opacity, edges, faces, ecolor, fcolor, gmap, filters):
+def render_special_gamut(gtype, fig, space, resolution, opacity, edges, faces, ecolor, fcolor, gmap, filters, limit):
     """Render the Pointer gamut in 3d."""
 
     target = Color.CS_MAP[space]
@@ -602,25 +606,32 @@ def render_pointer_gamut(fig, space, resolution, opacity, edges, faces, ecolor, 
     z = []
     cmap = []
 
-    for l in [90] + alg.linspace(90 - alg.ATOL, 15 + alg.ATOL, max(3, (resolution // 2) * 2 + 1)) + [15]:
-        b = [
-            Color(
-                'xyz-d65',
-                Color.chromatic_adaptation(WHITE_POINT_SC, Color.CS_MAP['xyz-d65'].WHITE, util.xy_to_xyz(i[0:2], i[2]))
-            ).convert('lch-d65', norm=False, in_place=True).set('c', lambda j, l=l: alg.ATOL if l in (15, 90) else j)
-            for i in pointer_gamut_boundary(l)
-        ]
-        b.append(b[0].clone())
-        b[0]['hue'] = b[0]['hue'] - 360
-        for c in Color.steps(b, steps=max(3, (resolution // 2) * 2 + 1), space='lch-d65', hue='specified'):
-            u.append(c['l'])
-            v.append(c['hue'])
-            c.convert(space, norm=False, in_place=True)
+    lightness = [91, *pointer.LCH_L, 14]
+    hues = pointer.LCH_H
 
-            store_coords(c, x, y, z, flags)
+    for l in lightness:
+        for h in hues:
+            if l == 91:
+                _l = l - 1 + 1e-8
+                c = 1e-8
+            elif l == 14:
+                _l = l + 1 - 1e-8
+                c = 1e-8
+            else:
+                _l = l
+                c = pointer.GAMUT[pointer.LCH_H.index(h)][pointer.LCH_L.index(l)]
+            u.append(_l)
+            v.append(h)
+            color = Color('xyz-d65', [0, 0, 0])
+            pointer.from_lch_sc(color, [_l, c, h])
+            
+            color.convert(space, norm=False, in_place=True)
+            if limit['pointer']:
+                c.fit_pointer_gamut()
+            store_coords(color, x, y, z, flags)
 
             # Adjust gamut to fit the display space
-            s = c.convert('srgb')
+            s = color.convert('srgb')
             if not s.in_gamut():
                 s.fit(**gmap)
             else:
@@ -756,13 +767,13 @@ def plot_gamut_in_space(
         opacity = config.get('opacity', 1)
         resolution = config.get('resolution', 200)
         edges = config.get('edges', False)
-        point = config.get('pointer', False)
         ecolor = None
+        limit = {'pointer': config.get('pointer', False)}
         if isinstance(edges, str):
             c = Color(edges).convert('srgb').fit(**gmap)
             if filters:
                 c.filter(filters[0], **filters[1], in_place=True, out_space=c.space()).clip()
-            ecolor = c.to_string(hex=True)
+            ecolor = c.to_string(hex=True, alpha=False)
             edges = True
         faces = config.get('faces', False)
         fcolor = ''
@@ -770,13 +781,17 @@ def plot_gamut_in_space(
             c = Color(faces).convert('srgb').fit(**gmap)
             if filters:
                 c.filter(filters[0], **filters[1], in_place=True, out_space=c.space()).clip()
-            fcolor = c.to_string(hex=True)
+            fcolor = c.to_string(hex=True, alpha=False)
             faces = True
 
         if gamut == 'pointer':
-            render_pointer_gamut(fig, space, resolution, opacity, edges, faces, ecolor, fcolor, gmap, filters)
+            render_special_gamut(
+                gamut, fig, space, resolution, opacity, edges, faces, ecolor, fcolor, gmap, filters, limit
+            )
         else:
-            render_space_cyl(fig, space, gamut, resolution, opacity, edges, faces, ecolor, fcolor, gmap, filters, point)
+            render_space_cyl(
+                fig, space, gamut, resolution, opacity, edges, faces, ecolor, fcolor, gmap, filters, limit
+            )
 
     return fig
 
@@ -821,7 +836,7 @@ def plot_colors(fig, space, gamut, gmap_colors, colors, gmap, filters=()):
                     x=x, y=y, z=z,
                     line={'color': 'black', 'width': 2},
                     marker={
-                        'color': c2.to_string(hex=True),
+                        'color': c2.to_string(hex=True, alpha=False),
                         'size': [16, 0],
                         'opacity': 1,
                         'line': {'width': 2}
@@ -870,18 +885,86 @@ def plot_interpolation(
         if interp_gmap:
             c.fit('srgb', **gmap)
         store_coords(c, x, y, z, flags)
-        c.convert('srgb', in_place=True).fit(**gmap)
+        c.convert('srgb', in_place=True)
+        c.fit(**gmap)
         if filters:
             c.filter(filters[0], **filters[1], in_place=True, out_space=c.space()).clip()
         if simulate_alpha:
-            cmap.append(Color.layer([c, 'white'], space='srgb').to_string(hex=True))
+            cmap.append(Color.layer([c, 'white'], space='srgb').to_string(hex=True, alpha=False))
         else:
-            cmap.append(c.to_string(comma=True, alpha=False))
+            cmap.append(c.to_string(hex=True, alpha=False))
 
     trace = go.Scatter3d(
         x=x, y=y, z=z,
         mode = 'markers',
         marker={'color': cmap, 'opacity': 1},
+        showlegend=False
+    )
+
+    fig.add_trace(trace)
+
+
+def plot_harmony(
+    fig,
+    space,
+    harmony,
+    gmap,
+    simulate_alpha,
+    harmony_gmap,
+    filters=()
+):
+    """Plot color harmony."""
+
+    if not harmony:
+        return
+
+    hcolor, options = harmony
+    if 'space' not in options:
+        options['space'] = space
+    options['out_space'] = space
+
+    colors = Color(hcolor).harmony(**options)
+
+    target = Color.CS_MAP[space]
+    flags = {
+        'is_cyl': target.is_polar(),
+        'is_labish': isinstance(target, Labish),
+        'is_lchish': isinstance(target, LChish),
+        'is_hslish': isinstance(target, HSLish),
+        'is_hwbish': isinstance(target, HWBish),
+        'is_hsvish': isinstance(target, HSVish)
+    }
+
+    cmap = []
+    x = []
+    y = []
+    z = []
+    for s in colors:
+        c = s.normalize(nans=False)
+        if harmony_gmap:
+            c.fit('srgb', **gmap)
+        store_coords(c, x, y, z, flags)
+        c.convert('srgb', in_place=True).fit(**gmap)
+        if filters:
+            c.filter(filters[0], **filters[1], in_place=True, out_space=c.space()).clip()
+        if simulate_alpha:
+            cmap.append(Color.layer([c, 'white'], space='srgb').to_string(hex=True, alpha=False))
+        else:
+           cmap.append(c.to_string(hex=True, alpha=False))
+
+    if options['name'] in ('wheel', 'rectangle', 'square', 'triad'):
+        x.append(x[0])
+        y.append(y[0])
+        z.append(z[0])
+        cmap.append(cmap[0])
+        size = ([8] * (len(x) - 1)) + [0]
+    else:
+        size = [8] * len(x)
+
+    trace = go.Scatter3d(
+        x=x, y=y, z=z,
+        marker={'size': size, 'color': cmap, 'opacity': 1},
+        line={'color': 'black', 'width': 3},
         showlegend=False
     )
 
@@ -940,7 +1023,7 @@ def plot_average(
         if filters:
             c.filter(filters[0], **filters[1], in_place=True, out_space=c.space()).clip()
         if simulate_alpha:
-            cmap.append(Color.layer([c, 'white'], space='srgb').to_string(hex=True))
+            cmap.append(Color.layer([c, 'white'], space='srgb').to_string(hex=True, alpha=False))
         else:
            cmap.append(c.to_string(comma=True, alpha=False))
 
@@ -952,9 +1035,9 @@ def plot_average(
         if filters:
             c.filter(filters[0], **filters[1], in_place=True, out_space=c.space()).clip()
         if simulate_alpha:
-            cmap.append(Color.layer([c, 'white'], space='srgb').to_string(hex=True))
+            cmap.append(Color.layer([c, 'white'], space='srgb').to_string(hex=True, alpha=False))
         else:
-            cmap.append(c.to_string(comma=True, alpha=False))
+            cmap.append(c.to_string(hex=True, alpha=False))
 
         trace = go.Scatter3d(
             x=x, y=y, z=z,
@@ -964,73 +1047,6 @@ def plot_average(
         )
 
         fig.add_trace(trace)
-
-
-def plot_harmony(
-    fig,
-    space,
-    harmony,
-    gmap,
-    simulate_alpha,
-    harmony_gmap,
-    filters=()
-):
-    """Plot color harmony."""
-
-    if not harmony:
-        return
-
-    hcolor, options = harmony
-    if 'space' not in options:
-        options['space'] = space
-    options['out_space'] = space
-
-    colors = Color(hcolor).harmony(**options)
-
-    target = Color.CS_MAP[space]
-    flags = {
-        'is_cyl': target.is_polar(),
-        'is_labish': isinstance(target, Labish),
-        'is_lchish': isinstance(target, LChish),
-        'is_hslish': isinstance(target, HSLish),
-        'is_hwbish': isinstance(target, HWBish),
-        'is_hsvish': isinstance(target, HSVish)
-    }
-
-    cmap = []
-    x = []
-    y = []
-    z = []
-    for s in colors:
-        c = s.normalize(nans=False)
-        if harmony_gmap:
-            c.fit('srgb', **gmap)
-        store_coords(c, x, y, z, flags)
-        c.convert('srgb', in_place=True).fit(**gmap)
-        if filters:
-            c.filter(filters[0], **filters[1], in_place=True, out_space=c.space()).clip()
-        if simulate_alpha:
-            cmap.append(Color.layer([c, 'white'], space='srgb').to_string(hex=True))
-        else:
-           cmap.append(c.to_string(comma=True, alpha=False))
-
-    if options['name'] in ('wheel', 'rectangle', 'square', 'triad'):
-        x.append(x[0])
-        y.append(y[0])
-        z.append(z[0])
-        cmap.append(cmap[0])
-        size = ([8] * (len(x) - 1)) + [0]
-    else:
-        size = [8] * len(x)
-
-    trace = go.Scatter3d(
-        x=x, y=y, z=z,
-        marker={'size': size, 'color': cmap, 'opacity': 1},
-        line={'color': 'black', 'width': 3},
-        showlegend=False
-    )
-
-    fig.add_trace(trace)
 </script>
 <script type="text/javascript">
 let pyodide = null

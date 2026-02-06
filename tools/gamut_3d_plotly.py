@@ -18,7 +18,7 @@ from coloraide.channels import ANGLE_DEG
 from coloraide.spaces import HSLish, HSVish, HWBish, Labish, LChish, RGBish  # noqa: E402
 from coloraide import algebra as alg  # noqa: E402
 from coloraide.color import POSTFIX  # noqa: E402
-from coloraide.gamut.pointer import pointer_gamut_boundary, WHITE_POINT_SC
+from coloraide.gamut import pointer
 from coloraide import util
 
 FORCE_OWN_GAMUT = {'ryb', 'ryb-biased'}
@@ -158,7 +158,8 @@ def cyl_disc(
     fcolor,
     gmap,
     flags,
-    filters
+    filters,
+    limit
 ):
     """
     Plot cylindrical disc on either top or bottom of an RGB cylinder.
@@ -203,6 +204,8 @@ def cyl_disc(
             u.append(c[radius])
             v.append(c[hue])
             c.convert(space, norm=False, in_place=True)
+            if limit['pointer']:
+                c.fit_pointer_gamut()
 
             store_coords(c, x, y, z, flags)
 
@@ -269,7 +272,7 @@ def store_coords(c, x, y, z, flags):
         z.append(c[2])
 
 
-def render_space_cyl(fig, space, gamut, resolution, opacity, edges, faces, ecolor, fcolor, gmap, filters, point):
+def render_space_cyl(fig, space, gamut, resolution, opacity, edges, faces, ecolor, fcolor, gmap, filters, limit):
     """Renders the color space using an HSL cylinder that is then mapped to the given space."""
 
     target = Color.CS_MAP[space]
@@ -333,7 +336,7 @@ def render_space_cyl(fig, space, gamut, resolution, opacity, edges, faces, ecolo
             u.append(c[2])
             v.append(c['hue'])
             c.convert(space, norm=False, in_place=True)
-            if point:
+            if limit['pointer']:
                 c.fit_pointer_gamut()
 
             store_coords(c, x, y, z, flags)
@@ -355,23 +358,24 @@ def render_space_cyl(fig, space, gamut, resolution, opacity, edges, faces, ecolo
 
     create3d(fig, x, y, z, tri, cmap, edges, faces, ecolor, fcolor, opacity, filters)
 
+    limit_p = limit['pointer']
+
     # Generate tops for spaces that do not normally get tops automatically.
-    if (flags['is_hwbish'] or (flags['is_cyl'] and not flags['is_lchish']) or isinstance(cs, HSVish)) and not point:
+    if (flags['is_hwbish'] or (flags['is_cyl'] and not flags['is_lchish']) or isinstance(cs, HSVish)):
         cyl_disc(
             fig, ColorCyl, space, gspace, 'top', resolution, opacity, edges,
-            faces, ecolor, fcolor, gmap, flags, filters
+            faces, ecolor, fcolor, gmap, flags, filters, limit
         )
 
-    if not point:
-        cyl_disc(
-            fig, ColorCyl, space, gspace, 'bottom', resolution, opacity, edges,
-            faces, ecolor, fcolor, gmap, flags, filters
-        )
+    cyl_disc(
+        fig, ColorCyl, space, gspace, 'bottom', resolution, opacity, edges,
+        faces, ecolor, fcolor, gmap, flags, filters, limit
+    )
 
     return fig
 
 
-def render_pointer_gamut(fig, space, resolution, opacity, edges, faces, ecolor, fcolor, gmap, filters):
+def render_special_gamut(gtype, fig, space, resolution, opacity, edges, faces, ecolor, fcolor, gmap, filters, limit):
     """Render the Pointer gamut in 3d."""
 
     target = Color.CS_MAP[space]
@@ -392,25 +396,32 @@ def render_pointer_gamut(fig, space, resolution, opacity, edges, faces, ecolor, 
     z = []
     cmap = []
 
-    for l in [90] + alg.linspace(90 - 1e-8, 15 + 1e-8, max(3, (resolution // 2) * 2 + 1)) + [15]:
-        b = [
-            Color(
-                'xyz-d65',
-                Color.chromatic_adaptation(WHITE_POINT_SC, Color.CS_MAP['xyz-d65'].WHITE, util.xy_to_xyz(i[0:2], i[2]))
-            ).convert('lch-d65', norm=False, in_place=True).set('c', lambda j, l=l: 1e-8 if l in (15, 90) else j)
-            for i in pointer_gamut_boundary(l)
-        ]
-        b.append(b[0].clone())
-        b[0]['hue'] = b[0]['hue'] - 360
-        for c in Color.steps(b, steps=max(3, (resolution // 2) * 2 + 1), space='lch-d65', hue='specified'):
-            u.append(c['l'])
-            v.append(c['hue'])
-            c.convert(space, norm=False, in_place=True)
+    lightness = [91, *pointer.LCH_L, 14]
+    hues = pointer.LCH_H
 
-            store_coords(c, x, y, z, flags)
+    for l in lightness:
+        for h in hues:
+            if l == 91:
+                _l = l - 1 + 1e-8
+                c = 1e-8
+            elif l == 14:
+                _l = l + 1 - 1e-8
+                c = 1e-8
+            else:
+                _l = l
+                c = pointer.GAMUT[pointer.LCH_H.index(h)][pointer.LCH_L.index(l)]
+            u.append(_l)
+            v.append(h)
+            color = Color('xyz-d65', [0, 0, 0])
+            pointer.from_lch_sc(color, [_l, c, h])
+            
+            color.convert(space, norm=False, in_place=True)
+            if limit['pointer']:
+                c.fit_pointer_gamut()
+            store_coords(color, x, y, z, flags)
 
             # Adjust gamut to fit the display space
-            s = c.convert('srgb')
+            s = color.convert('srgb')
             if not s.in_gamut():
                 s.fit(**gmap)
             else:
@@ -547,7 +558,7 @@ def plot_gamut_in_space(
         resolution = config.get('resolution', 200)
         edges = config.get('edges', False)
         ecolor = None
-        point = config.get('pointer', False)
+        limit = {'pointer': config.get('pointer', False)}
         if isinstance(edges, str):
             c = Color(edges).convert('srgb').fit(**gmap)
             if filters:
@@ -564,9 +575,13 @@ def plot_gamut_in_space(
             faces = True
 
         if gamut == 'pointer':
-            render_pointer_gamut(fig, space, resolution, opacity, edges, faces, ecolor, fcolor, gmap, filters)
+            render_special_gamut(
+                gamut, fig, space, resolution, opacity, edges, faces, ecolor, fcolor, gmap, filters, limit
+            )
         else:
-            render_space_cyl(fig, space, gamut, resolution, opacity, edges, faces, ecolor, fcolor, gmap, filters, point)
+            render_space_cyl(
+                fig, space, gamut, resolution, opacity, edges, faces, ecolor, fcolor, gmap, filters, limit
+            )
 
     return fig
 
@@ -839,7 +854,8 @@ def main():
         help=(
             "Gamut space to render space in. Can be followed by a JSON config in the form 'space:{}' to set `edges`,"
             '`faces`, `opacity`, or `resolution`. `edges` and `faces` can be a boolean to disable or enable them or '
-            'color to configure them all as a specific color.'
+            "color to configure them all as a specific color. Additionally, if `pointer` is set to true ",
+            "The current gamut will also have a restriction to force them to be within this gamut as well."
         )
     )
     parser.add_argument(
