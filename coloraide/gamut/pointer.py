@@ -190,7 +190,7 @@ def pointer_gamut_boundary(lightness: float | None = None) -> Matrix:
             max_dxy = 0.0
             max_xyy = [0.0, 0.0, 0.0]
             for j, l in enumerate(LCH_L):
-                xyy = lch_sc_to_xyY([l, LCH_POINTER[i][j], h])
+                xyy = lch_sc_to_xyY([l, GAMUT[i][j], h])
                 dxy = math.sqrt((WHITE_POINT_SC[0] - xyy[0]) ** 2 + (WHITE_POINT_SC[1] - xyy[1]) ** 2)
                 if dxy > max_dxy:
                     max_dxy = dxy
