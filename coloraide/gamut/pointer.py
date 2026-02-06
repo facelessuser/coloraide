@@ -19,11 +19,11 @@ if TYPE_CHECKING:  #pragma: no cover
 # White point C as defined in the Pointer data spreadsheet
 XYZ_W = alg.divide((98.0722647623506, 100.0, 118.225418982695), 100)
 WHITE_POINT_SC = tuple(util.xyz_to_xyY(XYZ_W)[:-1])  # type: VectorLike
-# Rows: hue 0 - 350 at steps of 10
+# Rows: hue 0 - 360 at steps of 10
 # Columns: lightness 15 - 90 at steps of 5
 LCH_L = [*range(15, 91, 5)]
-LCH_H = [*range(0, 351, 10)]
-LCH_POINTER = [
+LCH_H = [*range(0, 361, 10)]
+GAMUT = [
     [10, 30, 43, 56, 68, 77, 79, 77, 72, 65, 57, 50, 40, 30, 19, 8],
     [15, 30, 45, 56, 64, 70, 73, 73, 71, 65, 57, 48, 39, 30, 18, 7],
     [14, 34, 49, 61, 69, 74, 76, 76, 74, 68, 61, 51, 40, 30, 19, 9],
@@ -59,7 +59,8 @@ LCH_POINTER = [
     [60, 71, 79, 84, 85, 86, 82, 74, 66, 57, 48, 40, 31, 24, 16, 8],
     [20, 50, 72, 86, 89, 89, 86, 80, 72, 63, 54, 45, 36, 27, 18, 9],
     [26, 49, 63, 73, 82, 87, 87, 83, 78, 71, 62, 51, 40, 28, 18, 4],
-    [15, 37, 52, 65, 73, 79, 82, 84, 79, 73, 63, 53, 40, 30, 17, 6]
+    [15, 37, 52, 65, 73, 79, 82, 84, 79, 73, 63, 53, 40, 30, 17, 6],
+    [10, 30, 43, 56, 68, 77, 79, 77, 72, 65, 57, 50, 40, 30, 19, 8]
 ]
 
 
@@ -74,13 +75,13 @@ def to_lch_sc(color: Color) -> Vector:
 
     xyz = color.convert('xyz-d65').normalize(nans=False)
     xyz_sc = color.chromatic_adaptation(xyz._space.WHITE, WHITE_POINT_SC, xyz[:-1])
-    return lab_to_lch(xyz_to_lab(xyz_sc, util.xy_to_xyz(WHITE_POINT_SC)))
+    return lab_to_lch(xyz_to_lab(xyz_sc, XYZ_W))
 
 
 def from_lch_sc(color: AnyColor, lch: Vector) -> AnyColor:
     """Convert a color from LCh with an SC illuminant."""
 
-    xyz_sc = lab_to_xyz(lch_to_lab(lch), util.xy_to_xyz(WHITE_POINT_SC))
+    xyz_sc = lab_to_xyz(lch_to_lab(lch), XYZ_W)
     xyz_d65 = color.chromatic_adaptation(WHITE_POINT_SC, color.CS_MAP['xyz-d65'].WHITE, xyz_sc)
     return color.update('xyz-d65', xyz_d65, color[-1])
 
@@ -110,16 +111,8 @@ def closest_lightness(l: float) -> tuple[int, float]:
 def closest_hue(h: float) -> tuple[int, float]:
     """Calculate the two closest hues and return the first index and interpolation factor."""
 
-    hi = 0
-    # Handle wrapping hue
-    if h > LCH_H[-1]:
-        hi = len(LCH_H) - 1
-        h1, h2 = 350, 360
-
-    # Handle non-wrapping hue
-    else:
-        hi = bisect.bisect(LCH_H, h) - 1
-        h1, h2 = LCH_H[hi:hi + 2]
+    hi = bisect.bisect(LCH_H, h) - 1
+    h1, h2 = LCH_H[hi:hi + 2]
     hf = 1 - (h2 - h) / (h2 - h1)
 
     return hi, hf
@@ -136,9 +129,9 @@ def get_chroma_limit(l: float, h: float) -> float:
 
     # Interpolate the chroma limit by interpolating chroma values for the closest lightness values and hues.
     if hi == len(LCH_H) - 1:
-        row1, row2 = LCH_POINTER[-1], LCH_POINTER[0]
+        row1, row2 = GAMUT[-1], GAMUT[0]
     else:
-        row1, row2 = LCH_POINTER[hi:hi + 2]
+        row1, row2 = GAMUT[hi:hi + 2]
     return alg.lerp(alg.lerp(row1[li], row1[li + 1], lf), alg.lerp(row2[li], row2[li + 1], lf), hf)
 
 
@@ -193,7 +186,7 @@ def pointer_gamut_boundary(lightness: float | None = None) -> Matrix:
     # For each hue, find the lightness/chroma point that is furthest away from the white point.
     if lightness is None:
         max_gamut = []  # type: Matrix
-        for i, h in enumerate(LCH_H):
+        for i, h in enumerate(LCH_H[:-1]):
             max_dxy = 0.0
             max_xyy = [0.0, 0.0, 0.0]
             for j, l in enumerate(LCH_L):
@@ -209,7 +202,7 @@ def pointer_gamut_boundary(lightness: float | None = None) -> Matrix:
     # Return all the points for a given lightness
     elif LCH_L[0] <= lightness <= LCH_L[-1]:
         li, lf = closest_lightness(lightness)
-        chroma = [alg.lerp(row[li], row[li + 1], lf) for row in LCH_POINTER]
+        chroma = [alg.lerp(row[li], row[li + 1], lf) for row in GAMUT[:-1]]
         return [lch_sc_to_xyY([lightness, c, h]) for c, h in zip(chroma, LCH_H)]
 
     # Lightness exceeds threshold
