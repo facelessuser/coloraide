@@ -71,8 +71,7 @@ def plot_pointer_gamut(target, space_gamut, fit, title, height, width):
     color = colors[0]
     l, c, h = color[:-1]
     li, lf = gamut.pointer.closest_lightness(l)
-    chroma = [alg.lerp(row[li], row[li + 1], lf) for row in gamut.pointer.LCH_POINTER]
-    chroma.append(chroma[0])
+    chroma = [alg.lerp(row[li], row[li + 1], lf) for row in gamut.pointer.GAMUT]
 
     suptitle = ''
     if not title:
