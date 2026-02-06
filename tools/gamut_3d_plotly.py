@@ -19,7 +19,6 @@ from coloraide.spaces import HSLish, HSVish, HWBish, Labish, LChish, RGBish  # n
 from coloraide import algebra as alg  # noqa: E402
 from coloraide.color import POSTFIX  # noqa: E402
 from coloraide.gamut import pointer
-from coloraide import util
 
 FORCE_OWN_GAMUT = {'ryb', 'ryb-biased'}
 
@@ -358,8 +357,6 @@ def render_space_cyl(fig, space, gamut, resolution, opacity, edges, faces, ecolo
 
     create3d(fig, x, y, z, tri, cmap, edges, faces, ecolor, fcolor, opacity, filters)
 
-    limit_p = limit['pointer']
-
     # Generate tops for spaces that do not normally get tops automatically.
     if (flags['is_hwbish'] or (flags['is_cyl'] and not flags['is_lchish']) or isinstance(cs, HSVish)):
         cyl_disc(
@@ -414,7 +411,7 @@ def render_special_gamut(gtype, fig, space, resolution, opacity, edges, faces, e
             v.append(h)
             color = Color('xyz-d65', [0, 0, 0])
             pointer.from_lch_sc(color, [_l, c, h])
-            
+
             color.convert(space, norm=False, in_place=True)
             if limit['pointer']:
                 c.fit_pointer_gamut()
