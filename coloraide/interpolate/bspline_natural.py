@@ -15,20 +15,12 @@ class InterpolatorNaturalBSpline(InterpolatorBSpline[AnyColor]):
     """Natural B-spline class."""
 
     def setup(self) -> None:
-        """
-        Using B-spline as the base create a natural spline that also passes through the control points.
-
-        Using the color points as `S0...Sn`, calculate `B0...Bn`, such that interpolation will
-        pass through `S0...Sn`.
-
-        When given 2 data points, the operation will be linear, so there is nothing to do.
-        """
+        """Setup."""
 
         # Use the same logic as normal B-spline for handling undefined values and applying premultiplication
-        self.spline = alg.bspline
         self.handle_undefined()
-        alg.naturalize_bspline_controls(self.coordinates)
-        self.adjust_endpoints()
+        self.spline = alg.NaturalBSplineInterpolator
+        self.spline.preprocess(self.coordinates)
 
 
 class NaturalBSpline(Interpolate[AnyColor]):

@@ -22,16 +22,13 @@ experiments and can be used to calculate a number of things, including the Planc
 
 > [!tip] CMFs
 > It should be noted that there isn't one set of CMFs. Over the years there have been multiple attempts to come up with
-> the best CMFs and often done at both 2˚ and 10˚ viewing angles. ColorAide only provides CMFS provided by the CIE via
-> `coloraide.cmfs`, the CIE 1931 2 Degree Standard Observer being the default as it is still the common approach even
-> though better CMFs have been provided.
+> the best CMFs and often done at both 2˚ and 10˚ viewing angles. ColorAide only provides CMFS the CIE 1931 2 Degree
+> Standard Observer via `coloraide.cmfs`. It isn't easily possible to translate colors between different CMFs, and since
+> ColorAide contains only color spaces that were created using the 1931 2˚ CMFs.
 >
 > CMFS                            |
 > ------------------------------- |
 > `coloraide.cmfs.CIE_1931_2DEG`  |
-> `coloraide.cmfs.CIE_1964_10DEG` |
-> `coloraide.cmfs.CIE_2015_2DEG`  |
-> `coloraide.cmfs.CIE_2015_10DEG` |
 >
 > External CMFs could be used as long as they are in the appropriate format and not at increments less than 1nm.
 
@@ -186,7 +183,7 @@ Parameters        | Description
 `sigfig`          | Significant figures to round to. This is required to faithfully generate the values as documented in the papers and is set to `#!py 5` by default. If set to `#!py 0`, no rounding will be done.
 `planck_step`     | This controls the resolution at which the wavelengths in the CMFs are used to calculate the points along the Planckian locus. The original values are calculated with a 1nm resolution, so the default is set to `#!py 1`. If a given table has a lower resolution, such as 5nm, this value can be adjusted to properly work with that table.
 
-To use a different set of CMFS, such as the CIE 1964 10˚ Standard Observer, we could override the default plugin.
+To use a different white point, such as the D50, we could override the default plugin.
 
 ```py play
 from coloraide.temperature import robertson_1968
@@ -199,7 +196,7 @@ class Custom(Color):
     ...
 
 Custom.register(
-    robertson_1968.Robertson1968(cmfs.CIE_1964_10DEG, cat.WHITES['10deg']['D65'], mired_points, 0),
+    robertson_1968.Robertson1968(cmfs.CIE_1931_2DEG, cat.WHITES['2deg']['D50'], mired_points, 0),
     overwrite=True
 )
 
@@ -274,7 +271,7 @@ Parameters        | Description
 `planck_step`     | This controls the resolution at which the wavelengths in the CMFs are used to calculate the points along the Planckian locus. `#!py 5` (5nm) is used as the default as it provides decent performance vs accuracy.
 
 
-To use an different CMFs, such as the CIE 10˚ Standard Observer, we can add the plugin with our desired configuration, overwriting the defaults.
+To use a different white point, such as the D50, we could override the default plugin.
 
 ```py play
 from coloraide import cmfs
@@ -287,7 +284,7 @@ class Custom(Color):
 
 
 Custom.register(
-    Ohno2013(cmfs.CIE_1964_10DEG, cat.WHITES['10deg']['D65']),
+    Ohno2013(cmfs.CIE_1931_2DEG, cat.WHITES['2deg']['D50']),
     overwrite=True
 )
 

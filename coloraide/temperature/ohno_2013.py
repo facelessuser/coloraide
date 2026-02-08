@@ -12,7 +12,10 @@ from .. import util
 from .. import algebra as alg
 from . import CCT
 from ..types import Vector, VectorLike, AnyColor
-from typing import Any
+from typing import Any, TYPE_CHECKING
+
+if TYPE_CHECKING:  #pragma: no cover
+    from ..color import Color
 
 
 class BlackBodyCurve:
@@ -28,16 +31,13 @@ class BlackBodyCurve:
 
     def __init__(
         self,
-        cmfs: dict[int, tuple[float, float, float]] = cmfs.CIE_1931_2DEG,
+        cmfs: cmfs.CMFs = cmfs.CIE_1931_2DEG,
         white: VectorLike = cat.WHITES['2deg']['D65'],
         planck_step: int = 5,
         chromaticity: str = 'uv-1960'
     ) -> None:
         """Initialize."""
 
-        keys = [*cmfs.keys()]
-        self.cmfs_start = min(keys)
-        self.cmfs_end = max(keys)
         self.cmfs = cmfs
         self.white = util.xy_to_xyz(white)
         self.planck_step = planck_step
@@ -46,56 +46,40 @@ class BlackBodyCurve:
         # Low temperature range
         start = 1000
         end = 20000
-        step = 130
+        step = 100
         inc = (end - start) / step
         count = step + 1
         points = []
-        self.domain = []
+        domain = []
         for r in range(count):
             k = r * inc + start
             u, v = self.to_uv(
                 planck.temp_to_xy_planckian_locus(
-                    k, self.cmfs, self.white, self.cmfs_start, self.cmfs_end, self.planck_step
+                    k, self.cmfs, self.white, self.cmfs.start, self.cmfs.end, self.planck_step
                 )
             )
-            self.domain.append(k)
+            domain.append(k)
             points.append([u, v])
-        self.spline = alg.interpolate(points, method='catrom')
+        self.spline = alg.interpolate(points, domain=domain, method='sprague')
 
         # High temperature range
         start = end
         end = 100000
-        step = 220
+        step = 150
         inc = (end - start) / step
         count = step + 1
         points = []
-        self.domain2 = []
+        domain.clear()
         for r in range(count):
             k = r * inc + start
             u, v = self.to_uv(
                 planck.temp_to_xy_planckian_locus(
-                    k, self.cmfs, self.white, self.cmfs_start, self.cmfs_end, self.planck_step
+                    k, self.cmfs, self.white, self.cmfs.start, self.cmfs.end, self.planck_step
                 )
             )
-            self.domain2.append(k)
+            domain.append(k)
             points.append([u, v])
-        self.spline2 = alg.interpolate(points, method='catrom')
-
-    def scale(self, point: float, domain: Vector) -> float:
-        """Scale the temperature point to match the range 0 - 1."""
-
-        # Extrapolation
-        if point <= domain[0]:
-            point = (point - domain[0]) / (domain[-1] - domain[0])
-        elif point >= self.domain[-1]:
-            point = 1.0 + (point - domain[-1]) / (domain[-1] - domain[0])
-
-        # Interpolation
-        else:
-            a, b = domain[0], domain[len(domain) - 1]
-            l = b - a
-            point = ((point - a) / l) if l else 0.0
-        return point
+        self.spline2 = alg.interpolate(points, domain=domain, method='sprague')
 
     def __call__(self, temp: float, exact: bool = False) -> Vector:
         """Get the uv for the given temp."""
@@ -103,13 +87,13 @@ class BlackBodyCurve:
         if exact:
             return self.to_uv(
                 planck.temp_to_xy_planckian_locus(
-                    temp, self.cmfs, self.white, self.cmfs_start, self.cmfs_end, self.planck_step
+                    temp, self.cmfs, self.white, self.cmfs.start, self.cmfs.end, self.planck_step
                 )
             )
         else:
             if temp <= 20000:
-                return self.spline(self.scale(temp, self.domain))
-            return self.spline2(self.scale(temp, self.domain2))
+                return self.spline(temp)
+            return self.spline2(temp)
 
 
 class Ohno2013(CCT):
@@ -146,7 +130,7 @@ class Ohno2013(CCT):
 
     def __init__(
         self,
-        cmfs: dict[int, tuple[float, float, float]] = cmfs.CIE_1931_2DEG,
+        cmfs: cmfs.CMFs = cmfs.CIE_1931_2DEG,
         white: VectorLike = cat.WHITES['2deg']['D65'],
         planck_step: int = 5
     ):
@@ -157,7 +141,7 @@ class Ohno2013(CCT):
 
     def to_cct(
         self,
-        color: AnyColor,
+        color: Color,
         start: float = 1000,
         end: float = 100000,
         samples: int = 10,

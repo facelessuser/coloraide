@@ -14,7 +14,6 @@ try:
     from coloraide_extras.everything import ColorAll
 except ImportError:
     from coloraide.everything import ColorAll
-from coloraide import util  # noqa: E402
 from coloraide.cat import WHITES  # noqa: E402
 from coloraide import algebra as alg  # noqa: E402
 from coloraide.temperature import ohno_2013  # noqa: E402
@@ -97,24 +96,8 @@ class SpectralLocus:
     ) -> None:
         """Initialize."""
 
-        self.spline = alg.interpolate([*zip(x, y)], method='catrom')
+        self.spline = alg.interpolate([*zip(x, y)], domain=domain, method='catrom')
         self.domain = domain
-
-    def scale(self, point):
-        """Scale the temperature point to match the range 0 - 1."""
-
-        # Extrapolation
-        if point <= self.domain[0]:
-            point = (point - self.domain[0]) / (self.domain[-1] - self.domain[0])
-        elif point >= self.domain[-1]:
-            point = 1.0 + (point - self.domain[-1]) / (self.domain[-1] - self.domain[0])
-
-        # Interpolation
-        else:
-            a, b = self.domain[0], self.domain[len(self.domain) - 1]
-            l = b - a
-            point = ((point - a) / l) if l else 0.0
-        return point
 
     def steps(self, steps):
         """Get steps."""
@@ -124,7 +107,7 @@ class SpectralLocus:
     def __call__(self, wave):
         """Get the uv for the given temp."""
 
-        return self.spline(self.scale(wave))
+        return self.spline(wave)
 
 
 def get_spline(x, y, steps=100):
@@ -148,16 +131,26 @@ def convert_chromaticity(xy, opt):
     return color[opt.viewed_chromaticity_names[0]], color[opt.viewed_chromaticity_names[1]]
 
 
-def get_spectral_locus_labels(locus, waves, distance, opt):
+def get_spectral_locus_labels(opt):
     """Get the spectral locus wavelength labels."""
 
+    distance = opt.label_distance
     standard = opt.viewed_chromaticity == opt.chromaticity
 
     annotations = []
-    for wave in sorted(waves):
-        x, y = convert_chromaticity(locus(wave), opt)
-        x1, y1 = convert_chromaticity(locus(wave - 0.05), opt)
-        x2, y2 = convert_chromaticity(locus(wave + 0.05), opt)
+    for wave in sorted(opt.spectral_locus_labels):
+        x, y = convert_chromaticity(
+            ColorAll.convert_chromaticity('xy-1931', opt.chromaticity, opt.observer.xy(wave))[:-1],
+            opt
+        )
+        x1, y1 = convert_chromaticity(
+            ColorAll.convert_chromaticity('xy-1931', opt.chromaticity, opt.observer.xy(wave - 0.05))[:-1],
+            opt
+        )
+        x2, y2 = convert_chromaticity(
+            ColorAll.convert_chromaticity('xy-1931', opt.chromaticity, opt.observer.xy(wave + 0.05))[:-1],
+            opt
+        )
 
         d1 = math.sqrt((x - x1) ** 2 + (y - y1) ** 2)
         d2 = math.sqrt((x2 - x) ** 2 + (y2 - y) ** 2)
@@ -251,17 +244,11 @@ class DiagramOptions:
     - Handle some diagram colors specific to themes.
     """
 
-    def __init__(self, mode="1931", observer='2deg', title=""):
+    def __init__(self, mode="1931", title=""):
         """Initialize."""
 
         self.observer = cmfs.CIE_1931_2DEG
         self.white = ALL_WHITES['2deg']['D65']
-        if observer == '10deg':
-            self.white = ALL_WHITES['10deg']['D65']
-            self.observer = cmfs.CIE_1964_10DEG
-            self.axis_labels = ('CIE u', 'CIE v')
-        elif observer != '2deg':
-            raise ValueError(f"Unrecognized 'observer': {observer}")
 
         self.viewed_chromaticity = None
         if mode not in ('1931', '1960', '1976'):
@@ -284,34 +271,22 @@ class DiagramOptions:
         if mode == "1931":
             self.spectral_locus_labels = labels_1931
             self.axis_labels = ('CIE x', 'CIE y')
-            if observer == '2deg':
-                self.title = "CIE 1931 Chromaticy Diagram - 2˚ Degree Standard Observer"
-            else:
-                self.title = "CIE 1931 Chromaticy Diagram - 10˚ Degree Standard Observer"
+            self.title = "CIE 1931 Chromaticy Diagram - 2˚ Degree Standard Observer"
             self.label_distance = 0.04
         elif mode == "1976":
             self.spectral_locus_labels = labels_1960
             self.axis_labels = ("CIE u'", "CIE v'")
-            if observer == '2deg':
-                self.title = "CIE 1976 UCS Chromaticity Diagram - 2˚ Degree Standard Observer"
-            else:
-                self.title = "CIE 1976 UCS Chromaticity Diagram - 10˚ Degree Standard Observer"
+            self.title = "CIE 1976 UCS Chromaticity Diagram - 2˚ Degree Standard Observer"
             self.label_distance = 0.03
         elif mode == '1960':
             self.spectral_locus_labels = labels_1960
             self.axis_labels = ('CIE u', 'CIE v')
-            if observer == '2deg':
-                self.title = "CIE 1960 UCS Chromaticity Diagram - 2˚ Degree Standard Observer"
-            else:
-                self.title = "CIE 1960 UCS Chromaticity Diagram - 10˚ Degree Standard Observer"
+            self.title = "CIE 1960 UCS Chromaticity Diagram - 2˚ Degree Standard Observer"
             self.label_distance = 0.02
         else:
             self.spectral_locus_labels = labels_1960
             self.axis_labels = self.viewed_chromaticity_names
-            if observer == '2deg':
-                self.title = f"CIE {mode} Chromaticity Diagram - 2˚ Degree Standard Observer"
-            else:
-                self.title = f"CIE {mode} Diagram - 10˚ Degree Standard Observer"
+            self.title = f"CIE {mode} Chromaticity Diagram - 2˚ Degree Standard Observer"
             self.label_distance = 0.05
 
         self.cct = 'ohno-2013'
@@ -327,14 +302,14 @@ class DiagramOptions:
 
 
 def cie_diagram(
-    mode="1931", observer="2deg", colorize=True, opacity=1, rgb_spaces=None,
-    white_points=None, title='', show_labels=True, axis=True,
-    show_legend=True, overlay_legend=True, black_body=False, isotherms=False, cct=None, pointer=False,
-    macadam_limits=False, height=600, width=800
+    mode="1931", colorize=True, opacity=1, rgb_spaces=None, white_points=None,
+    title='', show_labels=True, axis=True, show_legend=True, overlay_legend=True,
+    black_body=False, isotherms=False, cct=None, pointer=False, macadam_limits=False,
+    height=600, width=800
 ):
     """CIE diagram."""
 
-    opt = DiagramOptions(mode=mode, observer=observer, title=title)
+    opt = DiagramOptions(mode=mode, title=title)
 
     fig = go.Figure(
         layout={
@@ -357,22 +332,16 @@ def cie_diagram(
 
     xs = []
     ys = []
-    wavelength = []
     annotations = []
 
     # Get points for the spectral locus
-    for k, v in opt.observer.items():
-        if 360 <= k <= 780:
-            # Get the XYZ values in the correct format
-            xy = util.xyz_to_xyY(v)[:-1]
-            wavelength.append(k)
-            x, y = Color.convert_chromaticity('xy-1931', opt.chromaticity, xy)[:-1]
-            xs.append(x)
-            ys.append(y)
+    for r in alg.linspace(360, 780, int(len(opt.observer) * 1.5)):
+        xy = opt.observer.xy(r)
+        x, y = Color.convert_chromaticity('xy-1931', opt.chromaticity, xy)[:-1]
+        xs.append(x)
+        ys.append(y)
 
-    spectral_locus = SpectralLocus(xs, ys, wavelength)
-    annotations = get_spectral_locus_labels(spectral_locus, opt.spectral_locus_labels, opt.label_distance, opt)
-    xs, ys = spectral_locus.steps(int(len(xs) * 1.5))
+    annotations = get_spectral_locus_labels(opt)
 
     # Draw the bottom purple line
     interp = alg.interpolate([[xs[-1], ys[-1]], [xs[0], ys[0]]])
@@ -636,7 +605,7 @@ def cie_diagram(
         wy = []
         annot = []
         for wp in white_points:
-            w = ALL_WHITES[observer][wp]
+            w = ALL_WHITES['2deg'][wp]
             annot.append(wp)
             xy = convert_chromaticity(Color.convert_chromaticity('xy-1931', opt.chromaticity, w)[:-1], opt)
             wx.append(xy[0])
@@ -779,7 +748,6 @@ def main():
 
     parser = argparse.ArgumentParser(prog='diagrams', description='Generate CIE Chromaticity diagrams.')
     parser.add_argument('--diagram', '-d', default='1931', help='Diagram to generate.')
-    parser.add_argument('--cmfs', '-c', default="2deg", help="CMFS to use, e.g., '2deg' (default) or '10deg'.")
     parser.add_argument('--white-point', '-w', action='append', help="A white point to plot.")
     parser.add_argument('--cct', '-C', action='append', help="A point specified by 'CCT:Duv'.")
     parser.add_argument(
@@ -809,7 +777,6 @@ def main():
 
     fig = cie_diagram(
         mode=args.diagram,
-        observer=args.cmfs,
         white_points=args.white_point,
         rgb_spaces=[r.split(':') for r in args.rgb] if args.rgb is not None else None,
         colorize=not args.no_background,

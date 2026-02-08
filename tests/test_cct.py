@@ -133,6 +133,16 @@ class TestCCTSpecificCases(util.ColorAsserts, unittest.TestCase):
             Color('color(xyz-d65 1.2743 1 0.14517)')
         )
 
+    def test_ohno_exact(self):
+        """Test exact CMFs."""
+
+        cct1, duv1 = Color('orange').cct(method='ohno-2013')
+        assert math.isclose(cct1, 2424.1146637385255, rel_tol=1e-11, abs_tol=1e-11)
+        assert math.isclose(duv1, 0.008069417642630583, rel_tol=1e-11, abs_tol=1e-11)
+        cct2, duv2 = Color('orange').cct(method='ohno-2013', exact=True)
+        assert math.isclose(cct2, 2424.1146637385255, rel_tol=1e-11, abs_tol=1e-11)
+        assert math.isclose(duv2, 0.008069417642630583, rel_tol=1e-11, abs_tol=1e-11)
+
     def test_ohno_alternate_cmfs(self):
         """Test alternate CMFs."""
 
@@ -143,25 +153,15 @@ class TestCCTSpecificCases(util.ColorAsserts, unittest.TestCase):
             CCT = 'ohno-2013'
 
         Custom.register(
-            Ohno2013(cmfs.CIE_1964_10DEG, cat.WHITES['10deg']['D65']),
+            Ohno2013(cmfs.CIE_1931_2DEG, cat.WHITES['2deg']['D50']),
             overwrite=True
         )
 
         srgbl = Custom.blackbody('srgb-linear', 5000, scale_space='srgb-linear')
-        self.assertColorEqual(srgbl, Color('color(srgb-linear 1 0.77908 0.61805)'))
+        self.assertColorEqual(srgbl, Color('color(srgb-linear 1 0.7915 0.6282)'))
         cct, duv = srgbl.cct()
-        assert math.isclose(cct, 5000.005435878293, rel_tol=1e-11, abs_tol=1e-11)
-        assert math.isclose(duv, 2.771032069214595e-08, rel_tol=1e-11, abs_tol=1e-11)
-
-    def test_ohno_exact(self):
-        """Test exact CMFs."""
-
-        cct1, duv1 = Color('orange').cct(method='ohno-2013')
-        assert math.isclose(cct1, 2424.1146637385255, rel_tol=1e-11, abs_tol=1e-11)
-        assert math.isclose(duv1, 0.008069417642630583, rel_tol=1e-11, abs_tol=1e-11)
-        cct2, duv2 = Color('orange').cct(method='ohno-2013', exact=True)
-        assert math.isclose(cct2, 2424.1146637385255, rel_tol=1e-11, abs_tol=1e-11)
-        assert math.isclose(duv2, 0.008069417642630583, rel_tol=1e-11, abs_tol=1e-11)
+        assert math.isclose(cct, 5000.0053320884645, rel_tol=1e-11, abs_tol=1e-11)
+        assert math.isclose(duv, 2.942006042494333e-08, rel_tol=1e-11, abs_tol=1e-11)
 
     def test_robertson_custom_table(self):
         """Test that we can customize Robertson 1968 table."""
@@ -174,7 +174,7 @@ class TestCCTSpecificCases(util.ColorAsserts, unittest.TestCase):
             CCT = 'robertson-1968'
 
         Custom.register(
-            robertson_1968.Robertson1968(cmfs.CIE_1964_10DEG, cat.WHITES['10deg']['D65']),
+            robertson_1968.Robertson1968(cmfs.CIE_1931_2DEG, cat.WHITES['2deg']['D50']),
             overwrite=True
         )
 

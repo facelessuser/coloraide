@@ -215,6 +215,7 @@ Scalable
 SciPy
 Sharma
 Sijmen
+Sprague
 Stolitzka
 Sz
 TODO
