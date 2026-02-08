@@ -880,6 +880,10 @@ color.fit('macadam-limits')
 color.in_gamut('macadam-limits')
 ```
 
+> [!note]
+> When gamut mapping in the `macadam-limits` gamut, the `method` parameter is ignored as its own handling will be
+> applied.
+
 ## Pointer's Gamut
 
 > [!new] New in 2.4
@@ -922,3 +926,7 @@ color.in_gamut('pointer-gamut')
 color.fit('pointer-gamut')
 color.in_gamut('pointer-gamut')
 ```
+
+> [!note]
+> When gamut mapping in the `pointer-gamut` gamut, the `method` parameter is ignored as its own handling will be
+> applied.
