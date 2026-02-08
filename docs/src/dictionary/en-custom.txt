@@ -202,6 +202,7 @@ RYB
 Raphson
 Rasmus
 Reinsch
+Rösch
 SCD
 SDR
 SL

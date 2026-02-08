@@ -18,7 +18,7 @@ from coloraide.channels import ANGLE_DEG
 from coloraide.spaces import HSLish, HSVish, HWBish, Labish, LChish, RGBish  # noqa: E402
 from coloraide import algebra as alg  # noqa: E402
 from coloraide.color import POSTFIX  # noqa: E402
-from coloraide.gamut import pointer
+from coloraide.gamut import pointer, visible_spectrum, SPECIAL_GAMUTS
 
 FORCE_OWN_GAMUT = {'ryb', 'ryb-biased'}
 
@@ -203,8 +203,10 @@ def cyl_disc(
             u.append(c[radius])
             v.append(c[hue])
             c.convert(space, norm=False, in_place=True)
-            if limit['pointer']:
-                c.fit_pointer_gamut()
+            if limit['macadam-limits']:
+                c.fit('macadam-limits')
+            if limit['pointer-gamut']:
+                c.fit('pointer-gamut')
 
             store_coords(c, x, y, z, flags)
 
@@ -335,8 +337,10 @@ def render_space_cyl(fig, space, gamut, resolution, opacity, edges, faces, ecolo
             u.append(c[2])
             v.append(c['hue'])
             c.convert(space, norm=False, in_place=True)
-            if limit['pointer']:
-                c.fit_pointer_gamut()
+            if limit['macadam-limits']:
+                c.fit('macadam-limits')
+            if limit['pointer-gamut']:
+                c.fit('pointer-gamut')
 
             store_coords(c, x, y, z, flags)
 
@@ -393,28 +397,44 @@ def render_special_gamut(gtype, fig, space, resolution, opacity, edges, faces, e
     z = []
     cmap = []
 
-    lightness = [91, *pointer.LCH_L, 14]
-    hues = pointer.LCH_H
+    lightness = [91, *pointer.LIGHTNESS, 14] if gtype == 'pointer-gamut' else visible_spectrum.LUMINANCE
+    hues = pointer.HUE if gtype == 'pointer-gamut' else visible_spectrum.HUE
 
     for l in lightness:
         for h in hues:
-            if l == 91:
-                _l = l - 1 + 1e-8
-                c = 1e-8
-            elif l == 14:
-                _l = l + 1 - 1e-8
-                c = 1e-8
+            if gtype == 'pointer-gamut':
+                # Close out the top or bottom if see lightness beyond the expected range
+                if l == 91:
+                    _l = l - 1 + 1e-8
+                    c = 1e-12
+                elif l == 14:
+                    _l = l + 1 - 1e-8
+                    c = 1e-12
+                else:
+                    _l = l
+                    c = pointer.LUT[pointer.HUE.index(h)][pointer.LIGHTNESS.index(l)]
+                u.append(_l)
+                v.append(h)
+                color = Color('xyz-d65', [0, 0, 0])
+                pointer.from_lch_sc(color, [_l, c, h])
             else:
-                _l = l
-                c = pointer.GAMUT[pointer.LCH_H.index(h)][pointer.LCH_L.index(l)]
-            u.append(_l)
-            v.append(h)
-            color = Color('xyz-d65', [0, 0, 0])
-            pointer.from_lch_sc(color, [_l, c, h])
+                color = Color('white').convert('xyy', in_place=True)
+                if l == -1:
+                    u.append(0)
+                    v.append(h)
+                    color.update('black')
+                else:
+                    c = visible_spectrum.LUT[visible_spectrum.HUE.index(h)][visible_spectrum.LUMINANCE.index(l)]
+                    xy = alg.add(alg.polar_to_rect(c, h), color.xy())
+                    u.append(l)
+                    v.append(h)
+                    color[:-1] = [*xy, l]
 
             color.convert(space, norm=False, in_place=True)
-            if limit['pointer']:
-                c.fit_pointer_gamut()
+            if limit['macadam-limits']:
+                color.fit('macadam-limits')
+            if limit['pointer-gamut']:
+                color.fit('pointer-gamut')
             store_coords(color, x, y, z, flags)
 
             # Adjust gamut to fit the display space
@@ -555,7 +575,10 @@ def plot_gamut_in_space(
         resolution = config.get('resolution', 200)
         edges = config.get('edges', False)
         ecolor = None
-        limit = {'pointer': config.get('pointer', False)}
+        limit = {
+            'pointer-gamut': config.get('pointer-gamut', False),
+            'macadam-limits': config.get('macadam-limits', False)
+        }
         if isinstance(edges, str):
             c = Color(edges).convert('srgb').fit(**gmap)
             if filters:
@@ -571,7 +594,7 @@ def plot_gamut_in_space(
             fcolor = c.to_string(hex=True, alpha=False)
             faces = True
 
-        if gamut == 'pointer':
+        if gamut in SPECIAL_GAMUTS:
             render_special_gamut(
                 gamut, fig, space, resolution, opacity, edges, faces, ecolor, fcolor, gmap, filters, limit
             )
@@ -851,8 +874,9 @@ def main():
         help=(
             "Gamut space to render space in. Can be followed by a JSON config in the form 'space:{}' to set `edges`,"
             '`faces`, `opacity`, or `resolution`. `edges` and `faces` can be a boolean to disable or enable them or '
-            "color to configure them all as a specific color. Additionally, if `pointer` is set to true ",
-            "The current gamut will also have a restriction to force them to be within this gamut as well."
+            "color to configure them all as a specific color. Additionally, if `pointer-gamut` or `macadam-limits` is "
+            "set to true. The current gamut will also have a restriction to force them to be within these gamuts as "
+            "well."
         )
     )
     parser.add_argument(

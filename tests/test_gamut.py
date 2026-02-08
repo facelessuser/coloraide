@@ -488,42 +488,75 @@ class TestPointerGamut(util.ColorAsserts, unittest.TestCase):
     def test_in_pointer_gamut_too_light(self):
         """Test gamut check when too light."""
 
-        self.assertFalse(Color('white').in_pointer_gamut())
+        self.assertFalse(Color('white').in_gamut('pointer-gamut'))
 
     def test_in_pointer_gamut_too_dark(self):
         """Test gamut check when too dark."""
 
-        self.assertFalse(Color('black').in_pointer_gamut())
+        self.assertFalse(Color('black').in_gamut('pointer-gamut'))
 
     def test_in_pointer_gamut(self):
         """Test gamut check in gamut."""
 
-        self.assertTrue(Color('orange').in_pointer_gamut())
+        self.assertTrue(Color('orange').in_gamut('pointer-gamut'))
 
     def test_out_of_pointer_gamut(self):
         """Test gamut check out of gamut."""
 
-        self.assertFalse(Color('red').in_pointer_gamut())
-
-    def test_hue_wrap(self):
-        """Test when hue interpolation wraps."""
-
-        self.assertFalse(Color('deeppink').in_pointer_gamut())
+        self.assertFalse(Color('red').in_gamut('pointer-gamut'))
 
     def test_fit_pointer_gamut_too_light(self):
         """Test fitting gamut when too light."""
 
-        self.assertColorEqual(Color('white').fit_pointer_gamut(), Color('rgb(226.33 226.33 226.33)'))
+        self.assertColorEqual(Color('white').fit('pointer-gamut'), Color('rgb(226.33 226.33 226.33)'))
 
     def test_fit_pointer_gamut_too_dark(self):
         """Test fitting gamut when too dark."""
 
-        self.assertColorEqual(Color('black').fit_pointer_gamut(), Color('rgb(37.667 37.667 37.667)'))
+        self.assertColorEqual(Color('black').fit('pointer-gamut'), Color('rgb(37.667 37.667 37.667)'))
 
     def test_fit_pointer_gamut(self):
         """Test gamut check out of gamut."""
 
-        self.assertColorEqual(Color('red').fit_pointer_gamut(), Color('rgb(244 46.539 23.139)'))
+        self.assertColorEqual(Color('red').fit('pointer-gamut'), Color('rgb(244 46.539 23.139)'))
+
+    def test_in_macadam_limits_too_light(self):
+        """Test gamut check when too light."""
+
+        self.assertFalse(Color('srgb', [1.1, 1.1, 1.1]).in_gamut('macadam-limits'))
+
+    def test_in_macadam_limits_too_dark(self):
+        """Test gamut check when too dark."""
+
+        self.assertFalse(Color('srgb', [-0.1, -0.1, -0.1]).in_gamut('macadam-limits'))
+
+    def test_in_macadam_limits(self):
+        """Test gamut check in gamut."""
+
+        self.assertTrue(Color('orange').in_gamut('macadam-limits'))
+
+    def test_out_of_macadam_limits(self):
+        """Test gamut check out of gamut."""
+
+        self.assertFalse(Color('rec2020', [0, 1, 0]).in_gamut('macadam-limits'))
+
+    def test_fit_macadam_limits_too_light(self):
+        """Test fitting gamut when too light."""
+
+        self.assertColorEqual(Color('srgb', [1.1, 1.1, 1.1]).fit('macadam-limits'), Color('white'))
+
+    def test_fit_macadam_limits_too_dark(self):
+        """Test fitting gamut when too dark."""
+
+        self.assertColorEqual(Color('srgb', [-0.1, -0.1, -0.1]).fit('macadam-limits'), Color('black'))
+
+    def test_fit_macadam_limits_gamut(self):
+        """Test gamut check out of gamut."""
+
+        self.assertColorEqual(
+            Color('rec2020', [0, 1, 0]).fit('macadam-limits'),
+            Color('color(rec2020 0.4652 0.96774 0.4652)')
+        )
 
     def test_pointer_boundary_too_light(self):
         """Test when pointer boundary is request is too light."""
@@ -559,6 +592,44 @@ class TestPointerGamut(util.ColorAsserts, unittest.TestCase):
         expected = [[0.5076988072583095, 0.2255929648510513, 0.11250973799663784],
                     [0.634800855490809, 0.35129621215430396, 0.18418651851244416],
                     [0.5260711281340981, 0.462168144862833, 0.482781043708229]]
+
+        for coords1, coords2 in zip(test, expected):
+            [self.assertCompare(a, b) for a, b in zip(coords1, coords2)]
+
+    def test_macadam_limits_too_light(self):
+        """Test when pointer boundary is request is too light."""
+
+        with self.assertRaises(ValueError):
+            gamut.visible_spectrum.macadam_limits(-0.01)
+
+    def test_macadam_limits_too_dark(self):
+        """Test when pointer boundary is request is too dark."""
+
+        with self.assertRaises(ValueError):
+            gamut.visible_spectrum.macadam_limits(1.01)
+
+    def test_macadam_limits_mid(self):
+        """Test when pointer boundary request."""
+
+        boundary = gamut.visible_spectrum.macadam_limits(0.5)
+        # Test a sample of the values
+        test = [boundary[0], boundary[5], boundary[8]]
+        expected = [[0.4806514042586269, 0.329, 0.5],
+                    [0.4962107271703434, 0.34505510826280383, 0.5],
+                    [0.507062460802951, 0.3563158624760576, 0.5]]
+
+        for coords1, coords2 in zip(test, expected):
+            [self.assertCompare(a, b) for a, b in zip(coords1, coords2)]
+
+    def test_macadam_limits_max(self):
+        """Test pointer boundary max request."""
+
+        boundary = gamut.visible_spectrum.macadam_limits()
+        # Test a sample of the values
+        test = [boundary[0], boundary[5], boundary[8]]
+        expected = [[0.6707946074737312, 0.329, 1],
+                    [0.6418734410118543, 0.3577989444223567, 1],
+                    [0.6265045190690097, 0.37310234904334116, 1]]
 
         for coords1, coords2 in zip(test, expected):
             [self.assertCompare(a, b) for a, b in zip(coords1, coords2)]

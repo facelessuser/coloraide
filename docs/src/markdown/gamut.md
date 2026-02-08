@@ -842,6 +842,44 @@ Steps(
 > ```
 > ///
 
+## MacAdam Limits
+
+> [!new] New in 8.1
+
+The optimal color solid or Rösch-MacAdam color solid is a type of color solid that contains all the possible colors that
+surfaces can have. This is a theoretical limit based on classical reflection, so fluorescence and such may fall outside
+this solid.
+
+The solid encompasses the full range of visible spectrum at the base, but, as luminance increases, it becomes smaller
+and smaller.
+
+![MacAdam limits at Luminance Levels](images/macadam-limits-lightness.png).
+
+Looking at the shape in 3D, we can get a full visualization of its geometry. 
+
+![Rösch-MacAdam Color Solid](images/rosch-macadam.png)
+
+Some color spaces can exceed these MacAdam limits as can be be seen with Rec. 2020 color at higher luminance. The below
+image shows the Rösch-MacAdam color solid and Rec. 2020 gamut rendered within xyY.
+
+![Rösch-MacAdam Color Solid](images/rosch-macadam-rec2020.png)
+
+If we were to clip all the Rec. 2020 colors outside the color solid, we would have something similar to the image below.
+
+![Rösch-MacAdam Color Solid](images/rosch-macadam-rec2020-clipped.png)
+
+ColorAide provides an approximation of this gamut via a 3D LUT in the D65 illuminant, and provides the special gamut
+name `macadam-limits` that can be used in `in_gamut()` or `fit()` to check if a color is within the MacAdam limits or
+compress the color to fit within the MacAdam limits.
+
+```py play
+color = Color('rec2020', [0, 1, 0])
+color
+color.in_gamut('macadam-limits')
+color.fit('macadam-limits')
+color.in_gamut('macadam-limits')
+```
+
 ## Pointer's Gamut
 
 > [!new] New in 2.4
@@ -873,22 +911,14 @@ The gamuts previously discussed are bound by a color space's limits, but the Poi
 generally and was created from observed data via research. Because it doesn't quite fit with the color space gamut API,
 ColorAide exposes two special functions to test if a color is in the Pointer's gamut and to fit a color to the gamut.
 
-To test if a color is within the gamut, simply call `in_pointer_gamut()`:
-
-```py play
-Color('red').in_pointer_gamut()
-Color('orange').in_pointer_gamut()
-```
-
-ColorAide provides the `fit_pointer_gamut()` method to perform this "fitting" of the color.
+ColorAide provides an approximation of this gamut via a 3D LUT in the C illuminant and provides the special gamut name
+`pointer-gamut` that can be used in `in_gamut()` or `fit()` to check if a color is within the Pointer gamut limits or
+compress the color to fit within the Pointer gamut limits.
 
 ```py play
 color = Color('red')
 color
-color.in_pointer_gamut()
-color.fit_pointer_gamut()
-color.in_pointer_gamut()
+color.in_gamut('pointer-gamut')
+color.fit('pointer-gamut')
+color.in_gamut('pointer-gamut')
 ```
-
-> [!tip]
-> Much like `in_gamut()`, `in_pointer_gamut()` allows adjusting tolerance as well via the `tolerance` parameter.

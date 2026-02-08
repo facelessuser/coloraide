@@ -351,12 +351,35 @@ class TestCustom(util.ColorAsserts, unittest.TestCase):
         class CustomFit(Fit):
             NAME = 'clip'
 
-            @staticmethod
-            def fit(color):
+            def fit(self, color, space, **kwargs):
                 return [0, 0, 0]
 
         with self.assertRaises(ValueError):
             Custom.register(CustomFit(), overwrite=True)
+
+    def test_reserved_gamut_name_registration(self):
+        """Test override registration of reserved fit method."""
+
+        from coloraide.spaces import Space
+
+        class Custom(Color):
+            pass
+
+        class CustomSpace(Space):
+            NAME = 'pointer-gamut'
+
+            def to_base(self, coords):  # pragma: no cover
+                """To base color."""
+
+                return coords
+
+            def from_base(self, coords):  # pragma: no cover
+                """From base color."""
+
+                return coords
+
+        with self.assertRaises(ValueError):
+            Custom.register(CustomSpace(), overwrite=True)
 
     def test_bad_registration_type(self):
         """Test bad registration type."""
@@ -381,8 +404,7 @@ class TestCustom(util.ColorAsserts, unittest.TestCase):
         class CustomDE(DeltaE):
             NAME = '*'
 
-            @staticmethod
-            def distance(color, sample, **kwargs):
+            def distance(self, color, sample, **kwargs):
                 return 0
 
         with self.assertRaises(ValueError):
