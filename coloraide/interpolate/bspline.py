@@ -21,7 +21,7 @@ class InterpolatorBSpline(InterpolatorContinuous[AnyColor]):
 
         # Process undefined values
         self.handle_undefined()
-        self.spline = alg.BSplineInterpolator
+        self.spline = alg.BSplineInterpolator  # type: type[alg._CubicInterpolator]
         self.spline.preprocess(self.coordinates)
 
     def interpolate(

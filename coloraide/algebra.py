@@ -820,8 +820,8 @@ class Interpolator:
         return self.run(i, t)
 
 
-class CatmullRomInterpolator(Interpolator):
-    """Catrom-Mull interpolator."""
+class _CubicInterpolator(Interpolator):
+    """Cubic interpolator."""
 
     @classmethod
     def preprocess(cls, points: list[Vector]) -> None:
@@ -832,19 +832,9 @@ class CatmullRomInterpolator(Interpolator):
 
     @staticmethod
     def interpolate(p0: float, p1: float, p2: float, p3: float, t: float) -> float:
-        """Calculate the new point using the provided values."""
+        """Interpolate."""
 
-        # Save some time calculating this once
-        t2 = t ** 2
-        t3 = t2 * t
-
-        # Insert control points to algorithm
-        return (
-            (-t3 + 2 * t2 - t) * p0 +  # B0
-            (3 * t3 - 5 * t2 + 2) * p1 +  # B1
-            (-3 * t3 + 4 * t2 + t) * p2 +  # B2
-            (t3 - t2) * p3  # B3
-        ) / 2
+        raise NotImplementedError('This function is not implemented')
 
     def run(self, i: int, t: float) -> Vector:
         """Begin interpolation."""
@@ -867,7 +857,28 @@ class CatmullRomInterpolator(Interpolator):
         return coord
 
 
-class MonotoneInterpolator(CatmullRomInterpolator):
+
+class CatmullRomInterpolator(_CubicInterpolator):
+    """Catrom-Mull interpolator."""
+
+    @staticmethod
+    def interpolate(p0: float, p1: float, p2: float, p3: float, t: float) -> float:
+        """Calculate the new point using the provided values."""
+
+        # Save some time calculating this once
+        t2 = t ** 2
+        t3 = t2 * t
+
+        # Insert control points to algorithm
+        return (
+            (-t3 + 2 * t2 - t) * p0 +  # B0
+            (3 * t3 - 5 * t2 + 2) * p1 +  # B1
+            (-3 * t3 + 4 * t2 + t) * p2 +  # B2
+            (t3 - t2) * p3  # B3
+        ) / 2
+
+
+class MonotoneInterpolator(_CubicInterpolator):
     """Monotone interpolator."""
 
     @staticmethod
@@ -945,7 +956,7 @@ class MonotoneInterpolator(CatmullRomInterpolator):
         return min(max(result, mn), mx)
 
 
-class BSplineInterpolator(CatmullRomInterpolator):
+class BSplineInterpolator(_CubicInterpolator):
     """B-Spline Interpolator."""
 
     @staticmethod
