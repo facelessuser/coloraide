@@ -8,7 +8,7 @@ class Illuminant(dict[float, float]):
     """Spectral distribution of illuminants."""
 
     def __init__(self, illuminant: dict[float, float], /, **kwargs: Any):
-        """Initalize and capture attributes of CMF."""
+        """Initialize and capture attributes of CMF."""
 
         keys = list(illuminant.keys())
         self.spline = alg.interpolate([[i]for i in illuminant.values()], method='linear')

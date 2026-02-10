@@ -10,7 +10,7 @@ class CMFs(dict[float, Vector]):
     """A color matching function wrapper for CMFs."""
 
     def __init__(self, cmfs: dict[float, Vector], /, interpolator: str = 'cubic', **kwargs: Any):
-        """Initalize and capture attributes of CMF."""
+        """Initialize and capture attributes of CMF."""
 
         keys = list(cmfs.keys())
         self.spline = alg.interpolate(list(cmfs.values()), method='sprague')
@@ -30,7 +30,7 @@ class CMFs(dict[float, Vector]):
         return self.spline(factor)
 
     def xy(self, key: float) -> Vector:
-        """Return CMFs data as XY coordiantes."""
+        """Return CMFs data as XY coordinates."""
 
         return util.xyz_to_xyY(self[key])[:-1]
 

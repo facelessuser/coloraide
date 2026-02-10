@@ -19,6 +19,7 @@ used as long as the final results are converted to normal types.
 """
 from __future__ import annotations
 import builtins
+import bisect
 import decimal
 import sys
 import cmath
@@ -259,6 +260,20 @@ def polar_to_rect(c: float, h: float) -> tuple[float, float]:
 
     r = math.radians(h)
     return c * math.cos(r), c * math.sin(r)
+
+
+def reversed_bisect_left(a: Vector, x: float, lo: int = 0, hi: int | None = None) -> int:
+    """Perform bisect left on a reversed list."""
+
+    if hi is None:
+        hi = len(a)
+    while lo < hi:
+        mid = (lo + hi) // 2
+        if x >= a[mid]:
+            hi = mid
+        else:
+            lo = mid + 1
+    return lo
 
 
 def solve_bisect(
@@ -767,7 +782,8 @@ class Interpolator:
         self.num_coords = len(points[0])
         self.preprocess(points)
         self.points = [*zip(*points)]
-        self.domain = domain[:] if domain is not None else domain
+        self.domain = list(domain) if domain is not None else domain
+        self.increasing = not self.domain or len(self.domain) == 1 or self.domain[1] > self.domain[0]
 
     @classmethod
     def preprocess(cls, points: list[Vector]) -> None:
@@ -796,17 +812,29 @@ class Interpolator:
         if self.domain is None:
             return t
 
+        import operator as op
+        le, ge = (op.le, op.ge) if self.increasing else (op.ge, op.le)
+
         # Extrapolation
-        if t <= self.domain[0]:
+        if le(t, self.domain[0]):
             t = (t - self.domain[0]) / (self.domain[-1] - self.domain[0])
-        elif t >= self.domain[-1]:
+        elif ge(t, self.domain[-1]):
             t = 1.0 + (t - self.domain[-1]) / (self.domain[-1] - self.domain[0])
 
         # Interpolation
         else:
-            a, b = self.domain[0], self.domain[len(self.domain) - 1]
-            l = b - a
-            t = ((t - a) / l) if l else 0.0
+            bisect_left = bisect.bisect_left if self.increasing else reversed_bisect_left
+            regions = len(self.domain) - 1
+            size = (1 / regions)
+            index = bisect_left(self.domain, t) - 1
+            adjusted = 0.0
+            if index < regions:
+                a, b = self.domain[index:index + 2]
+                l = b - a
+                adjusted = ((t - a) / l) if l else 0.0
+            else:
+                index = regions - 1
+            t = size * index + (adjusted * size)
         return t
 
     def __call__(self, t: float) -> Vector:
@@ -859,7 +887,7 @@ class _CubicInterpolator(Interpolator):
 
 
 class CatmullRomInterpolator(_CubicInterpolator):
-    """Catrom-Mull interpolator."""
+    """Catmull-Rom interpolator."""
 
     @staticmethod
     def interpolate(p0: float, p1: float, p2: float, p3: float, t: float) -> float:
@@ -989,7 +1017,7 @@ def _matrix_141(n: int) -> Matrix:
 
 
 class NaturalBSplineInterpolator(BSplineInterpolator):
-    """Natrual B-Spline interpolator."""
+    """Natural B-Spline interpolator."""
 
     @staticmethod
     def naturalize(points: list[Vector]) -> None:
