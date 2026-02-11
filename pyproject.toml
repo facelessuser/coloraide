@@ -135,7 +135,7 @@ omit = [
     "coloraide/spaces/cam16_jmh.py",
     "coloraide/spaces/zcam_jmh.py",
     "coloraide/deprecate.py",
-    "coloraide/sds.py"
+    "coloraide/illuminants.py"
 ]
 
 exclude_lines = [

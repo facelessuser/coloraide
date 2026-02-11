@@ -6,6 +6,7 @@ https://en.wikipedia.org/wiki/Planckian_locus#The_Planckian_locus_in_the_XYZ_col
 from __future__ import annotations
 import math
 from ..types import VectorLike, Vector
+from ..cmfs import CMFs
 from .. import util
 
 # Constants for Planck's Law
@@ -24,7 +25,7 @@ C2 = 1.4388e-2
 
 def temp_to_xy_planckian_locus(
     temp: float,
-    cmfs: dict[int, tuple[float, float, float]],
+    cmfs: CMFs,
     white: VectorLike,
     start: int = 360,
     end: int = 830,

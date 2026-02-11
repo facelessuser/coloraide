@@ -13,8 +13,9 @@ class InterpolatorMonotone(InterpolatorBSpline[AnyColor]):
     def setup(self) -> None:
         """Setup."""
 
-        super().setup()
-        self.spline = alg.monotone
+        self.handle_undefined()
+        self.spline = alg.MonotoneInterpolator
+        self.spline.preprocess(self.coordinates)
 
 
 class Monotone(Interpolate[AnyColor]):

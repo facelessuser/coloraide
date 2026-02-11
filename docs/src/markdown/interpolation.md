@@ -801,9 +801,22 @@ Color.interpolate(
 )
 ```
 
-Lastly, domains must be specified in ascending order of values. If a value decreases in magnitude, it will assume the
-value that comes right before it. This means you cannot put a domain in reverse. If you need to reverse the order, just
-flip the color order and setup the domain accordingly.
+Domains can also be specified in descending order.
+
+
+```py play
+Color.interpolate(
+    ['blue', 'green', 'yellow', 'orange', 'red'],
+    domain=[95, 85, 60, 32, -32]
+)
+Color.interpolate(
+    ['blue', 'green', 'yellow', 'orange', 'red'],
+    domain=[95, -32]
+)
+```
+
+Lastly, while domains can be specified in either ascending or descending order, it needs to be consistent. If a values
+increase in values, and suddenly decreases in value, you will get discontinuities.
 
 ```py play
 i = Color.interpolate(
@@ -856,9 +869,9 @@ to -0.5 and 1.5.
 
 ```py play
 offset, factor = 0.25, 1.5
-i = Color.interpolate(['red', 'blue'])
+i = Color.interpolate(['red', 'blue'], space='srgb')
 Ramp([i((r * factor / 100) - offset) for r in range(101)])
-i = Color.interpolate(['red', 'blue'], extrapolate=True)
+i = Color.interpolate(['red', 'blue'], space='srgb', extrapolate=True)
 Ramp([i((r * factor / 100) - offset) for r in range(101)])
 ```
 
@@ -868,8 +881,8 @@ end color. But when extrapolation is enabled, a color stop on an endpoint essent
 interpolation. And since there are no other colors on either end to interpolate with, extrapolation occurs.
 
 ```py play
-Color.interpolate([stop('red', 0.25), stop('blue', 0.75)])
-Color.interpolate([stop('red', 0.25), stop('blue', 0.75)], extrapolate=True)
+Color.interpolate([stop('red', 0.25), stop('blue', 0.75)], space='srgb')
+Color.interpolate([stop('red', 0.25), stop('blue', 0.75)], space='srgb', extrapolate=True)
 ```
 
 ## Undefined/NaN Handling {#null-handling}

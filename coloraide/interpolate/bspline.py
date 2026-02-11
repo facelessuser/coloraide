@@ -16,25 +16,13 @@ from typing import Any
 class InterpolatorBSpline(InterpolatorContinuous[AnyColor]):
     """Interpolate with B-spline."""
 
-    def adjust_endpoints(self) -> None:
-        """
-        Adjust endpoints such that they are clamped.
-
-        We cannot interpolate all the way to `coord[0]` and `coord[-1]` without additional control
-        points to coax the curve through the end points. Generate a point at both ends so that we
-        can properly evaluate the spline from start to finish.
-        """
-
-        self.coordinates.insert(0, [2 * a - b for a, b in zip(self.coordinates[0], self.coordinates[1])])
-        self.coordinates.append([2 * a - b for a, b in zip(self.coordinates[-1], self.coordinates[-2])])
-
     def setup(self) -> None:
         """Optional setup."""
 
         # Process undefined values
-        self.spline = alg.bspline
         self.handle_undefined()
-        self.adjust_endpoints()
+        self.spline = alg.BSplineInterpolator  # type: type[alg._CubicInterpolator]
+        self.spline.preprocess(self.coordinates)
 
     def interpolate(
         self,
@@ -61,7 +49,7 @@ class InterpolatorBSpline(InterpolatorContinuous[AnyColor]):
                 channels.append(alg.lerp(p0, p1, t))
             else:
                 p0, p1, p2, p3 = coords[i]
-                channels.append(self.spline(p0, p1, p2, p3, t))
+                channels.append(self.spline.interpolate(p0, p1, p2, p3, t))
 
         # Small adjustment for floating point math and alpha channels
         if 1 - channels[-1] < 1e-6:

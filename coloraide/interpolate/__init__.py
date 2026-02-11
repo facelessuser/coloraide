@@ -15,6 +15,7 @@ License: MIT (As noted in https://github.com/LeaVerou/color.js/blob/master/packa
 """
 from __future__ import annotations
 import math
+import bisect
 import functools
 from abc import ABCMeta, abstractmethod
 from .. import algebra as alg
@@ -101,6 +102,7 @@ class Interpolator(Generic[AnyColor], metaclass=ABCMeta):
         self.extrapolate = extrapolate
         self.current_easing = None  # type: Mapping[str, Callable[..., float]] | Callable[..., float] | None
         self.hue = hue
+        self.increasing = True
         cs = self.color_cls.CS_MAP[space]
         if cs.is_polar():
             self.hue_index = cs.hue_index()  # type: ignore[attr-defined]
@@ -119,6 +121,7 @@ class Interpolator(Generic[AnyColor], metaclass=ABCMeta):
 
         # Set the domain
         self._domain = []  # type: Vector
+
         if domain is not None:
             self.domain(domain)
 
@@ -186,6 +189,12 @@ class Interpolator(Generic[AnyColor], metaclass=ABCMeta):
             raise ValueError(f"'{space}' is not a valid color space")
         self._out_space = space
 
+    def domain(self, domain: Sequence[float]) -> None:
+        """Set the domain."""
+
+        self._domain = list(domain)
+        self.increasing = not domain or len(domain) == 1 or domain[1] > domain[0]
+
     def padding(self, padding: float | Sequence[float]) -> None:
         """Add/adjust padding."""
 
@@ -214,28 +223,6 @@ class Interpolator(Generic[AnyColor], metaclass=ABCMeta):
         # Calculate padded start and end
         else:
             self._padding = (0.0 + padding[0], 1.0 - padding[1])
-
-    def domain(self, domain: Sequence[float]) -> None:
-        """Set the domain."""
-
-        # Ensure domain ascends.
-        # If we have a domain of length 1, we will duplicate it.
-        d = []  # type: Vector
-        if domain:
-            length = len(domain)
-
-            # Ensure values are not descending
-            d.append(domain[0])
-            for index in range(length - 1):
-                b = domain[index + 1]
-                d.append(d[-1] if b <= d[-1] else b)
-
-            # We need at least two values, so duplicate the first.
-            if len(d) == 1:
-                d.append(d[0])
-            domain = d
-
-        self._domain = d
 
     @abstractmethod
     def setup(self) -> None:
@@ -405,7 +392,7 @@ class Interpolator(Generic[AnyColor], metaclass=ABCMeta):
 
         return progress(t) if progress is not None else t
 
-    def scale(self, point: float) -> float:
+    def handle_domain(self, p: float) -> float:
         """
         Scale a point from a custom domain into a domain of 0 to 1.
 
@@ -413,30 +400,30 @@ class Interpolator(Generic[AnyColor], metaclass=ABCMeta):
         so that our logic can remain consistent.
         """
 
-        if point < self._domain[0]:
-            point = (point - self._domain[0]) / (self._domain[-1] - self._domain[0]) if self.extrapolate else 0.0
-        elif point > self._domain[-1]:
-            point = 1.0 + (point - self._domain[-1]) / (self._domain[-1] - self._domain[0]) if self.extrapolate else 1.0
+        import operator as op
+
+        le, ge = (op.le, op.ge) if self.increasing else (op.ge, op.le)
+        bisect_left = bisect.bisect_left if self.increasing else alg.reversed_bisect_left
+
+        if le(p, self._domain[0]):
+            p = (p - self._domain[0]) / (self._domain[-1] - self._domain[0]) if self.extrapolate else 0.0
+        elif ge(p, self._domain[-1]):
+            p = 1.0 + (p - self._domain[-1]) / (self._domain[-1] - self._domain[0]) if self.extrapolate else 1.0
         else:
             regions = len(self._domain) - 1
             size = (1 / regions)
-            index = 0
-            adjusted = 0.0
-            for index in range(regions):
-                a, b = self._domain[index:index + 2]
-                if point >= a and point <= b:
-                    l = b - a
-                    adjusted = ((point - a) / l) if l else 0.0
-                    break
-
-            point = size * index + (adjusted * size)
-        return point
+            index = bisect_left(self._domain, p) - 1
+            a, b = self._domain[index:index + 2]
+            l = b - a
+            adjusted = ((p - a) / l) if l else 0.0
+            p = size * index + (adjusted * size)
+        return p
 
     def __call__(self, point: float) -> AnyColor:
         """Find which leg of the interpolation the request is between."""
 
         if self._domain:
-            point = self.scale(point)
+            point = self.handle_domain(point)
 
         if self._padding:
             slope = (self._padding[1] - self._padding[0])

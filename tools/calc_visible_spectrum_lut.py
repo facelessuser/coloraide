@@ -19,7 +19,7 @@ sys.path.insert(0, os.getcwd())
 from coloraide.everything import ColorAll as Color
 from coloraide import algebra as alg
 from coloraide import cmfs
-from coloraide import sds
+from coloraide import illuminants
 from coloraide import cat
 
 WHITE = cat.WHITES['2deg']['D65']
@@ -35,7 +35,7 @@ def create_rosch_macadam_solid():
     # Generate pulse wave
     wavelengths = list(range(start, end + 1, steps))
     l = len(wavelengths)
-    square_waves_basis = [[1.0 if e1 < e2 else 0 for e1, k in enumerate(range(l))] for e2 in range(1, l)]
+    square_waves_basis = [[1.0 if e1 < e2 else 0 for e1 in range(l)] for e2 in range(1, l)]
 
     square_waves = []
     for i in range(l):
@@ -55,11 +55,11 @@ def create_rosch_macadam_solid():
 
     # Calculate XYZ values via Integration
     xyz_bar = [[], [], []]
-    for i in range(360, 781, 5):
+    for i in range(start, end + 1, steps):
         xyz_bar[0].append(cmfs.CIE_1931_2DEG[i][0])
         xyz_bar[1].append(cmfs.CIE_1931_2DEG[i][1])
         xyz_bar[2].append(cmfs.CIE_1931_2DEG[i][2])
-    illuminant = [sds.D65[r] for r in range(360, 781, 5)]
+    illuminant = [illuminants.D65[r] for r in range(start, end + 1, steps)]
 
     xyz = alg.matmul(xyz_bar, alg.diag(illuminant))
     xyz = alg.transpose(alg.divide(xyz, alg.vdot(xyz_bar[1], illuminant)))

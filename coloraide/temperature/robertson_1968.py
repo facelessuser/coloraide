@@ -46,7 +46,7 @@ class Robertson1968(CCT):
 
     def __init__(
         self,
-        cmfs: dict[int, tuple[float, float, float]] = cmfs.CIE_1931_2DEG,
+        cmfs: cmfs.CMFs = cmfs.CIE_1931_2DEG,
         white: VectorLike = cat.WHITES['2deg']['D65'],
         mired: VectorLike = MIRED_EXTENDED,
         sigfig: int = 5,
@@ -59,7 +59,7 @@ class Robertson1968(CCT):
 
     def generate_table(
         self,
-        cmfs: dict[int, tuple[float, float, float]],
+        cmfs: cmfs.CMFs,
         white: VectorLike,
         mired: VectorLike,
         sigfig: int,
