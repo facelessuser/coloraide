@@ -19,7 +19,7 @@ class CMFs(dict[float, Vector]):
         self.step = round((self.end - self.start) / (len(keys) - 1))
         super().__init__(cmfs, **kwargs)
 
-    def __getitem__(self, key: float) -> Vector:
+    def __getitem__(self, key: float) -> Vector:  # pragma: no cover
         """Get item: `namespace['key']`."""
 
         value = super().get(key)
@@ -29,7 +29,7 @@ class CMFs(dict[float, Vector]):
         factor = (key - self.start) / (self.end - self.start)
         return self.spline(factor)
 
-    def xy(self, key: float) -> Vector:
+    def xy(self, key: float) -> Vector:  # pragma: no cover
         """Return CMFs data as XY coordinates."""
 
         return util.xyz_to_xyY(self[key])[:-1]
