@@ -869,9 +869,9 @@ to -0.5 and 1.5.
 
 ```py play
 offset, factor = 0.25, 1.5
-i = Color.interpolate(['red', 'blue'])
+i = Color.interpolate(['red', 'blue'], space='srgb')
 Ramp([i((r * factor / 100) - offset) for r in range(101)])
-i = Color.interpolate(['red', 'blue'], extrapolate=True)
+i = Color.interpolate(['red', 'blue'], space='srgb', extrapolate=True)
 Ramp([i((r * factor / 100) - offset) for r in range(101)])
 ```
 
@@ -881,8 +881,8 @@ end color. But when extrapolation is enabled, a color stop on an endpoint essent
 interpolation. And since there are no other colors on either end to interpolate with, extrapolation occurs.
 
 ```py play
-Color.interpolate([stop('red', 0.25), stop('blue', 0.75)])
-Color.interpolate([stop('red', 0.25), stop('blue', 0.75)], extrapolate=True)
+Color.interpolate([stop('red', 0.25), stop('blue', 0.75)], space='srgb')
+Color.interpolate([stop('red', 0.25), stop('blue', 0.75)], space='srgb', extrapolate=True)
 ```
 
 ## Undefined/NaN Handling {#null-handling}

@@ -156,6 +156,20 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
         self.assertColorEqual(i(79), Color('oklab(0.83476 0.0259 0.17031)'))
         self.assertColorEqual(i(95), Color('oklab(0.62796 0.22486 0.12585)'))
 
+    def test_domain_reversed(self):
+        """Test that domains work."""
+
+        i = Color.interpolate(
+            ['blue', 'green', 'yellow', 'orange', 'red'],
+            domain=list(reversed([-32, 32, 60, 85, 95])),
+        )
+
+        self.assertColorEqual(i(-32), Color('oklab(0.62796 0.22486 0.12585)'))
+        self.assertColorEqual(i(35), Color('oklab(0.81147 0.0429 0.16537)'))
+        self.assertColorEqual(i(60), Color('oklab(0.96798 -0.07137 0.19857)'))
+        self.assertColorEqual(i(79), Color('oklab(0.62733 -0.12376 0.12949)'))
+        self.assertColorEqual(i(95), Color('oklab(0.45201 -0.03246 -0.31153)'))
+
     def test_domain_extrapolation(self):
         """Test extrapolation with custom domain."""
 

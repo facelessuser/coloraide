@@ -827,13 +827,9 @@ class Interpolator:
             regions = len(self.domain) - 1
             size = (1 / regions)
             index = bisect_left(self.domain, t) - 1
-            adjusted = 0.0
-            if index < regions:
-                a, b = self.domain[index:index + 2]
-                l = b - a
-                adjusted = ((t - a) / l) if l else 0.0
-            else:
-                index = regions - 1
+            a, b = self.domain[index:index + 2]
+            l = b - a
+            adjusted = ((t - a) / l) if l else 0.0
             t = size * index + (adjusted * size)
         return t
 
@@ -859,7 +855,7 @@ class _CubicInterpolator(Interpolator):
         points.append([2 * a - b for a, b in zip(points[-1], points[-2])])
 
     @staticmethod
-    def interpolate(p0: float, p1: float, p2: float, p3: float, t: float) -> float:
+    def interpolate(p0: float, p1: float, p2: float, p3: float, t: float) -> float:  # pragma: no cover
         """Interpolate."""
 
         raise NotImplementedError('This function is not implemented')

@@ -2137,6 +2137,14 @@ class TestAlgebra(unittest.TestCase):
             [[3.0, 4.0], [4.5, 6.0], [6.0, 8.0], [7.5, 5.0], [9.0, 2.0]]
         )
 
+    def test_interpolate1d(self):
+        """Test interpolation."""
+
+        self.assertEqual(
+            alg.interpolate([3, 4, 6, 8, 9, 2]).steps(5),
+            [[3.0], [4.5], [7.0], [8.75], [2.0000000000000018]]
+        )
+
     def test_interpolate_natural(self):
         """Test interpolation with a natural spline."""
 
@@ -2157,6 +2165,12 @@ class TestAlgebra(unittest.TestCase):
             i(-0.2),
             [2.4, 2.7]
         )
+
+    def test_interpolate_sprague_not_enough_points(self):
+        """Test extrapolation with splines when interpolating."""
+
+        with self.assertRaises(ValueError):
+            alg.interpolate([5, 7, 3, 7], method='sprague')
 
     def test_vectorize(self):
         """Test `vectorize`."""

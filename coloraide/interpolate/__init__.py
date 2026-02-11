@@ -413,13 +413,9 @@ class Interpolator(Generic[AnyColor], metaclass=ABCMeta):
             regions = len(self._domain) - 1
             size = (1 / regions)
             index = bisect_left(self._domain, p) - 1
-            adjusted = 0.0
-            if index < regions:
-                a, b = self._domain[index:index + 2]
-                l = b - a
-                adjusted = ((p - a) / l) if l else 0.0
-            else:
-                index = regions - 1
+            a, b = self._domain[index:index + 2]
+            l = b - a
+            adjusted = ((p - a) / l) if l else 0.0
             p = size * index + (adjusted * size)
         return p
 
