@@ -119,7 +119,7 @@ def get_convert_chain(
     return chain
 
 
-def convert(color: Color, space: str) -> tuple[Space, Vector]:
+def convert(color: Color, space: str, skip_adaptation: bool = False) -> tuple[Space, Vector]:
     """Convert the color coordinates to the specified space."""
 
     # Grab the convert for the current space to the desired space
@@ -133,7 +133,7 @@ def convert(color: Color, space: str) -> tuple[Space, Vector]:
     # Perform chromatic adaption if needed (a conversion to or from XYZ D65).
     last = color._space
     for a, b, direction, adapt in chain:
-        if direction and adapt:
+        if direction and adapt and not skip_adaptation:
             coords = color.chromatic_adaptation(
                 a.WHITE,
                 b.WHITE,
@@ -141,7 +141,7 @@ def convert(color: Color, space: str) -> tuple[Space, Vector]:
             )
 
         coords = b.from_base(coords) if direction else a.to_base(coords)
-        if not direction and adapt:
+        if not direction and adapt and not skip_adaptation:
             coords = color.chromatic_adaptation(
                 a.WHITE,
                 b.WHITE,
