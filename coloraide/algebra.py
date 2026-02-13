@@ -1182,19 +1182,14 @@ def pprint(value: float | ArrayLike) -> None:
     print(pretty(value))
 
 
-def line_intersect(
+def ray_line_intersect(
     a1: VectorLike,
     a2: VectorLike,
     b1: VectorLike,
     b2: VectorLike,
-    strict: bool = False,
     abs_tol: float = ATOL
 ) -> Vector | None:
-    """
-    Find the intersection of of two vectors.
-
-    If `strict` is enabled, the match will be restricted in the vectors direction.
-    """
+    """Find the intersection of a ray and a line."""
 
     da = [a - b for a, b in zip(a2, a1)]
     db = [a - b for a, b in zip(b2, b1)]
@@ -1205,19 +1200,41 @@ def line_intersect(
     if abs(denom) < abs_tol:  # pragma: no cover
         return None
     t = dot(dap, dp, dims=D1) / denom
-    intersection = add(b1, multiply(t, db, dims=SC_D1), dims=D1)
+    # Intersect
+    i = add(b1, multiply(t, db, dims=SC_D1), dims=D1)
+    # Check if intersection is within bounds
+    if 0 <= t <= 1:
+        return i
+    return None  # pragma: no cover
+
+
+def line_intersect(
+    a1: VectorLike,
+    a2: VectorLike,
+    b1: VectorLike,
+    b2: VectorLike,
+    abs_tol: float = ATOL
+) -> Vector | None:  # pragma: no cover
+    """Find the intersection of of lines."""
+
+    da = [a - b for a, b in zip(a2, a1)]
+    db = [a - b for a, b in zip(b2, b1)]
+    dp = [a - b for a, b in zip(a1, b1)]
+    dap = [-da[1], da[0]]
+    denom = dot(dap, db, dims=D1)
+    # Perpendicular cases
+    if abs(denom) < abs_tol:  # pragma: no cover
+        return None
+    t = dot(dap, dp, dims=D1) / denom
+    # Intersect
+    i = add(b1, multiply(t, db, dims=SC_D1), dims=D1)
     # Check if intersection is within bounds
     if (
         0 <= t <= 1 and
-        # Ensure intersections are in the vector direction
-        (
-            not strict or
-            0 <= divide(dot(subtract(intersection, a1, dims=D1), da, dims=D1), dot(da, da, dims=D1), dims=SC) <= 1
-        )
+        0 <= divide(dot(subtract(i, a1, dims=D1), da, dims=D1), dot(da, da, dims=D1), dims=SC) <= 1
     ):
-        return intersection
-
-    return None  # pragma: no cover
+        return i
+    return None
 
 
 def all(a: float | ArrayLike) -> bool:  # noqa: A001

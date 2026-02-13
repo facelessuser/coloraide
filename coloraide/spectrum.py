@@ -31,7 +31,7 @@ def xy_to_angle(xy: VectorLike, white: VectorLike, offset: float = 0.0, invert: 
         norm = alg.multiply(norm, -1, dims=alg.D1_SC)
     if offset:
         angle = (alg.rect_to_polar(*norm)[1] - offset) % 360
-        if angle == 0:
+        if angle < 1e-12:
             angle = 360.0
     else:
         angle = alg.rect_to_polar(*norm)[1]
@@ -72,53 +72,69 @@ def closest_wavelength(
     # is found, we'll use the complementary.
     locus = [util.xyz_to_xyY(cmfs.CIE_1931_2DEG[r], white)[:-1] for r in range(LOCUS_START, LOCUS_END + 1, LOCUS_STEP)]
     start = xy_to_angle(locus[0], white)
-    current = xy_to_angle(xy, white, start, invert=reverse)
-    invert = xy_to_angle(xy, white, start, invert=not reverse)
+    current = xy_to_angle(xy, white, start)
+    invert = xy_to_angle(xy, white, start, invert=True)
     found = [False, False]
-    for i in range(0, len(locus) - 2):
+    for i in range(1, len(locus) - 2):
+        # Get the next locus point angle
+        a_next = xy_to_angle(locus[i], white, start)
 
         # Check if our angle is greater than the current locus point's angle
-        a_next = xy_to_angle(locus[i], white, start)
-        if a_next <= current and not found[0]:
-            target = current
-        elif a_next <= invert and not found[1]:
-            target = invert
-        else:
-            continue
+        for j in range(0, 2):
 
-        # Get the intersection
-        intersect = alg.line_intersect(white, xy, locus[i - 1], locus[i]) if a_next != target else locus[i]
-        # Unlikely, but included for sanity
-        if intersect is None:  # pragma: no cover
-            continue
+            # If has already been found, skip
+            target = invert if j else current
+            if a_next > target or found[j]:
+                continue
 
-        # Use the intersection to estimate the interpolation factor for the wavelength,
-        # and then get the interpolated value via Sprague interpolation.
-        i0 = i - 1
-        i2 = 0 if abs(locus[i0][0] - locus[i][0]) > abs(locus[i0][1] - locus[i][1]) else 1
-        f = alg.ilerp(locus[i0][i2], locus[i][i2], intersect[i2])
-        w = alg.lerp(LOCUS_START + i0, LOCUS_START + i, f)
-        intersect = util.xyz_to_xyY(cmfs.CIE_1931_2DEG[w], white)[:-1]
+            # Previous index
+            i0 = i - 1
 
-        if target == current:
-            dominant = intersect
-            w1 = w
-            found[0] = True
-        else:
-            complementary = intersect
-            w2 = w
-            found[1] = True
+            # Get the intersection
+            if target == a_next:
+                intersect = locus[i]  # type: Vector | None
+            elif target == xy_to_angle(locus[i0], white, start):
+                intersect = locus[i0]
+            else:
+                intersect = alg.ray_line_intersect(white, xy, locus[i0], locus[i])
+            if intersect is None:  # pragma: no cover
+                continue
 
-        if found[0]:
+            # Use the intersection to estimate the interpolation factor for the wavelength,
+            # and then get the interpolated value via Sprague interpolation.
+            i2 = 0 if abs(locus[i0][0] - locus[i][0]) > abs(locus[i0][1] - locus[i][1]) else 1
+            f = alg.ilerp(locus[i0][i2], locus[i][i2], intersect[i2])
+            w = alg.lerp(LOCUS_START + i0, LOCUS_START + i, f)
+            intersect = util.xyz_to_xyY(cmfs.CIE_1931_2DEG[w], white)[:-1]
+
+            if j == 0:
+                dominant = intersect
+                w1 = w
+                found[j] = True
+                if not reverse:
+                    break
+            else:
+                complementary = intersect
+                w2 = w
+                found[j] = True
+                if reverse:
+                    break
+
+        if found[reverse]:
             break
 
     # Unlikely catastrophic failure
     if not any(found):  # pragma: no cover
         return w1, dominant, complementary
 
+    # Swap dominant and complementary if we are looking for complementary
+    if reverse:
+        dominant, complementary = complementary, dominant
+        w1, w2 = w2, w1
+
     # If dominant isn't found, it is on the line of purples; use complementary instead
-    if not found[0]:
-        pt = alg.line_intersect(white, xy, locus[0], locus[-1])
+    if not found[reverse]:
+        pt = alg.ray_line_intersect(white, xy, locus[0], locus[-1])
         # Shouldn't happen, but just in case
         if pt is not None:  # pragma: no cover
             dominant = pt
