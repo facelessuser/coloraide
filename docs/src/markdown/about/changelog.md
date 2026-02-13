@@ -5,6 +5,8 @@ icon: lucide/scroll-text
 
 ## 8.2
 
+-   **NEW**: Add the ability to convert a wavelength into a color.
+-   **NEW**: Add a way to get the dominant or complementary wavelength from a color.
 -   **NEW**: Refactor interpolation helpers and add Sprague interpolation.
 -   **NEW**: Refactor handling of CMFs, and when interpolating them use Sprague interpolation.
 -   **NEW**: Use Sprague interpolation for the Ohno 2013 spline implementation to reduce needed points.
