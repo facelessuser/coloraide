@@ -11,7 +11,8 @@ icon: lucide/scroll-text
 -   **NEW**: Refactor handling of CMFs, and when interpolating them use Sprague interpolation.
 -   **NEW**: Use Sprague interpolation for the Ohno 2013 spline implementation to reduce needed points.
 -   **NEW**: Color interpolation can now have domains in reversed, sorted order.
--   **NEW**: Discard unused CMFs, other than CIE 1931 2˚.
+-   **NEW**: Discard unused CMFs, other than CIE 1931 2˚ as there is no practical way to convert existing spaces to
+    different observers.
 -   **NEW**: Rename internal file.
 
 ## 8.1

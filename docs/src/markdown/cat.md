@@ -92,10 +92,9 @@ auto = Color('prophoto-rgb', [1, 1, 1]).convert('srgb')
 manual, auto
 ```
 
-ColorAide, currently defines the following illuminants for both 2˚ observer and 10˚ observer, but most people are
-probably only concerned with D65 and D50 (2˚ observer) which are the only the illuminants used in the default
-color spaces provided by ColorAide. Illuminants are not restricted to what is listed below, but those are the ones
-available by default.
+ColorAide, currently defines the following illuminants for the 1931 2˚ Standard Observer, but most people are probably
+only concerned with D65 and D50, which are the only the illuminants used in the default color spaces provided by
+ColorAide. Illuminants are not restricted to what is listed below, but those are the ones available by default.
 
 Illuminants |
 ----------- |
@@ -111,7 +110,7 @@ Illuminants |
 `F7`        |
 `F11`       |
 
-Additionally, we have a few additional ones defined for 2˚ observer.
+Additionally, we have a few additional ones defined for 2˚ Standard Observer.
 
 Illuminants     |
 --------------- |

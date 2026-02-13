@@ -22,9 +22,10 @@ experiments and can be used to calculate a number of things, including the Planc
 
 > [!tip] CMFs
 > It should be noted that there isn't one set of CMFs. Over the years there have been multiple attempts to come up with
-> the best CMFs and often done at both 2˚ and 10˚ viewing angles. ColorAide only provides CMFS the CIE 1931 2 Degree
-> Standard Observer via `coloraide.cmfs`. It isn't easily possible to translate colors between different CMFs, and since
-> ColorAide contains only color spaces that were created using the 1931 2˚ CMFs.
+> the best CMFs and often done at both 2˚ and 10˚ viewing angles. ColorAide only provides the CIE 1931 2˚ Degree
+> Standard Observer via `coloraide.cmfs`. There is no standard or easy way to translate between different CMFs,
+> especially when it comes to different observer angles. Since ColorAide contains only color spaces based on the 1931 2˚
+> Standard Observer, that is all we supply at this time.
 >
 > CMFS                            |
 > ------------------------------- |
