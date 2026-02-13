@@ -303,9 +303,9 @@ class DiagramOptions:
 
 def cie_diagram(
     mode="1931", colorize=True, opacity=1, rgb_spaces=None, white_points=None,
-    title='', show_labels=True, axis=True, show_legend=True, overlay_legend=True,
+    title='', label_opacity=True, axis=True, show_legend=True, overlay_legend=True,
     black_body=False, isotherms=False, cct=None, pointer=False, macadam_limits=False,
-    height=600, width=800
+    estimate_wavelength=None, wavelength_whitepoint=None, wavelength=None, height=600, width=800
 ):
     """CIE diagram."""
 
@@ -537,16 +537,17 @@ def cie_diagram(
     for i in range(len(xs)):
         xs[i], ys[i] = convert_chromaticity((xs[i], ys[i]), opt)
 
+    # Spectral Locus
     fig.add_traces(data=go.Scatter(
         x=xs,
         y=ys,
         mode='lines',
         line={'color': opt.locus_line_color if colorize else opt.default_color, 'width': 2},
         showlegend=False,
-        opacity=0.5
+        opacity=0.2
     ))
 
-    if show_labels:
+    if label_opacity > 0:
         # Label points
         lx = []
         ly = []
@@ -562,7 +563,7 @@ def cie_diagram(
                 standoff=0,
                 showarrow=False,
                 align='center',
-                opacity=0.75
+                opacity=label_opacity
             )
 
         fig.add_traces(data=go.Scatter(
@@ -574,7 +575,7 @@ def cie_diagram(
                 'size': 6,
                 'symbol': 'circle'
             },
-            opacity=0.75,
+            opacity=label_opacity,
             showlegend=False
         ))
 
@@ -635,6 +636,63 @@ def cie_diagram(
                 align="center",
                 opacity=0.75
             )
+
+    # Estimate wavelengths.
+    if wavelength:
+        if not estimate_wavelength:
+            estimate_wavelength = []
+        for w in wavelength:
+            estimate_wavelength.append(float(w))
+    if estimate_wavelength:
+        for c in estimate_wavelength:
+            x = []
+            y = []
+            is_wavelength = isinstance(c, float)
+            color = Color(c) if not is_wavelength else Color.from_wavelength('xyy', c, scale=False)
+            if wavelength_whitepoint:
+                w = WHITES['2deg'][wavelength_whitepoint]
+            else:
+                w = color._space.WHITE
+            wlabel = str(w)
+            for k, v in WHITES['2deg'].items():
+                if w == v:
+                    wlabel = k
+                    break
+            dwl = color.wavelength(white=w)
+            cwl = color.wavelength(white=w, complementary=True)
+            if not math.isnan(dwl[1][0]):
+                bu0, bv0 = color.split_chromaticity(opt.chromaticity, white=opt.white)[:-1]
+                bu1, bv1 = convert_chromaticity(dwl[1], opt)
+                bu2, bv2 = convert_chromaticity(w, opt)
+                bu3, bv3 = convert_chromaticity(cwl[1], opt)
+                x = [bu1, bu0, bu2, bu3] if not is_wavelength else [bu1, bu2, bu3]
+                y = [bv1, bv0, bv2, bv3] if not is_wavelength else [bv1, bv2, bv3]
+                fig.add_traces(data=go.Scatter(
+                    x=x,
+                    y=y,
+                    mode='lines+markers',
+                    marker={
+                        'color': opt.default_colorized_color if colorize else opt.default_color,
+                        'size': 6,
+                        'symbol': 'circle'
+                    },
+                    opacity=0.5,
+                    showlegend=False
+                ))
+                if not is_wavelength:
+                    labels = [f'Dominant ({dwl[0]})', '', wlabel, 'Complementary']
+                else:
+                    labels = [f'Dominant ({dwl[0]})', wlabel, 'Complementary']
+                for _x, _y, _l in zip(x, y, labels):
+                    fig.add_annotation(
+                        text=_l,
+                        x=_x,
+                        y=_y,
+                        font={'size': 14},
+                        showarrow=False,
+                        opacity=0.75,
+                        yshift=14
+                    )
 
     # Add any specified CCT points.
     if cct:
@@ -760,11 +818,23 @@ def main():
         help="Show MacAdam limits, relative to D65, by specifying an L* value and a color for the boundary '30:color'. "
              "'max' can be used show the entire visible spectrum 'max:color'."
     )
+    parser.add_argument(
+        '--estimate-wavelength', '-e', action='append',
+        help="Estimate the wavelength of a color and draw the dominant and complementary points."
+    )
+    parser.add_argument(
+        '--wavelength-whitepoint', '-E',
+        help="Provide a specific white point to estimate wavelengths from."
+    )
+    parser.add_argument(
+        '--wavelength', action='append',
+        help="Provide a specific wavelength and convert it to a color and plot the complementary."
+    )
     parser.add_argument('--rgb', '-r', action='append', help="An RGB space to show on diagram: 'space:color'.")
     parser.add_argument('--title', '-t', default='', help="Override title with your own.")
     parser.add_argument('--no-axis', '-x', action="store_true", help="Disable display axis.")
     parser.add_argument('--no-legend', '-g', action="store_true", help="Disable legend.")
-    parser.add_argument('--no-labels', '-l', action='store_true', help="Disable showing wavelength labels.")
+    parser.add_argument('--label-opacity', '-l', type=float, default=0.75, help="Control opacity of labels.")
     parser.add_argument('--no-background', '-b', action='store_true', help="Disable diagram color background.")
     parser.add_argument('--no-alpha', '-a', action='store_true', help="Disable diagram transparent background.")
     parser.add_argument('--black-body', '-k', action='store_true', help="Draw the black body curve (WIP).")
@@ -781,7 +851,7 @@ def main():
         rgb_spaces=[r.split(':') for r in args.rgb] if args.rgb is not None else None,
         colorize=not args.no_background,
         opacity=0.8 if not args.no_alpha else 1.0,
-        show_labels=not args.no_labels,
+        label_opacity=args.label_opacity,
         show_legend=not args.no_legend,
         overlay_legend=args.overlay_legend,
         axis=not args.no_axis,
@@ -791,6 +861,9 @@ def main():
         cct=args.cct,
         pointer=args.pointer,
         macadam_limits=args.macadam_limits,
+        estimate_wavelength=args.estimate_wavelength,
+        wavelength_whitepoint=args.wavelength_whitepoint,
+        wavelength=args.wavelength,
         height=args.height,
         width=args.width
     )

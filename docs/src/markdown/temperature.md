@@ -90,8 +90,7 @@ out to even this limit.
 ## Out of Gamut Temperatures
 
 It should be noted that `blackbody()` normalizes/scales the returned colors by default as the colors are often much too
-bright initially, all having a max luminance. This scaling is usually done under a linear RGB color space, Linear
-Rec2020 being the default as it encompasses the entire curve.
+bright initially, all having a max luminance. This scaling is done is linear sRGB.
 
 Keep in mind that if the color is not in the display gamut it will need to be gamut mapped, and the gamut mapped value
 will not exhibit the same temperature. How far off it is will be depends on the disparity of the gamut sizes and how the

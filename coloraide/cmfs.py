@@ -13,10 +13,10 @@ class CMFs(dict[float, Vector]):
         """Initialize and capture attributes of CMF."""
 
         keys = list(cmfs.keys())
-        self.spline = alg.interpolate(list(cmfs.values()), method='sprague')
         self.start = int(keys[0])
         self.end = int(keys[-1])
         self.step = round((self.end - self.start) / (len(keys) - 1))
+        self.spline = alg.interpolate(list(cmfs.values()), method='sprague', domain=[self.start, self.end])
         super().__init__(cmfs, **kwargs)
 
     def __getitem__(self, key: float) -> Vector:  # pragma: no cover
@@ -25,9 +25,7 @@ class CMFs(dict[float, Vector]):
         value = super().get(key)
         if value is not None:
             return value[:]
-
-        factor = (key - self.start) / (self.end - self.start)
-        return self.spline(factor)
+        return self.spline(key)
 
     def xy(self, key: float) -> Vector:  # pragma: no cover
         """Return CMFs data as XY coordinates."""

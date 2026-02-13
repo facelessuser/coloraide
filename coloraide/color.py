@@ -19,6 +19,7 @@ from . import average
 from . import temperature
 from . import util
 from . import algebra as alg
+from . import spectrum
 from .channels import ANGLE_DEG, ANGLE_RAD, ANGLE_GRAD, ANGLE_TURN, ANGLE_NULL
 from .deprecate import warn_deprecated, deprecated
 from itertools import zip_longest as zipl
@@ -1341,6 +1342,51 @@ class Color(metaclass=ColorMeta):
 
         color = self._handle_color_input(color)
         return contrast.contrast(method, self, color)
+
+    def wavelength(
+        self,
+        *,
+        white: VectorLike | None = None,
+        complementary: bool = False
+    ) -> tuple[float, Vector, Vector]:
+        """Get the dominant wavelength."""
+
+        return spectrum.closest_wavelength(
+            self.xy(),
+            white or util.xyz_to_xyY(self.white())[:-1],
+            reverse=complementary
+        )
+
+    @classmethod
+    def from_wavelength(
+        cls,
+        space: str,
+        wavelength: float,
+        *,
+        scale: bool = True,
+        scale_space: str | None = None
+    ) -> Self:
+        """Create a color from a wavelength."""
+
+        xyz = spectrum.wavelength_to_color(wavelength)
+        color = cls('xyz-d65', xyz)
+
+        if scale_space is None:
+            scale_space = 'srgb-linear'
+
+        # Bypass chromatic adaptation to ensure we get the appropriate wavelength into the given white point.
+        # If a scaling is applied, we skip to get to this space, but subsequent conversions will be adapted.
+        if scale and isinstance(cls.CS_MAP[scale_space], RGBish):
+            color._space, color._coords[:-1] = convert.convert(color, scale_space, skip_adaptation=True)
+            color[:-1] = util.rgb_scale(color.coords())
+            # Convert to targeted color space
+            color.convert(space, in_place=True)
+        else:
+            color._space, color._coords[:-1] = convert.convert(color, space, skip_adaptation=True)
+            # Unlikely to get an achromatic, but just in case
+            if color._space.is_polar() and color.is_achromatic():  # pragma: no cover
+                color[color._space.hue_index()] = math.nan  # type: ignore[attr-defined]
+        return color
 
     @overload
     def get(self,
