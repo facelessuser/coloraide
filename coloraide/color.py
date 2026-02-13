@@ -1368,25 +1368,8 @@ class Color(metaclass=ColorMeta):
     ) -> Self:
         """Create a color from a wavelength."""
 
-        xyz = spectrum.wavelength_to_color(wavelength)
-        color = cls('xyz-d65', xyz)
-
-        if scale_space is None:
-            scale_space = 'srgb-linear'
-
-        # Bypass chromatic adaptation to ensure we get the appropriate wavelength into the given white point.
-        # If a scaling is applied, we skip to get to this space, but subsequent conversions will be adapted.
-        if scale and isinstance(cls.CS_MAP[scale_space], RGBish):
-            color._space, color._coords[:-1] = convert.convert(color, scale_space, skip_adaptation=True)
-            color[:-1] = util.rgb_scale(color.coords())
-            # Convert to targeted color space
-            color.convert(space, in_place=True)
-        else:
-            color._space, color._coords[:-1] = convert.convert(color, space, skip_adaptation=True)
-            # Unlikely to get an achromatic, but just in case
-            if color._space.is_polar() and color.is_achromatic():  # pragma: no cover
-                color[color._space.hue_index()] = math.nan  # type: ignore[attr-defined]
-        return color
+        xyY = util.xyz_to_xyY(spectrum.wavelength_to_color(wavelength))
+        return cls.chromaticity(space, xyY, 'xy-1931', scale=scale, scale_space=scale_space)
 
     @overload
     def get(self,
