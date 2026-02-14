@@ -3,7 +3,7 @@ icon: lucide/scroll-text
 ---
 # Changelog
 
-## 8.2
+## 8.3
 
 -   **NEW**: Add the ability to convert a wavelength into a color.
 -   **NEW**: Add a way to get the dominant or complementary wavelength from a color.

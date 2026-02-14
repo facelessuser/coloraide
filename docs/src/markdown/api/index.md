@@ -1590,12 +1590,12 @@ Return
 @classmethod
 def blackbody(
     cls,
+    space: str,
     temp: float,
     duv: float = 0.0,
     *,
     scale: bool = True,
     scale_space: str | None = None,
-    out_space: str | None = None,
     method: str | None = None,
     **kwargs: Any
 ) -> Self:
@@ -1614,11 +1614,11 @@ Parameters
 - 
     Parameters      | Defaults             | Description
     --------------- | -------------------- | -----------
+    `space`         | `#!py None`          | Color space that the new color should be in.
     `temp`          |                      | A positive temperature in Kelvin. Accepted range of temperature is based on the algorithm.
     `duv`           | `#!py 0.0`           | An optional ∆~uv~ specifying the distance from the black body curve.
     `scale`         | `#!py True`          | Scale the color with a linear RGB color space as defined by `scale_space`.
     `scale_space`   | `#!py 'srgb-linear'` | If `scale` is enabled, `scale_space` defines the RGB color space in which the returned color should be scaled within. The color space should be a linear space for best results. If undefined, `srgb-linear` will be used.
-    `out_space`     | `#!py None`          | Color space that the new color should be in. If `#!py None`, the return color will be in the same color space as specified by `space` or `xyz-d65` if `space` is `#!py None`.
     `method`        | `#!py None`          | A string specifying the algorithm to use. By default `robertson-1968` is used.
     `**kwargs`      |                      | Any plugin specific parameters to pass to the `blackbody` method.
 
@@ -1658,7 +1658,80 @@ Return
 -   Returns a list containing the correlated color temperature in Kelvin and the ∆~uv~.
 ///
 
-## `#!py Color.chromatic_adaptation`
+## `#!py Color.wavele_ngth` {#wavelength}
+
+```py
+def wavelength(
+    self,
+    *,
+    white: VectorLike | None = None,
+    complementary: bool = False
+) -> tuple[float, Vector, Vector]:
+    ...
+```
+
+/// define
+Description
+
+-   Returns the associated dominant wavelength for the color. Also returns two points representing the intersections.
+    with the spectral locus. Both points will be the same unless there is no dominant wavelength, in which case, the
+    complementary angle will be returned with a negative sign and the two point will be the intersection with the "line
+    of purples" and the intersection at the complementary wavelength.
+
+    If `complementary` is set to `#!py true`, the wavelength is complementary wavelength is returned instead of the
+    dominant, unless it cannot be found, in which case, the dominant is returned with a negative sign.
+
+Parameters
+
+- 
+    Parameters      | Defaults     | Description
+    --------------- | ------------ | -----------
+    `white`         | `#!py None`  | The white point to calculate the wavelengths relative to. If `#!py None` (the default) is passed, the current color space's white point will be used.
+    `complementary` | `#!py False` | A boolean indicating whether the a complementary wavelength should be returned instead of the dominant.
+
+Return
+
+-   Returns a tuple containing the wavelength and two intersection points.
+///
+
+
+## `#!py Color.from_wavelength` {#from_wavelength}
+
+
+```py
+@classmethod
+def from_wavelength(
+    cls,
+    space: str,
+    wavelength: float,
+    *,
+    scale: bool = True,
+    scale_space: str | None = None
+) -> Self:
+    ...
+```
+
+/// define
+Description
+
+-   Creates a color from a wavelength.
+
+Parameters
+
+- 
+    Parameters      | Defaults             | Description
+    --------------- | -------------------- | -----------
+    `space`         |                      | Color space that the new color should be in.
+    `wavelength`    |                      | A number indicating the wavelength to translate to a color
+    `scale`         | `#!py True`          | Scale the color with a linear RGB color space as defined by `scale_space`.
+    `scale_space`   | `#!py 'srgb-linear'` | If `scale` is enabled, `scale_space` defines the RGB color space in which the returned color should be scaled within. The color space should be a linear space for best results. If undefined, `srgb-linear` will be used.
+
+Return
+
+-   Returns a reference to the current [`Color`](#color).
+///
+
+## `#!py Color.chromatic_adaptation` {#chromatic_adaptation}
 
 ```py
 @classmethod
