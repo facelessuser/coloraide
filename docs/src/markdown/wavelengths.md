@@ -152,7 +152,7 @@ If it is desired, scaling can be turned off, and the color will be created from 
 ```py play
 Steps(
     [
-        c.clip()
+        c.clip('srgb')
         for c in Color.steps(
             [Color.from_wavelength('srgb', r, scale=False) for r in range(380, 751, 1)],
             steps=500
