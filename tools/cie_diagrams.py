@@ -542,7 +542,7 @@ def cie_diagram(
         mode='lines',
         line={'color': opt.locus_line_color if colorize else opt.default_color, 'width': 2},
         showlegend=False,
-        opacity=0.2
+        opacity=0.5
     ))
 
     if label_opacity > 0:
