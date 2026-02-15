@@ -24,9 +24,6 @@ from coloraide.spaces import Labish
 ALL_WHITES = copy.deepcopy(WHITES)
 ALL_WHITES['2deg']['D60'] = ColorAll.CS_MAP['aces2065-1'].WHITE
 
-# How dense do we scatter plot the diagram background colors?
-RESOLUTION = 800
-
 # Pick some arbitrary labels to display.
 labels_1931 = [
     390,
@@ -305,7 +302,8 @@ def cie_diagram(
     mode="1931", colorize=True, opacity=1, rgb_spaces=None, white_points=None,
     title='', label_opacity=True, axis=True, show_legend=True, overlay_legend=True,
     black_body=False, isotherms=False, cct=None, pointer=False, macadam_limits=False,
-    estimate_wavelength=None, wavelength_whitepoint=None, wavelength=None, height=600, width=800
+    estimate_wavelength=None, wavelength_whitepoint=None, wavelength=None, resolution=800,
+    height=600, width=800
 ):
     """CIE diagram."""
 
@@ -477,8 +475,8 @@ def cie_diagram(
                 max_range_y = s[4].ymax
 
         for r in itertools.product(
-            alg.linspace(min(0, min_range_x), max(1, max_range_x), RESOLUTION, endpoint=True),
-            alg.linspace(min(0, min_range_y), max(1, max_range_y), RESOLUTION, endpoint=True)
+            alg.linspace(min(0, min_range_x), max(1, max_range_x), resolution, endpoint=True),
+            alg.linspace(min(0, min_range_y), max(1, max_range_y), resolution, endpoint=True)
         ):
             in_space = False
             if spaces:
@@ -661,10 +659,22 @@ def cie_diagram(
             dwl = color.wavelength(white=w)
             cwl = color.wavelength(white=w, complementary=True)
             if not math.isnan(dwl[1][0]):
-                bu0, bv0 = color.split_chromaticity(opt.chromaticity, white=opt.white)[:-1]
-                bu1, bv1 = convert_chromaticity(dwl[1], opt)
-                bu2, bv2 = convert_chromaticity(w, opt)
-                bu3, bv3 = convert_chromaticity(cwl[1], opt)
+                bu0, bv0 = convert_chromaticity(
+                    color.split_chromaticity(opt.chromaticity, white=opt.white)[:-1],
+                    opt
+                )
+                bu1, bv1 = convert_chromaticity(
+                    Color.convert_chromaticity('xy-1931', opt.chromaticity, dwl[1])[:-1],
+                    opt
+                )
+                bu2, bv2 = convert_chromaticity(
+                    Color.convert_chromaticity('xy-1931', opt.chromaticity, w)[:-1],
+                    opt
+                )
+                bu3, bv3 = convert_chromaticity(
+                    Color.convert_chromaticity('xy-1931', opt.chromaticity, cwl[1])[:-1],
+                    opt
+                )
                 x = [bu1, bu0, bu2, bu3] if not is_wavelength else [bu1, bu2, bu3]
                 y = [bv1, bv0, bv2, bv3] if not is_wavelength else [bv1, bv2, bv3]
                 fig.add_traces(data=go.Scatter(
@@ -840,6 +850,7 @@ def main():
     parser.add_argument('--black-body', '-k', action='store_true', help="Draw the black body curve (WIP).")
     parser.add_argument('--isotherms', '-i', action='store_true', help="Show isotherms.")
     parser.add_argument('--overlay-legend', '-L', action='store_true', help="Overlay legend on plot.")
+    parser.add_argument('--resolution', '-R', type=int, default=800, help="Resolution of fill colors.")
     parser.add_argument('--output', '-o', default='', help='Output file.')
     parser.add_argument('--height', '-H', type=int, default=600, help="Height")
     parser.add_argument('--width', '-W', type=int, default=800, help="Width")
@@ -864,6 +875,7 @@ def main():
         estimate_wavelength=args.estimate_wavelength,
         wavelength_whitepoint=args.wavelength_whitepoint,
         wavelength=args.wavelength,
+        resolution=args.resolution,
         height=args.height,
         width=args.width
     )
