@@ -126,26 +126,6 @@ def eotf_st2084(
     return adjusted
 
 
-def rgb_scale(vec: VectorLike) -> Vector:
-    """
-    Scale the RGB vector.
-
-    If minimum is less than zero, behaves like min/max normalization.
-    If minimum is not less than zero, behaves like maximum normalization.
-    """
-
-    # `(v - min_v)`
-    w = min(vec)
-    if w < 0.0:
-        vec = [v - w for v in vec]
-
-    # `(max_v - min_v)`
-    m = max(vec)
-
-    # `(v - min_v) / (max_v - min_v)`
-    return [v / m if m else v for v in vec]
-
-
 def scale100(coords: Vector) -> Vector:
     """Scale from 1 to 100."""
 

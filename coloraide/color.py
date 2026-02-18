@@ -25,7 +25,7 @@ from .deprecate import warn_deprecated, deprecated
 from itertools import zip_longest as zipl
 from .css import parse
 from .types import VectorLike, Vector, ColorInput
-from .spaces import Space, RGBish
+from .spaces import Space
 from .spaces.hsv import HSV
 from .spaces.srgb.css import sRGB
 from .spaces.srgb_linear import sRGBLinear
@@ -69,6 +69,7 @@ from .gamut.fit_minde_chroma import MINDEChroma
 from .gamut.fit_lch_chroma import LChChroma
 from .gamut.fit_oklch_chroma import OkLChChroma
 from .gamut.fit_raytrace import RayTrace
+from .gamut.fit_scale import Scale
 from .cat import CAT, Bradford
 from .filters import Filter
 from .filters.w3c_filter_effects import Sepia, Brightness, Contrast, Saturate, Opacity, HueRotate, Grayscale, Invert
@@ -523,9 +524,11 @@ class Color(metaclass=ColorMeta):
         temp: float,
         duv: float = 0.0,
         *,
+        method: str | None = None,
         scale: bool = True,
         scale_space: str | None = None,
-        method: str | None = None,
+        max_saturation: bool = True,
+        clip_negative: bool = False,
         **kwargs: Any
     ) -> Self:
         """
@@ -542,8 +545,16 @@ class Color(metaclass=ColorMeta):
         """
 
         cct = temperature.cct(method, cls)
-        color = cct.from_cct(cls, space, temp, duv, scale, scale_space, **kwargs)
-        return color
+        uv, name = cct.from_cct(temp, duv, **kwargs)
+        return cls.chromaticity(
+            space,
+            uv,
+            name,
+            scale=scale,
+            scale_space=scale_space,
+            max_saturation=max_saturation,
+            clip_negative=clip_negative
+        )
 
     def cct(self, *, method: str | None = None, **kwargs: Any) -> Vector:
         """Get color temperature."""
@@ -829,9 +840,11 @@ class Color(metaclass=ColorMeta):
         coords: VectorLike,
         cspace: str = 'uv-1976',
         *,
+        white: VectorLike | None = None,
         scale: bool = False,
         scale_space: str | None = None,
-        white: VectorLike | None = None
+        max_saturation: bool = False,
+        clip_negative: bool = False
     ) -> Self:
         """
         Create a color from chromaticity coordinates.
@@ -846,9 +859,6 @@ class Color(metaclass=ColorMeta):
         RGB space's gamut will only be rough approximations of the color due to gamut
         limitations. Default linear RGB space is linear sRGB.
         """
-
-        if scale_space is None:
-            scale_space = 'srgb-linear'
 
         # Use the white point of the target color space unless a white point is given.
         if white is None:
@@ -867,9 +877,13 @@ class Color(metaclass=ColorMeta):
         )
 
         # Normalize in the given RGB color space (ideally linear).
-        if scale and isinstance(cls.CS_MAP[scale_space], RGBish):
-            color.convert(scale_space, in_place=True)
-            color[:-1] = util.rgb_scale(color.coords())
+        if scale:
+            gamut.scale_rgb(
+                color,
+                scale_space=scale_space if scale_space is not None else 'srgb-linear',
+                max_saturation=max_saturation,
+                clip_negative=clip_negative
+            )
 
         # Convert to targeted color space
         if space != color.space():
@@ -879,7 +893,8 @@ class Color(metaclass=ColorMeta):
 
     @classmethod
     def convert_chromaticity(
-        cls, cspace1: str,
+        cls,
+        cspace1: str,
         cspace2: str,
         coords: VectorLike,
         *,
@@ -1353,7 +1368,7 @@ class Color(metaclass=ColorMeta):
 
         return spectrum.closest_wavelength(
             self.xy(),
-            white or util.xyz_to_xyY(self.white())[:-1],
+            white or self._space.WHITE,
             reverse=complementary
         )
 
@@ -1363,13 +1378,24 @@ class Color(metaclass=ColorMeta):
         space: str,
         wavelength: float,
         *,
+        white: VectorLike | None = None,
         scale: bool = True,
-        scale_space: str | None = None
+        scale_space: str | None = None,
+        max_saturation: bool = True,
+        clip_negative: bool = False
     ) -> Self:
         """Create a color from a wavelength."""
 
-        xyY = util.xyz_to_xyY(spectrum.wavelength_to_color(wavelength))
-        return cls.chromaticity(space, xyY, 'xy-1931', scale=scale, scale_space=scale_space)
+        return cls.chromaticity(
+            space,
+            util.xyz_to_xyY(spectrum.wavelength_to_color(wavelength)),
+            'xy-1931',
+            white=white,
+            scale=scale,
+            scale_space=scale_space,
+            max_saturation=max_saturation,
+            clip_negative=clip_negative
+        )
 
     @overload
     def get(self,
@@ -1618,6 +1644,7 @@ Color.register(
         LChChroma(),
         OkLChChroma(),
         RayTrace(),
+        Scale(),
 
         # Filters
         Sepia(),

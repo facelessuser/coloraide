@@ -27,7 +27,6 @@ what the new color under the new illuminant should be in order to fulfill these 
 For a quick example, let's take the color `#!color blue` under sRGB (D65 white point) and the same `#!color blue` under
 Pro Photo RGB (D50 white point). If we take the raw chromaticity points from the color under each color space and use
 them to generate a color, both under the same color space (in this case sRGB), we can see that the values are different.
-We can see the values are different.
 
 ```py play
 d65 = Color('blue').split_chromaticity()

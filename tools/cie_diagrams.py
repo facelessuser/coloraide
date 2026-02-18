@@ -74,39 +74,6 @@ class Color(ColorAll):
     """Custom class for Pointer conversion."""
 
 
-class SpectralLocus:
-    """
-    Setup a spline that represents the black body curve.
-
-    Points between steps are approximated, but actual points can always be
-    acquired via `exact`.
-
-    For improved accuracy, we split spline data for low temps and high temps
-    and assign the number of required data points accordingly.
-    """
-
-    def __init__(
-        self,
-        x,
-        y,
-        domain
-    ) -> None:
-        """Initialize."""
-
-        self.spline = alg.interpolate([*zip(x, y)], domain=domain, method='catrom')
-        self.domain = domain
-
-    def steps(self, steps):
-        """Get steps."""
-
-        return tuple([*i] for i in zip(*self.spline.steps(steps)))
-
-    def __call__(self, wave):
-        """Get the uv for the given temp."""
-
-        return self.spline(wave)
-
-
 def get_spline(x, y, steps=100):
     """Get spline."""
 
@@ -498,9 +465,11 @@ def cie_diagram(
                     'srgb',
                     r,
                     opt.chromaticity,
+                    white=opt.white,
                     scale=True,
-                    scale_space='rec2020-linear',
-                    white=opt.white
+                    scale_space='srgb-linear',
+                    clip_negative=True,
+                    max_saturation=True
                 )
                 if in_space:
                     cc.append(srgb.convert('srgb').to_string(hex=True, fit="clip"))

@@ -671,9 +671,18 @@ def plot_interpolation(
     if not interp_colors:
         return
 
+    inputs = interp_colors.split(';')
     colors = Color.steps(
-        interp_colors.split(';'),
+        inputs,
         **interp_method
+    )
+
+    options = interp_method.copy()
+    options['steps'] = len(inputs)
+
+    markers = Color.steps(
+        interp_colors.split(';'),
+        **options
     )
 
     target = Color.CS_MAP[space]
@@ -686,32 +695,41 @@ def plot_interpolation(
         'is_hsvish': isinstance(target, HSVish)
     }
 
-    x = []
-    y = []
-    z = []
-    cmap = []
-    for c in colors:
-        c.convert(space, in_place=True)
-        if interp_gmap:
-            c.fit('srgb', **gmap)
-        store_coords(c, x, y, z, flags)
-        c.convert('srgb', in_place=True)
-        c.fit(**gmap)
-        if filters:
-            c.filter(filters[0], **filters[1], in_place=True, out_space=c.space()).clip()
-        if simulate_alpha:
-            cmap.append(Color.layer([c, 'white'], space='srgb').to_string(hex=True, alpha=False))
+    for i in range(2):
+        x = []
+        y = []
+        z = []
+        cmap = []
+        for c in (markers if i else colors):
+            c.convert(space, in_place=True)
+            if interp_gmap:
+                c.fit('srgb', **gmap)
+            store_coords(c, x, y, z, flags)
+            c.convert('srgb', in_place=True)
+            c.fit(**gmap)
+            if filters:
+                c.filter(filters[0], **filters[1], in_place=True, out_space=c.space()).clip()
+            if simulate_alpha:
+                cmap.append(Color.layer([c, 'white'], space='srgb').to_string(hex=True, alpha=False))
+            else:
+                cmap.append(c.to_string(hex=True, alpha=False))
+
+        if i:
+            trace = go.Scatter3d(
+                x=x, y=y, z=z,
+                mode = 'markers',
+                marker={'color': cmap, 'opacity': 1},
+                showlegend=False
+            )
         else:
-            cmap.append(c.to_string(hex=True, alpha=False))
+            trace = go.Scatter3d(
+                x=x, y=y, z=z,
+                mode = 'lines',
+                line={'color': cmap, 'width': 8},
+                showlegend=False
+                )
 
-    trace = go.Scatter3d(
-        x=x, y=y, z=z,
-        mode = 'markers',
-        marker={'color': cmap, 'opacity': 1},
-        showlegend=False
-    )
-
-    fig.add_trace(trace)
+        fig.add_trace(trace)
 
 
 def plot_harmony(
@@ -774,7 +792,7 @@ def plot_harmony(
     trace = go.Scatter3d(
         x=x, y=y, z=z,
         marker={'size': size, 'color': cmap, 'opacity': 1},
-        line={'color': 'black', 'width': 3},
+        line={'color': cmap, 'width': 3},
         showlegend=False
     )
 
@@ -857,6 +875,46 @@ def plot_average(
         )
 
         fig.add_trace(trace)
+
+
+def plot_spectral_locus(fig, space):
+    """Plot the spectral locus."""
+
+    target = Color.CS_MAP[space]
+
+    flags = {
+        'is_cyl': target.is_polar(),
+        'is_labish': isinstance(target, Labish),
+        'is_lchish': isinstance(target, LChish),
+        'is_hslish': isinstance(target, HSLish),
+        'is_hwbish': isinstance(target, HWBish),
+        'is_hsvish': isinstance(target, HSVish)
+    }
+
+    x = []
+    y = []
+    z = []
+    cmap = []
+    labels = []
+    for w in range(360, 781, 1):
+        color = Color.from_wavelength(space, w, scale=False)
+        store_coords(color, x, y, z, flags)
+        cmap.append(
+            color.convert('srgb', in_place=True).fit('srgb-linear', method='scale').to_string(hex=True, alpha=False)
+        )
+        if not w % 20:
+            labels.append(str(w))
+        else:
+            labels.append('')
+
+    trace = go.Scatter3d(
+        x=x, y=y, z=z,
+        text = labels,
+        mode='lines',
+        line={'color': cmap, 'width': 8},
+        showlegend=False
+    )
+    fig.add_trace(trace)
 
 
 def main():
@@ -966,6 +1024,9 @@ def main():
         default='perspective',
         help="Projection mode, perspective or orthographic"
     )
+    parser.add_argument(
+        '--spectral-locus', '-v', action='store_true', help='Plot the spectral for the current space.'
+    )
 
     args = parser.parse_args()
 
@@ -1012,6 +1073,13 @@ def main():
     interp = {'method': parts[0], 'hue': 'shorter', 'steps': 100}
     if len(parts) == 2:
         interp.update(parts[1])
+
+
+    if args.spectral_locus:
+        plot_spectral_locus(
+            fig,
+            args.space,
+        )
 
     # Plot interpolation
     plot_interpolation(

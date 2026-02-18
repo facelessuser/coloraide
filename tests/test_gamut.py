@@ -236,6 +236,38 @@ class TestGamut(util.ColorAsserts, unittest.TestCase):
             Color('color(display-p3 0.95641 0.95842 0.31554)')
         )
 
+    def test_scale(self):
+        """
+        Test conversion from a wavelength to a color with scaling.
+
+        We should have enough accuracy to scale in a linear RGB space and still get the same wavelength.
+        """
+
+        for w in range(360, 700, 1):
+            self.assertEqual(Color.from_wavelength('srgb', w, scale=False).fit(method='scale').wavelength()[0], w)
+
+    def test_scale_subtractive(self):
+        """Test a subtractive space."""
+
+        self.assertColorEqual(
+            Color('cmy', [1.1, 0.2, -0.01]).fit(method='scale'),
+            Color('color(--cmy 1 0.20566 0 / 1)')
+        )
+
+    def test_scale_polar(self):
+        """Test scale with polar."""
+
+        colors = [
+            c.fit('hpluv', method='scale')
+            for c in Color.steps(['oklch(90% 0.4 0)', 'oklch(90% 0.4 360)'], steps=100, space='oklch', hue='longer')
+        ]
+
+        self.assertColorEqual(colors[0], Color('oklch(0.57985 0.08457 0.10133)'))
+        self.assertColorEqual(colors[1], Color('oklch(0.57956 0.08284 3.1507)'))
+        self.assertColorEqual(colors[2], Color('oklch(0.57928 0.08128 5.9574)'))
+        self.assertColorEqual(colors[3], Color('oklch(0.57901 0.07989 8.528)'))
+        self.assertColorEqual(colors[4], Color('oklch(0.57876 0.07867 10.878)'))
+
 
 class TestRayTrace(util.ColorAsserts, unittest.TestCase):
     """Test gamut mapping/fitting with ray tracing."""
@@ -520,44 +552,6 @@ class TestPointerGamut(util.ColorAsserts, unittest.TestCase):
 
         self.assertColorEqual(Color('red').fit('pointer-gamut'), Color('rgb(244 46.539 23.139)'))
 
-    def test_in_macadam_limits_too_light(self):
-        """Test gamut check when too light."""
-
-        self.assertFalse(Color('srgb', [1.1, 1.1, 1.1]).in_gamut('macadam-limits'))
-
-    def test_in_macadam_limits_too_dark(self):
-        """Test gamut check when too dark."""
-
-        self.assertFalse(Color('srgb', [-0.1, -0.1, -0.1]).in_gamut('macadam-limits'))
-
-    def test_in_macadam_limits(self):
-        """Test gamut check in gamut."""
-
-        self.assertTrue(Color('orange').in_gamut('macadam-limits'))
-
-    def test_out_of_macadam_limits(self):
-        """Test gamut check out of gamut."""
-
-        self.assertFalse(Color('rec2020', [0, 1, 0]).in_gamut('macadam-limits'))
-
-    def test_fit_macadam_limits_too_light(self):
-        """Test fitting gamut when too light."""
-
-        self.assertColorEqual(Color('srgb', [1.1, 1.1, 1.1]).fit('macadam-limits'), Color('white'))
-
-    def test_fit_macadam_limits_too_dark(self):
-        """Test fitting gamut when too dark."""
-
-        self.assertColorEqual(Color('srgb', [-0.1, -0.1, -0.1]).fit('macadam-limits'), Color('black'))
-
-    def test_fit_macadam_limits_gamut(self):
-        """Test gamut check out of gamut."""
-
-        self.assertColorEqual(
-            Color('rec2020', [0, 1, 0]).fit('macadam-limits'),
-            Color('color(rec2020 0.4652 0.96774 0.4652)')
-        )
-
     def test_pointer_boundary_too_light(self):
         """Test when pointer boundary is request is too light."""
 
@@ -595,6 +589,45 @@ class TestPointerGamut(util.ColorAsserts, unittest.TestCase):
 
         for coords1, coords2 in zip(test, expected):
             [self.assertCompare(a, b) for a, b in zip(coords1, coords2)]
+
+
+class TestMacadamLimits(util.ColorAsserts, unittest.TestCase):
+    """Test Macadam limits."""
+
+    def test_in_macadam_limits_too_light(self):
+        """Test gamut check when too light."""
+
+        self.assertFalse(Color('srgb', [1.1, 1.1, 1.1]).in_gamut('macadam-limits'))
+
+    def test_in_macadam_limits_too_dark(self):
+        """Test gamut check when too dark."""
+
+        self.assertFalse(Color('srgb', [-0.1, -0.1, -0.1]).in_gamut('macadam-limits'))
+    def test_in_macadam_limits(self):
+        """Test gamut check in gamut."""
+
+        self.assertTrue(Color('orange').in_gamut('macadam-limits'))
+    def test_out_of_macadam_limits(self):
+        """Test gamut check out of gamut."""
+
+        self.assertFalse(Color('rec2020', [0, 1, 0]).in_gamut('macadam-limits'))
+    def test_fit_macadam_limits_too_light(self):
+        """Test fitting gamut when too light."""
+
+        self.assertColorEqual(Color('srgb', [1.1, 1.1, 1.1]).fit('macadam-limits'), Color('white'))
+
+    def test_fit_macadam_limits_too_dark(self):
+        """Test fitting gamut when too dark."""
+
+        self.assertColorEqual(Color('srgb', [-0.1, -0.1, -0.1]).fit('macadam-limits'), Color('black'))
+
+    def test_fit_macadam_limits_gamut(self):
+        """Test gamut check out of gamut."""
+
+        self.assertColorEqual(
+            Color('rec2020', [0, 1, 0]).fit('macadam-limits'),
+            Color('color(rec2020 0.4652 0.96774 0.4652)')
+        )
 
     def test_macadam_limits_too_light(self):
         """Test when pointer boundary is request is too light."""

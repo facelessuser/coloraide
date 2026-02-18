@@ -12,9 +12,9 @@ from . import cat
 from . import cmfs
 
 WHITE = cat.WHITES['2deg']['E']
-LOCUS_START = 360
-LOCUS_END = 780
-LOCUS_STEP = 1
+LOCUS_START = cmfs.CIE_1931_2DEG.start
+LOCUS_END = cmfs.CIE_1931_2DEG.end
+LOCUS_STEP = cmfs.CIE_1931_2DEG.step
 
 
 def xy_to_angle(xy: VectorLike, white: VectorLike, offset: float = 0.0, invert: bool = False) -> float:
@@ -30,7 +30,7 @@ def xy_to_angle(xy: VectorLike, white: VectorLike, offset: float = 0.0, invert: 
     if invert:
         norm = alg.multiply(norm, -1, dims=alg.D1_SC)
     if offset:
-        angle = (alg.rect_to_polar(*norm)[1] - offset) % 360
+        angle = (alg.rect_to_polar(*norm)[1] - offset) % 360.0
         if angle < 1e-12:
             angle = 360.0
     else:
@@ -62,6 +62,13 @@ def closest_wavelength(
     dominant = [math.nan, math.nan]
     complementary = [math.nan, math.nan]
 
+    # The detection of precise segments is very sensitive in high wavelength areas.
+    # Cycle the white chromaticity coordinates so that we are comparing against a
+    # white with the usual error that is already present in all other colors.
+    # The xy coordinates we are comparing against in the CMFs are so squished that
+    # this actually makes a difference.
+    white = util.xyz_to_xyY(util.xy_to_xyz(white))[:-1]
+
     # Achromatic, no wavelength
     if all(abs(a - b) < 1e-12 for a, b in zip(xy, white)):
         return w1, dominant, complementary
@@ -70,7 +77,7 @@ def closest_wavelength(
     # and the current color with the spectral locus. Check the dominant and
     # complementary, but return as soon as we have the dominant. If no dominant
     # is found, we'll use the complementary.
-    locus = [util.xyz_to_xyY(cmfs.CIE_1931_2DEG[r], white)[:-1] for r in range(LOCUS_START, LOCUS_END + 1, LOCUS_STEP)]
+    locus = [util.xyz_to_xyY(cmfs.CIE_1931_2DEG[r])[:-1] for r in range(LOCUS_START, LOCUS_END + 1, LOCUS_STEP)]
     start = xy_to_angle(locus[0], white)
     current = xy_to_angle(xy, white, start)
     invert = xy_to_angle(xy, white, start, invert=True)

@@ -112,8 +112,7 @@ The `white` parameter is also accepted by `xy()` and `uv()`.
 ColorAide also provides an easy way to create colors from chromaticity coordinates. `chromaticity()` is a generalized
 method that takes a color space to create the color in and a set of chromaticity coordinates. The coordinates should be
 supplied using the same white point as the targeted color space. Chromaticity coordinates can be passed as 2D
-coordinates without luminance or with luminance. When passed with luminance the color should be identical to the
-original.
+coordinates without luminance or with luminance.
 
 ```py play
 uvY = Color('red').uv()
@@ -126,22 +125,33 @@ desirable to normalize/scale the color in a linear RGB space to make the color d
 `scale_space`. Using a non-linear RGB space is not recommended as non-linear spaces will cause the chromaticity
 coordinates to shift.
 
+When scaling/normalization is enabled, it is performed by utilizing the [`scale`](./gamut.md#scale) gamut mapping logic,
+but it is applied to all colors for the purpose of normalization, not just out-of-gamut colors.
+
+Since coordinates can be given as 2D coordinates (with no luminance) or 3D coordinates (with luminance), luminance will
+be respected when given and preserved except for very bright colors which max out max saturation in the RGB space. If no
+luminance is given, 1 is assumed and the colors will be returned with max saturation.
+
 ```py play
 uv = Color('red').uv()
 Color.chromaticity('srgb', uv, scale=True)
+```
+
+Scaling will take into consideration luminance when provided, unless `max_saturation` is enabled which will force the
+maximum saturation regardless of the provided luminance.
+
+```py play
+uv = Color('red').uv()
+Color.chromaticity('srgb', [*uv, 0.3], scale=True)
+Color.chromaticity('srgb', [*uv, 0.3], scale=True, max_saturation=True)
+```
+
+Other RGB gamuts can be specified, and the closest linear version of the RGB gamut will be used if one can be found.
+
+```py play
 uv = Color('display-p3', [1, 0, 0]).uv()
 Color.chromaticity('display-p3', uv, scale=True, scale_space='display-p3-linear')
 ```
-
-This generally preserves chromaticity, scaling luminance, but if a color is out of gamut, the chromaticity of the
-resultant color will be affected.
-
-> [!tip]
-> There is no RGB color space that perfectly encompasses the entire visible gamut. No matter what scaling space is
-> selected, colors outside the gamut of the scaling space will not exactly match the specified chromaticity coordinates.
-> If exact values are needed, scaling should be avoided. If displaying the colors is desired, then sacrificing accuracy
-> of the colors by scaling or some other gamut mapping method is necessary. Scaling/normalization is how we colorize all
-> of our chromaticity diagrams in these documents.
 
 It is important to be consistent with white point usage. If we wanted to create a color in sRGB with ProPhoto
 chromaticities, it is important that we create the color first under a color space that uses the same white point.

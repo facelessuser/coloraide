@@ -20,14 +20,10 @@ class CCT(Plugin, metaclass=ABCMeta):
     @abstractmethod
     def from_cct(
         self,
-        color: type[AnyColor],
-        space: str,
         kelvin: float,
         duv: float,
-        scale: bool,
-        scale_space: str | None,
         **kwargs: Any
-    ) -> AnyColor:
+    ) -> tuple[tuple[float, float], str]:
         """Calculate a color that satisfies the CCT."""
 
 
