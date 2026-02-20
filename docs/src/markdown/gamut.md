@@ -227,7 +227,8 @@ some are better than others.
 > [!success] The `clip` gamut mapping is registered in `Color` by default and cannot be unregistered
 
 Clipping is a simple and naive approach to gamut mapping. If the color space is bounded by a gamut, clip will compare
-each channel's value against the bounds for that channel and set the value to the limit it exceeds.
+each channel's value against the bounds for that channel and set the value to the limit it exceeds. It is an approach
+that favors preserving high saturation.
 
 Clip can be performed via `fit` by using the method name `clip` or by using the `clip()` method.
 
@@ -238,9 +239,103 @@ c = Color('srgb', [2, 1, 1.5])
 c.clip()
 ```
 
+Due to the way clipping works, the lightness of the color is not well preserved. Saturation is favored over lightness
+in most cases.
+
+```py play
+Steps(
+    [
+        c.clip('srgb')
+        for c in Color.steps(['oklch(95% 0.4 0)', 'oklch(95% 0.4 360)'], space='oklch', steps=100, hue='longer')
+    ]
+)
+Steps(
+    [
+        c.clip('srgb')
+        for c in Color.steps(['oklch(50% 0.4 0)', 'oklch(50% 0.4 360)'], space='oklch', steps=100, hue='longer')
+    ]
+)
+Steps(
+    [
+        c.clip('srgb')
+        for c in Color.steps(['oklch(0% 0.4 0)', 'oklch(0% 0.4 360)'], space='oklch', steps=100, hue='longer')
+    ]
+)
+```
+
 Clipping is unique to all other clipping methods in that it has its own dedicated method `clip()` and its method name
 `clip` is reserved. While not always the best approach for all gamut mapping needs, clip is very important and its speed
 and simplicity are of great value.
+
+
+### Scale
+
+> [!success] The `scale` gamut mapping is registered in `Color` by default
+
+> [!new] New in 8.4
+
+The scale method is an approach where the out of gamut color channels are scaled within a linear RGB space such that the
+channels keep a similar proportion to each other. Luminance adjustments are applied as needed.
+
+Like clipping, it prioritizes preserving high saturation, but unlike clipping it also preserves the dominant wavelength
+of the color relative to it's white point (assuming it is applied within a linear RGB space). In the below image, we
+can see a green color on the spectral locus which has a wavelength of 550 nm being gamut mapped towards the white point
+in the xyY color space, preserving the wavelength.
+
+![Scale GMA 550 nm](./images/scale-550nm.png)
+
+```py play
+c = Color('xyy', [0.3016037993957513, 0.6923077623715744, 0.9949500999999999])
+c.wavelength()[0]
+c.fit('srgb', method='scale').wavelength()[0]
+c
+```
+
+> [!tip]
+> ColorAide will automatically use a linear RGB space if one is associated with target gamut, but if one cannot be
+> determined, a non-linear space will be used which cannot preserve the dominant wavelength.
+
+Normally, all color channels are lifted to remove negative values, then the channels are scaled to be within gamut, but
+if desired, these negative values can be clipped at the end instead.  In some cases, this can produce colors that are
+somewhat more vibrant at the cost of some shift in dominant wavelength. This is kind of a bridge between clipping and
+scaling.
+
+```py play
+Steps(
+    [
+        c.fit('srgb', method='scale', clip_negative=True)
+        for c in Color.steps(
+            [Color.from_wavelength('srgb', r, scale=False) for r in range(380, 751, 1)],
+            steps=500
+        )
+    ]
+)
+Steps(
+    [
+        c.fit('srgb', method='scale')
+        for c in Color.steps(
+            [Color.from_wavelength('srgb', r, scale=False) for r in range(380, 751, 1)],
+            steps=500
+        )
+    ]
+)
+```
+
+As previously mentioned, the scale method is performed in an RGB space (preferably a linear one). If a polar
+representation of an RGB space is specified that does not have an an associated RGB gamut, it will be transformed to a
+cube and have scaling applied. Other RGB-like spaces will also pass through this approach. It should be noted though
+that reliability of the results, in either of these cases, may vary depending on the color space and the range in which
+the method is applied. Generally, if possible, using the closest RGB gamut is advised as this approach is not guaranteed
+to work well in non-RGB spaces.
+
+```py play
+Steps(
+	[
+		c.fit('hpluv', method='scale')
+		for c in Color.steps(['oklch(90% 0.4 0)', 'oklch(90% 0.4 360)'], steps=100, space='oklch', hue='longer')
+	]
+)
+```
 
 ### Ray Tracing Chroma Reduction
 

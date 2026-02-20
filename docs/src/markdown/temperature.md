@@ -90,8 +90,10 @@ out to even this limit.
 
 ## Out of Gamut Temperatures
 
-It should be noted that `blackbody()` normalizes/scales the returned colors by default as the colors are often much too
-bright initially, all having a max luminance. This scaling is done is linear sRGB.
+It should be noted that `blackbody()` normalizes/scales the returned colors using the [`scale`](./gamut.md#scale) gamut
+mapping logic, just applied to all colors instead of just out-of-gamut colors. Colors are returned in such a way that
+they are often much too bright initially, all having a max luminance. The scale approach renders them using maximum
+saturation to produce vivid colors representing the temperature.
 
 Keep in mind that if the color is not in the display gamut it will need to be gamut mapped, and the gamut mapped value
 will not exhibit the same temperature. How far off it is will be depends on the disparity of the gamut sizes and how the
@@ -115,7 +117,8 @@ Using a larger gamut, such as Linear Rec. 2020 that encompasses the entire black
 results throughout the entire range, but this may be impractical if you need to work in a smaller gamut.
 
 The desired RGB color space to scale within can be specified via `scale_space`. And if no scaling is desired, it can be
-turned off by setting `scale` to `#!py False`.
+turned off by setting `scale` to `#!py False`. Generally, `blackbody()` also supports any other parameters allowed by
+the [`scale`](./gamut.md#scale) gamut mapping method.
 
 ```py play
 c1 = Color.blackbody('display-p3', 1200, scale_space='display-p3-linear')

@@ -1594,9 +1594,11 @@ def blackbody(
     temp: float,
     duv: float = 0.0,
     *,
+    method: str | None = None,
     scale: bool = True,
     scale_space: str | None = None,
-    method: str | None = None,
+    max_saturation: bool = False,
+    clip_negative: bool = False,
     **kwargs: Any
 ) -> Self:
     ...
@@ -1617,9 +1619,11 @@ Parameters
     `space`         | `#!py None`          | Color space that the new color should be in.
     `temp`          |                      | A positive temperature in Kelvin. Accepted range of temperature is based on the algorithm.
     `duv`           | `#!py 0.0`           | An optional ∆~uv~ specifying the distance from the black body curve.
+    `method`        | `#!py None`          | A string specifying the algorithm to use. By default `robertson-1968` is used.
     `scale`         | `#!py True`          | Scale the color with a linear RGB color space as defined by `scale_space`.
     `scale_space`   | `#!py 'srgb-linear'` | If `scale` is enabled, `scale_space` defines the RGB color space in which the returned color should be scaled within. The color space should be a linear space for best results. If undefined, `srgb-linear` will be used.
-    `method`        | `#!py None`          | A string specifying the algorithm to use. By default `robertson-1968` is used.
+    `max_saturation`| `#!py False`         | Whether to return colors with maximum saturation, discarding luminance.
+    `clip_negative` | `#!py False`         | Enable simple clipping of negative values opposed to lifting the channels to eliminate the negative values before scaling.
     `**kwargs`      |                      | Any plugin specific parameters to pass to the `blackbody` method.
 
 Return
@@ -1705,8 +1709,11 @@ def from_wavelength(
     space: str,
     wavelength: float,
     *,
+    white: VectorLike | None = None,
     scale: bool = True,
-    scale_space: str | None = None
+    scale_space: str | None = None,
+    max_saturation: bool = True,
+    clip_negative: bool = False
 ) -> Self:
     ...
 ```
@@ -1724,7 +1731,10 @@ Parameters
     `space`         |                      | Color space that the new color should be in.
     `wavelength`    |                      | A number indicating the wavelength to translate to a color
     `scale`         | `#!py True`          | Scale the color with a linear RGB color space as defined by `scale_space`.
+    `white`         | `#!py None`          | A tuple defining an arbitrary white point to be used as the reference for the wavelength.
     `scale_space`   | `#!py 'srgb-linear'` | If `scale` is enabled, `scale_space` defines the RGB color space in which the returned color should be scaled within. The color space should be a linear space for best results. If undefined, `srgb-linear` will be used.
+    `max_saturation`| `#!py False`         | Whether to return colors with maximum saturation, discarding luminance. This is enabled by default.
+    `clip_negative` | `#!py False`         | Enable simple clipping of negative values opposed to lifting the channels to eliminate the negative values before scaling.
 
 Return
 
@@ -1872,9 +1882,11 @@ def chromaticity(
     coords: VectorLike,
     cspace: str = 'uv-1976',
     *,
+    white: VectorLike | None = None,
     scale: bool = False,
     scale_space: str | None = None,
-    white: VectorLike | None = None
+    max_saturation: bool = True,
+    clip_negative: bool = False
 ) -> Self:
     ...
 ```
@@ -1897,7 +1909,9 @@ Parameters
     `cspace`        | `#!py 'uv-1976'`     | A string indicating what chromaticity space to use. `uv-1976` being the default.
     `white`         | `#!py None`          | Specify the white in which to chromatically adapt the points from, if none is specified, the targeted color's white point is assumed.
     `scale`         | `#!py True`          | Scale the color with a linear RGB color space as defined by `scale_space`.
-    `scale_space`   | `#!py None`          | If `scale` is enabled, `scale_space` defines the RGB color space in which the returned color should be scaled within. The color space should be a linear space for best results. If undefined, `srgb-linear` will be used.
+    `scale_space`   | `#!py 'srgb-linear'` | If `scale` is enabled, `scale_space` defines the RGB color space in which the returned color should be scaled within. The color space should be a linear space for best results. If undefined, `srgb-linear` will be used.
+    `max_saturation`| `#!py False`         | Whether to return colors with maximum saturation, discarding luminance.
+    `clip_negative` | `#!py False`         | Enable simple clipping of negative values opposed to lifting the channels to eliminate the negative values before scaling.
 
 Return
 

@@ -82,7 +82,7 @@ class TestWavelenghts(util.ColorAssertsPyTest, unittest.TestCase):
 
         wl = Color('magenta').wavelength()
         self.assertEqual(wl[0], -549)
-        self.assertEqual(wl[1], [0.3246214634376017, 0.0746128668039302])
+        self.assertEqual(wl[1], [0.3246214629905204, 0.07461287634401273])
         self.assertEqual(wl[2], [0.29540911176297835, 0.6979697802523211])
 
     def test_complementary(self):

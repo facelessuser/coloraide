@@ -11,7 +11,7 @@ from .. import cmfs
 from .. import util
 from .. import algebra as alg
 from . import CCT
-from ..types import Vector, VectorLike, AnyColor
+from ..types import Vector, VectorLike
 from typing import Any, TYPE_CHECKING
 
 if TYPE_CHECKING:  #pragma: no cover
@@ -233,14 +233,10 @@ class Ohno2013(CCT):
 
     def from_cct(
         self,
-        color: type[AnyColor],
-        space: str,
         kelvin: float,
         duv: float,
-        scale: bool,
-        scale_space: str | None,
         **kwargs: Any
-    ) -> AnyColor:
+    ) -> tuple[tuple[float, float], str]:
         """Calculate a color that satisfies the CCT using Planck's law."""
 
         u0, v0 = self.blackbody(kelvin, exact=True)
@@ -255,4 +251,4 @@ class Ohno2013(CCT):
                 u0 = u0 - duv * dv
                 v0 = v0 + duv * du
 
-        return color.chromaticity(space, [u0, v0, 1], self.CHROMATICITY, scale=scale, scale_space=scale_space)
+        return (u0, v0), self.CHROMATICITY

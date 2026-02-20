@@ -14,7 +14,7 @@ from .. import util
 from .. import cat
 from .. import cmfs
 from . import CCT
-from ..types import Vector, VectorLike, AnyColor
+from ..types import Vector, VectorLike
 from typing import Any, TYPE_CHECKING, NamedTuple
 
 if TYPE_CHECKING:  #pragma: no cover
@@ -209,14 +209,10 @@ class Robertson1968(CCT):
 
     def from_cct(
         self,
-        color: type[AnyColor],
-        space: str,
         kelvin: float,
         duv: float,
-        scale: bool,
-        scale_space: str | None,
         **kwargs: Any
-    ) -> AnyColor:
+    ) -> tuple[tuple[float, float], str]:
         """Calculate a color that satisfies the CCT."""
 
         # Find inverse temperature to use as index.
@@ -249,4 +245,4 @@ class Robertson1968(CCT):
                     v += dv * sign * duv
                 break
 
-        return color.chromaticity(space, [u, v, 1], self.CHROMATICITY, scale=scale, scale_space=scale_space)
+        return (u, v), self.CHROMATICITY

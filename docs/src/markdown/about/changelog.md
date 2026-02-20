@@ -3,6 +3,22 @@ icon: lucide/scroll-text
 ---
 # Changelog
 
+## 8.4
+
+-   **NEW**: Add a new gamut mapping approach called `scale` that scales colors within a linear RGB space and can
+    preserve the dominant wavelength and takes luminance into account.
+-   **NEW**: Utilize new `scale` gamut mapping logic for normalization when creating a color using `from_wavelengths()`,
+    `blackbody()`, or `chromaticity()`. Options for `scale` can be passed down through these functions.
+-   **NEW**: `chromaticity()` will now respect the input luminance when scaling/normalizing the color if luminance is
+    provided. Max saturation can be forced with the `max_saturation` parameter if luminance would like to be ignored.
+-   **NEW**: `from_wavelength()` now accepts the parameter `white` which will return the color relative to a white point
+    different from what color it is placed into.
+-   **NEW**: Creating colors from wavelength and determining wavelengths from colors are now only capped at the CMFs
+    limit, though dominant wavelength calculations from colors are still only practical up until 700 nm even if the
+    wavelengths above are not rejected.
+-   **NEW**: Temperature plugin refactor such that `from_cct` only accepts Kelvin temperature and Duv and returns the
+    chromaticity coordinates and the ID of either `xy-1931`, `uv-1960`, or `uv-1976`.
+
 ## 8.3
 
 -   **NEW**: Add the ability to convert a wavelength into a color.

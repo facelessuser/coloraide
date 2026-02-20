@@ -26,8 +26,7 @@ def plot_interpolation(
     powerless,
     extrapolate,
     steps,
-    gmap,
-    opacity=1
+    gmap
 ):
     """Plot interpolations, but force Lab to operate like LCh."""
 
@@ -69,12 +68,22 @@ def plot_interpolation(
 
     trace = go.Scatter3d(
         x=x, y=y, z=z,
-        mode='markers',
-        marker={'color': cmap},
+        mode='lines',
+        line={'color': cmap, 'width': 16},
         showlegend=False
     )
 
-    trace.update(opacity=opacity)
+    trace.update(opacity=0.5)
+    fig.add_trace(trace)
+
+    trace = go.Scatter3d(
+        x=[x[0], x[-1]], y=[y[0], y[-1]], z=[z[0], z[-1]],
+        mode='markers',
+        marker={'color': [cmap[0], cmap[-1]]},
+        showlegend=False
+    )
+
+    trace.update(opacity=1)
     fig.add_trace(trace)
 
 
@@ -136,6 +145,8 @@ def simulate_raytrace_gamut_mapping(args):
 
     points = []
     color = Color(args.gamut_color)
+
+    orig_space = color.space()
 
     gmap = json.loads(args.gmap)
     gmap['method'] = 'raytrace'
@@ -225,51 +236,53 @@ def simulate_raytrace_gamut_mapping(args):
 
         mapcolor.convert(space, in_place=True)
         last = mapcolor[:-1]
-        for i in range(4):
-            if i:
-                mapcolor.convert(pspace, in_place=True, norm=False)
-                print('Uncorrected:', mapcolor)
+        if any(mn > x or x > mx for x in last):
+            for i in range(4):
+                if i:
+                    mapcolor.convert(pspace, in_place=True, norm=False)
+                    print('Uncorrected:', mapcolor)
 
-                coords = mapcolor[:-1]
-                if adaptive:
-                    if polar:
-                        mapcolor[:-1] = fit.project_onto(coords, start, end)
+                    coords = mapcolor[:-1]
+                    if adaptive:
+                        if polar:
+                            mapcolor[:-1] = fit.project_onto(coords, start, end)
+                        else:
+                            mapcolor[:-1] = fit.to_rect(fit.project_onto(fit.to_polar(coords, a, b), start, end), a, b)
+
                     else:
-                        mapcolor[:-1] = fit.to_rect(fit.project_onto(fit.to_polar(coords, a, b), start, end), a, b)
+                        coords[l] = start[l]
+                        if polar:
+                            coords[h] = start[h]
+                        else:
+                            fit.to_polar(coords, a, b)
+                            coords[b] = start[b]
+                            fit.to_rect(coords, a, b)
+                        mapcolor[:-1] = coords
 
-                else:
-                    coords[l] = start[l]
-                    if polar:
-                        coords[h] = start[h]
-                    else:
-                        fit.to_polar(coords, a, b)
-                        coords[b] = start[b]
-                        fit.to_rect(coords, a, b)
-                    mapcolor[:-1] = coords
+                    print('Corrected:', mapcolor)
+                    mapcolor.convert(space, in_place=True)
+                    print('Corrected RGB:', mapcolor, '\n----')
 
-                print('Corrected:', mapcolor)
-                mapcolor.convert(space, in_place=True)
-                print('Corrected RGB:', mapcolor, '\n----')
+                coords = cs.from_base(mapcolor[:-1]) if coerced else mapcolor[:-1]
+                print('-->', anchor, coords)
+                intersection = fit.raytrace_box(anchor, coords, bmin=bmin, bmax=bmax)
+                print('===', intersection)
 
-            coords = cs.from_base(mapcolor[:-1]) if coerced else mapcolor[:-1]
-            print('-->', anchor, coords)
-            intersection = fit.raytrace_box(anchor, coords, bmin=bmin, bmax=bmax)
-            print('===', intersection)
+                if not intersection:
+                    mapcolor[:-1] = last
+                    break
 
-            if not intersection:
-                mapcolor[:-1] = last
-                break
+                if i and all(low < x < high for x in coords):
+                    anchor = coords
 
-            if i and all(low < x < high for x in coords):
-                anchor = coords
-
-            points.append(mapcolor[:-1])
-            points.append(intersection)
-            points.append(anchor)
-            mapcolor[:-1] = last = cs.to_base(intersection) if coerced else intersection
+                points.append(mapcolor[:-1])
+                points.append(intersection)
+                points.append(anchor)
+                mapcolor[:-1] = last = cs.to_base(intersection) if coerced else intersection
 
         print('Final:', mapcolor.convert(pspace, norm=False))
-        clip_channels(color.update(space, mapcolor[:-1], mapcolor[-1]))
+        clip_channels(mapcolor.convert(orig_space, in_place=True))
+        color.update(mapcolor)
         print('Clipped RGB:', color.convert(space))
 
     if mode == 'perceptual':
@@ -325,8 +338,7 @@ def simulate_raytrace_gamut_mapping(args):
             False,
             False,
             100,
-            gmap,
-            opacity=0.3
+            gmap
         )
 
     return fig

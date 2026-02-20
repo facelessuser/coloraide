@@ -1200,11 +1200,10 @@ def ray_line_intersect(
     if abs(denom) < abs_tol:  # pragma: no cover
         return None
     t = dot(dap, dp, dims=D1) / denom
-    # Intersect
-    i = add(b1, multiply(t, db, dims=SC_D1), dims=D1)
     # Check if intersection is within bounds
     if 0 <= t <= 1:
-        return i
+        # Intersect
+        return add(b1, multiply(t, db, dims=SC_D1), dims=D1)
     return None  # pragma: no cover
 
 

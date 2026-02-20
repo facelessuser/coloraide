@@ -24,12 +24,12 @@ Approximate wavelengths of light.
 
 ## Estimate Dominant Wavelength of Color
 
-Colors are made up of certain frequencies of light, sometimes multiple if they are not a pure frequency. In color
+Colors are made up of certain frequencies of light, sometimes multiple if they are not a pure frequencies. In color
 science, colors can be classified by their dominant wavelength.
 
-Dominant wavelengths are acquired by drawing a line from the white point through the color to the edge of the horseshoe
-shape of the spectrum. The intersection on that line would be the dominant wavelength. If the line was extended in the
-opposite direction, the intersection on the other side of the spectral locus would be complementary wavelength.
+Dominant wavelengths are acquired by drawing a line from the white point and the target color to the edge of the
+horseshoe shape of the spectrum. The intersection on that line would be the dominant wavelength. If the line was
+extended in the opposite direction, the intersection on the other side of the spectral locus would be complementary wavelength.
 
 ![Dominant and Complementary Wavelength](./images/dominant-wavelength-cyan.png)
 
@@ -43,8 +43,8 @@ these cases, the complementary wavelength is used. They are denoted with a negat
 
 ![Dominant and Complementary Wavelength](./images/dominant-wavelength-magenta.png)
 
-In ColorAide, we can call the `wavelength()` function to acquire the closest, dominant wavelength (between 360 - 780 nm).
-This will return the dominant wavelength and two intersection points, usually these intersection points will be the same.
+In ColorAide, we can call the `wavelength()` function to acquire the closest, dominant wavelength. This will return the
+dominant wavelength and two intersection points, usually these intersection points will be the same.
 
 ```py play
 Color('cyan').wavelength()
@@ -61,7 +61,7 @@ Color('magenta').wavelength()
 We can also query colors from the perspective of the complementary wavelength. When this is done, the complementary
 wavelength is returned with both coordinates representing the intersection of the spectral locus at the closest,
 complementary wavelength. If the complementary intersection falls on the "line of purples", then the dominant wavelength
-is returned with a negative sign, and the two points will be intersection with the "line of purples" and the
+is returned with a negative sign, and the two points will be the intersection with the "line of purples" and the
 intersection at the dominant wavelength, respectively.
 
 /// html | div#break-down
@@ -74,10 +74,10 @@ Colors will be evaluated in the current white point as specified by the color sp
 color from a different white point perspective, a new white point can be chosen.
 
 > [!note]
-> During conversions, colors are chromatically adapted, if the white point changes, so the wavelengths of colors will
-> shift if they are converted. When we evaluate in different white points, we take the xy coordinates relative to the
-> current white point which should preserve the wavelengths, assuming the color space transformation to the xy
-> coordinates does not introduce errors.
+> During conversions, colors are chromatically adapted, if the white point changes, the wavelengths of colors will shift
+> if they are converted. When we evaluate in different white points, we take the xy coordinates relative to the current
+> white point which should preserve the wavelengths, assuming the color space transformation to the xy coordinates does
+> not introduce errors.
 
 ```py play
 from coloraide.cat import WHITES
@@ -88,8 +88,8 @@ Color('magenta').wavelength(white=WHITES['2deg']['E'])
 /// html | div#breakdown
 > [!tip]
 > It should be noted that the general implementation as described above for approximating wavelengths can be become more
-> difficult at higher wavelengths (typically 700 nm in the red-orange region) due to the non-linear shape of the spectral
-> locus in that area. As wavelengths approach 700 nm, the curve becomes steeper and more curved, making precise
+> difficult at higher wavelengths (typically above 700 nm in the red-orange region) due to the non-linear shape of the
+> spectral locus in that area. As wavelengths approach 700 nm, the curve becomes steeper and more curved, making precise
 > interpolation between discrete data points on the locus more challenging.
 >
 > Additionally, chromaticity coordinates for high-wavelength sources are more sensitive to small measurement errors, and
@@ -97,8 +97,8 @@ Color('magenta').wavelength(white=WHITES['2deg']['E'])
 > chromaticity calculations.  This, combined with the complex geometry of the spectral locus, makes the intersection
 > point harder to determine reliably using simple interpolation methods.
 >
-> Do the way the wavelengths clump and curl in the 700+ nm region, it is possible to get multiple intersections, with
-> multiple wavelengths. ColorAide simply takes the first as it evaluates wavelengths from lowest to highest. Other
+> Due to the way the wavelengths clump and curl in the 700+ nm region, it is possible to get multiple intersections,
+> with multiple wavelengths. ColorAide simply takes the first as it evaluates wavelengths from lowest to highest. Other
 > methods would need to be employed to more accurately handle colors at wavelengths beyond 700 nm. In ColorAide, results
 > will be most reliable in the range up to 700 nm, assuming color space transformations introduce no additional error
 > beyond what can be tolerated.
@@ -114,11 +114,11 @@ Color('magenta').wavelength(white=WHITES['2deg']['E'])
 
 ## Colors from Wavelengths
 
-ColorAide also offers a way to generate colors from a given wavelength. Wavelengths are allowed in the range of 360-780
+ColorAide also offers a way to generate colors from a given wavelength. Wavelengths are allowed in the range of 360-830
 nm.
 
 ```py play
-Color.interpolate([Color.from_wavelength('xyz-d65', r) for r in range(360, 780, 1)])
+Color.interpolate([Color.from_wavelength('xyz-d65', r) for r in range(360, 831, 1)])
 ```
 
 In order to convert a color from a wavelength, we simply use the Color Matching Functions (CMFs) and look up the
@@ -128,33 +128,63 @@ a linear gamut, and returned in the specified color space. The default scaling c
 (`srgb-linear`).
 
 ```py play
-Color.from_wavelength('srgb', 405).wavelength()
-```
-
-Colors will have the best results if they are specified with a target color space and a linear scaling space which have
-a common white point. Colors are created. For instance, ProPhoto uses a D50 white point, so it would be best to scale
-in `prophoto-rgb-linear` instead of something like `rec2020-linear` that has a D65 white point.
-
-```py play
-Color.from_wavelength('prophoto-rgb', 405, scale_space='prophoto-rgb-linear').wavelength()
-Color.from_wavelength('prophoto-rgb', 405, scale_space='rec2020-linear').wavelength()
+c = Color.from_wavelength('srgb', 405)
+c
+c.wavelength()
 ```
 
 > [!tip]
-> While colors can be created in the range of 360 - 780 nm, evaluating the wavelength via `wavelength()` in the range
-> of 700+ nm may be in accurate. Read [here](#breakdown) to learn why.
+> While colors can be created in the range of 360 - 830 nm, evaluating the wavelength via `wavelength()` in the range
+> of 700+ nm may be inaccurate. Read [here](#breakdown) to learn why.
 
-Converting a color from the original target space, if changing white points, will alter the wavelength of the color
-due to chromatic adaptation.
+> [!tip]
+> Colors will have the best results if they are specified with a target color space and a linear scaling space which
+> have a common white point. Colors are created. For instance, ProPhoto uses a D50 white point, so it would be best to
+> scale in `prophoto-rgb-linear` instead of something like `rec2020-linear` that has a D65 white point.
+>
+> Converting a color from the original target space, if changing white points, can alter the wavelength of the color
+> due to chromatic adaptation.
 
-If it is desired, scaling can be turned off, and the color will be created from the raw, unscaled XYZ coordinates.
+Converting wavelengths to colors uses the same logic as the [`scale`](./gamut.md#scale) gamut mapping approach under the
+hood as it is an approach that creates vivid, visible colors while preserving the dominant wavelength. The difference is
+that it is applied to all colors, in-gamut or out-of-gamut, in order to normalize all the colors. By default colors are
+returned with maximum saturation.
+
+`from_wavelength()` supports all the same options as the gamut mapping method, so you can, for instance, disable
+`max_saturation` which should respect the luminance levels as specified by the raw XYZ values in the CMFs.
+
+```py play
+Color.interpolate(
+    [
+        Color.from_wavelength('srgb', r, max_saturation=False)
+        for r in range(360, 831, 1)
+    ]
+)
+```
+
+Also, in order to preserve the dominant wavelength, colors with negative RGB values are lifted such that the negative
+values are eliminated followed by the color scaling to compress the color into the gamut. To get colors that are a bit
+more vivid, we can enable clipping of the negative values instead of "lifting" them. The downside is that the final
+color may not maintain the same dominant wavelength, but it may maintain more of the hue.
+
+```py play
+Color.interpolate(
+    [
+        Color.from_wavelength('srgb', r, max_saturation=False, clip_negative=True)
+        for r in range(360, 831, 1)
+    ]
+)
+```
+
+Lastly, if it is desired, scaling can be turned off, and the color will be created from the raw, unscaled XYZ
+coordinates. Then gamut mapping is completely up to the user.
 
 ```py play
 Steps(
     [
         c.clip('srgb')
         for c in Color.steps(
-            [Color.from_wavelength('srgb', r, scale=False) for r in range(380, 751, 1)],
+            [Color.from_wavelength('srgb', r, scale=False) for r in range(360, 831, 1)],
             steps=500
         )
     ]

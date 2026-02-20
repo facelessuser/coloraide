@@ -5,24 +5,33 @@ This employs a faster approach than bisecting to reduce chroma.
 """
 from __future__ import annotations
 import math
-from functools import lru_cache
 from .. import util
 from .. import algebra as alg
-from . import Fit, clip_channels
+from . import Fit, clip_channels, coerce_to_rgb
+from ..spaces import Prism, Luminant
 from ..cat import WHITES
-from ..spaces import Prism, Luminant, Space, HSLish, HSVish, HWBish
-from ..spaces.hsl import hsl_to_srgb, srgb_to_hsl
-from ..spaces.hsv import hsv_to_srgb, srgb_to_hsv
-from ..spaces.hwb import hwb_to_hsv, hsv_to_hwb
-from ..spaces.srgb_linear import sRGBLinear
 from .tools import adaptive_hue_independent
 from ..types import Vector, VectorLike
-from typing import Callable, Any, TYPE_CHECKING  # noqa: F401
+from typing import Any, TYPE_CHECKING  # noqa: F401
 
 if TYPE_CHECKING:  #pragma: no cover
     from ..color import Color
 
 WHITE = util.xy_to_xyz(WHITES['2deg']['D65'])
+
+
+def to_rect(coords: Vector, c:int, h: int) -> Vector:
+    """Polar to rectangular."""
+
+    coords[c], coords[h] = alg.polar_to_rect(coords[c], coords[h])
+    return coords
+
+
+def to_polar(coords: Vector, c:int, h: int) -> Vector:
+    """Rectangular to rectangular."""
+
+    coords[c], coords[h] = alg.rect_to_polar(coords[c], coords[h])
+    return coords
 
 
 def project_onto(a: Vector, b: Vector, o: Vector) -> Vector:
@@ -57,99 +66,6 @@ def project_onto(a: Vector, b: Vector, o: Vector) -> Vector:
     elif r < 0.0:  # pragma: no cover
         r = 0.0
     return [vb1 * r + ox, vb2 * r + oy, vb3 * r + oz]
-
-
-def hwb_to_srgb(coords: Vector) -> Vector:  # pragma: no cover
-    """Convert HWB to sRGB."""
-
-    return hsv_to_srgb(hwb_to_hsv(coords))
-
-
-def srgb_to_hwb(coords: Vector) -> Vector:  # pragma: no cover
-    """Convert sRGB to HWB."""
-
-    return hsv_to_hwb(srgb_to_hsv(coords))
-
-
-def to_rect(coords: Vector, c:int, h: int) -> Vector:
-    """Polar to rectangular."""
-
-    coords[c], coords[h] = alg.polar_to_rect(coords[c], coords[h])
-    return coords
-
-
-def to_polar(coords: Vector, c:int, h: int) -> Vector:
-    """Rectangular to rectangular."""
-
-    coords[c], coords[h] = alg.rect_to_polar(coords[c], coords[h])
-    return coords
-
-
-@lru_cache(maxsize=20, typed=True)
-def coerce_to_rgb(cs: Space) -> Space:
-    """
-    Coerce an HSL, HSV, or HWB color space to RGB to allow us to ray trace the gamut.
-
-    It is rare to have a color space that is bound to an RGB gamut that does not exist as an RGB
-    defined RGB space. HPLuv is one that is defined only as a cylindrical, HSL-like space. Okhsl
-    and Okhsv are another whose gamut is meant to target sRGB, but it is very fuzzy and has sRGB
-    colors not quite in gamut, and others that exceed the sRGB gamut.
-
-    For gamut mapping, RGB cylindrical spaces can be coerced into an RGB form using traditional
-    HSL, HSV, or HWB approaches which is good enough.
-    """
-
-    if isinstance(cs, HSLish):
-        to_ = hsl_to_srgb  # type: Callable[[Vector], Vector]
-        from_ = srgb_to_hsl  # type: Callable[[Vector], Vector]
-    elif isinstance(cs, HSVish):
-        to_ = hsv_to_srgb
-        from_ = srgb_to_hsv
-    elif isinstance(cs, HWBish):  # pragma: no cover
-        to_ = hwb_to_srgb
-        from_ = srgb_to_hwb
-    else:  # pragma: no cover
-        raise ValueError(f'Cannot coerce {cs.NAME} to an RGB space.')
-
-    class RGB(sRGBLinear):
-        """Custom RGB class."""
-
-        NAME = f'-rgb-{cs.NAME}'
-        BASE = cs.NAME
-        GAMUT_CHECK = None
-        CLIP_SPACE = None
-        WHITE = cs.WHITE
-        DYAMIC_RANGE = cs.DYNAMIC_RANGE
-        INDEXES = cs.indexes()
-        # Scale saturation and lightness (or HWB whiteness and blackness)
-        SCALE_SAT = cs.channels[INDEXES[1]].high
-        SCALE_LIGHT = cs.channels[INDEXES[2]].high
-
-        def to_base(self, coords: Vector) -> Vector:
-            """Convert from RGB to HSL."""
-
-            coords = from_(coords)
-            if self.SCALE_SAT != 1:
-                coords[1] *= self.SCALE_SAT
-            if self.SCALE_LIGHT != 1:
-                coords[2] *= self.SCALE_LIGHT
-            ordered = [0.0, 0.0, 0.0]
-            for e, c in enumerate(coords):
-                ordered[self.INDEXES[e]] = c
-            return ordered
-
-        def from_base(self, coords: Vector) -> Vector:
-            """Convert from HSL to RGB."""
-
-            coords = [coords[i] for i in self.INDEXES]
-            if self.SCALE_SAT != 1:
-                coords[1] /= self.SCALE_SAT
-            if self.SCALE_LIGHT != 1:
-                coords[2] /= self.SCALE_LIGHT
-            coords = to_(coords)
-            return coords
-
-    return RGB()
 
 
 def raytrace_box(
@@ -226,6 +142,7 @@ class RayTrace(Fit):
 
         if pspace is None:
             pspace = self.PSPACE
+        orig_space = space
         cs = color.CS_MAP[space]
 
         # Requires an RGB-ish or Prism space, preferably a linear space.
@@ -358,4 +275,5 @@ class RayTrace(Fit):
                     continue
 
             # Remove noise from floating point conversion.
-            clip_channels(color.update(space, mapcolor[:-1], mapcolor[-1]))
+            clip_channels(mapcolor.convert(orig_space, in_place=True))
+            color.update(mapcolor)
