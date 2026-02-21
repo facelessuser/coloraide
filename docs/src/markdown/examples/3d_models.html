@@ -875,7 +875,8 @@ def plot_interpolation(
     gmap,
     simulate_alpha,
     interp_gmap,
-    filters=()
+    filters=(),
+    opacity=1
 ):
     """Plot interpolations."""
 
@@ -891,10 +892,7 @@ def plot_interpolation(
     options = interp_method.copy()
     options['steps'] = len(inputs)
 
-    markers = Color.steps(
-        interp_colors.split(';'),
-        **options
-    )
+    markers = [Color(i) for i in interp_colors.split(';')]
 
     target = Color.CS_MAP[space]
     flags = {
@@ -936,10 +934,12 @@ def plot_interpolation(
             trace = go.Scatter3d(
                 x=x, y=y, z=z,
                 mode = 'lines',
-                line={'color': cmap, 'width': 8},
+                line={'color': cmap, 'width': 16},
                 showlegend=False
                 )
 
+        if opacity < 1:
+            trace.update(opacity=opacity)
         fig.add_trace(trace)
 
 

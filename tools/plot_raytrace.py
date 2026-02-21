@@ -15,78 +15,6 @@ from coloraide import algebra as alg  # noqa: E402
 from coloraide.channels import ANGLE_DEG  # noqa: E402
 
 
-def plot_interpolation(
-    fig,
-    space,
-    interp_colors,
-    interp_space,
-    interp_method,
-    hue,
-    carryfoward,
-    powerless,
-    extrapolate,
-    steps,
-    gmap
-):
-    """Plot interpolations, but force Lab to operate like LCh."""
-
-    if not interp_colors:
-        return
-
-    colors = Color.steps(
-        interp_colors.split(';'),
-        space=interp_space,
-        steps=steps,
-        hue=hue,
-        carryfoward=carryfoward,
-        powerless=powerless,
-        extrapolate=extrapolate,
-        method=interp_method
-    )
-
-    target = Color.CS_MAP[space]
-    flags = {
-        'is_cyl': target.is_polar(),
-        'is_labish': isinstance(target, plt3d.Labish),
-        'is_lchish': isinstance(target, plt3d.LChish),
-        'is_hslish': isinstance(target, plt3d.HSLish),
-        'is_hwbish': isinstance(target, plt3d.HWBish),
-        'is_hsvish': isinstance(target, plt3d.HSVish)
-    }
-
-    x = []
-    y = []
-    z = []
-    cmap = []
-    for c in colors:
-        c.convert(space, in_place=True)
-        plt3d.store_coords(c, x, y, z, flags)
-
-        c.convert('srgb', in_place=True)
-        c.fit(**gmap)
-        cmap.append(c.to_string(hex=True))
-
-    trace = go.Scatter3d(
-        x=x, y=y, z=z,
-        mode='lines',
-        line={'color': cmap, 'width': 16},
-        showlegend=False
-    )
-
-    trace.update(opacity=0.5)
-    fig.add_trace(trace)
-
-    trace = go.Scatter3d(
-        x=[x[0], x[-1]], y=[y[0], y[-1]], z=[z[0], z[-1]],
-        mode='markers',
-        marker={'color': [cmap[0], cmap[-1]]},
-        showlegend=False
-    )
-
-    trace.update(opacity=1)
-    fig.add_trace(trace)
-
-
 def raytrace(args):
     """Test ray tracing directly."""
 
@@ -300,7 +228,7 @@ def simulate_raytrace_gamut_mapping(args):
                 indexes[:] = indexes[1], indexes[2], indexes[0]
                 points[e] = [temp[i] for i in indexes]
 
-    x, y, z = zip(*points)
+    x, y, z = zip(*points) if points else ([], [], [])
     data = []
     i = 0
     while i < len(x):
@@ -318,7 +246,7 @@ def simulate_raytrace_gamut_mapping(args):
     # Plot the color space
     fig = plt3d.plot_gamut_in_space(
         space if mode == 'rgb' else pspace,
-        {args.gamut_rgb: {'opacity': 0.2, 'resolution': 100}},
+        {args.gamut_rgb: {'opacity': 0.2, 'resolution': 10 if mode == 'rgb' else 100}},
         title=args.title,
         gmap=gmap,
         size=(args.width, args.height)
@@ -327,18 +255,16 @@ def simulate_raytrace_gamut_mapping(args):
     fig.add_traces(data)
 
     if args.gamut_interp:
-        plot_interpolation(
+        plt3d.plot_interpolation(
             fig,
             space if mode == 'rgb' else pspace,
             first.to_string(fit=False) + ';' + achroma.to_string(fit=False),
-            pspace,
-            'linear',
-            'shorter',
+            {"method": "linear", "hue": "shorter", "steps": 100},
+            gmap,
             False,
             False,
-            False,
-            100,
-            gmap
+            (),
+            opacity=0.5
         )
 
     return fig
