@@ -125,6 +125,7 @@ def adjust_luminance(
         d65 = c._space.WHITE
         adapt = d65 != white
         xyz = c.chromatic_adaptation(d65, white, c[:-1]) if adapt else c[:-1]
+        Y = alg.clamp(Y, 0.0, max_luminance)
         # Luminance below the cusp can just be restored
         if xyz[1] > Y:
             xyz = util.xy_to_xyz(util.xyz_to_xyY(xyz, white)[:-1], Y)
@@ -132,11 +133,10 @@ def adjust_luminance(
         # Luminance above the cusp requires us to find the intersection of the vectors of the
         # path between the color and white and those same colors with the adjusted luminance.
         elif preserve_luminance and xyz[1] < Y:
-            Y = alg.clamp(Y, 0, max_luminance)
             xyy = util.xyz_to_xyY(xyz, white)
             intersect = alg.line_interesect(
                 xyz,
-                util.xy_to_xyz(white, 1),
+                util.xy_to_xyz(white, max_luminance),
                 util.xy_to_xyz(xyy[:2], Y),
                 util.xy_to_xyz(white, Y)
             )

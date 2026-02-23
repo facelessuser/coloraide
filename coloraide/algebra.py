@@ -1182,6 +1182,33 @@ def pprint(value: float | ArrayLike) -> None:
     print(pretty(value))
 
 
+def point_on_segment(a: VectorLike, b: VectorLike, p: VectorLike, abs_tol: float = ATOL) -> bool:
+    """Point on line segment."""
+
+    l = len(p)
+
+    ab = [b[i] - a[i] for i in range(l)]
+    ap = [p[i] - a[i] for i in range(l)]
+
+    # Check if `ap` is parallel to `ab` (cross product is zero)
+    cp = cross(ab, ap)
+    if _any(abs(c) > abs_tol for c in cp):
+        return False
+
+    # Check if the point is between a and b
+    for i in range(l):
+        if abs(ab[i]) < abs_tol:
+            continue
+        t = ap[i] / ab[i]
+        break
+
+    # See if `ab` is a point and `p` is that point
+    else:
+        return _all(abs(i - j) < abs_tol for i, j in zip(a, p))
+
+    return 0 <= t <= 1
+
+
 def line_interesect(
     s1: VectorLike,
     e1: VectorLike,
@@ -1207,9 +1234,17 @@ def line_interesect(
     # Line segment difference
     l1 = [a - b for a, b in zip(e1, s1)]
     l2 = [a - b for a, b in zip(e2, s2)]
+
     # Magnitude
     m1 = math.sqrt(sum(a ** 2 for a in l1))
     m2 = math.sqrt(sum(a ** 2 for a in l2))
+
+    # One of the lines is a point.
+    if m1 < abs_tol:
+        return list(s1) if point_on_segment(e2, s2, s1, abs_tol=abs_tol) else None
+    elif m2 < abs_tol:
+        return list(s2) if point_on_segment(e1, s1, s2, abs_tol=abs_tol) else None
+
     # Unit vector
     u1 = [a / m1 for a in l1]
     u2 = [a / m2 for a in l2]
