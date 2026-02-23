@@ -275,12 +275,17 @@ and simplicity are of great value.
 > [!new] New in 8.4
 
 The scale method is an approach where the out of gamut color channels are scaled within a linear RGB space such that the
-channels keep a similar proportion to each other. Luminance adjustments are applied as needed.
+channels keep a similar proportion to each other. This approach specifically ensures that the
+[dominant wavelength](.wavelengths.md#estimate-dominant-wavelength-of-color) of the color is preserved which contributes
+the hue. It can be implemented in a way that prioritizes the colorfulness of the color or the luminance.
 
-Like clipping, it prioritizes preserving high saturation, but unlike clipping it also preserves the dominant wavelength
-of the color relative to it's white point (assuming it is applied within a linear RGB space). In the below image, we
-can see a green color on the spectral locus which has a wavelength of 550 nm being gamut mapped towards the white point
-in the xyY color space, preserving the wavelength.
+#### Colorfulness Preserving Scale
+
+The default behavior of the `scale` method in ColorAide, behaves somewhat Like clipping as it prioritizes preserving
+high saturation, but unlike clipping it also preserves the dominant wavelength of the color relative to it's white point
+(assuming it is applied within a linear RGB space). In the below image, we can see a green color on the spectral locus
+which has a wavelength of 550 nm being gamut mapped towards the white point in the xyY color space, preserving the
+wavelength.
 
 ![Scale GMA 550 nm](./images/scale-550nm.png)
 
@@ -332,6 +337,58 @@ to work well in non-RGB spaces.
 Steps(
 	[
 		c.fit('hpluv', method='scale')
+		for c in Color.steps(['oklch(90% 0.4 0)', 'oklch(90% 0.4 360)'], steps=100, space='oklch', hue='longer')
+	]
+)
+```
+
+#### Luminance Preserving Scale
+
+[Scaling](#scale) prioritizes colorfulness just like clipping. It generally scales the color such that it represents
+the max saturated version of that color above the cusp of the linear RGB space, and then restores the luminance in the
+xyY color space if the original luminance was below the cusp as, due to the geometry of the xyY space,
+any color below the cusp has no change in the saturation.
+
+The benefit of this approach is if you want to the preserve the colorfulness at high luminance, the colors will retain
+a similar intensity with the same dominant wavelength.
+
+If there is a strong requirement to preserve the luminance instead, the `preserve_luminance` option can be set to
+`#!py True`. This will preserve luminance over saturation/colorfulness while preserving the same
+[dominant wavelength](.wavelengths.md#estimate-dominant-wavelength-of-color).
+
+> [!note]
+> Luminance is not perceptually uniform.
+
+/// tab | Colorfulness Preserving
+![Scaled Preserve Saturation](./images/scale-gma-saturation.png)
+///
+
+/// tab | Luminance Preserving
+![Scaled Preserve Luminance](./images/scale-gma-luminance.png)
+///
+
+```py play
+original = Color('rec2020', [1, 0.8, 0.8])
+scaled = original.clone().fit('srgb', method='scale')
+scaled_lum = original.clone().fit('srgb', method='scale', preserve_luminance=True)
+original.luminance(), scaled.luminance(), scaled_lum.luminance()
+original.wavelength()[0], scaled.wavelength()[0], scaled_lum.wavelength()[0]
+original, scaled, scaled_lum
+```
+
+To make it easy to select this option, we've also provided the `scale-luminance` method which is the `scale` method
+with `preserve_luminance` enabled by default.
+
+```py play
+Steps(
+	[
+		c.fit('srgb', method='scale')
+		for c in Color.steps(['oklch(90% 0.4 0)', 'oklch(90% 0.4 360)'], steps=100, space='oklch', hue='longer')
+	]
+)
+Steps(
+	[
+		c.fit('srgb', method='scale-luminance')
 		for c in Color.steps(['oklch(90% 0.4 0)', 'oklch(90% 0.4 360)'], steps=100, space='oklch', hue='longer')
 	]
 )

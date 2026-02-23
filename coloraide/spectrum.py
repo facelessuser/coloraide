@@ -38,6 +38,31 @@ def xy_to_angle(xy: VectorLike, white: VectorLike, offset: float = 0.0, invert: 
     return angle
 
 
+def ray_line_intersect(
+    a1: VectorLike,
+    a2: VectorLike,
+    b1: VectorLike,
+    b2: VectorLike,
+    abs_tol: float = alg.ATOL
+) -> Vector | None:
+    """Find the intersection of a 2D ray and line."""
+
+    da = [a - b for a, b in zip(a2, a1)]
+    db = [a - b for a, b in zip(b2, b1)]
+    dp = [a - b for a, b in zip(a1, b1)]
+    dap = [-da[1], da[0]]
+    denom = alg.dot(dap, db, dims=alg.D1)
+    # Parallel cases
+    if abs(denom) < abs_tol:  # pragma: no cover
+        return None
+    t = alg.dot(dap, dp, dims=alg.D1) / denom
+    # Check if intersection is within bounds
+    if 0 <= t <= 1:
+        # Intersect
+        return alg.add(b1, alg.multiply(t, db, dims=alg.SC_D1), dims=alg.D1)
+    return None  # pragma: no cover
+
+
 def closest_wavelength(
     xy: VectorLike,
     white: VectorLike = WHITE,
@@ -103,7 +128,7 @@ def closest_wavelength(
             elif target == xy_to_angle(locus[i0], white, start):
                 intersect = locus[i0]
             else:
-                intersect = alg.ray_line_intersect(white, xy, locus[i0], locus[i])
+                intersect = ray_line_intersect(white, xy, locus[i0], locus[i])
             if intersect is None:  # pragma: no cover
                 continue
 
@@ -141,7 +166,7 @@ def closest_wavelength(
 
     # If dominant isn't found, it is on the line of purples; use complementary instead
     if not found[reverse]:
-        pt = alg.ray_line_intersect(white, xy, locus[0], locus[-1])
+        pt = ray_line_intersect(white, xy, locus[0], locus[-1])
         # Shouldn't happen, but just in case
         if pt is not None:  # pragma: no cover
             dominant = pt

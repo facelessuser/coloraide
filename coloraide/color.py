@@ -70,6 +70,7 @@ from .gamut.fit_lch_chroma import LChChroma
 from .gamut.fit_oklch_chroma import OkLChChroma
 from .gamut.fit_raytrace import RayTrace
 from .gamut.fit_scale import Scale
+from .gamut.fit_scale_luminance import ScaleLuminance
 from .cat import CAT, Bradford
 from .filters import Filter
 from .filters.w3c_filter_effects import Sepia, Brightness, Contrast, Saturate, Opacity, HueRotate, Grayscale, Invert
@@ -529,6 +530,7 @@ class Color(metaclass=ColorMeta):
         scale_space: str | None = None,
         max_saturation: bool = True,
         clip_negative: bool = False,
+        preserve_luminance: bool = False,
         **kwargs: Any
     ) -> Self:
         """
@@ -553,7 +555,8 @@ class Color(metaclass=ColorMeta):
             scale=scale,
             scale_space=scale_space,
             max_saturation=max_saturation,
-            clip_negative=clip_negative
+            clip_negative=clip_negative,
+            preserve_luminance=preserve_luminance
         )
 
     def cct(self, *, method: str | None = None, **kwargs: Any) -> Vector:
@@ -844,7 +847,8 @@ class Color(metaclass=ColorMeta):
         scale: bool = False,
         scale_space: str | None = None,
         max_saturation: bool = False,
-        clip_negative: bool = False
+        clip_negative: bool = False,
+        preserve_luminance: bool = False
     ) -> Self:
         """
         Create a color from chromaticity coordinates.
@@ -882,7 +886,8 @@ class Color(metaclass=ColorMeta):
                 color,
                 scale_space=scale_space if scale_space is not None else 'srgb-linear',
                 max_saturation=max_saturation,
-                clip_negative=clip_negative
+                clip_negative=clip_negative,
+                preserve_luminance=preserve_luminance
             )
 
         # Convert to targeted color space
@@ -1382,7 +1387,8 @@ class Color(metaclass=ColorMeta):
         scale: bool = True,
         scale_space: str | None = None,
         max_saturation: bool = True,
-        clip_negative: bool = False
+        clip_negative: bool = False,
+        preserve_luminance: bool = False
     ) -> Self:
         """Create a color from a wavelength."""
 
@@ -1394,7 +1400,8 @@ class Color(metaclass=ColorMeta):
             scale=scale,
             scale_space=scale_space,
             max_saturation=max_saturation,
-            clip_negative=clip_negative
+            clip_negative=clip_negative,
+            preserve_luminance=preserve_luminance
         )
 
     @overload
@@ -1645,6 +1652,7 @@ Color.register(
         OkLChChroma(),
         RayTrace(),
         Scale(),
+        ScaleLuminance(),
 
         # Filters
         Sepia(),

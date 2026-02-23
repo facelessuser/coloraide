@@ -246,6 +246,19 @@ class TestGamut(util.ColorAsserts, unittest.TestCase):
         for w in range(360, 700, 1):
             self.assertEqual(Color.from_wavelength('srgb', w, scale=False).fit(method='scale').wavelength()[0], w)
 
+    def test_scale_luminance(self):
+        """
+        Test conversion from a wavelength to a color with scaling and luminance preservation.
+
+        We should have enough accuracy to scale in a linear RGB space and still get the same wavelength, except when
+        luminance preservation forces the color to be achromatic, then wavelength will be undefined.
+        """
+
+        original = Color('rec2020', [1, 0.8, 0.8])
+        scaled_lum = original.clone().fit('srgb', method='scale-luminance', preserve_luminance=True)
+        self.assertTrue(math.isclose(original.luminance(), scaled_lum.luminance()))
+        self.assertTrue(original.wavelength()[0] == scaled_lum.wavelength()[0])
+
     def test_scale_subtractive(self):
         """Test a subtractive space."""
 

@@ -1182,58 +1182,90 @@ def pprint(value: float | ArrayLike) -> None:
     print(pretty(value))
 
 
-def ray_line_intersect(
-    a1: VectorLike,
-    a2: VectorLike,
-    b1: VectorLike,
-    b2: VectorLike,
+def point_on_segment(a: VectorLike, b: VectorLike, p: VectorLike, abs_tol: float = ATOL) -> bool:
+    """Point on line segment."""
+
+    l = len(p)
+
+    ab = [b[i] - a[i] for i in range(l)]
+    ap = [p[i] - a[i] for i in range(l)]
+
+    # Check if `ap` is parallel to `ab` (cross product is zero)
+    cp = cross(ab, ap)
+    if _any(abs(c) > abs_tol for c in cp):
+        return False
+
+    # Check if the point is between a and b
+    for i in range(l):
+        if abs(ab[i]) < abs_tol:
+            continue
+        t = ap[i] / ab[i]
+        break
+
+    # See if `ab` is a point and `p` is that point
+    else:
+        return _all(abs(i - j) < abs_tol for i, j in zip(a, p))
+
+    return 0 <= t <= 1
+
+
+def line_interesect(
+    s1: VectorLike,
+    e1: VectorLike,
+    s2: VectorLike,
+    e2: VectorLike,
+    rel_tol: float = RTOL,
     abs_tol: float = ATOL
 ) -> Vector | None:
-    """Find the intersection of a ray and a line."""
+    """
+    Find intersection of two lines.
 
-    da = [a - b for a, b in zip(a2, a1)]
-    db = [a - b for a, b in zip(b2, b1)]
-    dp = [a - b for a, b in zip(a1, b1)]
-    dap = [-da[1], da[0]]
-    denom = dot(dap, db, dims=D1)
-    # Perpendicular cases
-    if abs(denom) < abs_tol:  # pragma: no cover
+    This was designed particularly for 3D intersection, but can be used for either 2D or 3D,
+    but 2D line intersection could be calculated with less work using other methods if performance
+    was of importance.
+
+    3D lines rarely intersect, but often the shortest line between can be found.
+    If the shortest line is has no length (a point) then it is an actual intersection.
+    Our cases are constructed such that an intersection is expected, and a line is not sufficient.
+    We can verify closeness of the points (to account for floating point errors) to verify that within
+    some expected threshold, the two line points are essentially a point and an intersection is found.
+    """
+
+    # Line segment difference
+    l1 = [a - b for a, b in zip(e1, s1)]
+    l2 = [a - b for a, b in zip(e2, s2)]
+
+    # Magnitude
+    m1 = math.sqrt(sum(a ** 2 for a in l1))
+    m2 = math.sqrt(sum(a ** 2 for a in l2))
+
+    # One of the lines is a point.
+    if m1 < abs_tol:
+        return list(s1) if point_on_segment(e2, s2, s1, abs_tol=abs_tol) else None
+    elif m2 < abs_tol:
+        return list(s2) if point_on_segment(e1, s1, s2, abs_tol=abs_tol) else None
+
+    # Unit vector
+    u1 = [a / m1 for a in l1]
+    u2 = [a / m2 for a in l2]
+    # Direction projection
+    u = vdot(u1, u2)
+    if u == 1:  # pragma: no cover
         return None
-    t = dot(dap, dp, dims=D1) / denom
-    # Check if intersection is within bounds
-    if 0 <= t <= 1:
-        # Intersect
-        return add(b1, multiply(t, db, dims=SC_D1), dims=D1)
-    return None  # pragma: no cover
-
-
-def line_intersect(
-    a1: VectorLike,
-    a2: VectorLike,
-    b1: VectorLike,
-    b2: VectorLike,
-    abs_tol: float = ATOL
-) -> Vector | None:  # pragma: no cover
-    """Find the intersection of of lines."""
-
-    da = [a - b for a, b in zip(a2, a1)]
-    db = [a - b for a, b in zip(b2, b1)]
-    dp = [a - b for a, b in zip(a1, b1)]
-    dap = [-da[1], da[0]]
-    denom = dot(dap, db, dims=D1)
-    # Perpendicular cases
-    if abs(denom) < abs_tol:  # pragma: no cover
+    # Separation projection
+    sp = [a - b for a, b in zip(s2, s1)]
+    sp1 = vdot(sp, u1)
+    sp2 = vdot(sp, u2)
+    # Distance along lines
+    d1 = (sp1 - u * sp2) / (1 - u * u)
+    d2 = (sp2 - u * sp1) / (u * u - 1)
+    # Calculate points of closest line
+    p1 = [a + b for a, b in zip(s1, [x * d1 for x in u1])]
+    p2 = [a + b for a, b in zip(s2, [x * d2 for x in u2])]
+    # If points are close enough, assume intersect, otherwise raise error
+    if not _all(math.isclose(i, j, rel_tol=rel_tol, abs_tol=abs_tol) for i, j in zip(p1, p2)):  # pragma: no cover
         return None
-    t = dot(dap, dp, dims=D1) / denom
-    # Intersect
-    i = add(b1, multiply(t, db, dims=SC_D1), dims=D1)
-    # Check if intersection is within bounds
-    if (
-        0 <= t <= 1 and
-        0 <= divide(dot(subtract(i, a1, dims=D1), da, dims=D1), dot(da, da, dims=D1), dims=SC) <= 1
-    ):
-        return i
-    return None
+    return p1
 
 
 def all(a: float | ArrayLike) -> bool:  # noqa: A001
