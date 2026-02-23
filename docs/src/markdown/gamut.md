@@ -276,7 +276,7 @@ and simplicity are of great value.
 
 The scale method is an approach where the out of gamut color channels are scaled within a linear RGB space such that the
 channels keep a similar proportion to each other. This approach specifically ensures that the
-[dominant wavelength](.wavelengths.md#estimate-dominant-wavelength-of-color) of the color is preserved which contributes
+[dominant wavelength](./wavelengths.md#estimate-dominant-wavelength-of-color) of the color is preserved which contributes
 the hue. It can be implemented in a way that prioritizes the colorfulness of the color or the luminance.
 
 #### Colorfulness Preserving Scale
@@ -354,7 +354,7 @@ a similar intensity with the same dominant wavelength.
 
 If there is a strong requirement to preserve the luminance instead, the `preserve_luminance` option can be set to
 `#!py True`. This will preserve luminance over saturation/colorfulness while preserving the same
-[dominant wavelength](.wavelengths.md#estimate-dominant-wavelength-of-color).
+[dominant wavelength](./wavelengths.md#estimate-dominant-wavelength-of-color).
 
 > [!note]
 > Luminance is not perceptually uniform.
