@@ -112,17 +112,37 @@ def coerce_to_rgb(cs: Space) -> Space:
     return RGB()
 
 
-def adjust_luminance(color: Color, Y: float, white: VectorLike) -> None:
+def adjust_luminance(
+    color: Color,
+    Y: float,
+    white: VectorLike,
+    max_luminance: float = 1.0,
+    preserve_luminance: bool = True
+) -> None:
     """Adjust luminance of a color."""
 
     with color.within('xyz-d65') as c:
-        c.convert('xyz-d65', in_place=True)
         d65 = c._space.WHITE
         adapt = d65 != white
         xyz = c.chromatic_adaptation(d65, white, c[:-1]) if adapt else c[:-1]
+        # Luminance below the cusp can just be restored
         if xyz[1] > Y:
             xyz = util.xy_to_xyz(util.xyz_to_xyY(xyz, white)[:-1], Y)
             c[:-1] = c.chromatic_adaptation(white, d65, xyz) if adapt else xyz
+        # Luminance above the cusp requires us to find the intersection of the vectors of the
+        # path between the color and white and those same colors with the adjusted luminance.
+        elif preserve_luminance and xyz[1] < Y:
+            Y = alg.clamp(Y, 0, max_luminance)
+            xyy = util.xyz_to_xyY(xyz, white)
+            intersect = alg.line_interesect(
+                xyz,
+                util.xy_to_xyz(white, 1),
+                util.xy_to_xyz(xyy[:2], Y),
+                util.xy_to_xyz(white, Y)
+            )
+            # Update color if we found an intersection
+            if intersect is not None:
+                c[:-1] = c.chromatic_adaptation(white, d65, intersect) if adapt else intersect
 
 
 def scale_rgb(
@@ -130,7 +150,8 @@ def scale_rgb(
     *,
     scale_space: str,
     clip_negative: bool = False,
-    max_saturation: bool = False
+    max_saturation: bool = False,
+    preserve_luminance: bool = False
 ) -> None:
     """Apply color scaling."""
 
@@ -171,10 +192,9 @@ def scale_rgb(
         rgb[i] = alg.clamp((rgb[i] - mn) / mx if mx else (rgb[i] - mn), 0.0, 1.0) * maximum
     mapcolor[:-1] = cs.to_base(rgb) if coerced else rgb
 
-    # If the current luminance is greater than the original luminance,
-    # set the luminance to the original. Set it xyY with the same white point.
+    # Check if luminance doesn't match and update accordingly.
     if not max_saturation:
-        adjust_luminance(mapcolor, Y, white)
+        adjust_luminance(mapcolor, Y, white, maximum, preserve_luminance)
 
     # Clip in the original gamut bound color space and update the original color
     clip_channels(mapcolor.convert(orig_space, in_place=True))

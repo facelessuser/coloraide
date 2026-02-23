@@ -3,6 +3,11 @@ icon: lucide/scroll-text
 ---
 # Changelog
 
+## 8.5
+
+-   **NEW**: Add `perserve_luminance` option to `scale` to allow for a luminance preserving version.
+-   **NEW**: Add `scale-luminance` gamut mapping method as a pre-configured luminance preserving scale method.
+
 ## 8.4
 
 -   **NEW**: Add a new gamut mapping approach called `scale` that scales colors within a linear RGB space and can
