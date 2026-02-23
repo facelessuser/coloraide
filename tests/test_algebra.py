@@ -3647,6 +3647,69 @@ class TestAlgebra(unittest.TestCase):
         self.assertEqual(alg.prod([3, 2, 4]), 24.0)
         self.assertEqual(alg.prod([[1, 2, 3], [4, 5, 6], [7, 8, 9]]), 362880.0)
 
+    def test_line_intersect(self):
+        """Test line intersect."""
+
+        self.assertEqual(
+            alg.line_interesect([0, 0, 0], [4, 4, 4], [4, 4, 0], [0, 0, 4]),
+            [2.0000000000000004, 2.0000000000000004, 2.0000000000000004]
+        )
+
+        self.assertEqual(
+            alg.line_interesect([0, 0, 0], [4, 4, 4], [2, 2, 2], [2, 2, 2]),
+            [2, 2, 2]
+        )
+
+        self.assertEqual(
+            alg.line_interesect([2, 2, 2], [2, 2, 2], [4, 4, 0], [0, 0, 4]),
+            [2, 2, 2]
+        )
+
+        self.assertEqual(
+            alg.line_interesect([0, 0, 0], [4, 4, 4], [4, 0, 0], [8, 0, 4]),
+            None
+        )
+
+        self.assertEqual(
+            alg.line_interesect([0, 0, 0], [4, 4, 4], [8, 0, 4], [8, 0, 4]),
+            None
+        )
+
+        # Very close
+        self.assertEqual(
+            alg.line_interesect([0, 0, 0], [4, 4, 4], [-1e-16, -1e-16, -1e-16], [-1e-16, -1e-16, -1e-16]),
+            [-1e-16, -1e-16, -1e-16]
+        )
+
+        self.assertEqual(
+            alg.line_interesect([-1e-16, -1e-16, -1e-16], [-1e-16, -1e-16, -1e-16], [0, 0, 0], [4, 4, 4]),
+            [-1e-16, -1e-16, -1e-16]
+        )
+
+        self.assertEqual(
+            alg.line_interesect(
+                [0, 0, 0], [4, 4, 4], [2 + 1e-16, 2 + 1e-16, 2 + 1e-16],
+                [2 + 1e-16, 2 + 1e-16, 2 + 1e-16]
+            ),
+            [2.0, 2.0, 2.0]
+        )
+
+        self.assertEqual(
+            alg.line_interesect([0, 0, 0], [4, 4, 4], [2, 2, 2], [2 + 1e-16, 2 + 1e-16, 2 + 1e-16]),
+            [2, 2, 2]
+        )
+
+        self.assertEqual(
+            alg.line_interesect(
+                [0.9504559270516716, 1.0, 1.0890577507598784],
+                [0.9504559270516716, 1.0, 1.0890577507598784],
+                [0.9504559270516715, 0.9999999999999999, 1.089057750759878],
+                [0.9504559270516715, 0.9999999999999999, 1.089057750759878]
+            ),
+            [0.9504559270516716, 1.0, 1.0890577507598784]
+        )
+
+
 def test_pprint(capsys):
     """Test matrix print."""
 
