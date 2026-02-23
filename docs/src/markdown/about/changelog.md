@@ -5,7 +5,7 @@ icon: lucide/scroll-text
 
 ## 8.5
 
--   **NEW**: Add `perserve_luminance` option to `scale` to allow for a luminance preserving version.
+-   **NEW**: Add `preserve_luminance` option to `scale` to allow for a luminance preserving version.
 -   **NEW**: Add `scale-luminance` gamut mapping method as a pre-configured luminance preserving scale method.
 
 ## 8.4
