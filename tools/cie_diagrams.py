@@ -122,8 +122,10 @@ def get_spectral_locus_labels(opt):
 
         diry = (y - y1) > 0
         dirx = (x - x1) > 0
-        m1 = -((y - y1) / (x - x1)) ** -1
-        m2 = -((y2 - y) / (x2 - x)) ** -1
+        temp = (y - y1) / (x - x1)
+        m1 = -(temp) ** -1 if temp else 0
+        temp = (y2 - y) / (x2 - x)
+        m2 = -(temp) ** -1 if temp else 0
         m = alg.lerp(m1, m2, factor)
 
         length = math.sqrt(1.0 + m ** 2)
