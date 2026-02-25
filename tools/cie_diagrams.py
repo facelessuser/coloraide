@@ -301,24 +301,20 @@ def cie_diagram(
 
     Color.register([ohno_2013.Ohno2013(opt.observer, opt.white)], overwrite=True)
 
-    xs = []
-    ys = []
+    xys =[]
     annotations = []
 
     # Get points for the spectral locus
     for r in alg.linspace(360, 780, len(opt.observer)):
         xy = opt.observer.xy(r)
-        x, y = Color.convert_chromaticity('xy-1931', opt.chromaticity, xy)[:-1]
-        xs.append(x)
-        ys.append(y)
+        xy = Color.convert_chromaticity('xy-1931', opt.chromaticity, xy)[:-1]
+        xys.append(xy)
 
     annotations = get_spectral_locus_labels(opt)
 
     # Draw the bottom purple line
-    interp = alg.interpolate([[xs[-1], ys[-1]], [xs[0], ys[0]]])
-    xi, yi = zip(*[interp(i / 50) for i in range(1, 51)])
-    xs.extend(xi)
-    ys.extend(yi)
+    interp = alg.interpolate([xys[-1], xys[0]])
+    xys.extend([interp(i / 50) for i in range(1, 51)])
 
     spaces = []
 
@@ -357,9 +353,7 @@ def cie_diagram(
                     sy,
                     color,
                     label,
-                    Polygon(sx, sy),
-                    _x,
-                    _y
+                    Polygon(_x, _y)
                 )
             )
 
@@ -391,9 +385,7 @@ def cie_diagram(
                     sy,
                     color,
                     label,
-                    Polygon(sx, sy),
-                    _x,
-                    _y
+                    Polygon(_x, _y)
                 )
             )
 
@@ -411,20 +403,20 @@ def cie_diagram(
             interp = alg.interpolate([blue[:-1], red[:-1]])
             sxy.extend([interp(i / 50) for i in range(1, 51)])
             sx, sy = zip(*sxy)
-            xy = [*zip(*[convert_chromaticity((a, b), opt) for a, b in zip(sx, sy)])]
+            xy = [convert_chromaticity((a, b), opt) for a, b in zip(sx, sy)]
+            _x, _y = zip(*xy)
             spaces.append(
                 (
                     sx,
                     sy,
                     color,
                     space,
-                    Polygon(sx, sy),
-                    xy[0],
-                    xy[1]
+                    Polygon(_x, _y)
                 )
             )
 
     # Generate fill colors for inside the spectral locus
+    poly = Polygon(*zip(*[convert_chromaticity(r, opt) for r in xys]))
     if colorize:
         px = []
         py = []
@@ -432,7 +424,6 @@ def cie_diagram(
         cx = []
         cy = []
         cc = []
-        poly = Polygon(xs, ys)
         min_range_x = float('inf')
         min_range_y = float('inf')
         max_range_x = float('-inf')
@@ -448,8 +439,8 @@ def cie_diagram(
                 max_range_y = s[4].ymax
 
         for r in itertools.product(
-            alg.linspace(min(0, min_range_x), max(1, max_range_x), resolution, endpoint=True),
-            alg.linspace(min(0, min_range_y), max(1, max_range_y), resolution, endpoint=True)
+            alg.linspace(min(poly.xmin, min_range_x), max(poly.xmax, max_range_x), resolution),
+            alg.linspace(min(poly.ymin, min_range_y), max(poly.ymax, max_range_y), resolution)
         ):
             in_space = False
             if spaces:
@@ -459,32 +450,43 @@ def cie_diagram(
                         break
 
             if poly.contains(r):
-                xy = convert_chromaticity(r, opt)
                 if in_space:
-                    cx.append(xy[0])
-                    cy.append(xy[1])
+                    cx.append(r[0])
+                    cy.append(r[1])
                 else:
-                    px.append(xy[0])
-                    py.append(xy[1])
+                    px.append(r[0])
+                    py.append(r[1])
 
-                srgb = Color.chromaticity(
-                    'srgb',
-                    r,
-                    opt.chromaticity,
-                    white=opt.white,
-                    scale=True,
-                    scale_space='srgb-linear',
-                    clip_negative=True,
-                    max_saturation=True
-                )
-                if in_space:
-                    cc.append(srgb.convert('srgb').to_string(hex=True, fit="clip"))
+                if opt.mode not in ('1931', '1960', '1976'):
+                    cs = Color.CS_MAP[opt.mode]
+                    values = [''] * 3
+                    l, a, b = cs.indexes()
+                    values[l] = '100%'
+                    values[a] = str(r[0])
+                    values[b] = str(r[1])
+                    srgb = Color(
+                        f'color({cs.SERIALIZE[0]} {values[0]} {values[1]} {values[2]})'
+                    ).convert('srgb', in_place=True)
+                    srgb.fit(method='scale', max_saturation=True, clip_negative=True)
                 else:
-                    c.append(srgb.convert('srgb').to_string(hex=True, fit="clip"))
+                    srgb = Color.chromaticity(
+                        'srgb',
+                        r,
+                        opt.chromaticity,
+                        white=opt.white,
+                        scale=True,
+                        scale_space='srgb-linear',
+                        clip_negative=True,
+                        max_saturation=True
+                    )
+                if in_space:
+                    cc.append(srgb.to_string(hex=True, fit="clip"))
+                else:
+                    c.append(srgb.to_string(hex=True, fit="clip"))
             elif in_space:
-                xy = convert_chromaticity(r, opt)
-                cx.append(xy[0])
-                cy.append(xy[1])
+                # xy = convert_chromaticity(r, opt)
+                cx.append(r[0])
+                cy.append(r[1])
                 cc.append('#888888')
 
         # Visible spectrum fill
@@ -507,13 +509,10 @@ def cie_diagram(
                 showlegend=False
             ))
 
-    for i in range(len(xs)):
-        xs[i], ys[i] = convert_chromaticity((xs[i], ys[i]), opt)
-
     # Spectral Locus
     fig.add_traces(data=go.Scatter(
-        x=xs,
-        y=ys,
+        x=poly.x,
+        y=poly.y,
         mode='lines',
         line={'color': opt.locus_line_color if colorize else opt.default_color, 'width': 2},
         showlegend=False,
@@ -556,16 +555,16 @@ def cie_diagram(
     for item in spaces:
         # Shadow effect
         fig.add_traces(data=go.Scatter(
-            x=[i + 0.0012 for i in item[5]],
-            y=[i - 0.0012 for i in item[6]],
+            x=[i + 0.0012 for i in item[4].x],
+            y=[i - 0.0012 for i in item[4].y],
             mode='lines',
             line={'color': opt.locus_line_color, 'width': 5},
             opacity=0.3,
             showlegend=False
         ))
         fig.add_traces(data=go.Scatter(
-            x=item[5],
-            y=item[6],
+            x=item[4].x,
+            y=item[4].y,
             mode='lines',
             name=item[3],
             line={'color': item[2], 'width': 4},
