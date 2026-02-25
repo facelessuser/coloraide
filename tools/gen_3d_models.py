@@ -69,7 +69,7 @@ models = {
     'lchuv': {'title': TEMPLATE.format('LChuv'), 'filename': 'lchuv-3d.png', 'azim': 300},
     'luv': {'title': TEMPLATE.format('CIELuv'), 'filename': 'luv-3d.png'},
     'macadam-limits': {
-        'title': "Rösch–MacAdam Solid ", 'filename': 'macadam-limits-3d.png', 'space': 'xyy',
+        'title': "Rösch-MacAdam Solid", 'filename': 'macadam-limits-3d.png', 'space': 'xyy',
         'gamut': 'macadam-limits', 'azim': -100
     },
     'msh': {'title': TEMPLATE.format('Msh'), 'filename': 'msh-3d.png'},
