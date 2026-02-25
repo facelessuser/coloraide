@@ -68,6 +68,10 @@ models = {
     'lch99o': {'title': TEMPLATE.format('DIN99o LCh'), 'filename': 'lch99o-3d.png', 'azim': 300},
     'lchuv': {'title': TEMPLATE.format('LChuv'), 'filename': 'lchuv-3d.png', 'azim': 300},
     'luv': {'title': TEMPLATE.format('CIELuv'), 'filename': 'luv-3d.png'},
+    'macadam-limits': {
+        'title': "Rösch–MacAdam Solid ", 'filename': 'macadam-limits-3d.png', 'space': 'xyy',
+        'gamut': 'macadam-limits', 'azim': -100
+    },
     'msh': {'title': TEMPLATE.format('Msh'), 'filename': 'msh-3d.png'},
     'okhsl': {'title': 'Okhsl Color Space', 'filename': 'okhsl-3d.png'},
     'okhsv': {'title': 'Okhsv Color Space', 'filename': 'okhsv-3d.png'},
@@ -76,8 +80,9 @@ models = {
     'oklrab': {'title': TEMPLATE.format('Oklrab'), 'filename': 'oklrab-3d.png'},
     'oklrch': {'title': TEMPLATE.format('OkLrCh'), 'filename': 'oklrch-3d.png', 'azim': 300},
     'orgb': {'title': TEMPLATE.format('oRGB'), 'filename': 'orgb-3d.png', 'azim': -90, 'elev': 80},
-    'pointer': {
-        'title': "Pointer's Gamut Plotted in Luv", 'filename': 'pointer-3d.png', 'space': 'luv', 'gamut': 'pointer'
+    'pointer-gamut': {
+        'title': "Pointer's Gamut Plotted in Luv", 'filename': 'pointer-3d.png', 'space': 'luv',
+        'gamut': 'pointer-gamut'
     },
     'rlab': {'title': TEMPLATE.format('RLAB'), 'filename': 'rlab-3d.png'},
     'ryb': {'title': 'RYB Color Space', 'filename': 'ryb-3d.png', 'gamut': 'ryb'},
