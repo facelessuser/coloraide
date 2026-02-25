@@ -91,11 +91,12 @@ def convert_chromaticity(xy, opt):
     return color[opt.viewed_chromaticity_names[0]], color[opt.viewed_chromaticity_names[1]]
 
 
-def get_spectral_locus_labels(opt):
+def get_spectral_locus_labels(opt, poly):
     """Get the spectral locus wavelength labels."""
 
-    distance = opt.label_distance
-    standard = opt.viewed_chromaticity == opt.chromaticity
+    deltax = (poly.xmax - poly.xmin)
+    deltay = (poly.ymax - poly.ymin)
+    distance = ((deltax + deltay) / 2) * 0.05
 
     annotations = []
     for wave in sorted(opt.spectral_locus_labels):
@@ -128,7 +129,7 @@ def get_spectral_locus_labels(opt):
         dx = 1.0 / length
         dy = m / length
 
-        noadjust = not standard or wave < 695
+        noadjust = wave < 695
 
         # Values really close to 700 extend past the normal locus part and cause the orientation to be off,
         # so we force values greater than 695 to orient in sanely.
@@ -250,22 +251,18 @@ class DiagramOptions:
             self.spectral_locus_labels = labels_1931
             self.axis_labels = ('CIE x', 'CIE y')
             self.title = "CIE 1931 Chromaticy Diagram - 2˚ Degree Standard Observer"
-            self.label_distance = 0.04
         elif mode == "1976":
             self.spectral_locus_labels = labels_1960
             self.axis_labels = ("CIE u'", "CIE v'")
             self.title = "CIE 1976 UCS Chromaticity Diagram - 2˚ Degree Standard Observer"
-            self.label_distance = 0.03
         elif mode == '1960':
             self.spectral_locus_labels = labels_1960
             self.axis_labels = ('CIE u', 'CIE v')
             self.title = "CIE 1960 UCS Chromaticity Diagram - 2˚ Degree Standard Observer"
-            self.label_distance = 0.02
         else:
             self.spectral_locus_labels = labels_1960
             self.axis_labels = self.viewed_chromaticity_names if not self.polar else ['a', 'b']
             self.title = f"CIE {mode} Chromaticity Diagram - 2˚ Degree Standard Observer"
-            self.label_distance = 0.05
 
         self.cct = 'ohno-2013'
 
@@ -318,11 +315,15 @@ def cie_diagram(
         xy = Color.convert_chromaticity('xy-1931', opt.chromaticity, xy)[:-1]
         xys.append(xy)
 
-    annotations = get_spectral_locus_labels(opt)
-
     # Draw the bottom purple line
     interp = alg.interpolate([xys[-1], xys[0]])
     xys.extend([interp(i / 50) for i in range(1, 51)])
+
+    # Create the polygon representing the locus
+    poly = Polygon(*zip(*[convert_chromaticity(r, opt) for r in xys]))
+
+    # Create wavelength labels
+    annotations = get_spectral_locus_labels(opt, poly)
 
     spaces = []
 
