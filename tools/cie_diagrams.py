@@ -19,7 +19,7 @@ from coloraide import algebra as alg  # noqa: E402
 from coloraide.temperature import ohno_2013  # noqa: E402
 from coloraide import cmfs  # noqa: E402
 from coloraide import gamut  # noqa: E402
-from coloraide.spaces import Labish
+from coloraide.spaces import Labish, LChish
 
 ALL_WHITES = copy.deepcopy(WHITES)
 ALL_WHITES['2deg']['D60'] = ColorAll.CS_MAP['aces2065-1'].WHITE
@@ -86,6 +86,8 @@ def convert_chromaticity(xy, opt):
         opt.chromaticity,
         white=opt.white
     )
+    if opt.polar:
+        return alg.polar_to_rect(color[opt.viewed_chromaticity_names[0]], color[opt.viewed_chromaticity_names[1]])
     return color[opt.viewed_chromaticity_names[0]], color[opt.viewed_chromaticity_names[1]]
 
 
@@ -219,15 +221,21 @@ class DiagramOptions:
 
         self.observer = cmfs.CIE_1931_2DEG
         self.white = ALL_WHITES['2deg']['D65']
+        self.polar = False
 
         self.viewed_chromaticity = None
         if mode not in ('1931', '1960', '1976'):
             if ColorAll.CS_MAP.get(mode):
                 cs = ColorAll.CS_MAP[mode]
-                if isinstance(ColorAll.CS_MAP[mode], Labish):
+                if isinstance(cs, Labish):
                     self.chromaticity = 'xy-1931'
                     self.viewed_chromaticity = mode
                     self.viewed_chromaticity_names = cs.names()[1:]
+                elif isinstance(cs, LChish):
+                    self.chromaticity = 'xy-1931'
+                    self.viewed_chromaticity = mode
+                    self.viewed_chromaticity_names = cs.names()[1:]
+                    self.polar = True
             if self.viewed_chromaticity is None:
                 raise ValueError(f"Unrecognized 'mode': {mode}")
         else:
@@ -255,7 +263,7 @@ class DiagramOptions:
             self.label_distance = 0.02
         else:
             self.spectral_locus_labels = labels_1960
-            self.axis_labels = self.viewed_chromaticity_names
+            self.axis_labels = self.viewed_chromaticity_names if not self.polar else ['a', 'b']
             self.title = f"CIE {mode} Chromaticity Diagram - 2˚ Degree Standard Observer"
             self.label_distance = 0.05
 
@@ -462,8 +470,13 @@ def cie_diagram(
                     values = [''] * 3
                     l, a, b = cs.indexes()
                     values[l] = '100%'
-                    values[a] = str(r[0])
-                    values[b] = str(r[1])
+                    if opt.polar:
+                        chroma, hue = alg.rect_to_polar(r[0], r[1])
+                        values[a] = str(chroma)
+                        values[b] = str(hue)
+                    else:
+                        values[a] = str(r[0])
+                        values[b] = str(r[1])
                     srgb = Color(
                         f'color({cs.SERIALIZE[0]} {values[0]} {values[1]} {values[2]})'
                     ).convert('srgb', in_place=True)
