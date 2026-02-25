@@ -701,6 +701,7 @@ def cie_diagram(
             temp, duv = (float(v) for v in value.split(':'))
             c = Color.blackbody('xyz-d65', temp, duv, scale=False, method=opt.cct)
             bu, bv = c.split_chromaticity(opt.chromaticity, white=opt.white)[:-1]
+            bu, bv = convert_chromaticity((bu, bv), opt)
             annot.append(f'({round(bu, 4)}, {round(bv, 4)})')
             bx.append(bu)
             by.append(bv)
@@ -747,6 +748,7 @@ def cie_diagram(
                 for duv in duv_range:
                     c = Color.blackbody('xyz-d65', kelvin, duv, scale=False, method=opt.cct)
                     bu, bv = c.split_chromaticity(opt.chromaticity, white=opt.white)[:-1]
+                    bu, bv = convert_chromaticity((bu, bv), opt)
                     duvx.append(bu)
                     duvy.append(bv)
 
@@ -773,7 +775,6 @@ def cie_diagram(
                     showarrow=False
                 )
 
-                duvx, duvy = [*zip(*[convert_chromaticity((bu, bv), opt) for bu, bv in zip(duvx, duvy)])]
                 fig.add_traces(data=go.Scatter(
                     x=duvx,
                     y=duvy,
