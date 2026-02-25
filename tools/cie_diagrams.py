@@ -74,12 +74,6 @@ class Color(ColorAll):
     """Custom class for Pointer conversion."""
 
 
-def get_spline(x, y, steps=100):
-    """Get spline."""
-
-    return tuple([*i] for i in zip(*alg.interpolate([*zip(x, y)], method='catrom').steps(steps)))
-
-
 def convert_chromaticity(xy, opt):
     """Convert chromaticities."""
 
@@ -148,7 +142,7 @@ def get_spectral_locus_labels(opt):
     return annotations
 
 
-class Polygon2D:
+class Polygon:
     """2D Polygon."""
 
     def __init__(self, x, y):
@@ -181,23 +175,33 @@ class Polygon2D:
         """
 
         px, py = p
+
         # If point is outside the the bounding box, it is not in the 2D polygon.
         if px > self.xmax or px < self.xmin or py > self.ymax or py < self.ymin:
             return False
 
         winding = 0
+        # Get the previous vertex
+        ax = self.x[0]
+        ay = self.y[0]
         for i in range(1, self.length):
-            # Get the previous and and current vertex
-            j = i - 1
-            ax, ay = self.x[j], self.y[j]
-            bx, by = self.x[i], self.y[i]
+            # Get the current vertex
+            bx = self.x[i]
+            by = self.y[i]
 
+            # Check if crossing
             if ay <= py:
                 if by > py and ((bx - ax) * (py - ay) - (px - ax) * (by - ay)) > 0:
                     winding += 1
             elif by <= py and ((bx - ax) * (py - ay) - (px - ax) * (by - ay)) < 0:
-                winding -= 1
-        return winding != 0
+                winding += 1
+
+            # Current is now previous
+            ax = bx
+            ay = by
+
+        # If odd, we are inside
+        return bool(winding & 1)
 
 
 class DiagramOptions:
@@ -302,7 +306,7 @@ def cie_diagram(
     annotations = []
 
     # Get points for the spectral locus
-    for r in alg.linspace(360, 780, int(len(opt.observer) * 1.5)):
+    for r in alg.linspace(360, 780, len(opt.observer)):
         xy = opt.observer.xy(r)
         x, y = Color.convert_chromaticity('xy-1931', opt.chromaticity, xy)[:-1]
         xs.append(x)
@@ -353,7 +357,7 @@ def cie_diagram(
                     sy,
                     color,
                     label,
-                    Polygon2D(sx, sy),
+                    Polygon(sx, sy),
                     _x,
                     _y
                 )
@@ -387,7 +391,7 @@ def cie_diagram(
                     sy,
                     color,
                     label,
-                    Polygon2D(sx, sy),
+                    Polygon(sx, sy),
                     _x,
                     _y
                 )
@@ -414,7 +418,7 @@ def cie_diagram(
                     sy,
                     color,
                     space,
-                    Polygon2D(sx, sy),
+                    Polygon(sx, sy),
                     xy[0],
                     xy[1]
                 )
@@ -428,7 +432,7 @@ def cie_diagram(
         cx = []
         cy = []
         cc = []
-        poly = Polygon2D(xs, ys)
+        poly = Polygon(xs, ys)
         min_range_x = float('inf')
         min_range_y = float('inf')
         max_range_x = float('-inf')
@@ -766,7 +770,9 @@ def cie_diagram(
                     opacity=0.5
                 ))
 
-        uaxis, vaxis = get_spline(uaxis, vaxis, len(uaxis) * 3)
+        uaxis, vaxis = zip(
+            *alg.interpolate([[i, j] for i, j in zip(uaxis, vaxis)], method='sprague').steps(len(uaxis) * 3)
+        )
         fig.add_traces(data=go.Scatter(
             x=uaxis,
             y=vaxis,
