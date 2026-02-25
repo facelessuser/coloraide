@@ -75,8 +75,8 @@ class Lab(Labish, Space):
 
     CHANNELS = (
         Channel("l", 0.0, 1.0),
-        Channel("a", 1.0, 1.0, flags=FLG_MIRROR_PERCENT),
-        Channel("b", 1.0, 1.0, flags=FLG_MIRROR_PERCENT)
+        Channel("a", -1.0, 1.0, flags=FLG_MIRROR_PERCENT),
+        Channel("b", -1.0, 1.0, flags=FLG_MIRROR_PERCENT)
     )
     CHANNEL_ALIASES = {
         "lightness": "l"
