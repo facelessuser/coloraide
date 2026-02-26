@@ -4,8 +4,8 @@ import os
 
 sys.path.insert(0, os.getcwd())
 
-from coloraide import util  # noqa: E402
-from coloraide import algebra as alg  # noqa: E402
+from coloraide import util
+from coloraide import algebra as alg
 
 white_d65 = util.xy_to_xyz((0.31270, 0.32900))
 white_d50 = util.xy_to_xyz((0.34570, 0.35850))

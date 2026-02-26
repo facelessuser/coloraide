@@ -42,7 +42,7 @@ import os
 sys.path.insert(0, os.getcwd())
 
 # Use higher precision Oklab conversion matrix along with LMS matrix with our exact white point
-from tools.calc_oklab_matrices import SRGBL_TO_LMS, LMS_TO_SRGBL, LMS3_TO_OKLAB, OKLAB_TO_LMS3, XYZ_TO_LMS # noqa: E402
+from tools.calc_oklab_matrices import SRGBL_TO_LMS, LMS_TO_SRGBL, LMS3_TO_OKLAB, OKLAB_TO_LMS3, XYZ_TO_LMS
 
 PRINT_DIAGS = False
 GAMUT = 'srgb'

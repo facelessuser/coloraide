@@ -15,9 +15,9 @@ try:
 except ImportError:
     from coloraide.everything import ColorAll as Color
 from coloraide.channels import ANGLE_DEG
-from coloraide.spaces import HSLish, HSVish, HWBish, Labish, LChish, RGBish  # noqa: E402
-from coloraide import algebra as alg  # noqa: E402
-from coloraide.color import POSTFIX  # noqa: E402
+from coloraide.spaces import HSLish, HSVish, HWBish, Labish, LChish, RGBish
+from coloraide import algebra as alg
+from coloraide.color import POSTFIX
 from coloraide.gamut import pointer, visible_spectrum, SPECIAL_GAMUTS
 
 FORCE_OWN_GAMUT = {'ryb', 'ryb-biased'}

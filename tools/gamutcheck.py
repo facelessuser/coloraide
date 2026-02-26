@@ -6,7 +6,7 @@ import itertools as it
 
 sys.path.insert(0, os.getcwd())
 
-from coloraide.everything import ColorAll as Color  # noqa: E402
+from coloraide.everything import ColorAll as Color
 
 
 def run(gamut, space, max_chroma, adaptive, calc_near):

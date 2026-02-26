@@ -26,9 +26,9 @@ try:
     from coloraide_extras.everything import ColorAll as Color
 except ImportError:
     from coloraide.everything import ColorAll as Color
-from coloraide import NaN  # noqa: E402
-from coloraide.util import fmt_float  # noqa: E402
-from coloraide.spaces import LChish  # noqa: E402
+from coloraide import NaN
+from coloraide.util import fmt_float
+from coloraide.spaces import LChish
 
 
 def ignore_LCh_high_chroma_black(color):

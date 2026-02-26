@@ -4,8 +4,8 @@ import os
 
 sys.path.insert(0, os.getcwd())
 
-from coloraide import algebra as alg  # noqa: E402
-from coloraide import Color  # noqa: E402
+from coloraide import algebra as alg
+from coloraide import Color
 
 # Smith & Pokorny (1975) 2-deg cone fundamentals
 M = [

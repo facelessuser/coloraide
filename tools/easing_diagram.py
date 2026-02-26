@@ -8,7 +8,7 @@ import plotly.io as io
 
 sys.path.insert(0, os.getcwd())
 
-from coloraide import easing  # noqa: E402
+from coloraide import easing
 
 RE_BEZIER = re.compile(
     r'''(?x)

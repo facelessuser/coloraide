@@ -133,8 +133,8 @@ import struct
 
 sys.path.insert(0, os.getcwd())
 
-import tools.calc_xyz_transform as xyzt  # noqa: E402
-from coloraide import algebra as alg  # noqa: E402
+import tools.calc_xyz_transform as xyzt
+from coloraide import algebra as alg
 
 
 float32 = alg.vectorize(lambda value: struct.unpack('f', struct.pack('f', value))[0])

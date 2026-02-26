@@ -12,11 +12,11 @@ import plotly.io as io
 
 sys.path.insert(0, os.getcwd())
 
-from coloraide import gamut  # noqa: E402
-from coloraide import algebra as alg  # noqa: E402
-from coloraide.everything import ColorAll  # noqa: E402
-from coloraide.spaces.lch import LCh  # noqa: E402
-from coloraide.spaces.lab import Lab  # noqa: E402
+from coloraide import gamut
+from coloraide import algebra as alg
+from coloraide.everything import ColorAll
+from coloraide.spaces.lch import LCh
+from coloraide.spaces.lab import Lab
 
 
 class LabPointer(Lab):

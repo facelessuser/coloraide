@@ -4,7 +4,7 @@ import os
 
 sys.path.insert(0, os.getcwd())
 
-from coloraide import algebra as alg  # noqa: E402
+from coloraide import algebra as alg
 
 m1 = [
     [0.41478972, 0.579999, 0.0146480],

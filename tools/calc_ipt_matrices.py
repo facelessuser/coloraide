@@ -8,8 +8,8 @@ import os
 
 sys.path.insert(0, os.getcwd())
 
-from tools.calc_xyz_transform import white_d65  # noqa: E402
-from coloraide import algebra as alg  # noqa: E402
+from tools.calc_xyz_transform import white_d65
+from coloraide import algebra as alg
 
 # IPT provides 2 matrices, the forward and reverse transform.
 # These matrices are given at 16 bit accuracy. If the forward

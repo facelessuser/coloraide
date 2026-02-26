@@ -14,10 +14,10 @@ try:
     from coloraide_extras.everything import ColorAll as Color
 except ImportError:
     from coloraide.everything import ColorAll as Color
-from coloraide.cat import WHITES  # noqa: E402
-from coloraide import algebra as alg  # noqa: E402
-from coloraide import cmfs  # noqa: E402
-from coloraide import gamut  # noqa: E402
+from coloraide.cat import WHITES
+from coloraide import algebra as alg
+from coloraide import cmfs
+from coloraide import gamut
 from coloraide.spaces import Labish, LChish
 
 ALL_WHITES = copy.deepcopy(WHITES)

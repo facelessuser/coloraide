@@ -13,11 +13,11 @@ try:
     from coloraide_extras.everything import ColorAll as Color
 except ImportError:
     from coloraide.everything import ColorAll as Color
-from coloraide.util import fmt_float  # noqa: E402
-from coloraide.spaces import LChish, Luminant, Prism, Labish, HSLish, HSVish  # noqa: E402
-from coloraide.spaces.hsl import HSL  # noqa: E402
-from coloraide.spaces.lch import LCh  # noqa: E402
-from coloraide import algebra as alg  # noqa: E402
+from coloraide.util import fmt_float
+from coloraide.spaces import LChish, Luminant, Prism, Labish, HSLish, HSVish
+from coloraide.spaces.hsl import HSL
+from coloraide.spaces.lch import LCh
+from coloraide import algebra as alg
 
 
 class _LCh(LCh):

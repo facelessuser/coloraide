@@ -5,9 +5,9 @@ import numpy as np
 
 sys.path.insert(0, os.getcwd())
 
-from coloraide.everything import ColorAll as Color  # noqa: E402
-from coloraide.spaces import cam16  # noqa: E402
-from coloraide.spaces import hct  # noqa: E402
+from coloraide.everything import ColorAll as Color
+from coloraide.spaces import cam16
+from coloraide.spaces import hct
 
 env = hct.HCT.ENV
 

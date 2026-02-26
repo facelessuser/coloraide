@@ -5,7 +5,7 @@ import argparse
 
 sys.path.insert(0, os.getcwd())
 
-import tools.gamut_3d_plotly as diagrams  # noqa: E402
+import tools.gamut_3d_plotly as diagrams
 
 LOCATION = 'docs/src/markdown/images'
 TEMPLATE = 'sRGB Gamut Plotted in {} Color Space'

@@ -8,8 +8,8 @@ import os
 
 sys.path.insert(0, os.getcwd())
 
-from coloraide import algebra as alg  # noqa: E402
-import tools.calc_xyz_transform as xyzt  # noqa: E402
+from coloraide import algebra as alg
+import tools.calc_xyz_transform as xyzt
 
 
 RGB_TO_XYZ, XYZ_TO_RGB = xyzt.get_matrix(xyzt.white_d65, 'rec2020')

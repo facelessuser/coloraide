@@ -16,8 +16,8 @@ try:
     from coloraide_extras.everything import ColorAll as Color
 except ImportError:
     from coloraide.everything import ColorAll as Color
-from tools.slice_diagram import plot_slice  # noqa: E402
-from coloraide import algebra as alg  # noqa: E402
+from tools.slice_diagram import plot_slice
+from coloraide import algebra as alg
 
 
 def get_spline(x, y, steps=100):

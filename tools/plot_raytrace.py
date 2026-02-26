@@ -8,11 +8,11 @@ import json
 
 sys.path.insert(0, os.getcwd())
 
-import tools.gamut_3d_plotly as plt3d  # noqa: E402
-from coloraide.gamut import fit_raytrace as fit, clip_channels  # noqa: E402
-from coloraide.everything import ColorAll as Color  # noqa: E402
-from coloraide import algebra as alg  # noqa: E402
-from coloraide.channels import ANGLE_DEG  # noqa: E402
+import tools.gamut_3d_plotly as plt3d
+from coloraide.gamut import fit_raytrace as fit, clip_channels
+from coloraide.everything import ColorAll as Color
+from coloraide import algebra as alg
+from coloraide.channels import ANGLE_DEG
 
 
 def raytrace(args):
