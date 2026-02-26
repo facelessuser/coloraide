@@ -11,18 +11,17 @@ import math
 sys.path.insert(0, os.getcwd())
 
 try:
-    from coloraide_extras.everything import ColorAll
+    from coloraide_extras.everything import ColorAll as Color
 except ImportError:
-    from coloraide.everything import ColorAll
+    from coloraide.everything import ColorAll as Color
 from coloraide.cat import WHITES  # noqa: E402
 from coloraide import algebra as alg  # noqa: E402
-from coloraide.temperature import ohno_2013  # noqa: E402
 from coloraide import cmfs  # noqa: E402
 from coloraide import gamut  # noqa: E402
 from coloraide.spaces import Labish, LChish
 
 ALL_WHITES = copy.deepcopy(WHITES)
-ALL_WHITES['2deg']['D60'] = ColorAll.CS_MAP['aces2065-1'].WHITE
+ALL_WHITES['2deg']['D60'] = Color.CS_MAP['aces2065-1'].WHITE
 
 # Pick some arbitrary labels to display.
 labels_1931 = [
@@ -70,17 +69,13 @@ labels_1960 = [
 ISOTHERMS = {100000, 10000, 6000, 4000, 3000, 2000, 1500, 1000}
 
 
-class Color(ColorAll):
-    """Custom class for Pointer conversion."""
-
-
 def convert_chromaticity(xy, opt):
     """Convert chromaticities."""
 
     if opt.viewed_chromaticity == opt.chromaticity:
         return xy
 
-    color = ColorAll.chromaticity(
+    color = Color.chromaticity(
         opt.viewed_chromaticity,
         xy,
         opt.chromaticity,
@@ -101,15 +96,15 @@ def get_spectral_locus_labels(opt, poly):
     annotations = []
     for wave in sorted(opt.spectral_locus_labels):
         x, y = convert_chromaticity(
-            ColorAll.convert_chromaticity('xy-1931', opt.chromaticity, opt.observer.xy(wave))[:-1],
+            Color.convert_chromaticity('xy-1931', opt.chromaticity, opt.observer.xy(wave))[:-1],
             opt
         )
         x1, y1 = convert_chromaticity(
-            ColorAll.convert_chromaticity('xy-1931', opt.chromaticity, opt.observer.xy(wave - 0.05))[:-1],
+            Color.convert_chromaticity('xy-1931', opt.chromaticity, opt.observer.xy(wave - 0.05))[:-1],
             opt
         )
         x2, y2 = convert_chromaticity(
-            ColorAll.convert_chromaticity('xy-1931', opt.chromaticity, opt.observer.xy(wave + 0.05))[:-1],
+            Color.convert_chromaticity('xy-1931', opt.chromaticity, opt.observer.xy(wave + 0.05))[:-1],
             opt
         )
 
@@ -129,15 +124,22 @@ def get_spectral_locus_labels(opt, poly):
         dx = 1.0 / length
         dy = m / length
 
-        noadjust = wave < 695
+        # We only use 700 in the 1931 diagram, and it wraps back in on itself.
+        # It will be placed on the left, which isn't wrong, but not visually expected.
+        # Prevent this so it stays on the right side.
+        adjust = wave != 700
 
-        # Values really close to 700 extend past the normal locus part and cause the orientation to be off,
-        # so we force values greater than 695 to orient in sanely.
-        x0 = x + dx * (-distance if ((m >= 0 and not dirx) or (m < 0 and dirx and diry)) and noadjust else distance)
-        y0 = y + dy * (-distance if ((m >= 0 and diry) or (m < 0 and diry)) and noadjust else distance)
+        # Calculate sign
+        sx = (-1 if ((m >= 0 and not dirx) or (m < 0 and dirx)) and adjust else 1)
+        sy = (-1 if ((m >= 0 and diry) or (m < 0 and diry)) and adjust else 1)
 
-        rotate = math.degrees(math.atan2(y0 - y, x0 - x)) % 360
-        if rotate > 150:
+        # Apply offset
+        x0 = x + dx * distance * sx
+        y0 = y + dy * distance * sy
+
+        # Rotate text
+        rotate = math.degrees(math.atan2(dy, dx)) % 360
+        if 90 <= rotate <= 270:
             rotate += 180
             rotate %= 360
 
@@ -226,8 +228,8 @@ class DiagramOptions:
 
         self.viewed_chromaticity = None
         if mode not in ('1931', '1960', '1976'):
-            if ColorAll.CS_MAP.get(mode):
-                cs = ColorAll.CS_MAP[mode]
+            if Color.CS_MAP.get(mode):
+                cs = Color.CS_MAP[mode]
                 if isinstance(cs, Labish):
                     self.chromaticity = 'xy-1931'
                     self.viewed_chromaticity = mode
@@ -264,7 +266,7 @@ class DiagramOptions:
             self.axis_labels = self.viewed_chromaticity_names if not self.polar else ['a', 'b']
             self.title = f"CIE {mode} Chromaticity Diagram - 2˚ Degree Standard Observer"
 
-        self.cct = 'ohno-2013'
+        self.cct = 'robertson-1968'
 
         if title:
             self.title = title
@@ -301,26 +303,21 @@ def cie_diagram(
     if isotherms:
         black_body = True
 
-    class Color(ColorAll):
-        ...
-
-    Color.register([ohno_2013.Ohno2013(opt.observer, opt.white)], overwrite=True)
-
-    xys =[]
+    locus =[]
     annotations = []
 
     # Get points for the spectral locus
-    for r in alg.linspace(360, 780, len(opt.observer)):
+    for r in alg.linspace(opt.observer.start, opt.observer.end, len(opt.observer)):
         xy = opt.observer.xy(r)
         xy = Color.convert_chromaticity('xy-1931', opt.chromaticity, xy)[:-1]
-        xys.append(xy)
+        locus.append(xy)
 
     # Draw the bottom purple line
-    interp = alg.interpolate([xys[-1], xys[0]])
-    xys.extend([interp(i / 50) for i in range(1, 51)])
+    interp = alg.interpolate([locus[-1], locus[0]])
+    locus.extend([interp(i / 50) for i in range(1, 51)])
 
     # Create the polygon representing the locus
-    poly = Polygon(*zip(*[convert_chromaticity(r, opt) for r in xys]))
+    poly = Polygon(*zip(*[convert_chromaticity(r, opt) for r in locus]))
 
     # Create wavelength labels
     annotations = get_spectral_locus_labels(opt, poly)
@@ -425,7 +422,6 @@ def cie_diagram(
             )
 
     # Generate fill colors for inside the spectral locus
-    poly = Polygon(*zip(*[convert_chromaticity(r, opt) for r in xys]))
     if colorize:
         px = []
         py = []
@@ -523,7 +519,7 @@ def cie_diagram(
                 showlegend=False
             ))
 
-    # Spectral Locus
+    # Spectral Locus line
     fig.add_traces(data=go.Scatter(
         x=poly.x,
         y=poly.y,
@@ -533,8 +529,8 @@ def cie_diagram(
         opacity=0.5
     ))
 
+    # Add labels
     if label_opacity > 0:
-        # Label points
         lx = []
         ly = []
         for annotate in annotations:
@@ -752,25 +748,38 @@ def cie_diagram(
                     duvx.append(bu)
                     duvy.append(bv)
 
-                bottom = kelvin < 4000
                 label = f'{kelvin}K' if kelvin != 100000 else '∞'
-                rotate = 0 - (math.degrees(math.atan2(duvy[-1] - duvy[0], duvx[-1] - duvx[0])) % 360)
-                offset = duv_range[0 if bottom else 1] / 2
+                rotate = math.degrees(math.atan2(duvy[-1] - duvy[0], duvx[-1] - duvx[0])) % 360
+
+                # Place temp labels on the positive half of the Duv line.
+                offset = duv_range[1] / 2
                 c = Color.blackbody('xyz-d65', kelvin, offset, scale=False, method=opt.cct)
                 bu, bv = c.split_chromaticity(opt.chromaticity, white=opt.white)[:-1]
 
+                # Calculate offset of labels
                 ax, ay = convert_chromaticity([bu, bv], opt)
-                vert = [0, 0] if kelvin == 100000 else alg.polar_to_rect(-20 if bottom else 15, 0 - rotate)
-                horz = alg.polar_to_rect(6, 0 - rotate + 90)
-                label_offset = [vert[0] + horz[0], vert[1] + horz[1]]
+                lx, ly = alg.polar_to_rect(15, rotate) if kelvin != 100000 else alg.polar_to_rect(2, rotate + 180)
+                ls = alg.polar_to_rect(8, rotate + 90)
+                lx += ls[0]
+                ly += ls[1]
+
+                # Standard diagrams are known quantities, adjust labels to be
+                # consistent and readable. Non-standard ones we will just be
+                # consistent on how we rotate them just to prevent upside down labels.
+                if opt.mode in ('1960', '1976'):
+                    rotate += 180
+                elif opt.mode != '1931' and 90 <= rotate <= 270:
+                    rotate += 180
+                    rotate %= 360
+
                 fig.add_annotation(
                     text=label,
                     x=ax,
                     y=ay,
-                    xshift=label_offset[0],
-                    yshift=label_offset[1],
+                    xshift=lx,
+                    yshift=ly,
                     font={'size': 12},
-                    textangle=rotate,
+                    textangle=0 - rotate,
                     standoff=0,
                     showarrow=False
                 )
@@ -796,6 +805,7 @@ def cie_diagram(
             opacity=0.5
         ))
 
+    # Add legend of gamuts
     if overlay_legend and show_legend:
         fig.update_layout(legend={'x': 1, 'bgcolor': 'rgba(0,0,0,0)', 'xanchor': 'right', 'yanchor': 'top'})
 
