@@ -24,8 +24,8 @@ Approximate wavelengths of light.
 
 ## Estimate Dominant Wavelength of Color
 
-Colors are made up of certain frequencies of light, sometimes multiple if they are not a pure frequencies. In color
-science, colors can be classified by their dominant wavelength.
+Colors are made up of certain frequencies of light, sometimes multiple if they are not a pure frequency of light. In
+color science, colors can be classified by their dominant wavelength.
 
 Dominant wavelengths are acquired by drawing a line from the white point and the target color to the edge of the
 horseshoe shape of the spectrum. The intersection on that line would be the dominant wavelength. If the line was
