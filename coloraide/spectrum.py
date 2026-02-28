@@ -122,10 +122,10 @@ def closest_wavelength(
                 continue
 
             # Compare the interpolated angle with the actual angle
-            angle_diff = lambda f, a=i0, b=i, t=target: xy_to_angle(
-                cmfs.CIE_1931_2DEG.xy(alg.lerp(LOCUS_START + a, LOCUS_START + b, f)),
-                white,
-                start
+            angle_diff = lambda f, a=LOCUS_START + i0, b=LOCUS_START + i, t=target, w=white, s=start: xy_to_angle(
+                cmfs.CIE_1931_2DEG.xy(alg.lerp(a, b, f)),
+                w,
+                s
             ) - t
 
             # Linear interpolation of a non-linear curve will yield some offset from our current angle.
