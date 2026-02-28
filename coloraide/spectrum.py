@@ -109,33 +109,29 @@ def closest_wavelength(
     found = [False, False]
     for i in range(1, len(locus) - 2):
         # Get the next locus point angle
+        i0 = i - 1
+        p_next = xy_to_angle(locus[i0], white, start)
         a_next = xy_to_angle(locus[i], white, start)
 
         # Check if our angle is greater than the current locus point's angle
         for j in range(0, 2):
 
-            # If has already been found, skip
+            # If has already been found or we are not aligned with segment, skip
             target = invert if j else current
-            if a_next > target or found[j]:
+            if found[j] or a_next > target or target > p_next:
                 continue
 
-            # Previous index
-            i0 = i - 1
+            # Compare the interpolated angle with the actual angle
+            angle_diff = lambda f, a=i0, b=i, t=target: xy_to_angle(
+                cmfs.CIE_1931_2DEG.xy(alg.lerp(LOCUS_START + a, LOCUS_START + b, f)),
+                white,
+                start
+            ) - t
 
-            # Get the intersection
-            if target == a_next:
-                intersect = locus[i]  # type: Vector | None
-            elif target == xy_to_angle(locus[i0], white, start):
-                intersect = locus[i0]
-            else:
-                intersect = ray_line_intersect(white, xy, locus[i0], locus[i])
-            if intersect is None:  # pragma: no cover
-                continue
-
-            # Use the intersection to estimate the interpolation factor for the wavelength,
-            # and then get the interpolated value via Sprague interpolation.
-            i2 = 0 if abs(locus[i0][0] - locus[i][0]) > abs(locus[i0][1] - locus[i][1]) else 1
-            f = alg.ilerp(locus[i0][i2], locus[i][i2], intersect[i2])
+            # Linear interpolation of a non-linear curve will yield some offset from our current angle.
+            # While the angle is likely to be "good enough", we can do better.
+            # Go with the best approximation we can find.
+            f, _ = alg.solve_bisect(1, 0, angle_diff, start=alg.ilerp(p_next, a_next, target))
             w = alg.lerp(LOCUS_START + i0, LOCUS_START + i, f)
             intersect = util.xyz_to_xyY(cmfs.CIE_1931_2DEG[w], white)[:-1]
 

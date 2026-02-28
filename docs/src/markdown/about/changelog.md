@@ -3,6 +3,10 @@ icon: lucide/scroll-text
 ---
 # Changelog
 
+## 8.5.1
+
+-   **ENHANCE**: More accurate dominant wavelength calculations.
+
 ## 8.5
 
 -   **NEW**: Add `preserve_luminance` option to `scale` to allow for a luminance preserving version.
