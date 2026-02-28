@@ -1226,6 +1226,7 @@ class Color(metaclass=ColorMeta):
         space: str | None = None,
         out_space: str | None = None,
         premultiplied: bool = True,
+        carryforward: bool | None = False,
         **kwargs: Any
     ) -> Self:
         """Average the colors."""
@@ -1241,7 +1242,8 @@ class Color(metaclass=ColorMeta):
             colors,
             weights,
             space,
-            premultiplied
+            premultiplied,
+            carryforward if carryforward is not None else cls.CARRYFORWARD
         ).convert(out_space, in_place=True)
 
     def filter(  # noqa: A003

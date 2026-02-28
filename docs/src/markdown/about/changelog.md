@@ -3,8 +3,9 @@ icon: lucide/scroll-text
 ---
 # Changelog
 
-## 8.5.1
+## 8.6
 
+-   **NEW**: Add support for `carryforward` within `average()`.
 -   **ENHANCE**: More accurate dominant wavelength calculations.
 
 ## 8.5

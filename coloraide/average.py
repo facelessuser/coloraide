@@ -5,6 +5,7 @@ from . import util
 import itertools as it
 from .spaces import HWBish
 from .types import ColorInput, AnyColor
+from .interpolate import carryforward_convert
 from typing import Iterable
 
 
@@ -24,7 +25,8 @@ def average(
     colors: Iterable[ColorInput],
     weights: Iterable[float] | None,
     space: str,
-    premultiplied: bool = True
+    premultiplied: bool = True,
+    carryforward: bool = False
 ) -> AnyColor:
     """
     Average a list of colors together.
@@ -33,10 +35,9 @@ def average(
     """
 
     sentinel = Sentinel()
-    obj = color_cls(space, [])
 
     # Get channel information
-    cs = obj.CS_MAP[space]
+    cs = color_cls.CS_MAP[space]
     if cs.is_polar():
         hue_index = cs.hue_index()  # type: ignore[attr-defined]
         is_hwb = isinstance(cs, HWBish)
@@ -49,6 +50,8 @@ def average(
         hue_max = 0.0
         to_rad = 0.0
         to_hue = 0.0
+
+    obj = color_cls(space, [])
     channels = cs.channels
     chan_count = len(channels)
     avgs = [0.0] * chan_count
@@ -83,10 +86,15 @@ def average(
             elif w > mx:
                 mx = w
 
-        obj.update(c)  # type: ignore[arg-type]
-        # If cylindrical color is achromatic, ensure hue is undefined
-        if hue_index >= 0 and not math.isnan(obj[hue_index]) and obj.is_achromatic():
-            obj[hue_index] = math.nan
+        if carryforward:
+            obj.mutate(c)  # type: ignore[arg-type]
+            carryforward_convert(obj, space, hue_index, True)
+        else:
+            obj.update(c)  # type: ignore[arg-type]
+            # If cylindrical color is achromatic, ensure hue is undefined
+            if hue_index >= 0 and not math.isnan(obj[hue_index]) and obj.is_achromatic():
+                obj[hue_index] = math.nan
+
         coords = obj[:]
 
         # Average weights

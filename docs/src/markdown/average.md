@@ -64,6 +64,8 @@ It should be noted that when averaging colors with hues which are evenly distrib
 will produce an achromatic hue. When achromatic hues are produced during circular mean, the color will discard
 chroma/saturation information, producing an achromatic color.
 
+![Evenly Distributed Angles](images/avg-evenly-distributed.png)
+
 ```py play
 Color.average(['red', 'green', 'blue'], space='hsl')
 ```
@@ -157,12 +159,20 @@ Color.average(['hsl(30 0 100)', 'hsl(240 100 50 / 1)'], space='hsl')
 ```
 
 As stated earlier, undefined logic is applied to any channel with undefined values. It should be noted that no attempt
-to carry forward the undefined values through conversion is made at this time. If conversion is required, the
+to carry forward the undefined values through conversion is made by default. If conversion is required, the
 conversions will remove any undefined status unless the channel is an achromatic hues.
 
 ```py play
 for i in range(12):
     Color.average(['darkgreen', f'color(srgb 0 none 0 / {i / 11})', 'color(srgb 0 0 1)'])
+```
+
+If desired, `carryforward` can be enabled, and if possible, undefined values will be carried into the target color
+space.
+
+```py play
+for i in range(12):
+    Color.average(['darkgreen', f'color(srgb 0 none 0 / {i / 11})', 'color(srgb 0 0 1)'], carryforward=True)
 ```
 
 When `premultiplied` is enabled, premultiplication will not be applied to a color if its `alpha` is undefined as it is

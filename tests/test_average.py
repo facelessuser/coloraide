@@ -215,3 +215,17 @@ class TestAverage(util.ColorAsserts, unittest.TestCase):
         self.assertColorEqual(a, Color('color(srgb none none none / none)'), none=True)
         a = Color.average(['#ff0000', '#00ff00', '#ffff00', '#0000ff'], [0.0] * 4, space='hsl')
         self.assertColorEqual(a, Color('hsl(none none none / none)'), none=True)
+
+    def test_carryforward(self):
+        """Test carry forwarding."""
+
+        c = [
+            Color.average(['darkgreen', f'color(srgb 0 none 0 / {i / 11})', 'color(srgb 0 0 1)'], carryforward=True)
+            for i in range(12)
+        ]
+
+        self.assertColorEqual(c[0], Color('color(srgb-linear 0 0.09558 0.5 / 0.66667)'))
+        self.assertColorEqual(c[3], Color('color(srgb-linear 0 0.08411 0.44 / 0.75758)'))
+        self.assertColorEqual(c[6], Color('color(srgb-linear 0 0.0751 0.39286 / 0.84848)'))
+        self.assertColorEqual(c[9], Color('color(srgb-linear 0 0.06783 0.35484 / 0.93939)'))
+        self.assertColorEqual(c[11], Color('color(srgb-linear 0 0.06372 0.33333)'))
