@@ -12,12 +12,12 @@ class CMFs:
     def __init__(self, cmfs: dict[float, Vector], /, interpolator: str = 'sprague'):
         """Initialize and capture attributes of CMF."""
 
-        keys = list(cmfs.keys())
+        self._cmfs = cmfs
+        keys = list(self.keys())
         self.start = int(keys[0])
         self.end = int(keys[-1])
-        self.step = round((self.end - self.start) / (len(keys) - 1))
-        self.spline = alg.interpolate(list(cmfs.values()), method=interpolator, domain=[self.start, self.end])
-        self._cmfs = cmfs
+        self.step = round((self.end - self.start) / (len(self) - 1))
+        self.spline = alg.interpolate(list(self.values()), method=interpolator, domain=[self.start, self.end])
 
     def __len__(self) -> int:
         """Length."""
@@ -31,17 +31,17 @@ class CMFs:
     def __getitem__(self, key: float) -> Vector:
         """Get item: `namespace['key']`."""
 
-        value = self._cmfs.get(key)
+        value = self.get(key)
         if value is not None:
             return value[:]
         return self.spline(key)
 
-    def get(self, key: float, default: None = None) -> Vector | None:  # pragma: no cover
+    def get(self, key: float, default: None = None) -> Vector | None:
         """Get the value at the specified wavelength."""
 
         return self._cmfs.get(key, default)
 
-    def values(self) -> dict_values[float, Vector]:  # pragma: no cover
+    def values(self) -> dict_values[float, Vector]:
         """Get the value at the specified wavelength."""
 
         return self._cmfs.values()
@@ -51,7 +51,7 @@ class CMFs:
 
         return self._cmfs.items()
 
-    def keys(self) -> dict_keys[float, Vector]:  # pragma: no cover
+    def keys(self) -> dict_keys[float, Vector]:
         """Get the value at the specified wavelength."""
 
         return self._cmfs.keys()
