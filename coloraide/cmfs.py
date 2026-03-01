@@ -19,6 +19,11 @@ class CMFs:
         self.spline = alg.interpolate(list(cmfs.values()), method=interpolator, domain=[self.start, self.end])
         self._cmfs = cmfs
 
+    def __len__(self) -> int:
+        """Length."""
+
+        return len(self._cmfs)
+
     def __hash__(self) -> int:
         """Hash."""
         return id(self)
