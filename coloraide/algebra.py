@@ -304,12 +304,10 @@ def solve_bisect(
             high = t
         else:
             low = t
+
         t = (high + low) * 0.5
 
-        if math.isclose(low, high, rel_tol=rtol, abs_tol=atol):  # pragma: no cover
-            break
-
-    return t, abs(x) < atol  # pragma: no cover
+    return t, math.isclose(x, 0, rel_tol=rtol, abs_tol=atol)  # pragma: no cover
 
 
 def _solve_quadratic(poly: Vector) -> Vector:
