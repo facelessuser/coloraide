@@ -1,33 +1,57 @@
 """Color matching functions."""
 from __future__ import annotations
 from .types import Vector
-from typing import Any
 from . import algebra as alg
 from . import util
+from _collections_abc import dict_items, dict_keys, dict_values
 
 
-class CMFs(dict[float, Vector]):
+class CMFs:
     """A color matching function wrapper for CMFs."""
 
-    def __init__(self, cmfs: dict[float, Vector], /, interpolator: str = 'cubic', **kwargs: Any):
+    def __init__(self, cmfs: dict[float, Vector], /, interpolator: str = 'sprague'):
         """Initialize and capture attributes of CMF."""
 
         keys = list(cmfs.keys())
         self.start = int(keys[0])
         self.end = int(keys[-1])
         self.step = round((self.end - self.start) / (len(keys) - 1))
-        self.spline = alg.interpolate(list(cmfs.values()), method='sprague', domain=[self.start, self.end])
-        super().__init__(cmfs, **kwargs)
+        self.spline = alg.interpolate(list(cmfs.values()), method=interpolator, domain=[self.start, self.end])
+        self._cmfs = cmfs
 
-    def __getitem__(self, key: float) -> Vector:  # pragma: no cover
+    def __hash__(self) -> int:
+        """Hash."""
+        return id(self)
+
+    def __getitem__(self, key: float) -> Vector:
         """Get item: `namespace['key']`."""
 
-        value = super().get(key)
+        value = self._cmfs.get(key)
         if value is not None:
             return value[:]
         return self.spline(key)
 
-    def xy(self, key: float) -> Vector:  # pragma: no cover
+    def get(self, key: float, default: None = None) -> Vector | None:  # pragma: no cover
+        """Get the value at the specified wavelength."""
+
+        return self._cmfs.get(key, default)
+
+    def values(self) -> dict_values[float, Vector]:  # pragma: no cover
+        """Get the value at the specified wavelength."""
+
+        return self._cmfs.values()
+
+    def items(self) -> dict_items[float, Vector]:  # pragma: no cover
+        """Get the value at the specified wavelength."""
+
+        return self._cmfs.items()
+
+    def keys(self) -> dict_keys[float, Vector]:  # pragma: no cover
+        """Get the value at the specified wavelength."""
+
+        return self._cmfs.keys()
+
+    def xy(self, key: float) -> Vector:
         """Return CMFs data as XY coordinates."""
 
         return util.xyz_to_xyY(self[key])[:-1]

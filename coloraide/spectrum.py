@@ -5,6 +5,7 @@ Handle spectral related things.
 """
 from __future__ import annotations
 import math
+from functools import lru_cache
 from . import algebra as alg
 from . import util
 from .types import Vector, VectorLike
@@ -15,6 +16,17 @@ WHITE = cat.WHITES['2deg']['E']
 LOCUS_START = cmfs.CIE_1931_2DEG.start
 LOCUS_END = cmfs.CIE_1931_2DEG.end
 LOCUS_STEP = cmfs.CIE_1931_2DEG.step
+
+
+@lru_cache(maxsize=1)
+def get_locus_angles(cmfs: cmfs.CMFs, white: VectorLike) -> tuple[Vector, float]:
+    """Get the angles of the points and return list of angles and the offset we adjust the angles."""
+
+    start = xy_to_angle(util.xyz_to_xyY(cmfs[cmfs.start])[:-1], white)
+    return [
+        xy_to_angle(util.xyz_to_xyY(cmfs[r])[:-1], white, start)
+        for r in range(cmfs.start, cmfs.end + 1, cmfs.step)
+    ], start
 
 
 def xy_to_angle(xy: VectorLike, white: VectorLike, offset: float = 0.0, invert: bool = False) -> float:
@@ -102,38 +114,39 @@ def closest_wavelength(
     # and the current color with the spectral locus. Check the dominant and
     # complementary, but return as soon as we have the dominant. If no dominant
     # is found, we'll use the complementary.
-    locus = [util.xyz_to_xyY(cmfs.CIE_1931_2DEG[r])[:-1] for r in range(LOCUS_START, LOCUS_END + 1, LOCUS_STEP)]
-    start = xy_to_angle(locus[0], white)
-    current = xy_to_angle(xy, white, start)
-    invert = xy_to_angle(xy, white, start, invert=True)
+    locus, offset = get_locus_angles(cmfs.CIE_1931_2DEG, tuple(white))
+    locus_start = cmfs.CIE_1931_2DEG.start
+    locus_end = cmfs.CIE_1931_2DEG.end
+    current = xy_to_angle(xy, white, offset)
+    invert = xy_to_angle(xy, white, offset, invert=True)
     found = [False, False]
-    for i in range(1, len(locus) - 2):
+    for i in range(1, len(locus) - 1):
         # Get the next locus point angle
         i0 = i - 1
-        p_next = xy_to_angle(locus[i0], white, start)
-        a_next = xy_to_angle(locus[i], white, start)
+        a_prev = locus[i0]
+        a_next = locus[i]
 
         # Check if our angle is greater than the current locus point's angle
         for j in range(0, 2):
 
             # If has already been found or we are not aligned with segment, skip
             target = invert if j else current
-            if found[j] or a_next > target or target > p_next:
+            if found[j] or not (a_prev >= target >= a_next):
                 continue
 
             # Compare the interpolated angle with the actual angle
-            angle_diff = lambda f, a=LOCUS_START + i0, b=LOCUS_START + i, t=target, w=white, s=start: xy_to_angle(
-                cmfs.CIE_1931_2DEG.xy(alg.lerp(a, b, f)),
+            angle_diff = lambda f, p=locus_start + i0, n=locus_start + i, t=target, w=white, o=offset: t - xy_to_angle(
+                cmfs.CIE_1931_2DEG.xy(alg.lerp(p, n, f)),
                 w,
-                s
-            ) - t
+                o
+            )
 
             # Linear interpolation of a non-linear curve will yield some offset from our current angle.
             # While the angle is likely to be "good enough", we can do better.
             # Go with the best approximation we can find.
-            f, _ = alg.solve_bisect(1, 0, angle_diff, start=alg.ilerp(p_next, a_next, target))
-            w = alg.lerp(LOCUS_START + i0, LOCUS_START + i, f)
-            intersect = util.xyz_to_xyY(cmfs.CIE_1931_2DEG[w], white)[:-1]
+            f, _ = alg.solve_bisect(0, 1, f=angle_diff, start=alg.ilerp(a_prev, a_next, target))
+            w = alg.lerp(locus_start + i0, locus_start + i, f)
+            intersect = cmfs.CIE_1931_2DEG.xy(w)
 
             if j == 0:
                 dominant = intersect
@@ -162,7 +175,7 @@ def closest_wavelength(
 
     # If dominant isn't found, it is on the line of purples; use complementary instead
     if not found[reverse]:
-        pt = ray_line_intersect(white, xy, locus[0], locus[-1])
+        pt = ray_line_intersect(white, xy, cmfs.CIE_1931_2DEG.xy(locus_start),  cmfs.CIE_1931_2DEG.xy(locus_end))
         # Shouldn't happen, but just in case
         if pt is not None:  # pragma: no cover
             dominant = pt
