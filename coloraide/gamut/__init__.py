@@ -182,7 +182,7 @@ def scale_rgb(
 
     # Grab the white point and the luminance of the current gamut.
     white = mapcolor._space.WHITE
-    Y = mapcolor.luminance()
+    Y = mapcolor.luminance(white=white)
 
     # Scale the color into gamut
     rgb = cs.from_base(mapcolor[:-1]) if coerced else mapcolor[:-1]

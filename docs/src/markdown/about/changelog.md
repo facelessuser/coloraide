@@ -7,6 +7,8 @@ icon: lucide/scroll-text
 
 -   **NEW**: Add support for `carryforward` within `average()`.
 -   **ENHANCE**: More accurate dominant wavelength calculations.
+-   **FIX**: Ensure luminance calculations are all in the same white point with `scale` gamut mapping and color
+    harmonies.
 
 ## 8.5
 
