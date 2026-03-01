@@ -250,6 +250,7 @@ def create_custom_hsl(gamut):
     class HSL(type(hsl)):
         NAME = f'-hsl-{gamut}'
         BASE = gamut
+        SERIALIZE = (f'--{NAME}',)
         GAMUT_CHECK = gamut
         CLIP_SPACE = None
         WHITE = cs.WHITE
@@ -413,11 +414,11 @@ def cyl_disc(
             radius = c._space.radial_index()
             u.append(c[radius])
             v.append(c[hue])
-            c.convert(space, norm=False, in_place=True)
             if limit['macadam-limits']:
                 c.fit('macadam-limits')
             if limit['pointer-gamut']:
                 c.fit('pointer-gamut')
+            c.convert(space, norm=False, in_place=True)
 
             store_coords(c, x, y, z, flags)
 
@@ -547,11 +548,11 @@ def render_space_cyl(fig, space, gamut, resolution, opacity, edges, faces, ecolo
         for c in ColorCyl.steps([color, s2], steps=max(3, (resolution // 2) * 2 + 1), space=gspace, hue='specified'):
             u.append(c[2])
             v.append(c['hue'])
-            c.convert(space, norm=False, in_place=True)
             if limit['macadam-limits']:
                 c.fit('macadam-limits')
             if limit['pointer-gamut']:
                 c.fit('pointer-gamut')
+            c.convert(space, norm=False, in_place=True)
 
             store_coords(c, x, y, z, flags)
 
@@ -641,11 +642,11 @@ def render_special_gamut(gtype, fig, space, resolution, opacity, edges, faces, e
                     v.append(h)
                     color[:-1] = [*xy, l]
 
-            color.convert(space, norm=False, in_place=True)
             if limit['macadam-limits']:
                 color.fit('macadam-limits')
             if limit['pointer-gamut']:
                 color.fit('pointer-gamut')
+            color.convert(space, norm=False, in_place=True)
             store_coords(color, x, y, z, flags)
 
             # Adjust gamut to fit the display space
