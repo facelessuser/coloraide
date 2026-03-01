@@ -644,7 +644,7 @@ def cie_diagram(
             cwl = color.wavelength(white=w, complementary=True)
             if not math.isnan(dwl[1][0]):
                 bu0, bv0 = convert_chromaticity(
-                    color.split_chromaticity(opt.chromaticity, white=opt.white)[:-1],
+                    color.split_chromaticity(opt.chromaticity)[:-1],
                     opt
                 )
                 bu1, bv1 = convert_chromaticity(
