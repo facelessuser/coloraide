@@ -74,7 +74,7 @@ def get_chroma_limit(l: float, h: float) -> float:
 
 
 def fit_macadam_limits(color: AnyColor) -> AnyColor:
-    """Fit a color to the approximation of the visible spectrum."""
+    """Fit a color to the approximation of the Macadam limits at the color's given luminance."""
 
     # Convert to xyY
     xyz = (color.convert('xyz-d65', norm=False) if color.space() != 'xyz-d65' else color.normalize(nans=False))[:-1]
@@ -98,7 +98,7 @@ def fit_macadam_limits(color: AnyColor) -> AnyColor:
 
 def in_macadam_limits(color: Color, tolerance: float) -> bool:
     """
-    See if color is within the approximation of the visible spectrum.
+    See if color is within the approximation of the Macadam limits for the color's luminance.
 
     Find the closest hues and lightness (rows and columns) so we can interpolate
     an appropriate max chroma for a given hue and lightness. Test that the
@@ -121,7 +121,7 @@ def in_macadam_limits(color: Color, tolerance: float) -> bool:
 
 def macadam_limits(luminance: float | None = None) -> Matrix:
     """
-    Calculate the visible spectrum's gamut boundary points for the given lightness.
+    Calculate the visible Macadam limit boundary points for the given lightness.
 
     If no lightness is provided, calculate the maximum boundary.
     Result is returned as xyY coordinates (in the D65 illuminant).

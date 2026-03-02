@@ -280,7 +280,7 @@ def solve_bisect(
     low: float,
     high: float,
     f: Callable[..., float],
-    args: tuple[Any] | tuple[()] = (),
+    args: tuple[Any, ...] | tuple[()] = (),
     start: float | None = None,
     maxiter: int = 50,
     rtol: float = RTOL,
