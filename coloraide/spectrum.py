@@ -13,9 +13,6 @@ from . import cat
 from . import cmfs
 
 WHITE = cat.WHITES['2deg']['E']
-LOCUS_START = cmfs.CIE_1931_2DEG.start
-LOCUS_END = cmfs.CIE_1931_2DEG.end
-LOCUS_STEP = cmfs.CIE_1931_2DEG.step
 
 
 @lru_cache(maxsize=1)
@@ -27,6 +24,12 @@ def get_locus_angles(cmfs: cmfs.CMFs, white: VectorLike) -> tuple[Vector, float]
         xy_to_angle(util.xyz_to_xyY(cmfs[r])[:-1], white, start)
         for r in range(cmfs.start, cmfs.end + 1, cmfs.step)
     ], start
+
+
+def compare_angle(f: float, cmfs: cmfs.CMFs, p: float, n: float, t: float, w: Vector, o: float) -> float:
+    """Compare the calculated angle with the target."""
+
+    return t - xy_to_angle(cmfs.xy(alg.lerp(p, n, f)), w, o)
 
 
 def xy_to_angle(xy: VectorLike, white: VectorLike, offset: float = 0.0, invert: bool = False) -> float:
@@ -114,9 +117,10 @@ def closest_wavelength(
     # and the current color with the spectral locus. Check the dominant and
     # complementary, but return as soon as we have the dominant. If no dominant
     # is found, we'll use the complementary.
-    locus, offset = get_locus_angles(cmfs.CIE_1931_2DEG, tuple(white))
-    locus_start = cmfs.CIE_1931_2DEG.start
-    locus_end = cmfs.CIE_1931_2DEG.end
+    cmfs_ = cmfs.CIE_1931_2DEG
+    locus, offset = get_locus_angles(cmfs_, tuple(white))
+    locus_start = cmfs_.start
+    locus_end = cmfs_.end
     current = xy_to_angle(xy, white, offset)
     invert = xy_to_angle(xy, white, offset, invert=True)
     found = [False, False]
@@ -134,19 +138,18 @@ def closest_wavelength(
             if found[j] or not (a_prev >= target >= a_next):
                 continue
 
-            # Compare the interpolated angle with the actual angle
-            angle_diff = lambda f, p=locus_start + i0, n=locus_start + i, t=target, w=white, o=offset: t - xy_to_angle(
-                cmfs.CIE_1931_2DEG.xy(alg.lerp(p, n, f)),
-                w,
-                o
-            )
-
             # Linear interpolation of a non-linear curve will yield some offset from our current angle.
             # While the angle is likely to be "good enough", we can do better.
             # Go with the best approximation we can find.
-            f, _ = alg.solve_bisect(0, 1, f=angle_diff, start=alg.ilerp(a_prev, a_next, target))
+            f, _ = alg.solve_bisect(
+                0,
+                1,
+                f=compare_angle,
+                args=(cmfs_, locus_start + i0, locus_start + i, target, white, offset),
+                start=alg.ilerp(a_prev, a_next, target)
+            )
             w = alg.lerp(locus_start + i0, locus_start + i, f)
-            intersect = cmfs.CIE_1931_2DEG.xy(w)
+            intersect = cmfs_.xy(w)
 
             if j == 0:
                 dominant = intersect
@@ -175,7 +178,7 @@ def closest_wavelength(
 
     # If dominant isn't found, it is on the line of purples; use complementary instead
     if not found[reverse]:
-        pt = ray_line_intersect(white, xy, cmfs.CIE_1931_2DEG.xy(locus_start),  cmfs.CIE_1931_2DEG.xy(locus_end))
+        pt = ray_line_intersect(white, xy, cmfs_.xy(locus_start),  cmfs_.xy(locus_end))
         # Shouldn't happen, but just in case
         if pt is not None:  # pragma: no cover
             dominant = pt
@@ -191,8 +194,9 @@ def closest_wavelength(
 def wavelength_to_color(wavelength: float) -> Vector:
     """Return the XYZ value for the specified wavelength."""
 
-    if wavelength < LOCUS_START or wavelength > LOCUS_END:
-        raise ValueError(f'{wavelength}nm exceeds the range of {LOCUS_START}nm - {LOCUS_END}nm')
+    cmfs_ = cmfs.CIE_1931_2DEG
+    if wavelength < cmfs_.start or wavelength > cmfs_.end:
+        raise ValueError(f'{wavelength}nm exceeds the range of {cmfs_.start}nm - {cmfs_.end}nm')
 
     # Wavelength is within the CMFs
-    return cmfs.CIE_1931_2DEG[wavelength]
+    return cmfs_[wavelength]
