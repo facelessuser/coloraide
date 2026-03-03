@@ -29,6 +29,10 @@ SPECIAL_GAMUTS = {
     'macadam-limits': {
         'check': visible_spectrum.in_macadam_limits,
         'fit': visible_spectrum.fit_macadam_limits
+    },
+    'visible-spectrum': {
+        'check': visible_spectrum.in_visible_spectrum,
+        'fit': visible_spectrum.fit_visible_spectrum
     }
 }   # type: dict[str, dict[str, Callable[..., Any]]]
 

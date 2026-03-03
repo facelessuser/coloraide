@@ -1,12 +1,13 @@
 """Check if color is in visible gamut."""
 from __future__ import annotations
+import math
 import bisect
 from ..cat import WHITES
 from .. import algebra as alg
 from .. import util
 from ..types import Matrix, AnyColor  # noqa: F401
 from .rosch_macadam_solid import LUT, LUMINANCE, HUE
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:  #pragma: no cover
     from ..color import Color
@@ -73,7 +74,7 @@ def get_chroma_limit(l: float, h: float) -> float:
     return alg.lerp(alg.lerp(row1[li], row1[li + 1], lf), alg.lerp(row2[li], row2[li + 1], lf), hf)
 
 
-def fit_macadam_limits(color: AnyColor) -> AnyColor:
+def fit_macadam_limits(color: AnyColor, **kwargs: Any) -> AnyColor:
     """Fit a color to the approximation of the Macadam limits at the color's given luminance."""
 
     # Convert to xyY
@@ -96,7 +97,7 @@ def fit_macadam_limits(color: AnyColor) -> AnyColor:
     return color.update(color.new('xyz-d65', util.xy_to_xyz((x, y), new_Y), color[-1])) if adjusted else color
 
 
-def in_macadam_limits(color: Color, tolerance: float) -> bool:
+def in_macadam_limits(color: Color, tolerance: float | None = None) -> bool:
     """
     See if color is within the approximation of the Macadam limits for the color's luminance.
 
@@ -104,6 +105,9 @@ def in_macadam_limits(color: Color, tolerance: float) -> bool:
     an appropriate max chroma for a given hue and lightness. Test that the
     color's chroma does not exceed the limit.
     """
+
+    if tolerance is None:
+        tolerance = util.DEF_FIT_TOLERANCE
 
     # Convert to xyY
     xyz = (color.convert('xyz-d65', norm=False) if color.space() != 'xyz-d65' else color.normalize(nans=False))[:-1]
@@ -142,3 +146,77 @@ def macadam_limits(luminance: float | None = None) -> Matrix:
     # Luminance exceeds threshold
     else:
         raise ValueError(f'Luminance must be between {LUMINANCE[0]} and {LUMINANCE[-1]}, but was {luminance}')
+
+
+def in_visible_spectrum(color: Color, tolerance: float | None = None) -> bool:
+    """See if color is within the spectral locus."""
+
+    if tolerance is None:
+        tolerance = 1e-3
+
+    # Get white and xyY coordinates
+    white = color.white('xy-1931')
+    l = color.luminance(white=white)
+    xy = color.xy()
+
+    # Get the dominant wavelength which will yield the point on the spectral locus in our direction
+    wave, dominant = color.wavelength()[:2]
+
+    # See if we have an achromatic color
+    if math.isnan(wave):
+        oog_chroma = False
+    else:
+        # Calculate magnitude with vector normalized such that white is the origin
+        xy_temp = alg.subtract(xy, white, dims=alg.D1)
+        m1 = math.sqrt(xy_temp[0] ** 2 + xy_temp[1] ** 2)
+        xy_temp = alg.subtract(dominant, white, dims=alg.D1)
+        m2 = math.sqrt(xy_temp[0] ** 2 + xy_temp[1] ** 2)
+        oog_chroma = m1 > (m2 + tolerance)
+
+    # See if we are within tolerance
+    return (0 - tolerance) <= l <= (1 + tolerance) and not oog_chroma
+
+
+def fit_visible_spectrum(color: AnyColor, tolerance: float = 0.0, **kwargs: Any) -> AnyColor:
+    """Fit color to the visible spectrum."""
+
+    # Get white and xyY coordinates
+    white = color.white('xy-1931')
+    l = color.luminance(white=white)
+    xy = color.xy()
+
+    # Get the dominant wavelength which will yield the point on the spectral locus in our direction
+    wave, dominant = color.wavelength()[:2]
+
+    # See if we have an achromatic color
+    if math.isnan(wave):
+        dominant = white
+        oog_chroma = False
+    else:
+        # Calculate magnitude with vector normalized such that white is the origin
+        xy_temp = alg.subtract(xy, white, dims=alg.D1)
+        m1 = math.sqrt(xy_temp[0] ** 2 + xy_temp[1] ** 2)
+        xy_temp = alg.subtract(dominant, white, dims=alg.D1)
+        m2 = math.sqrt(xy_temp[0] ** 2 + xy_temp[1] ** 2)
+
+        # Adjust range to pull in color relative to the spectral locus
+        if tolerance:
+            m2 += tolerance
+            h = math.degrees(math.atan2(xy_temp[1], xy_temp[0])) % 360
+            dominant = list(alg.add(alg.polar_to_rect(m2, h), white, dims=alg.D1))
+
+        # Check if color is outside the spectral locus
+        oog_chroma = m1 > m2
+
+    # Adjust color is out of luminance range or outside the spectral locus limits
+    if l > 1 or l < 0 or oog_chroma:
+        color.update(
+            color.chromaticity(
+                color.space(),
+                [*(dominant if oog_chroma else xy), alg.clamp(l, 0, 1)],
+                'xy-1931',
+                white=white,
+                scale=False
+            )
+        )
+    return color
