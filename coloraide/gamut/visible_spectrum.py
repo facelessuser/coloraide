@@ -97,7 +97,7 @@ def fit_macadam_limits(color: AnyColor, **kwargs: Any) -> AnyColor:
     return color.update(color.new('xyz-d65', util.xy_to_xyz((x, y), new_Y), color[-1])) if adjusted else color
 
 
-def in_macadam_limits(color: Color, tolerance: float | None = None, **kwargs: Any) -> bool:
+def in_macadam_limits(color: Color, tolerance: float, **kwargs: Any) -> bool:
     """
     See if color is within the approximation of the Macadam limits for the color's luminance.
 
@@ -105,9 +105,6 @@ def in_macadam_limits(color: Color, tolerance: float | None = None, **kwargs: An
     an appropriate max chroma for a given hue and lightness. Test that the
     color's chroma does not exceed the limit.
     """
-
-    if tolerance is None:
-        tolerance = util.DEF_FIT_TOLERANCE
 
     # Convert to xyY
     xyz = (color.convert('xyz-d65', norm=False) if color.space() != 'xyz-d65' else color.normalize(nans=False))[:-1]
@@ -150,14 +147,15 @@ def macadam_limits(luminance: float | None = None) -> Matrix:
 
 def in_visible_spectrum(
     color: Color,
-    tolerance: float | None = None,
+    tolerance: float,
+    xy_tolerance: float | None = 1e-3,
     ignore_luminance: bool = False,
     **kwargs: Any
 ) -> bool:
     """See if color is within the spectral locus."""
 
-    if tolerance is None:
-        tolerance = 1e-3
+    if xy_tolerance is None:
+        xy_tolerance = tolerance
 
     # Get white and xyY coordinates
     white = color.white('xy-1931')
@@ -176,7 +174,7 @@ def in_visible_spectrum(
         m1 = math.sqrt(xy_temp[0] ** 2 + xy_temp[1] ** 2)
         xy_temp = alg.subtract(dominant, white, dims=alg.D1)
         m2 = math.sqrt(xy_temp[0] ** 2 + xy_temp[1] ** 2)
-        oog_chroma = m1 > (m2 + tolerance)
+        oog_chroma = m1 > (m2 + xy_tolerance)
 
     oog_lum = False if ignore_luminance else (l > (1 + tolerance) or l < (0 - tolerance))
 
@@ -186,11 +184,14 @@ def in_visible_spectrum(
 
 def fit_visible_spectrum(
     color: AnyColor,
-    tolerance: float = 1e-3,
+    xy_tolerance: float | None = 1e-3,
     ignore_luminance: bool = False,
     **kwargs: Any
 ) -> AnyColor:
     """Fit color to the visible spectrum."""
+
+    if xy_tolerance is None:
+        xy_tolerance = 0.0
 
     # Get white and xyY coordinates
     white = color.white('xy-1931')
@@ -212,8 +213,8 @@ def fit_visible_spectrum(
         m2 = math.sqrt(xy_temp[0] ** 2 + xy_temp[1] ** 2)
 
         # Adjust range to pull in color relative to the spectral locus
-        if tolerance:
-            m2 += tolerance
+        if xy_tolerance:
+            m2 += xy_tolerance
             h = math.degrees(math.atan2(xy_temp[1], xy_temp[0])) % 360
             dominant = list(alg.add(alg.polar_to_rect(m2, h), white, dims=alg.D1))
 

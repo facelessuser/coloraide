@@ -1055,12 +1055,12 @@ class Color(metaclass=ColorMeta):
         if space is None:
             space = self.space()
 
+        if tolerance is None:
+            tolerance = util.DEF_FIT_TOLERANCE
+
         # Handle special gamut requests
         if space in gamut.SPECIAL_GAMUTS:
             return cast(bool, gamut.SPECIAL_GAMUTS[space]['check'](self, tolerance=tolerance, **kwargs))
-
-        if tolerance is None:
-            tolerance = util.DEF_FIT_TOLERANCE
 
         # Check if gamut is in the provided space
         c = self.convert(space, norm=False) if space is not None and space != self.space() else self

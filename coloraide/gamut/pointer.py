@@ -162,7 +162,7 @@ def fit_pointer_gamut(color: AnyColor, **kwargs: Any) -> AnyColor:
     return from_lch_sc(color, [new_l, new_c, h]) if adjusted else color
 
 
-def in_pointer_gamut(color: Color, tolerance: float | None = None, **kwargs: Any) -> bool:
+def in_pointer_gamut(color: Color, tolerance: float, **kwargs: Any) -> bool:
     """
     See if color is within the pointer gamut.
 
@@ -171,9 +171,6 @@ def in_pointer_gamut(color: Color, tolerance: float | None = None, **kwargs: Any
     the an appropriate max chroma for a given hue and lightness. Test that the
     color's chroma does not exceed the limit.
     """
-
-    if tolerance is None:
-        tolerance = util.DEF_FIT_TOLERANCE
 
     # Convert to CIE LCh with the SC illuminant
     l, c, h = to_lch_sc(color)

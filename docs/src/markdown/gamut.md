@@ -1117,19 +1117,23 @@ Color('prophoto-rgb', [0, 1, 0]).fit('visible-spectrum').in_gamut('visible-spect
 
 It should be noted that many color spaces use rounded primaries. For instance, Rec. 2020 has primaries right on the
 spectral locus, but they are rounded to 3 decimal places. When we use no threshold, these colors appear outside the
-gamut. For this reason, using `visible-spectrum` with `in_gamut()` uses a default tolerance of `1e-3`, a larger
-tolerance than our other gamut checks do. In fact, we also use this same tolerance when trimming non-luminance limits
-of colors when using `fit()`. If desired the tolerance can be changed.
+gamut. For this reason, using `visible-spectrum` with `in_gamut()` uses a default tolerance of `1e-3` specifically for
+the xy coordinates, a larger tolerance than the normal default. In fact, we also use this same tolerance when trimming
+the xy coordinates of colors when using `fit()`.
+
+To change the xy tolerance, simply change `xy_tolerance` to you desired amount. Alternatively, you can set it
+`#!py None` and it will assume the general tolerance as set by `tolerance`. Since `fit()` doesn't have a default
+tolerance, it effectively disables the xy tolerance.
 
 ```py play
 Color('rec2020', [1, 0, 0]).in_gamut('visible-spectrum')
 Color('rec2020', [1, 0, 0]).fit('visible-spectrum')
-Color('rec2020', [1, 0, 0]).in_gamut('visible-spectrum', tolerance=0)
-Color('rec2020', [1, 0, 0]).fit('visible-spectrum', tolerance=0)
+Color('rec2020', [1, 0, 0]).in_gamut('visible-spectrum', xy_tolerance=None)
+Color('rec2020', [1, 0, 0]).fit('visible-spectrum', xy_tolerance=None)
 ```
 
-Lastly, it when dealing with an HDR color, you may not want the check to fail or if luminance is high, and you may not
-want the correction to touch the luminance. If this is the case, just set `ignore_luminance`.
+Lastly, when dealing with an HDR color, you may not want the check to fail when luminance is high, and you may not want
+the correction to touch the luminance. If this is the case, just set `ignore_luminance` to `#!py True`.
 
 ```py play
 Color('rec2100-hlg', [1, 1, 1]).in_gamut('visible-spectrum')

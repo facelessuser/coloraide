@@ -694,14 +694,23 @@ class TestVisibleSpectrum(util.ColorAsserts, unittest.TestCase):
         self.assertFalse(Color('rec2020', [1.1, 1.1, 1.1]).in_gamut('visible-spectrum'))
         self.assertFalse(Color('prophoto-rgb', [0, 0, 1]).in_gamut('visible-spectrum'))
 
-    def test_visible_spectrum_threshold(self):
-        """Test gamut check using threshold."""
+    def test_visible_spectrum_xy_threshold(self):
+        """Test gamut check using xy threshold."""
 
         # Rec. 2020 is right on the spectral locus, but uses rounded primaries
-        self.assertTrue(Color('rec2020', [1, 1, 1]).in_gamut('visible-spectrum', tolerance=0))
-        self.assertFalse(Color('rec2020', [1, 0, 0]).in_gamut('visible-spectrum', tolerance=0))
-        self.assertFalse(Color('rec2020', [0, 1, 0]).in_gamut('visible-spectrum', tolerance=0))
-        self.assertFalse(Color('rec2020', [0, 0, 1]).in_gamut('visible-spectrum', tolerance=0))
+        self.assertTrue(Color('rec2020', [1, 1, 1]).in_gamut('visible-spectrum', xy_tolerance=0))
+        self.assertFalse(Color('rec2020', [1, 0, 0]).in_gamut('visible-spectrum', xy_tolerance=0))
+        self.assertFalse(Color('rec2020', [0, 1, 0]).in_gamut('visible-spectrum', xy_tolerance=0))
+        self.assertFalse(Color('rec2020', [0, 0, 1]).in_gamut('visible-spectrum', xy_tolerance=0))
+
+    def test_visible_spectrum_xy_threshold_none(self):
+        """Test gamut check using assuming the normal threshold for xy threshold."""
+
+        # Rec. 2020 is right on the spectral locus, but uses rounded primaries
+        self.assertTrue(Color('rec2020', [1, 1, 1]).in_gamut('visible-spectrum', xy_tolerance=None))
+        self.assertTrue(Color('rec2020', [1, 0, 0]).in_gamut('visible-spectrum', xy_tolerance=None))
+        self.assertFalse(Color('rec2020', [0, 1, 0]).in_gamut('visible-spectrum', xy_tolerance=None))
+        self.assertFalse(Color('rec2020', [0, 0, 1]).in_gamut('visible-spectrum', xy_tolerance=None))
 
     def test_fit_visible_spectrum(self):
         """Fit colors to visible spectrum."""
@@ -724,11 +733,11 @@ class TestVisibleSpectrum(util.ColorAsserts, unittest.TestCase):
 
         # Custom tolerance
         self.assertColorEqual(
-            Color('rec2020', [0, 1, 0]).fit('visible-spectrum', tolerance=0),
+            Color('rec2020', [0, 1, 0]).fit('visible-spectrum', xy_tolerance=0),
             Color('color(rec2020 0.03137 0.99995 0.03137)')
         )
         self.assertColorEqual(
-            Color('rec2020', [0, 0, 1]).fit('visible-spectrum', tolerance=0),
+            Color('rec2020', [0, 0, 1]).fit('visible-spectrum', xy_tolerance=None),
             Color('color(rec2020 0.03558 0.03558 0.99779)')
         )
 
