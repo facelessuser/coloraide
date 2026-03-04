@@ -97,7 +97,7 @@ def fit_macadam_limits(color: AnyColor, **kwargs: Any) -> AnyColor:
     return color.update(color.new('xyz-d65', util.xy_to_xyz((x, y), new_Y), color[-1])) if adjusted else color
 
 
-def in_macadam_limits(color: Color, tolerance: float | None = None) -> bool:
+def in_macadam_limits(color: Color, tolerance: float | None = None, **kwargs: Any) -> bool:
     """
     See if color is within the approximation of the Macadam limits for the color's luminance.
 
@@ -148,7 +148,12 @@ def macadam_limits(luminance: float | None = None) -> Matrix:
         raise ValueError(f'Luminance must be between {LUMINANCE[0]} and {LUMINANCE[-1]}, but was {luminance}')
 
 
-def in_visible_spectrum(color: Color, tolerance: float | None = None) -> bool:
+def in_visible_spectrum(
+    color: Color,
+    tolerance: float | None = None,
+    ignore_luminance: bool = False,
+    **kwargs: Any
+) -> bool:
     """See if color is within the spectral locus."""
 
     if tolerance is None:
@@ -173,11 +178,18 @@ def in_visible_spectrum(color: Color, tolerance: float | None = None) -> bool:
         m2 = math.sqrt(xy_temp[0] ** 2 + xy_temp[1] ** 2)
         oog_chroma = m1 > (m2 + tolerance)
 
+    oog_lum = False if ignore_luminance else (l > (1 + tolerance) or l < (0 - tolerance))
+
     # See if we are within tolerance
-    return (0 - tolerance) <= l <= (1 + tolerance) and not oog_chroma
+    return not oog_lum and not oog_chroma
 
 
-def fit_visible_spectrum(color: AnyColor, tolerance: float = 0.0, **kwargs: Any) -> AnyColor:
+def fit_visible_spectrum(
+    color: AnyColor,
+    tolerance: float = 1e-3,
+    ignore_luminance: bool = False,
+    **kwargs: Any
+) -> AnyColor:
     """Fit color to the visible spectrum."""
 
     # Get white and xyY coordinates
@@ -208,8 +220,10 @@ def fit_visible_spectrum(color: AnyColor, tolerance: float = 0.0, **kwargs: Any)
         # Check if color is outside the spectral locus
         oog_chroma = m1 > m2
 
+    oog_lum = False if ignore_luminance else (l > 1 or l < 0)
+
     # Adjust color is out of luminance range or outside the spectral locus limits
-    if l > 1 or l < 0 or oog_chroma:
+    if oog_lum or l < 0 or oog_chroma:
         color.update(
             color.chromaticity(
                 color.space(),

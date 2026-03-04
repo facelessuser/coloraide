@@ -1049,7 +1049,7 @@ class Color(metaclass=ColorMeta):
         mapping.fit(self, target, **kwargs)
         return self
 
-    def in_gamut(self, space: str | None = None, *, tolerance: float | None = None) -> bool:
+    def in_gamut(self, space: str | None = None, *, tolerance: float | None = None, **kwargs: Any) -> bool:
         """Check if current color is in gamut."""
 
         if space is None:
@@ -1057,7 +1057,7 @@ class Color(metaclass=ColorMeta):
 
         # Handle special gamut requests
         if space in gamut.SPECIAL_GAMUTS:
-            return cast(bool, gamut.SPECIAL_GAMUTS[space]['check'](self, tolerance=tolerance))
+            return cast(bool, gamut.SPECIAL_GAMUTS[space]['check'](self, tolerance=tolerance, **kwargs))
 
         if tolerance is None:
             tolerance = util.DEF_FIT_TOLERANCE

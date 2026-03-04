@@ -423,7 +423,7 @@ def cyl_disc(
             elif limit['macadam-limits']:
                 c.fit('macadam-limits')
             elif limit['visible-spectrum']:
-                c.fit('visible-spectrum', tolerance=1e-3)
+                c.fit('visible-spectrum')
             c.convert(space, norm=False, in_place=True)
 
             store_coords(c, x, y, z, flags)
@@ -559,7 +559,7 @@ def render_space_cyl(fig, space, gamut, resolution, opacity, edges, faces, ecolo
             elif limit['macadam-limits']:
                 c.fit('macadam-limits')
             elif limit['visible-spectrum']:
-                c.fit('visible-spectrum', tolerance=1e-3)
+                c.fit('visible-spectrum')
 
             c.convert(space, norm=False, in_place=True)
 

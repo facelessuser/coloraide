@@ -162,7 +162,7 @@ def fit_pointer_gamut(color: AnyColor, **kwargs: Any) -> AnyColor:
     return from_lch_sc(color, [new_l, new_c, h]) if adjusted else color
 
 
-def in_pointer_gamut(color: Color, tolerance: float | None = None) -> bool:
+def in_pointer_gamut(color: Color, tolerance: float | None = None, **kwargs: Any) -> bool:
     """
     See if color is within the pointer gamut.
 

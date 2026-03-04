@@ -711,45 +711,52 @@ class TestVisibleSpectrum(util.ColorAsserts, unittest.TestCase):
             Color('rec2020', [1, 1, 1])
         )
         self.assertColorEqual(
-            Color('prophoto-rgb', [1, 0, 0]).fit('visible-spectrum'),
-            Color('color(prophoto-rgb 0.99997 0.00033 0.00033)')
-        )
-        self.assertColorEqual(
             Color('prophoto-rgb', [0, 1, 0]).fit('visible-spectrum'),
-            Color('color(prophoto-rgb 0.15012 0.99257 0.15012)')
+            Color('color(prophoto-rgb 0.14843 0.99272 0.14843)')
         )
         self.assertColorEqual(
             Color('prophoto-rgb', [0, 0, 1]).fit('visible-spectrum'),
-            Color('color(prophoto-rgb 0.00137 0.00137 0.01563)')
+            Color('color(prophoto-rgb 0.00137 0.00137 0.0158)')
         )
 
     def test_fit_visible_spectrum_threshold(self):
         """Fit colors to visible spectrum."""
 
-        # Without tolerance
+        # Custom tolerance
         self.assertColorEqual(
-            Color('rec2020', [1, 0, 0]).fit('visible-spectrum'),
-            Color('color(rec2020 0.99995 0.01551 0.01551)')
-        )
-        self.assertColorEqual(
-            Color('rec2020', [0, 1, 0]).fit('visible-spectrum'),
+            Color('rec2020', [0, 1, 0]).fit('visible-spectrum', tolerance=0),
             Color('color(rec2020 0.03137 0.99995 0.03137)')
         )
         self.assertColorEqual(
-            Color('rec2020', [0, 0, 1]).fit('visible-spectrum'),
+            Color('rec2020', [0, 0, 1]).fit('visible-spectrum', tolerance=0),
             Color('color(rec2020 0.03558 0.03558 0.99779)')
         )
 
-        # With tolerance
+        # Normal tolerance
         self.assertColorEqual(
-            Color('rec2020', [1, 0, 0]).fit('visible-spectrum', tolerance=1e-3),
+            Color('rec2020', [1, 0, 0]).fit('visible-spectrum'),
             Color('rec2020', [1, 0, 0])
         )
         self.assertColorEqual(
-            Color('rec2020', [0, 1, 0]).fit('visible-spectrum', tolerance=1e-3),
+            Color('rec2020', [0, 1, 0]).fit('visible-spectrum'),
             Color('rec2020', [0, 1, 0])
         )
         self.assertColorEqual(
-            Color('rec2020', [0, 0, 1]).fit('visible-spectrum', tolerance=1e-3),
+            Color('rec2020', [0, 0, 1]).fit('visible-spectrum'),
             Color('rec2020', [0, 0, 1])
+        )
+
+    def test_ignore_luminance(self):
+        """Test ignore luminance."""
+
+        self.assertFalse(Color('rec2100-hlg', [1, 1, 1]).in_gamut('visible-spectrum'))
+        self.assertTrue(Color('rec2100-hlg', [1, 1, 1]).in_gamut('visible-spectrum', ignore_luminance=True))
+
+        self.assertColorEqual(
+            Color('rec2100-hlg', [0, 1, 0]).fit('visible-spectrum'),
+            Color('color(rec2100-hlg 0 0.82507 0)')
+        )
+        self.assertColorEqual(
+            Color('rec2100-hlg', [0, 1, 0]).fit('visible-spectrum', ignore_luminance=True),
+            Color('color(rec2100-hlg 0 1 0)')
         )
