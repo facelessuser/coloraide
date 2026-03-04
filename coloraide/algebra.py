@@ -1077,21 +1077,23 @@ class SpragueInterpolator(Interpolator):
         if len(points) < 6:
             raise ValueError('Sprague interpolation requires at least 6 evenly spaced points.')
         l = len(points[0])
-        index = [0, 1, -2, -1]
-        p1, p2, p3, p4 = points[0:6], points[0:6], points[-6:], points[-6:]
+        # Create 2 points at the start and end of the data that will guide the interpolation
+        # through the start and end points.
+        p1, p2 = points[0:6], points[-6:]
         points.insert(0, [])
         points.insert(1, [])
         points.append([])
         points.append([])
+        index = [0, 1, -2, -1]
         for i in range(l):
-            n = [
-                [j[i] for j in p1],
-                [j[i] for j in p2],
-                [j[i] for j in p3],
-                [j[i] for j in p4]
-            ]
-            for e, row in enumerate(multiply(cls.SPRAGUE_COEFFICIENTS, n)):
-                points[index[e]].append(divide(sum(row), 209))
+            # Each row of coefficients relates to one of the new points.
+            # The top rows relate to the first two points we add to the start,
+            # and we use the first 6 starting points as context. The last two
+            # relate to the end points and use the last t points as context.
+            for e, row in enumerate(cls.SPRAGUE_COEFFICIENTS):
+                points[index[e]].append(
+                    sum(multiply(row, [j[i] for j in (p1 if e < 2 else p2)], dims=D1)) / 209
+                )
 
     def interpolate(self, p0: float, p1: float, p2: float, p3: float, p4: float, p5: float, t: float) -> float:
         """Interpolate with Sprague."""
