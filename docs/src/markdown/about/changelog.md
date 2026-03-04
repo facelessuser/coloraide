@@ -10,6 +10,7 @@ icon: lucide/scroll-text
 -   **ENHANCE**: More accurate dominant wavelength calculations.
 -   **FIX**: Ensure luminance calculations are all in the same white point with `scale` gamut mapping and color
     harmonies.
+-   **FIX**: Fix some typing issues.
 
 ## 8.5
 
