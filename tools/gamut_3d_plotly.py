@@ -19,8 +19,11 @@ from coloraide.spaces import HSLish, HSVish, HWBish, Labish, LChish, RGBish
 from coloraide import algebra as alg
 from coloraide.color import POSTFIX
 from coloraide.gamut import pointer, visible_spectrum, SPECIAL_GAMUTS
+from coloraide.cmfs import CIE_1931_2DEG as cmfs
+from coloraide import util
 
 FORCE_OWN_GAMUT = {'ryb', 'ryb-biased'}
+QHULL_OPTIONS = "Qbb Qc Qz Qx Q12 QbB"
 
 
 def get_face_color(cmap, simplex, filters):
@@ -203,10 +206,12 @@ def cyl_disc(
             radius = c._space.radial_index()
             u.append(c[radius])
             v.append(c[hue])
-            if limit['macadam-limits']:
-                c.fit('macadam-limits')
             if limit['pointer-gamut']:
                 c.fit('pointer-gamut')
+            elif limit['macadam-limits']:
+                c.fit('macadam-limits')
+            elif limit['visible-spectrum']:
+                c.fit('visible-spectrum')
             c.convert(space, norm=False, in_place=True)
 
             store_coords(c, x, y, z, flags)
@@ -224,7 +229,7 @@ def cyl_disc(
             cmap.append(s.to_string(hex=True))
 
     # Calculate triangles
-    tri = Delaunay([*zip(u, v)])
+    tri = Delaunay([*zip(u, v)], qhull_options=QHULL_OPTIONS)
 
     create3d(fig, x, y, z, tri, cmap, edges, faces, ecolor, fcolor, opacity, filters)
 
@@ -337,10 +342,13 @@ def render_space_cyl(fig, space, gamut, resolution, opacity, edges, faces, ecolo
         for c in ColorCyl.steps([color, s2], steps=max(3, (resolution // 2) * 2 + 1), space=gspace, hue='specified'):
             u.append(c[2])
             v.append(c['hue'])
-            if limit['macadam-limits']:
-                c.fit('macadam-limits')
             if limit['pointer-gamut']:
                 c.fit('pointer-gamut')
+            elif limit['macadam-limits']:
+                c.fit('macadam-limits')
+            elif limit['visible-spectrum']:
+                c.fit('visible-spectrum')
+
             c.convert(space, norm=False, in_place=True)
 
             store_coords(c, x, y, z, flags)
@@ -358,7 +366,7 @@ def render_space_cyl(fig, space, gamut, resolution, opacity, edges, faces, ecolo
             cmap.append(s.to_string(hex=True))
 
     # Calculate the triangles
-    tri = Delaunay([*zip(u, v)])
+    tri = Delaunay([*zip(u, v)], qhull_options=QHULL_OPTIONS)
 
     create3d(fig, x, y, z, tri, cmap, edges, faces, ecolor, fcolor, opacity, filters)
 
@@ -381,6 +389,7 @@ def render_special_gamut(gtype, fig, space, resolution, opacity, edges, faces, e
     """Render the Pointer gamut in 3d."""
 
     target = Color.CS_MAP[space]
+    white = target.WHITE
     flags = {
         'is_cyl': target.is_polar(),
         'is_labish': isinstance(target, Labish),
@@ -398,11 +407,29 @@ def render_special_gamut(gtype, fig, space, resolution, opacity, edges, faces, e
     z = []
     cmap = []
 
-    lightness = [91, *pointer.LIGHTNESS, 14] if gtype == 'pointer-gamut' else visible_spectrum.LUMINANCE
-    hues = pointer.HUE if gtype == 'pointer-gamut' else visible_spectrum.HUE
+    if gtype == 'pointer-gamut':
+        lightness = [91, *pointer.LIGHTNESS, 14]
+        hues = pointer.HUE
+    elif gtype == 'macadam-limits':
+        lightness = visible_spectrum.LUMINANCE
+        hues = visible_spectrum.HUE
+    else:
+        lightness = alg.linspace(1, alg.ATOL, max(3, (resolution // 2) * 2 + 1))
+        xy_pair = [cmfs.xy(r) for r in range(cmfs.start, cmfs.end + 1, cmfs.step)]
+        first, last = xy_pair[0], xy_pair[-1]
+        xy_pair.extend(
+            [[alg.lerp(last[0], first[0], r / 48), alg.lerp(last[1], first[1], r / 48)] for r in range(0, 49, 1)]
+        )
+        hues = [alg.rect_to_polar(*alg.subtract(r, white))[1] for r in xy_pair]
+        lowest = min(hues)
+        idx = hues.index(lowest)
+        hues = list(reversed(hues[:idx])) + list(reversed(hues[idx + 1:]))
+        hues.append(hues[0] + 360)
+        xy_pair = list(reversed(xy_pair[:idx])) + list(reversed(xy_pair[idx + 1:]))
+        xy_pair.append(xy_pair[0])
 
     for l in lightness:
-        for h in hues:
+        for e, h in enumerate(hues):
             if gtype == 'pointer-gamut':
                 # Close out the top or bottom if see lightness beyond the expected range
                 if l == 91:
@@ -418,7 +445,7 @@ def render_special_gamut(gtype, fig, space, resolution, opacity, edges, faces, e
                 v.append(h)
                 color = Color('xyz-d65', [0, 0, 0])
                 pointer.from_lch_sc(color, [_l, c, h])
-            else:
+            elif gtype == 'macadam-limits':
                 color = Color('white').convert('xyy', in_place=True)
                 if l == -1:
                     u.append(0)
@@ -430,11 +457,16 @@ def render_special_gamut(gtype, fig, space, resolution, opacity, edges, faces, e
                     u.append(l)
                     v.append(h)
                     color[:-1] = [*xy, l]
+            else:
+                color = Color.chromaticity('xyy', [*xy_pair[e], l], 'xy-1931', white=white, scale=False)
+                u.append(l)
+                v.append(h)
 
-            if limit['macadam-limits']:
-                color.fit('macadam-limits')
-            if limit['pointer-gamut']:
+            if gtype != 'pointer-gamut' and limit['pointer-gamut']:
                 color.fit('pointer-gamut')
+            elif gtype not in ('pointer-gamut', 'macadam-limits') and limit['macadam-limits']:
+                color.fit('macadam-limits')
+
             color.convert(space, norm=False, in_place=True)
             store_coords(color, x, y, z, flags)
 
@@ -451,9 +483,63 @@ def render_special_gamut(gtype, fig, space, resolution, opacity, edges, faces, e
             cmap.append(s.to_string(hex=True))
 
     # Calculate the triangles
-    tri = Delaunay([*zip(u, v)])
+    tri = Delaunay([*zip(u, v)], qhull_options=QHULL_OPTIONS)
 
     create3d(fig, x, y, z, tri, cmap, edges, faces, ecolor, fcolor, opacity, filters)
+
+    # Draw top and bottom of the visible spectrum
+    step = max(int(resolution / 8), 4)
+    if gtype == 'visible-spectrum':
+        for l in (1, alg.ATOL):
+            # 9, 60; 60, 90
+            ranges = list(range(0, 300, 4)) + [300]
+            for r in ranges:
+                start = r
+                end = min(r + (4 if r < 300 else 1000), len(hues) - 1)
+                u = []
+                v = []
+                x = []
+                y = []
+                z = []
+                cmap = []
+                for r in alg.linspace(0, 1, step):
+                    for e in range(start, end + 1, 1):
+                        h = hues[e]
+                        _c, _ = alg.rect_to_polar(*alg.subtract(xy_pair[e], white))
+                        _c = alg.lerp(_c, alg.ATOL, r)
+                        u.append(_c)
+                        v.append(h)
+                        color = Color.chromaticity(
+                            'xyy',
+                            [*alg.add(alg.polar_to_rect(_c, h), white), l],
+                            'xy-1931',
+                            white=white,
+                            scale=False
+                        )
+
+                        if gtype != 'pointer-gamut' and limit['pointer-gamut']:
+                            color.fit('pointer-gamut')
+                        if gtype not in ('pointer-gamut', 'macadam-limits') and limit['macadam-limits']:
+                            color.fit('macadam-limits')
+                        color.convert(space, norm=False, in_place=True)
+                        store_coords(color, x, y, z, flags)
+
+                        # Adjust gamut to fit the display space
+                        s = color.convert('srgb')
+                        if not s.in_gamut():
+                            s.fit(**gmap)
+                        else:
+                            s.clip()
+
+                        if filters:
+                            s.filter(filters[0], **filters[1], in_place=True, out_space=s.space()).clip()
+
+                        cmap.append(s.to_string(hex=True))
+
+                    # Calculate the triangles
+                    tri = Delaunay([*zip(u, v)], qhull_options=QHULL_OPTIONS)
+
+                    create3d(fig, x, y, z, tri, cmap, edges, faces, ecolor, fcolor, opacity, filters)
 
     return fig
 
@@ -578,7 +664,8 @@ def plot_gamut_in_space(
         ecolor = None
         limit = {
             'pointer-gamut': config.get('pointer-gamut', False),
-            'macadam-limits': config.get('macadam-limits', False)
+            'macadam-limits': config.get('macadam-limits', False),
+            'visible-spectrum': config.get('visible-spectrum', False)
         }
         if isinstance(edges, str):
             c = Color(edges).convert('srgb').fit(**gmap)
@@ -882,6 +969,7 @@ def plot_spectral_locus(fig, space):
     """Plot the spectral locus."""
 
     target = Color.CS_MAP[space]
+    white = target.WHITE
 
     flags = {
         'is_cyl': target.is_polar(),
@@ -901,12 +989,30 @@ def plot_spectral_locus(fig, space):
         color = Color.from_wavelength(space, w, scale=False)
         store_coords(color, x, y, z, flags)
         cmap.append(
-            color.convert('srgb', in_place=True).fit('srgb-linear', method='scale').to_string(hex=True, alpha=False)
+            color.convert(
+                'srgb', in_place=True).fit('srgb-linear', method='scale', max_saturation=True
+            ).to_string(hex=True, alpha=False)
         )
         if not w % 20:
             labels.append(str(w))
         else:
             labels.append('')
+    first, last = util.xyz_to_xyY(cmfs[360]), util.xyz_to_xyY(cmfs[780])
+    for r in range(50):
+        color = Color.chromaticity(
+            space,
+            [alg.lerp(last[x], first[x], r / 49) for x in range(3)],
+            'xy-1931',
+            white=white,
+            scale=False
+        )
+        store_coords(color, x, y, z, flags)
+        cmap.append(
+            color.convert(
+                'srgb', in_place=True).fit('srgb-linear', method='scale', max_saturation=True
+            ).to_string(hex=True, alpha=False)
+        )
+        labels.append('')
 
     trace = go.Scatter3d(
         x=x, y=y, z=z,

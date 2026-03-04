@@ -1033,6 +1033,7 @@ def average(
     space: str | None = None,
     out_space: str | None = None,
     premultiplied: bool = True,
+    carryforward: bool = False,
     **kwargs: Any
 ) -> Self:
     ...
@@ -1308,13 +1309,11 @@ Description
 Parameters
 
 - 
-    Some methods could have additional parameters to configure the behavior, these would be done through `**kwargs`.
-    None of built-in gamut mapping methods currently have additional parameters.
-
     Parameters | Defaults           | Description
     ---------- | ------------------ | -----------
     `space`    | `#!py None`        | The color space that the color must be mapped to. If space is `#!py None`, then the current color space will be used.
     `method`   | `#!py None`        | String that specifies which gamut mapping method to use. If `#!py None`, `lch-chroma` will be used.
+    `**kwargs` |                    | Any supported parameters that should be passed to special gamuts.
 
 Return
 
@@ -1327,7 +1326,8 @@ Return
 def in_gamut(
     self, space: str | None = None,
     *,
-    tolerance: float = util.DEF_FIT_TOLERANCE
+    tolerance: float | None = None,
+    **kwargs: Any
 ) -> bool:
     ...
 ```
@@ -1343,7 +1343,8 @@ Parameters
     Parameters | Defaults         | Description
     ---------- | ---------------- | -----------
     `space`    | `#!py None`      | The color space that the color must be fit within. If space is `#!py None`, then the current color space will be used.
-    `tolerance`| `#!py 0.000075`  | Tolerance allowed when checking bounds of color.
+    `tolerance`| `#!py None`      | Tolerance allowed when checking bounds of color. If `#!py None`, the default is used.
+    `**kwargs` |                  | Any supported parameters that should be passed to special gamuts.
 
 Return
 

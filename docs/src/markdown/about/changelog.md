@@ -5,6 +5,7 @@ icon: lucide/scroll-text
 
 ## 8.6
 
+-   **NEW**: Add new special gamut `visible-spectrum`.
 -   **NEW**: Add support for `carryforward` within `average()`.
 -   **ENHANCE**: More accurate dominant wavelength calculations.
 -   **FIX**: Ensure luminance calculations are all in the same white point with `scale` gamut mapping and color

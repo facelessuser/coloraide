@@ -1026,7 +1026,7 @@ class Color(metaclass=ColorMeta):
 
         # Handle special gamut requests
         if space in gamut.SPECIAL_GAMUTS:
-            return cast(Self, gamut.SPECIAL_GAMUTS[space]['fit'](self))
+            return cast(Self, gamut.SPECIAL_GAMUTS[space]['fit'](self, **kwargs))
 
         # If within gamut, just normalize hue range by calling clip.
         if self.in_gamut(space, tolerance=0):
@@ -1049,7 +1049,7 @@ class Color(metaclass=ColorMeta):
         mapping.fit(self, target, **kwargs)
         return self
 
-    def in_gamut(self, space: str | None = None, *, tolerance: float = util.DEF_FIT_TOLERANCE) -> bool:
+    def in_gamut(self, space: str | None = None, *, tolerance: float | None = None, **kwargs: Any) -> bool:
         """Check if current color is in gamut."""
 
         if space is None:
@@ -1057,7 +1057,10 @@ class Color(metaclass=ColorMeta):
 
         # Handle special gamut requests
         if space in gamut.SPECIAL_GAMUTS:
-            return cast(bool, gamut.SPECIAL_GAMUTS[space]['check'](self, tolerance=tolerance))
+            return cast(bool, gamut.SPECIAL_GAMUTS[space]['check'](self, tolerance=tolerance, **kwargs))
+
+        if tolerance is None:
+            tolerance = util.DEF_FIT_TOLERANCE
 
         # Check if gamut is in the provided space
         c = self.convert(space, norm=False) if space is not None and space != self.space() else self

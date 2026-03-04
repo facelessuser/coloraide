@@ -11,7 +11,7 @@ from ..spaces.lch import lab_to_lch, lch_to_lab
 from .. import algebra as alg
 from .. import util
 from ..types import Vector, Matrix, AnyColor, VectorLike  # noqa: F401
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:  #pragma: no cover
     from ..color import Color
@@ -144,7 +144,7 @@ def get_chroma_limit(l: float, h: float) -> float:
     return alg.lerp(alg.lerp(row1[li], row1[li + 1], lf), alg.lerp(row2[li], row2[li + 1], lf), hf)
 
 
-def fit_pointer_gamut(color: AnyColor) -> AnyColor:
+def fit_pointer_gamut(color: AnyColor, **kwargs: Any) -> AnyColor:
     """Fit a color to the Pointer gamut."""
 
     # Convert to CIE LCh with the SC illuminant
@@ -162,7 +162,7 @@ def fit_pointer_gamut(color: AnyColor) -> AnyColor:
     return from_lch_sc(color, [new_l, new_c, h]) if adjusted else color
 
 
-def in_pointer_gamut(color: Color, tolerance: float) -> bool:
+def in_pointer_gamut(color: Color, tolerance: float | None = None, **kwargs: Any) -> bool:
     """
     See if color is within the pointer gamut.
 
@@ -171,6 +171,9 @@ def in_pointer_gamut(color: Color, tolerance: float) -> bool:
     the an appropriate max chroma for a given hue and lightness. Test that the
     color's chroma does not exceed the limit.
     """
+
+    if tolerance is None:
+        tolerance = util.DEF_FIT_TOLERANCE
 
     # Convert to CIE LCh with the SC illuminant
     l, c, h = to_lch_sc(color)

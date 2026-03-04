@@ -994,48 +994,6 @@ Steps(
 > ```
 > ///
 
-## MacAdam Limits
-
-> [!new] New in 8.1
-
-The optimal color solid or Rösch-MacAdam color solid is a type of color solid that contains all the possible colors that
-surfaces can have. This is a theoretical limit based on classical reflection, so fluorescence and such may fall outside
-this solid.
-
-The solid encompasses the full range of visible spectrum at the base, but, as luminance increases, it becomes smaller
-and smaller.
-
-![MacAdam limits at Luminance Levels](images/macadam-limits-lightness.png).
-
-Looking at the shape in 3D, we can get a full visualization of its geometry. 
-
-![Rösch-MacAdam Color Solid](images/rosch-macadam.png)
-
-Some color spaces can exceed these MacAdam limits as can be be seen with Rec. 2020 color at higher luminance. The below
-image shows the Rösch-MacAdam color solid and Rec. 2020 gamut rendered within xyY.
-
-![Rösch-MacAdam Color Solid](images/rosch-macadam-rec2020.png)
-
-If we were to clip all the Rec. 2020 colors outside the color solid, we would have something similar to the image below.
-
-![Rösch-MacAdam Color Solid](images/rosch-macadam-rec2020-clipped.png)
-
-ColorAide provides an approximation of this gamut via a 3D LUT in the D65 illuminant, and provides the special gamut
-name `macadam-limits` that can be used in `in_gamut()` or `fit()` to check if a color is within the MacAdam limits or
-compress the color to fit within the MacAdam limits.
-
-```py play
-color = Color('rec2020', [0, 1, 0])
-color
-color.in_gamut('macadam-limits')
-color.fit('macadam-limits')
-color.in_gamut('macadam-limits')
-```
-
-> [!note]
-> When gamut mapping in the `macadam-limits` gamut, the `method` parameter is ignored as its own handling will be
-> applied.
-
 ## Pointer's Gamut
 
 > [!new] New in 2.4
@@ -1082,3 +1040,100 @@ color.in_gamut('pointer-gamut')
 > [!note]
 > When gamut mapping in the `pointer-gamut` gamut, the `method` parameter is ignored as its own handling will be
 > applied.
+
+## MacAdam Limits
+
+> [!new] New in 8.1
+
+The optimal color solid or Rösch-MacAdam color solid is a type of color solid that contains all the possible colors that
+surfaces can have. This is a theoretical limit based on classical reflection, so fluorescence and such may fall outside
+this solid.
+
+The solid encompasses the full range of visible spectrum at the base, but, as luminance increases, it becomes smaller
+and smaller.
+
+![MacAdam limits at Luminance Levels](images/macadam-limits-lightness.png).
+
+Looking at the shape in 3D, we can get a full visualization of its geometry. 
+
+![Rösch-MacAdam Color Solid](images/rosch-macadam.png)
+
+Some color spaces can exceed these MacAdam limits as can be be seen with Rec. 2020 color at higher luminance. The below
+image shows the Rösch-MacAdam color solid and Rec. 2020 gamut rendered within xyY.
+
+![Rösch-MacAdam Color Solid](images/rosch-macadam-rec2020.png)
+
+If we were to clip all the Rec. 2020 colors outside the color solid, we would have something similar to the image below.
+
+![Rösch-MacAdam Color Solid](images/rosch-macadam-rec2020-clipped.png)
+
+ColorAide provides an approximation of this gamut via a 3D LUT in the D65 illuminant, and provides the special gamut
+name `macadam-limits` that can be used in `in_gamut()` or `fit()` to check if a color is within the MacAdam limits or
+compress the color to fit within the MacAdam limits.
+
+```py play
+color = Color('rec2020', [0, 1, 0])
+color
+color.in_gamut('macadam-limits')
+color.fit('macadam-limits')
+color.in_gamut('macadam-limits')
+```
+
+> [!note]
+> When gamut mapping in the `macadam-limits` gamut, the `method` parameter is ignored as its own handling will be
+> applied.
+
+## Visible Spectrum
+
+> [!new] 8.6
+
+This provides checks and corrections of colors outside the spectral locus. The limits are defined by the 2D chromaticity
+coordinates. This includes both reflective and emissive colors, but the luminance is not based off any hard data and is
+just clamped between the ranges 0 - 1, regardless of the saturation of the color.
+
+
+![Rec. 2020 Within the Visible Spectrum](images/visible-spectrum-3d.png)
+
+We can check if a color is within the visible spectrum, by using the special gamut name `visible-spectrum`.
+
+```py play
+color = Color('prophoto-rgb', [0, 1, 0]).in_gamut('visible-spectrum')
+```
+
+We can also use `fit()` to adjust colors to fit within the visible spectrum. The visible spectrum is a complex shape,
+and the adjustments approximate the best point within the gamut, so colors should be _close_.
+
+/// tab | ProPhoto
+![ProPhoto RGB Outside the Visible Spectrum](images/visible-spectrum-prophoto-oog.png)
+///
+
+/// tab | ProPhoto Adjusted
+![ProPhoto RGB Inside the Visible Spectrum](images/visible-spectrum-prophoto-ig.png)
+///
+
+```py play
+Color('prophoto-rgb', [0, 1, 0]).fit('visible-spectrum').in_gamut('visible-spectrum')
+```
+
+It should be noted that many color spaces use rounded primaries. For instance, Rec. 2020 has primaries right on the
+spectral locus, but they are rounded to 3 decimal places. When we use no threshold, these colors appear outside the
+gamut. For this reason, using `visible-spectrum` with `in_gamut()` uses a default tolerance of `1e-3`, a larger
+tolerance than our other gamut checks do. In fact, we also use this same tolerance when trimming non-luminance limits
+of colors when using `fit()`. If desired the tolerance can be changed.
+
+```py play
+Color('rec2020', [1, 0, 0]).in_gamut('visible-spectrum')
+Color('rec2020', [1, 0, 0]).fit('visible-spectrum')
+Color('rec2020', [1, 0, 0]).in_gamut('visible-spectrum', tolerance=0)
+Color('rec2020', [1, 0, 0]).fit('visible-spectrum', tolerance=0)
+```
+
+Lastly, it when dealing with an HDR color, you may not want the check to fail or if luminance is high, and you may not
+want the correction to touch the luminance. If this is the case, just set `ignore_luminance`.
+
+```py play
+Color('rec2100-hlg', [1, 1, 1]).in_gamut('visible-spectrum')
+Color('rec2100-hlg', [1, 1, 1]).fit('visible-spectrum')
+Color('rec2100-hlg', [1, 1, 1]).in_gamut('visible-spectrum', ignore_luminance=True)
+Color('rec2100-hlg', [1, 1, 1]).fit('visible-spectrum', ignore_luminance=True)
+```

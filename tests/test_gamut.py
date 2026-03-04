@@ -679,3 +679,84 @@ class TestMacadamLimits(util.ColorAsserts, unittest.TestCase):
 
         for coords1, coords2 in zip(test, expected):
             [self.assertCompare(a, b) for a, b in zip(coords1, coords2)]
+
+
+class TestVisibleSpectrum(util.ColorAsserts, unittest.TestCase):
+    """Test visible spectrum."""
+
+    def test_visible_spectrum(self):
+        """Test gamut check in visible spectrum."""
+
+        self.assertTrue(Color('rec2020', [1, 1, 1]).in_gamut('visible-spectrum'))
+        self.assertTrue(Color('rec2020', [1, 0, 0]).in_gamut('visible-spectrum'))
+        self.assertTrue(Color('rec2020', [0, 1, 0]).in_gamut('visible-spectrum'))
+        self.assertTrue(Color('rec2020', [0, 0, 1]).in_gamut('visible-spectrum'))
+        self.assertFalse(Color('rec2020', [1.1, 1.1, 1.1]).in_gamut('visible-spectrum'))
+        self.assertFalse(Color('prophoto-rgb', [0, 0, 1]).in_gamut('visible-spectrum'))
+
+    def test_visible_spectrum_threshold(self):
+        """Test gamut check using threshold."""
+
+        # Rec. 2020 is right on the spectral locus, but uses rounded primaries
+        self.assertTrue(Color('rec2020', [1, 1, 1]).in_gamut('visible-spectrum', tolerance=0))
+        self.assertFalse(Color('rec2020', [1, 0, 0]).in_gamut('visible-spectrum', tolerance=0))
+        self.assertFalse(Color('rec2020', [0, 1, 0]).in_gamut('visible-spectrum', tolerance=0))
+        self.assertFalse(Color('rec2020', [0, 0, 1]).in_gamut('visible-spectrum', tolerance=0))
+
+    def test_fit_visible_spectrum(self):
+        """Fit colors to visible spectrum."""
+
+        self.assertTrue(
+            Color('rec2020', [1.1, 1.1, 1.1]).fit('visible-spectrum'),
+            Color('rec2020', [1, 1, 1])
+        )
+        self.assertColorEqual(
+            Color('prophoto-rgb', [0, 1, 0]).fit('visible-spectrum'),
+            Color('color(prophoto-rgb 0.14843 0.99272 0.14843)')
+        )
+        self.assertColorEqual(
+            Color('prophoto-rgb', [0, 0, 1]).fit('visible-spectrum'),
+            Color('color(prophoto-rgb 0.00137 0.00137 0.0158)')
+        )
+
+    def test_fit_visible_spectrum_threshold(self):
+        """Fit colors to visible spectrum."""
+
+        # Custom tolerance
+        self.assertColorEqual(
+            Color('rec2020', [0, 1, 0]).fit('visible-spectrum', tolerance=0),
+            Color('color(rec2020 0.03137 0.99995 0.03137)')
+        )
+        self.assertColorEqual(
+            Color('rec2020', [0, 0, 1]).fit('visible-spectrum', tolerance=0),
+            Color('color(rec2020 0.03558 0.03558 0.99779)')
+        )
+
+        # Normal tolerance
+        self.assertColorEqual(
+            Color('rec2020', [1, 0, 0]).fit('visible-spectrum'),
+            Color('rec2020', [1, 0, 0])
+        )
+        self.assertColorEqual(
+            Color('rec2020', [0, 1, 0]).fit('visible-spectrum'),
+            Color('rec2020', [0, 1, 0])
+        )
+        self.assertColorEqual(
+            Color('rec2020', [0, 0, 1]).fit('visible-spectrum'),
+            Color('rec2020', [0, 0, 1])
+        )
+
+    def test_ignore_luminance(self):
+        """Test ignore luminance."""
+
+        self.assertFalse(Color('rec2100-hlg', [1, 1, 1]).in_gamut('visible-spectrum'))
+        self.assertTrue(Color('rec2100-hlg', [1, 1, 1]).in_gamut('visible-spectrum', ignore_luminance=True))
+
+        self.assertColorEqual(
+            Color('rec2100-hlg', [0, 1, 0]).fit('visible-spectrum'),
+            Color('color(rec2100-hlg 0 0.82507 0)')
+        )
+        self.assertColorEqual(
+            Color('rec2100-hlg', [0, 1, 0]).fit('visible-spectrum', ignore_luminance=True),
+            Color('color(rec2100-hlg 0 1 0)')
+        )
