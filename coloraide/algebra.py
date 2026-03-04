@@ -452,7 +452,7 @@ def solve_newton(
     f0: Callable[..., float],
     dx: Callable[..., float],
     dx2: Callable[..., float] | None = None,
-    args: tuple[Any] | tuple[()] = (),
+    args: tuple[Any, ...] | tuple[()] = (),
     maxiter: int = 50,
     rtol: float = RTOL,
     atol: float = ATOL,
