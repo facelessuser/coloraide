@@ -1085,7 +1085,7 @@ color.in_gamut('macadam-limits')
 
 ## Visible Spectrum
 
-> [!new] 8.6
+> [!new] New in 8.6
 
 This provides checks and corrections of colors outside the spectral locus. The limits are defined by the 2D chromaticity
 coordinates. This includes both reflective and emissive colors, but the luminance is not based off any hard data and is
