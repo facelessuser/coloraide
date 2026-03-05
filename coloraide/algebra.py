@@ -906,27 +906,30 @@ class MonotoneInterpolator(_CubicInterpolator):
     @staticmethod
     def interpolate(p0: float, p1: float, p2: float, p3: float, t: float) -> float:
         """
-        Monotone spline based on Hermite.
+        A monotonic cubic Hermite sampler spline.
+
+        This samples data of a points neighbors to calculate gradients and secants on the fly to
+        create a monotonic cubic Hermite spline. Calculations could be done ahead of time and stored
+        at the cost of memory, but we've opted to do this on the fly.
 
         We calculate our secants for our four samples (the center pair being our interpolation target).
-
         From those, we calculate an initial gradient, and test to see if it is needed. In the event
         that our there is no increase or decrease between the point, we can infer that the gradient
         should be horizontal. We also test if they have opposing signs, if so, we also consider the
         gradient to be zero.
 
-        Lastly, we ensure that the gradient is confined within a circle with radius 3 as it has been
-        observed that such a circle encapsulates the entire monotonicity region.
+        This is an alternative that assumes a cube with corners defined at (0,0) and (3,3) instead of
+        a circle with radius 3. Both approaches encapsulate the entire monotonicity, but the cube
+        approach requires less points and less checks and is more efficient for on the fly calculations.
 
         Once gradients are calculated, we simply perform the Hermite spline calculation and clean up
         floating point math errors to ensure monotonicity.
 
-        We could build up secant and gradient info ahead of time, but currently we do it on the fly.
-
-        http://jbrd.github.io/2020/12/27/monotone-cubic-interpolation.html
-        https://ui.adsabs.harvard.edu/abs/1990A%26A...239..443S/abstract
-        https://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.39.6720
-        https://en.wikipedia.org/w/index.php?title=Monotone_cubic_interpolation&oldid=950478742
+        - http://jbrd.github.io/2020/12/27/monotone-cubic-interpolation.html
+        - https://www.jstor.org/stable/2156610
+        - https://ui.adsabs.harvard.edu/abs/1990A%26A...239..443S/abstract
+        - https://www.researchgate.net/publication/2511970_Non-Overshooting_Hermite_Cubic_Splines_For_Keyframe_Interpolation
+        - https://en.wikipedia.org/w/index.php?title=Monotone_cubic_interpolation&oldid=950478742
         """
 
         # Save some time calculating this once
@@ -939,43 +942,41 @@ class MonotoneInterpolator(_CubicInterpolator):
         s2 = p3 - p2
 
         # Calculate initial gradients
-        m1 = (s0 + s1) * 0.5
-        m2 = (s1 + s2) * 0.5
+        m0 = (s0 + s1) * 0.5
+        m1 = (s1 + s2) * 0.5
 
         # Center segment should be horizontal as there is no increase/decrease between the two points
-        if math.isclose(p1, p2):
-            m1 = m2 = 0.0
+        if math.isclose(p1, p2, rel_tol=RTOL, abs_tol=ATOL):
+            m0 = m1 = 0.0
         else:
 
             # Gradient is zero if segment is horizontal or if the left hand secant differs in sign from current.
-            if math.isclose(p0, p1) or (math.copysign(1.0, s0) != math.copysign(1.0, s1)):
-                m1 = 0.0
+            if math.isclose(p0, p1, rel_tol=RTOL, abs_tol=ATOL) or sign(s0) != sign(s1):
+                m0 = 0.0
 
             # Ensure gradient magnitude is either 3 times the left or current secant (smaller being preferred).
             else:
-                m1 *= min(3.0 * s0 / m1, min(3.0 * s1 / m1, 1.0))
+                m0 *= min(3.0 * s0 / m0, 3.0 * s1 / m0, 1.0)
 
             # Gradient is zero if segment is horizontal or if the right hand secant differs in sign from current.
-            if math.isclose(p2, p3) or (math.copysign(1.0, s1) != math.copysign(1.0, s2)):
-                m2 = 0.0
+            if math.isclose(p2, p3, rel_tol=RTOL, abs_tol=ATOL) or sign(s1) != sign(s2):
+                m1 = 0.0
 
             # Ensure gradient magnitude is either 3 times the current or right secant (smaller being preferred).
             else:
-                m2 *= min(3.0 * s1 / m2, min(3.0 * s2 / m2, 1.0))
+                m1 *= min(3.0 * s1 / m1, 3.0 * s2 / m1, 1.0)
 
         # Now we can evaluate the Hermite spline
         result = (
-            (m1 + m2 - 2 * s1) * t3 +
-            (3.0 * s1 - 2.0 * m1 - m2) * t2 +
-            m1 * t +
+            (m0 + m1 - 2.0 * s1) * t3 +
+            (3.0 * s1 - 2.0 * m0 - m1) * t2 +
+            m0 * t +
             p1
         )
 
         # As the spline is monotonic, all interpolated values should be confined between the endpoints.
         # Floating point arithmetic can cause this to be out of bounds on occasions.
-        mn = min(p1, p2)
-        mx = max(p1, p2)
-        return min(max(result, mn), mx)
+        return clamp(result, min(p1, p2), max(p1, p2))
 
 
 class BSplineInterpolator(_CubicInterpolator):
