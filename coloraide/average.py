@@ -13,13 +13,6 @@ class Sentinel(float):
     """Sentinel object that is specific to averaging that we shouldn't see defined anywhere else."""
 
 
-def _iter_colors(colors: Iterable[ColorInput]) -> Iterable[tuple[ColorInput, float]]:
-    """Iterate colors and return weights."""
-
-    for c in colors:
-        yield c, 1.0
-
-
 def average(
     color_cls: type[AnyColor],
     colors: Iterable[ColorInput],
@@ -66,7 +59,8 @@ def average(
 
     # Sum channel values using a rolling average. Apply premultiplication and additional weighting as required.
     count = 0
-    for c, w in (_iter_colors(colors) if no_weights else it.zip_longest(colors, weights, fillvalue=sentinel)):  # type: ignore[arg-type]
+    fill = 1 if no_weights else sentinel
+    for c, w in it.zip_longest(colors, [] if no_weights else weights, fillvalue=fill):  # type: ignore[arg-type]
 
         # Handle explicit weighted cases
         if not no_weights:
