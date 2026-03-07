@@ -1075,12 +1075,12 @@ class SpragueInterpolator(Interpolator):
     def preprocess(cls, points: list[Vector]) -> None:
         """Apply any preprocessing points."""
 
-        l = len(points[0])
-        if l < 6:
+        if len(points) < 6:
             raise ValueError('Sprague interpolation requires at least 6 evenly spaced points.')
         # Create 2 points at the start and end of the data that will guide the interpolation
         # through the start and end points.
         p1, p2 = points[0:6], points[-6:]
+        l = len(points[0])
         s0 = [0.0] * l
         s1 = [0.0] * l
         e0 = [0.0] * l
