@@ -3,6 +3,10 @@ icon: lucide/scroll-text
 ---
 # Changelog
 
+## 8.7
+
+-   **NEW**: Drop support for Python 3.9.
+
 ## 8.6
 
 -   **NEW**: Add new special gamut `visible-spectrum`.
