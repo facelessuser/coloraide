@@ -772,19 +772,22 @@ class Interpolator:
     def __init__(
         self,
         points: list[Vector],
-        domain: VectorLike | None
+        domain: VectorLike | None,
+        extrapolate: bool = True,
+        **kwargs: Any
     ) -> None:
         """Initialize."""
 
         self.length = len(points)
         self.num_coords = len(points[0])
-        self.preprocess(points)
+        self.extrapolate = extrapolate
+        self.preprocess(points, **kwargs)
         self.points = [*zip(*points)]
         self.domain = list(domain) if domain is not None else domain
         self.increasing = not self.domain or len(self.domain) == 1 or self.domain[1] > self.domain[0]
 
     @classmethod
-    def preprocess(cls, points: list[Vector]) -> None:
+    def preprocess(cls, points: list[Vector], **kwargs: Any) -> None:
         """Apply any preprocessing points."""
 
         pass
@@ -838,6 +841,8 @@ class Interpolator:
         n = self.length - 1
         i = max(min(math.floor(t * n), n - 1), 0)
         t = (t - i / n) * n if 0 <= t <= 1 else t
+        if not self.extrapolate:
+            t = clamp(t, 0.0, 1.0)
 
         return self.run(i, t)
 
@@ -845,12 +850,34 @@ class Interpolator:
 class _CubicInterpolator(Interpolator):
     """Cubic interpolator."""
 
+    DEF_END_COND = 'not-a-knot'
+
+    def __init__(
+        self,
+        points: list[Vector],
+        domain: VectorLike | None,
+        **kwargs: Any
+    ) -> None:
+        """Initialize."""
+
+        self.end_condition = kwargs.get('end_cond', self.DEF_END_COND)
+        super().__init__(points, domain, **kwargs)
+
     @classmethod
-    def preprocess(cls, points: list[Vector]) -> None:
+    def preprocess(cls, points: list[Vector], end_cond: str | None = None, **kwargs: Any) -> None:
         """Apply any preprocessing points."""
 
-        points.insert(0, [2 * a - b for a, b in zip(points[0], points[1])])
-        points.append([2 * a - b for a, b in zip(points[-1], points[-2])])
+        if end_cond is None:
+            end_cond = cls.DEF_END_COND
+
+        if end_cond == 'natural' or len(points) == 2:
+            points.insert(0, [2 * a - b for a, b in zip(points[0], points[1])])
+            points.append([2 * a - b for a, b in zip(points[-1], points[-2])])
+        elif end_cond == 'not-a-knot':
+            points.insert(0, [2 * a - b for a, b in zip(points[0], points[2])])
+            points.append([2 * a - b for a, b in zip(points[-1], points[-3])])
+        else:
+            raise ValueError(f"End condition '{end_cond}' is not recognized")
 
     @staticmethod
     def interpolate(p0: float, p1: float, p2: float, p3: float, t: float) -> float:  # pragma: no cover
@@ -864,20 +891,16 @@ class _CubicInterpolator(Interpolator):
         coord = []
         for idx in range(self.num_coords):
             c = self.points[idx]
-            if t < 0 or t > 1:
-                coord.append(lerp(c[i + 1], c[i + 2], t))
-            else:
-                coord.append(
-                    self.interpolate(
-                        c[i],
-                        c[i + 1],
-                        c[i + 2],
-                        c[i + 3],
-                        t
-                    )
+            coord.append(
+                self.interpolate(
+                    c[i],
+                    c[i + 1],
+                    c[i + 2],
+                    c[i + 3],
+                    t
                 )
+            )
         return coord
-
 
 
 class CatmullRomInterpolator(_CubicInterpolator):
@@ -976,7 +999,8 @@ class MonotoneInterpolator(_CubicInterpolator):
 
         # As the spline is monotonic, all interpolated values should be confined between the endpoints.
         # Floating point arithmetic can cause this to be out of bounds on occasions.
-        return clamp(result, min(p1, p2), max(p1, p2))
+        # If we are extrapolating (`t` is beyond the range), it doesn't really matter.
+        return clamp(result, min(p1, p2), max(p1, p2)) if 0 <= t <= 1 else result
 
 
 class BSplineInterpolator(_CubicInterpolator):
@@ -1013,6 +1037,8 @@ def _matrix_141(n: int) -> Matrix:
 
 class NaturalBSplineInterpolator(BSplineInterpolator):
     """Natural B-Spline interpolator."""
+
+    DEF_END_COND = 'natural'
 
     @staticmethod
     def naturalize(points: list[Vector]) -> None:
@@ -1054,11 +1080,11 @@ class NaturalBSplineInterpolator(BSplineInterpolator):
                 points[r] = v[r - 1]
 
     @classmethod
-    def preprocess(cls, points: list[Vector]) -> None:
+    def preprocess(cls, points: list[Vector], end_cond: str | None = None, **kwargs: Any) -> None:
         """Apply any preprocessing points."""
 
         cls.naturalize(points)
-        super(NaturalBSplineInterpolator, cls).preprocess(points)
+        super(NaturalBSplineInterpolator, cls).preprocess(points, end_cond, **kwargs)
 
 
 class SpragueInterpolator(Interpolator):
@@ -1072,7 +1098,7 @@ class SpragueInterpolator(Interpolator):
     ]
 
     @classmethod
-    def preprocess(cls, points: list[Vector]) -> None:
+    def preprocess(cls, points: list[Vector], **kwargs: Any) -> None:
         """Apply any preprocessing points."""
 
         if len(points) < 6:
@@ -1122,20 +1148,17 @@ class SpragueInterpolator(Interpolator):
         coord = []
         for idx in range(self.num_coords):
             c = self.points[idx]
-            if t < 0 or t > 1:
-                coord.append(lerp(c[i + 2], c[i + 3], t))
-            else:
-                coord.append(
-                    self.interpolate(
-                        c[i],
-                        c[i + 1],
-                        c[i + 2],
-                        c[i + 3],
-                        c[i + 4],
-                        c[i + 5],
-                        t
-                    )
+            coord.append(
+                self.interpolate(
+                    c[i],
+                    c[i + 1],
+                    c[i + 2],
+                    c[i + 3],
+                    c[i + 4],
+                    c[i + 5],
+                    t
                 )
+            )
         return coord
 
 
@@ -1152,13 +1175,25 @@ SPLINES = {
 def interpolate(
     points: list[Vector] | Vector,
     domain: VectorLike | None = None,
-    method: str = 'linear'
+    method: str = 'linear',
+    extrapolate: bool = True,
+    **kwargs: Any
 ) -> Interpolator:
     """Generic interpolation method."""
 
     if points and isinstance(points[0], Sequence):
-        return SPLINES[method](cast('list[Vector]', points[:]), domain=domain)
-    return SPLINES[method](cast('list[Vector]', [[p] for p in points]), domain=domain)
+        return SPLINES[method](
+            cast('list[Vector]', points[:]),
+            domain=domain,
+            extrapolate=extrapolate,
+            **kwargs
+        )
+    return SPLINES[method](
+        cast('list[Vector]', [[p] for p in points]),
+        domain=domain,
+        extrapolate=extrapolate,
+        **kwargs
+    )
 
 
 ################################

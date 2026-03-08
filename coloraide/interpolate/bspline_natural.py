@@ -20,7 +20,7 @@ class InterpolatorNaturalBSpline(InterpolatorBSpline[AnyColor]):
         # Use the same logic as normal B-spline for handling undefined values and applying premultiplication
         self.handle_undefined()
         self.spline = alg.NaturalBSplineInterpolator
-        self.spline.preprocess(self.coordinates)
+        self.spline.preprocess(self.coordinates, end_cond=self.end_cond)
 
 
 class NaturalBSpline(Interpolate[AnyColor]):

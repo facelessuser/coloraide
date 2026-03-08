@@ -2159,11 +2159,21 @@ class TestAlgebra(unittest.TestCase):
         i = alg.interpolate([[3, 4], [6, 8], [9, 2]], method='natural')
         self.assertEqual(
             i(1.2),
-            [9.6, 0.3000000000000007]
+            [9.6, 0.3199999999999994]
         )
         self.assertEqual(
             i(-0.2),
-            [2.4, 2.7]
+            [2.4, 2.72]
+        )
+
+        i = alg.interpolate([[3, 4], [6, 8], [9, 2]], method='natural', extrapolate=False)
+        self.assertEqual(
+            i(1.2),
+            [9, 2]
+        )
+        self.assertEqual(
+            i(-0.2),
+            [3, 4]
         )
 
     def test_interpolate_sprague_not_enough_points(self):
