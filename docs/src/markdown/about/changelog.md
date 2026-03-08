@@ -16,6 +16,7 @@ icon: lucide/scroll-text
     the `end_cond` parameter.
 -   **NEW**: Extrapolation with splines will no longer use linear extrapolation in order to ensure results are
     consistent with their chosen end conditions.
+_   **FIX**: CMFs should extrapolate linearly if ever forced to do so.
 
 ## 8.6
 
