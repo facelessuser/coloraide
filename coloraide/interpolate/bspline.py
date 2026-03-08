@@ -16,13 +16,19 @@ from typing import Any
 class InterpolatorBSpline(InterpolatorContinuous[AnyColor]):
     """Interpolate with B-spline."""
 
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        """Initialize."""
+
+        self.end_cond = kwargs.get('end_cond', None)  # type: str | None
+        super().__init__(*args, **kwargs)
+
     def setup(self) -> None:
         """Optional setup."""
 
         # Process undefined values
         self.handle_undefined()
         self.spline = alg.BSplineInterpolator  # type: type[alg._CubicInterpolator]
-        self.spline.preprocess(self.coordinates)
+        self.spline.preprocess(self.coordinates, end_cond=self.end_cond)
 
     def interpolate(
         self,
@@ -41,15 +47,8 @@ class InterpolatorBSpline(InterpolatorContinuous[AnyColor]):
             t = self.ease(point, i)
 
             # If `t` ends up spilling out past our boundaries, we need to extrapolate
-            if self.extrapolate and index == 1 and point < 0.0:
-                p0, p1 = coords[i][1:3]
-                channels.append(alg.lerp(p0, p1, t))
-            elif self.extrapolate and index == self.length - 1 and point > 1.0:
-                p0, p1 = coords[i][-3:-1]
-                channels.append(alg.lerp(p0, p1, t))
-            else:
-                p0, p1, p2, p3 = coords[i]
-                channels.append(self.spline.interpolate(p0, p1, p2, p3, t))
+            p0, p1, p2, p3 = coords[i]
+            channels.append(self.spline.interpolate(p0, p1, p2, p3, t))
 
         # Small adjustment for floating point math and alpha channels
         if 1 - channels[-1] < 1e-6:

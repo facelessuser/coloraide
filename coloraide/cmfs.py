@@ -34,6 +34,14 @@ class CMFs:
         value = self.get(key)
         if value is not None:
             return value[:]
+        # Extrapolate linearly
+        if key < self.start:
+            i = alg.ilerp(self.start + self.step, self.start, key)
+            return [alg.lerp(a, b, i)for a, b in zip(self._cmfs[self.start + self.step], self._cmfs[self.start])]
+        if key > self.end:
+            i = alg.ilerp(self.end - self.step, self.end, key)
+            return [alg.lerp(a, b, i)for a, b in zip(self._cmfs[self.end - self.step], self._cmfs[self.end])]
+        # Interpolate
         return self.spline(key)
 
     def get(self, key: float, default: None = None) -> Vector | None:

@@ -63,16 +63,16 @@ straight lines between each color in a chain of colors.
 
 ![Piecewise Interpolation](images/piecewise-interpolation.png)
 
+```py play
+Color.interpolate(['#51A5E6', '#79AF58', '#92A854', '#A097BE', '#CF8E38', '#CF83A1', '#F76B5C'])
+```
+
 When the `interpolate` method receives more that two colors, the interpolation will utilize piecewise interpolation
 and interpolation will be broken up between each pair of colors. The function, just like when interpolating between two
 colors, still operates by default in the domain of [0, 1], only it will now apply to the entire range of colors.
 
 Piecewise interpolation simply breaks up a series of data points into segments in order to apply interpolation
 individually on each segment.
-
-```py play
-Color.interpolate(['black', 'red', 'white'])
-```
 
 This approach generally works well, but since the placement of colors may not be in a straight line, you will often
 have pivot points and the transition may not be quite as smooth at these locations.
@@ -142,16 +142,18 @@ built off of the [`continuous` interpolation](#continuous-interpolation) approac
 
 ![B-spline](images/bspline-interpolation.png)
 
-B-spline is a piecewise spline similar to Bezier curves. It utilizes "control points" that help shape the interpolation
-path through a series of colors. Like Bezier Curves, the path does not pass through the control points, but it is
-clamped at the start and end. Essentially, the interpolation path passes through both end colors and bends that path
-along the way towards the other colors being used as control points.
-
-It can be used by specifying `bspline` as the interpolation method.
-
 ```py play
-Color.interpolate(['red', 'green', 'blue', 'orange'], method='bspline')
+Color.interpolate(['#51A5E6', '#79AF58', '#92A854', '#A097BE', '#CF8E38', '#CF83A1', '#F76B5C'], method='bspline')
 ```
+
+B-spline is a piecewise spline similar to Bezier curves. It utilizes "control points" that help shape the interpolation
+path through a series of colors. Like Bezier Curves, the path is not guaranteed to pass through the control points.
+
+> [!tip]
+> By default, this approach uses `not-a-knot` end conditions which doesn't introduce end point bias, but if you'd like to
+> ensure the interpolation passes through the end points, you can set `end_cond` to `natural`.
+>
+> If you need an interpolation to pass through all points, see the [Natural spline](#natural).
 
 ### Natural
 
@@ -159,47 +161,35 @@ Color.interpolate(['red', 'green', 'blue', 'orange'], method='bspline')
 
 ![Natural](images/natural-interpolation.png)
 
+```py play
+Color.interpolate(['#51A5E6', '#79AF58', '#92A854', '#A097BE', '#CF8E38', '#CF83A1', '#F76B5C'], method='natural')
+```
+
 The "natural" spline is the same as the B-spline approach except an algorithm is applied that uses the colors as data
 points and calculates new control points such that the interpolation passes through all the data points. This means
 that the path will pass through all the colors. The resultant spline has the continuity and properties of a natural
 spline, hence the name.
 
-One down side is that it can overshoot or undershoot a bit, and can occasionally cause the interpolation path to pass
-out of gamut if interpolating on an edge.
+- **Interpolation**: Passes through all control points.
+- **Continuity**: C^2^ continuous (both first and second derivatives are continuous).
+- **Local control**: No, changing one point affects the entire curve.
+- **Boundary Conditions**: Uses "natural" conditions (second derivative = 0 at endpoints).
+
+Natural provides a nice, smooth curve, but may have unwanted oscillations. Occasionally it can cause the interpolation
+path to pass out of gamut if interpolating on an edge.
 
 It can be used by specifying `natural` as the interpolation method.
 
-```py play
-Color.interpolate(['red', 'green', 'blue', 'orange'], method='natural')
-```
-
-### Monotone
-
-> [!success] Monotone interpolation is registered in `Color` by Default
-
-![Monotone](images/monotone-interpolation.png)
-
-The "monotone" spline is a piecewise interpolation spline that passes through all its data points and helps to preserve
-monotonicity. As far as we are concerned, the important thing to note is that it greatly reduces any overshoot or
-undershoot in the interpolation.
-
-```py play
-Color.interpolate(['red', 'green', 'blue', 'orange'], method='monotone')
-```
+> [!tip]
+> By default, end conditions are set to `natural`, and while not recommended, you can set `end_cond` to `not-a-not`, but
+> that would undo the behavior that constrains the interpolation to pass through the end points, a characteristic of the
+> natural boundary conditions.
 
 ### Catmull-Rom
 
 > [!failure] Catmull-Rom interpolation is not registered in `Color` by Default
 
 ![Catmull-Rom](images/catmull-rom-interpolation.png)
-
-Lastly, the Catmull-Rom spline is another "interpolating" spline that passes through all of its data points, similar to
-the "natural" spline, but it but does not share the same continuity and properties of a "natural" spline.
-
-Much like the "natural" spline, it can overshoot or undershoot.
-
-Catmull-Rom is not registered by default, but can be registered as shown below and then used by specifying `catrom`
-as the interpolation method.
 
 ```py play
 from coloraide import Color
@@ -209,8 +199,51 @@ class Custom(Color): ...
 
 Custom.register(CatmullRom())
 
-Custom.interpolate(['red', 'green', 'blue', 'orange'], method='catrom')
+Custom.interpolate(['#51A5E6', '#79AF58', '#92A854', '#A097BE', '#CF8E38', '#CF83A1', '#F76B5C'], method='catrom')
 ```
+
+The Catmull-Rom spline is another "interpolating" spline that passes through all of its data points, similar to the
+"natural" spline in that it passes through all the points, but it but does not share the same continuity and properties
+of a "natural" spline.
+
+- **Interpolation**: Passes through all control points.
+- **Continuity**: C^1^ continuous (first derivative is continuous).
+- **Local Control**: Adjustments of one point won't affect the entire curve.
+
+With Catmull-Rom, changing one point won't affect the entire curve, but has a more local effect. Depending on the data
+set, can have more overshoot than Natural and can exhibit unwanted oscillation.
+
+> [!tip]
+> By default, `catrom` uses `not-a-knot` end conditions which do not introduce end point bias, but you can set
+> `end_cond` to `natural` if preferred which will guide the interpolation through the end points in a more linear way at
+> the ends.
+
+### Monotone
+
+> [!success] Monotone interpolation is registered in `Color` by Default
+
+![Monotone](images/monotone-interpolation.png)
+
+```py play
+Color.interpolate(['#51A5E6', '#79AF58', '#92A854', '#A097BE', '#CF8E38', '#CF83A1', '#F76B5C'], method='monotone')
+```
+
+The "monotone" spline is a piecewise interpolation spline that passes through all its data points and helps to preserve
+monotonicity. As far as we are concerned, the important thing to note is that it greatly reduces any overshoot or
+undershoot in the interpolation.
+
+- **Interpolation**: Passes through all control points.
+- **Continuity**: C^1^ continuous (first derivative continuous).
+- **Local control**: Adjustments of one point won't affect the entire curve.
+
+Much like Catmull-Rom, adjusting one point won't affect the entire curve, but it ensures the interpolated curve
+maintains the increasing or decreasing trend. As previously mentioned, this also prevents oscillations, but can
+sometimes be too constrained and give less smooth results.
+
+> [!tip]
+> By default, `monotone` uses `not-a-knot` end conditions which do not introduce end point bias, but you can set
+> `end_cond` to `natural` if preferred which will guide the interpolation through the end points in a more linear way at
+> the ends.
 
 ## Discrete Interpolation
 

@@ -188,7 +188,6 @@ class InterpolatorContinuous(Interpolator[AnyColor]):
                         if last is None:
                             # For hue longer, we need to simulate the behavior of resolving undefined hue before fix-up
                             if is_longer and hue_index == i:
-                                print('who?')
                                 c[i] = alg.lerp(b - mx, b, point * (e - 1))
                             # Handle all other channels and hue approaches in the default way
                             else:

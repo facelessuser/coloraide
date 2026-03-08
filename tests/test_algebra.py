@@ -2159,12 +2159,34 @@ class TestAlgebra(unittest.TestCase):
         i = alg.interpolate([[3, 4], [6, 8], [9, 2]], method='natural')
         self.assertEqual(
             i(1.2),
-            [9.6, 0.3000000000000007]
+            [9.6, 0.3199999999999994]
         )
         self.assertEqual(
             i(-0.2),
-            [2.4, 2.7]
+            [2.4, 2.72]
         )
+
+        i = alg.interpolate([[3, 4], [6, 8], [9, 2]], method='natural', extrapolate=False)
+        self.assertEqual(
+            i(1.2),
+            [9, 2]
+        )
+        self.assertEqual(
+            i(-0.2),
+            [3, 4]
+        )
+
+    def test_interpolation_end_conditions(self):
+        """Test interpolation end conditions."""
+
+        i = alg.interpolate([[3, 4], [6, 8], [9, 2]], method='catrom', end_cond='natural')
+        i2 = alg.interpolate([[3, 4], [6, 8], [9, 2]], method='catrom', end_cond='not-a-knot')
+
+        self.assertEqual(i(0.25), [4.5, 6.625])
+        self.assertEqual(i2(0.25), [4.6875, 6.25])
+
+        with self.assertRaises(ValueError):
+            alg.interpolate([[3, 4], [6, 8], [9, 2]], method='catrom', end_cond='bad')
 
     def test_interpolate_sprague_not_enough_points(self):
         """Test extrapolation with splines when interpolating."""

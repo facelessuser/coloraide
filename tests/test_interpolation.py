@@ -687,13 +687,13 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
         """Test multiple inputs for B-spline interpolation."""
 
         func = Color.interpolate(['white', 'red', 'black'], method='bspline')
-        self.assertColorEqual(func(0), Color('oklab(1 0 0)'))
-        self.assertColorEqual(func(0.25), Color('color(--oklab 0.80865 0.10306 0.05768 / 1)'))
+        self.assertColorEqual(func(0), Color('oklab(1.1047 0.03748 0.02097)'))
+        self.assertColorEqual(func(0.25), Color('oklab(0.82173 0.10775 0.0603)'))
         self.assertColorEqual(func(0.5), Color('color(--oklab 0.5853 0.14991 0.0839 / 1)'))
-        self.assertColorEqual(func(0.75), Color('color(--oklab 0.30865 0.10306 0.05768 / 1)'))
-        self.assertColorEqual(func(1), Color('color(--oklab 0 0 0 / 1)'))
-        self.assertColorEqual(func(-0.1), Color('color(--oklab 1 0 0 / 1)'))
-        self.assertColorEqual(func(1.1), Color('color(--oklab 0 0 0 / 1)'))
+        self.assertColorEqual(func(0.75), Color('oklab(0.3009 0.10775 0.0603)'))
+        self.assertColorEqual(func(1), Color('oklab(-0.06201 0.03748 0.02097)'))
+        self.assertColorEqual(func(-0.1), Color('oklab(1.1047 0.03748 0.02097)'))
+        self.assertColorEqual(func(1.1), Color('oklab(-0.06201 0.03748 0.02097)'))
 
     def test_interpolate_multi_natural(self):
         """Test multiple inputs for Natural B-spline interpolation."""
@@ -736,9 +736,9 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
 
         func = Color.interpolate(['white', 'red', 'black'], method='catrom')
         self.assertColorEqual(func(0), Color('color(--oklab 1 0 0 / 1)'))
-        self.assertColorEqual(func(0.25), Color('color(--oklab 0.82997 0.14054 0.07865 / 1)'))
+        self.assertColorEqual(func(0.25), Color('oklab(0.79072 0.12649 0.07079)'))
         self.assertColorEqual(func(0.5), Color('color(--oklab 0.62796 0.22486 0.12585 / 1)'))
-        self.assertColorEqual(func(0.75), Color('color(--oklab 0.32997 0.14054 0.07865 / 1)'))
+        self.assertColorEqual(func(0.75), Color('oklab(0.35322 0.12649 0.07079)'))
         self.assertColorEqual(func(1), Color('color(--oklab 0 0 0 / 1)'))
         self.assertColorEqual(func(-0.1), Color('color(--oklab 1 0 0 / 1)'))
         self.assertColorEqual(func(1.1), Color('color(--oklab 0 0 0 / 1)'))
@@ -748,9 +748,9 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
 
         func = Color.interpolate(['white', 'red', 'black'], method='monotone')
         self.assertColorEqual(func(0), Color('color(--oklab 1 0 0 / 1)'))
-        self.assertColorEqual(func(0.25), Color('color(--oklab 0.82997 0.14054 0.07865 / 1)'))
+        self.assertColorEqual(func(0.25), Color('oklab(0.79072 0.11243 0.06292)'))
         self.assertColorEqual(func(0.5), Color('color(--oklab 0.62796 0.22486 0.12585 / 1)'))
-        self.assertColorEqual(func(0.75), Color('color(--oklab 0.32997 0.14054 0.07865 / 1)'))
+        self.assertColorEqual(func(0.75), Color('oklab(0.35322 0.11243 0.06292)'))
         self.assertColorEqual(func(1), Color('color(--oklab 0 0 0 / 1)'))
         self.assertColorEqual(func(-0.1), Color('color(--oklab 1 0 0 / 1)'))
         self.assertColorEqual(func(1.1), Color('color(--oklab 0 0 0 / 1)'))
@@ -1468,7 +1468,7 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
                 space='hsl',
                 method='bspline'
             )(0.75),
-            Color('hsl(152.5 40.104% 44.271%)')
+            Color('hsl(151.15 39.063 43.854)')
         )
 
     def test_bspline_undefined_alpha(self):
@@ -1480,7 +1480,7 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
                 space='srgb',
                 method='bspline'
             )(0.75),
-            Color('rgb(3.4932 76.849 174.66 / 0.76042)')
+            Color('rgb(0 80.342 174.66 / 0.76042)')
         )
 
         self.assertColorEqual(
@@ -1489,7 +1489,7 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
                 space='srgb',
                 method='bspline'
             )(0.75),
-            Color('rgb(10.408 57.245 130.1 / 0.51042)')
+            Color('rgb(0 61.094 132.81 / 0.5)')
         )
 
         self.assertColorEqual(
@@ -1498,7 +1498,7 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
                 space='srgb',
                 method='bspline'
             )(0.75),
-            Color('rgb(8.5 140.25 106.25 / 0.625)')
+            Color('rgb(0 147.86 107.14 / 0.61979)')
         )
 
     def test_extrapolate_bspline(self):
@@ -1513,8 +1513,8 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
             method='bspline',
             extrapolate=True
         )
-        self.assertColorEqual(i(-0.5), Color('oklab(0.7 0.25 0.1)'))
-        self.assertColorEqual(i(1.5), Color('oklab(0.7 0 -0.19)'))
+        self.assertColorEqual(i(-0.5), Color('oklab(0.7 0.26917 0.14667)'))
+        self.assertColorEqual(i(1.5), Color('oklab(0.7 -0.02458 -0.23375)'))
 
     def test_extrapolate_linear(self):
         """
