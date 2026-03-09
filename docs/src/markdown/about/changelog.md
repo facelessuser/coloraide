@@ -7,8 +7,8 @@ icon: lucide/scroll-text
 
 -   **NEW**: Drop support for Python 3.9.
 -   **NEW**: Provide end conditions more appropriate for the given cubic spline type.
-    -   Use `not-a-knot` end point conditions by default for spline interpolations by default which prevents introducing
-        end point bias and fixes issues where overshoot was being introduced in `monotone` at the end points.
+    -   Use `not-a-knot` end point conditions by default for spline interpolations which prevents introducing end point
+        bias and fixes issues where overshoot was being introduced in `monotone` at the end points.
     -   `bspline` will not pass through end points unless configured to use `natural` end point conditions.
     -   The `natural` spline method will continue to use `natural` end point constraints by default as that is a
         requirement of the method.
