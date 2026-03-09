@@ -7,7 +7,7 @@ icon: lucide/scroll-text
 
 -   **NEW**: Drop support for Python 3.9.
 -   **NEW**: Provide end conditions more appropriate for the given cubic spline type.
-    -   Use `not-a-knot` end point conditions by default for spline interpolations which prevents introducing end point
+    -   Use `not-a-knot` end point conditions by default for spline interpolations, which prevents introducing end point
         bias and fixes issues where overshoot was being introduced in `monotone` at the end points.
     -   `bspline` will not pass through end points unless configured to use `natural` end point conditions.
     -   The `natural` spline method will continue to use `natural` end point constraints by default as that is a
@@ -16,7 +16,7 @@ icon: lucide/scroll-text
     the `end_cond` parameter.
 -   **NEW**: Extrapolation with splines will no longer use linear extrapolation in order to ensure results are
     consistent with their chosen end conditions.
-_   **FIX**: CMFs should extrapolate linearly if ever forced to do so.
+-   **FIX**: CMFs should extrapolate linearly if ever forced to do so.
 
 ## 8.6
 
