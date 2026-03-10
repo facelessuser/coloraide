@@ -32,6 +32,7 @@ CMF
 CMFs
 CMY
 CMYK
+COMBVD
 CSS
 CVD
 CVDs
@@ -74,12 +75,14 @@ Florian
 Formatter
 Fortran
 GMA
+GenSpace
 Golub
 Gosset
 Gossett
 Grau
 HCT
 HDR
+HLC
 HLG
 HPE
 HPLuv
@@ -94,6 +97,10 @@ HUSL
 HWB
 HWBish
 Hellwig
+Helmgen
+Helmgenlch
+Helmlab
+Helmlch
 Hermann
 Horner
 HyAB
@@ -147,6 +154,7 @@ MINDE
 MacAdam
 Machado
 Matcher
+MetricSpace
 Miquel
 MkDocs
 Molin
