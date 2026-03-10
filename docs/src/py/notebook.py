@@ -26,6 +26,7 @@ from pygments.lexers import get_lexer_by_name
 from pygments.formatters import find_formatter_class
 from coloraide import Color
 from coloraide.interpolate import Interpolator, normalize_domain
+from coloraide import algebra as alg
 try:
     from coloraide_extras.everything import ColorAll
 except ImportError:
@@ -687,11 +688,11 @@ def _color_command_console(colors, gamut=WEBSPACE):
             )
             el += color_wheel
         elif is_grad or is_steps:
-            current = total = percent = last = 0
+            last = 0
+            l = len(item)
             if is_steps:
-                total = len(item)
-                percent = 100 / total
-                current = percent
+                percents = (p for p in alg.linspace(0, 100, l + 1))
+                last = next(percents)
 
             if bar:
                 el += '<div class="swatch-bar">{}</div>'.format(' '.join(values))
@@ -702,17 +703,11 @@ def _color_command_console(colors, gamut=WEBSPACE):
             for e, color in enumerate(item):
                 color.fit()
                 color_str = color.convert(gamut).to_string(fit=False)
-                if current:
-                    if is_steps:
-                        stops.append(f'{color_str} {last!s}%')
-                        stops.append(f'{color_str} {current!s}%')
-                    else:
-                        stops.append(color_str)
-                    last = current
-                    if e < (total - 1):
-                        current += percent
-                    else:
-                        current = 100
+                if is_steps:
+                    stops.append(f'{color_str} {last!s}%')
+                    if e < l - 1:
+                        last = next(percents)
+                    stops.append(f'{color_str} {last!s}%')
                 else:
                     stops.append(color_str)
             if not stops:
