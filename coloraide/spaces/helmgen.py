@@ -146,7 +146,7 @@ class Helmgen(Lab):
     NAME = "helmgen"
     SERIALIZE = ("--helmgen",)
     CHANNELS = (
-        Channel("l", 0.0, 1.0),
+        Channel("l", 0.0, 1.168140042703694),
         Channel("a", -0.4, 0.4, flags=FLG_MIRROR_PERCENT),
         Channel("b", -0.4, 0.4, flags=FLG_MIRROR_PERCENT)
     )

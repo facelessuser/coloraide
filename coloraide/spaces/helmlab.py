@@ -673,9 +673,9 @@ class Helmlab(Lab):
     NAME = "helmlab"
     SERIALIZE = ("--helmlab",)
     CHANNELS = (
-        Channel("l", 0.0, 1.0),
-        Channel("a", -0.4, 0.4, flags=FLG_MIRROR_PERCENT),
-        Channel("b", -0.4, 0.4, flags=FLG_MIRROR_PERCENT)
+        Channel("l", 0.0, 1.1436213369754669),
+        Channel("a", -1.0, 1.0, flags=FLG_MIRROR_PERCENT),
+        Channel("b", -1.0, 1.0, flags=FLG_MIRROR_PERCENT)
     )
     WHITE = WHITES['2deg']['ASTM-E308-D65']
 
