@@ -50,6 +50,7 @@ from .distance.delta_e_99o import DE99o
 from .distance.delta_e_cam16 import DECAM16
 from .distance.delta_e_cam02 import DECAM02
 from .distance.delta_e_hct import DEHCT
+from .distance.delta_e_helmlab import DEHelmlab
 from .gamut.fit_hct_chroma import HCTChroma
 from .interpolate.catmull_rom import CatmullRom
 from .contrast.lstar import LstarContrast
@@ -125,6 +126,7 @@ ColorAll.register(
         DECAM16(),
         DECAM02(),
         DEHCT(),
+        DEHelmlab(),
 
         # Gamut Mapping
         HCTChroma(),

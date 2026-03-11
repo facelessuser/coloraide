@@ -39,7 +39,7 @@ class DEHelmlab(DeltaE):
 
         # Pair-dependent weighting
         lavg = (l1 + l2) * 0.5
-        sl = 1 + SL * (lavg - 0.5) ** 2
+        sl = 1.0 + SL * (lavg - 0.5) ** 2
 
         c1 = math.sqrt(a1 ** 2 + b1 ** 2)
         c2 = math.sqrt(a2 ** 2 + b2 ** 2)
@@ -52,4 +52,5 @@ class DEHelmlab(DeltaE):
         # Monotonic compression
         compressed = raw / (1.0 + COMPRESS * raw)
 
-        return compressed ** Q
+        # `mypy` is broken and can't figure out we are returning a float
+        return compressed ** Q  # type: ignore[no-any-return]

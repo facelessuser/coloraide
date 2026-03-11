@@ -155,6 +155,7 @@ MacAdam
 Machado
 Matcher
 MetricSpace
+Minkowski
 Miquel
 MkDocs
 Molin
