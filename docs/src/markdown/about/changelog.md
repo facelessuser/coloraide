@@ -3,6 +3,10 @@ icon: lucide/scroll-text
 ---
 # Changelog
 
+## 8.8
+
+-   **NEW**: Add new spaces: `helmlab`, `helmlch`, `helmgen`, and `helmgenlch`.
+
 ## 8.7
 
 -   **NEW**: Drop support for Python 3.9.

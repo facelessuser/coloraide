@@ -101,6 +101,7 @@ class TestAchromaticRoundTrip(TestRoundTrip):
     Color.deregister('space:hpluv')
     Color.deregister('space:ryb')
     Color.deregister('space:ryb-biased')
+    Color.deregister('space:helmlch')
 
     SPACES = dict.fromkeys(Color.CS_MAP, 10)
 

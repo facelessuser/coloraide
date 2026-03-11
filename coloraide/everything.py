@@ -43,7 +43,9 @@ from .spaces.cubehelix import Cubehelix
 from .spaces.rec2020_oetf import Rec2020OETF
 from .spaces.msh import Msh
 from .spaces.helmgen import Helmgen
+from .spaces.helmgenlch import Helmgenlch
 from .spaces.helmlab import Helmlab
+from .spaces.helmlch import Helmlch
 from .distance.delta_e_99o import DE99o
 from .distance.delta_e_cam16 import DECAM16
 from .distance.delta_e_cam02 import DECAM02
@@ -115,6 +117,8 @@ ColorAll.register(
         sUCS(),
         Helmgen(),
         Helmlab(),
+        Helmgenlch(),
+        Helmlch(),
 
         # Delta E
         DE99o(),
