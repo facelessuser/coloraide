@@ -103,6 +103,8 @@ flowchart LR
 
     xyz-d65 --- hct
 
+    xyz-d65 --- helmlab
+
     xyz-d65 --- helmgen --- helmgenlch
 
     xyz-d65 --- sucs

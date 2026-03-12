@@ -5,7 +5,8 @@ icon: lucide/scroll-text
 
 ## 8.8
 
--   **NEW**: Add new spaces: `helmlab`, `helmlch`, `helmgen`, and `helmgenlch`.
+-   **NEW**: Add new spaces: `helmlab`, `helmgen`, and `helmgenlch`.
+-   **NEW**: Add new distancing algorithm: `helmlab`.
 
 ## 8.7
 

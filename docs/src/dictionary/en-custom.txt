@@ -100,7 +100,6 @@ Hellwig
 Helmgen
 Helmgenlch
 Helmlab
-Helmlch
 Hermann
 Horner
 HyAB
@@ -370,6 +369,7 @@ quantizer
 rc
 reflectance
 reflectances
+reparameterization
 repurpose
 rgb
 sCAM

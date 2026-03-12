@@ -1,5 +1,5 @@
 """
-Helmlch class.
+Helmgenlch class.
 
 LCh based on the Helmlab GenSpace: generation-optimized color space for interpolation.
 
