@@ -105,8 +105,6 @@ flowchart LR
 
     xyz-d65 --- helmgen --- helmgenlch
 
-    xyz-d65 --- helmlab --- helmlch
-
     xyz-d65 --- sucs
 
     xyz-d65 --- scam-jmh
@@ -155,7 +153,6 @@ flowchart LR
     helmgen(Helmgen)
     helmgenlch(Helmgenlch)
     helmlab(Helmlab)
-    helmlch(Helmlch)
     hpluv(HPLuv)
     hsi(HSI)
     hsl(HSL)
@@ -232,7 +229,6 @@ flowchart LR
     click helmgen "./helmgen/" _self
     click helmgenlch "./helmgenlch/" _self
     click helmlab "./helmlab/" _self
-    click helmlch "./helmlch/" _self
     click hpluv "./hpluv/" _self
     click hsi "./hsi/" _self
     click hsl "./hsl/" _self
@@ -317,7 +313,6 @@ Color Space                                     | ID
 [Helmgen](./helmgen.md)                         | `helmgen`
 [Helmgenlch](./helmgenlch.md)                   | `helmgenlch`
 [Helmlab](./helmlab.md)                         | `helmlab`
-[Helmlch](./helmlch.md)                         | `helmlch`
 [HPLuv](./hpluv.md)                             | `hpluv`
 [HSI](./hsi.md)                                 | `hsi`
 [HSL](./hsl.md)                                 | `hsl`

@@ -103,7 +103,6 @@ class TestAchromaticRoundTrip(TestRoundTrip):
     Color.deregister('space:ryb-biased')
 
     SPACES = dict.fromkeys(Color.CS_MAP, 10)
-    SPACES['helmlch'] = (10, 4, {'zcam-jmh',})
 
     COLORS = [
         Color('darkgrey'),
