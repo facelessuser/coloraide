@@ -471,7 +471,7 @@ def l_correct_inv (l1: float, h: float) -> float:
             L_CORR_P2 * (dt * (0.5 - l) - t) +
             L_CORR_P3 * 2 * t * dt
         )
-        if abs(dfdL) < 1e-10:
+        if abs(dfdL) < 1e-10:  # pragma: no cover
             dfdL = 1
 
         l -= f / dfdL
@@ -508,7 +508,7 @@ def dark_l_inv (ln: float, h: float) -> float:
         f = l * eg - ln
         gp = coeff * oml * (1 - 3 * l)
         fp = eg * (1 + l * gp)
-        if abs(fp) < 1e-10:
+        if abs(fp) < 1e-10:  # pragma: no cover
             fp = 1
         l -= f / fp
     return l
@@ -657,7 +657,7 @@ def helmlab_full_to_xyz(lab: Vector) -> Vector:
     for _ in range(8):
         f = h_raw + hue_delta(h_raw) - h_out
         fp = 1 + hue_delta_deriv(h_raw)
-        if abs(fp) < 1e-10:
+        if abs(fp) < 1e-10:  # pragma: no cover
             fp = 1
         h_raw -= f / fp
     a = c * math.cos(h_raw)
