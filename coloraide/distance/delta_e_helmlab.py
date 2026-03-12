@@ -8,7 +8,7 @@ from __future__ import annotations
 import math
 from . import DeltaE
 from ..types import AnyColor
-from typing import Any
+from typing import Any, cast
 
 SL = 0.0010089809904916469
 SC = 0.021678192255028452
@@ -47,10 +47,10 @@ class DEHelmlab(DeltaE):
         sc = 1.0 + SC * cavg
 
         # Weighted Minkowski distance
-        raw = math.pow(dl ** 2 / sl ** 2 + WC * (da ** 2 + db ** 2) / sc ** 2, P / 2)
+        raw = (dl ** 2 / sl ** 2 + WC * (da ** 2 + db ** 2) / sc ** 2) ** (P / 2)
 
         # Monotonic compression
         compressed = raw / (1.0 + COMPRESS * raw)
 
         # `mypy` is broken and can't figure out we are returning a float
-        return compressed ** Q
+        return cast(float, compressed ** Q)
