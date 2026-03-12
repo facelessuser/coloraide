@@ -47,10 +47,10 @@ class DEHelmlab(DeltaE):
         sc = 1.0 + SC * cavg
 
         # Weighted Minkowski distance
-        raw = (dl ** 2 / sl ** 2 + WC * (da ** 2 + db ** 2) / sc ** 2) ** (P / 2)
+        raw = math.pow(dl ** 2 / sl ** 2 + WC * (da ** 2 + db ** 2) / sc ** 2, P / 2)
 
         # Monotonic compression
         compressed = raw / (1.0 + COMPRESS * raw)
 
         # `mypy` is broken and can't figure out we are returning a float
-        return compressed ** Q  # type: ignore[no-any-return]
+        return compressed ** Q

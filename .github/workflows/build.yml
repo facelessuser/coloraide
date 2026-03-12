@@ -34,6 +34,8 @@ jobs:
     - name: Test
       run: |
         hatch run +py=${{ matrix.python-version }} dev:mypy
+    - name: Types
+      run: |
         hatch run +py=${{ matrix.python-version }} dev:tests
     - name: Upload Results
       if: success()
