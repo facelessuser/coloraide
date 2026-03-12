@@ -206,14 +206,26 @@ Delta\ E                                 | Symmetrical           | Name         
 
 Both the DIN99o color space and the ∆E algorithm must be registered to use.
 
+### Delta E Helmlab
+
+> [!failure] The ∆E~helmlab~ distancing algorithm is **not** registered in `Color` by default
+
+Delta\ E                                 | Symmetrical           | Name            | Parameters
+---------------------------------------- | --------------------- | --------------- | --------------------
+[∆E~helmlab~][dehelmlab]\ (Helmlab)      | :octicons-check-16:   | `helmlab`       |
+
+∆E~helmlab~ uses a special algorithm to compute distance in the [Helmlab](./colors/helmlab.md) color space.
+
+Both the Helmlab color space and the ∆E algorithm must be registered to use.
+
 ```py
 from coloraide import Color as Base
-from coloraide.distance.delta_e_99o import DE99o
-from coloraide.spaces.din99o import DIN99o
+from coloraide.distance.delta_e_helmlab import DEHelmlab
+from coloraide.spaces.helmlab import Helmlab
 
 class Color(Base): ...
 
-Color.register([DIN99o(), DE99o()])
+Color.register([Helmlab(), DEHelmlab()])
 ```
 
 ### Delta E CAM16
