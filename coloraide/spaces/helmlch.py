@@ -18,6 +18,7 @@ from __future__ import annotations
 from .lch import LCh
 from ..cat import WHITES
 from ..channels import Channel, FLG_ANGLE
+from typing import Any
 
 
 class Helmlch(LCh):
@@ -37,3 +38,9 @@ class Helmlch(LCh):
         "hue": "h"
     }
     WHITE = WHITES['2deg']['ASTM-E308-D65']
+
+    def __init__(self, **kwargs: Any):
+        """Initialize."""
+
+        super().__init__(**kwargs)
+        self.achromatic_threshold = 1e-7
