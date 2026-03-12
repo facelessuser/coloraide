@@ -104,6 +104,7 @@ def simulate_raytrace_gamut_mapping(args):
             mx = color.new(space, [mx] * 3).convert(linear, in_place=True)[0]
         space = linear
     print('Target RGB Space:', space)
+    print('Perceptual Space', pspace)
 
     bmax = [mx] * 3
     mn = cs.CHANNELS[0].low
@@ -259,7 +260,7 @@ def simulate_raytrace_gamut_mapping(args):
             fig,
             space if mode == 'rgb' else pspace,
             first.to_string(fit=False) + ';' + achroma.to_string(fit=False),
-            {"method": "linear", "hue": "shorter", "steps": 100},
+            {"method": "linear", "hue": "shorter", "steps": 100, "space": space if mode != 'rgb' else pspace},
             gmap,
             False,
             False,
