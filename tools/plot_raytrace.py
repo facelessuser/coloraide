@@ -260,7 +260,7 @@ def simulate_raytrace_gamut_mapping(args):
             fig,
             space if mode == 'rgb' else pspace,
             first.to_string(fit=False) + ';' + achroma.to_string(fit=False),
-            {"method": "linear", "hue": "shorter", "steps": 100, "space": space if mode != 'rgb' else pspace},
+            {"method": "linear", "hue": "shorter", "steps": 100, "space": pspace},
             gmap,
             False,
             False,
