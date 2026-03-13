@@ -3,7 +3,6 @@
 *[CATs]: chromatic adaptation transform
 *[CCT]: correlated color temperature
 *[CMFs]: color matching functions
-*[COMBVD]: Combined Visual-Difference Dataset
 *[CVD]: color vision deficiency
 *[CVDs]: color vision deficiency
 *[EOTF]: electro-optical transfer function

@@ -16,7 +16,6 @@
 [dehyab]: http://markfairchild.org/PDFs/PAP40.pdf
 [deitp]: https://kb.portrait.com/help/ictcp-color-difference-metric
 [dez]: https://www.osapublishing.org/oe/fulltext.cfm?uri=oe-25-13-15131&id=368272
-[dehelmlab]: https://arxiv.org/abs/2602.23010
 [extras]: https://github.com/facelessuser/coloraide-extras
 [filter-effects]: https://www.w3.org/TR/filter-effects-1/
 [floating-point]: https://docs.python.org/3/tutorial/floatingpoint.html#floating-point-arithmetic-issues-and-limitations

@@ -651,42 +651,6 @@ class TestDistance(util.ColorAssertsPyTest):
         'color1,color2,value',
         [
             ('red', 'red', 0),
-            ('red', 'orange', 0.2701),
-            ('red', 'yellow', 0.3326),
-            ('red', 'green', 0.3518),
-            ('red', 'blue', 0.3649),
-            ('red', 'indigo', 0.3085),
-            ('red', 'violet', 0.277),
-            ('red', 'white', 0.3029),
-            ('red', 'black', 0.3478),
-            ('red', 'gray', 0.2831),
-            ('red', 'red', 0),
-            ('orange', 'red', 0.2701),
-            ('yellow', 'red', 0.3326),
-            ('green', 'red', 0.3518),
-            ('blue', 'red', 0.3649),
-            ('indigo', 'red', 0.3085),
-            ('violet', 'red', 0.277),
-            ('white', 'red', 0.3029),
-            ('black', 'red', 0.3478),
-            ('gray', 'red', 0.2831)
-        ]
-    )
-    def test_delta_e_helmlab(self, color1, color2, value):
-        """Test delta e Helmlab."""
-
-        print('color1: ', color1)
-        print('color2: ', color2)
-        self.assertCompare(
-            Color(color1).delta_e(color2, method="helmlab"),
-            value,
-            rounding=4
-        )
-
-    @pytest.mark.parametrize(
-        'color1,color2,value',
-        [
-            ('red', 'red', 0),
             ('red', 'orange', 37.32),
             ('red', 'yellow', 66.5558),
             ('red', 'green', 68.7175),
@@ -708,7 +672,6 @@ class TestDistance(util.ColorAssertsPyTest):
             ('gray', 'red', 47.5086)
         ]
     )
-
     def test_delta_e_cam16(self, color1, color2, value):
         """Test delta e CAM16 UCS."""
 
@@ -999,3 +962,4 @@ class TestClosest(util.ColorAsserts, unittest.TestCase):
 
         with self.assertRaises(ValueError):
             Color('red').delta_e('blue', method='cam02', space='lab')
+
