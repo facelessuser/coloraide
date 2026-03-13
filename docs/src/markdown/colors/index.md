@@ -103,6 +103,10 @@ flowchart LR
 
     xyz-d65 --- hct
 
+    xyz-d65 --- helmlab
+
+    xyz-d65 --- helmgen --- helmgenlch
+
     xyz-d65 --- sucs
 
     xyz-d65 --- scam-jmh
@@ -148,6 +152,9 @@ flowchart LR
     display-p3-linear(Linear Display P3)
     hct(HCT)
     hellwig-jmh(Hellwig JMh)
+    helmgen(Helmgen)
+    helmgenlch(Helmgenlch)
+    helmlab(Helmlab)
     hpluv(HPLuv)
     hsi(HSI)
     hsl(HSL)
@@ -221,6 +228,9 @@ flowchart LR
     click display-p3-linear "./display_p3_linear/" _self
     click hct "./hct/" _self
     click hellwig-jmh "./hellwig/" _self
+    click helmgen "./helmgen/" _self
+    click helmgenlch "./helmgenlch/" _self
+    click helmlab "./helmlab/" _self
     click hpluv "./hpluv/" _self
     click hsi "./hsi/" _self
     click hsl "./hsl/" _self
@@ -302,6 +312,9 @@ Color Space                                     | ID
 [Display P3](./display_p3.md)                   | `display-p3`
 [HCT](./hct.md)                                 | `hct`
 [Hellwig JMh](./hellwig.md)                     | `hellwig-jmh`
+[Helmgen](./helmgen.md)                         | `helmgen`
+[Helmgenlch](./helmgenlch.md)                   | `helmgenlch`
+[Helmlab](./helmlab.md)                         | `helmlab`
 [HPLuv](./hpluv.md)                             | `hpluv`
 [HSI](./hsi.md)                                 | `hsi`
 [HSL](./hsl.md)                                 | `hsl`
