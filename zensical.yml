@@ -131,6 +131,8 @@ nav:
         - CAM16 SCD: colors/cam16_scd.md
         - CAM16 LCD: colors/cam16_lcd.md
         - XYB: colors/xyb.md
+        - Helmgen: colors/helmgen.md
+        - Helmlab: colors/helmlab.md
 
       - LCh Like Spaces:
         - LCh D50: colors/lch.md
@@ -148,6 +150,7 @@ nav:
         - Msh: colors/msh.md
         - sUCS: colors/sucs.md
         - sCAM: colors/scam.md
+        - Helmgenlch: colors/helmgenlch.md
 
       - ACES Spaces:
         - ACES 2065-1: colors/aces2065_1.md
