@@ -9,6 +9,8 @@ icon: lucide/scroll-text
 
 ## 8.8.1
 
+-   **NEW**: Add new spaces: `helmlab`, `helmgen`, and `helmgenlch`.
+-   **NEW**: Add new distancing algorithm: `helmlab`.
 -   **ENHANCE**: Minor speed improvements related to chromatic adaptation.
 -   **FIX**: Small regression in RYB round-trip precision due to a global tolerance change. Ensure RYB uses a tolerance
     specific for its needs.
