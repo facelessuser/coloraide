@@ -17,9 +17,8 @@ from .lab import Lab
 from ..cat import WHITES
 from ..channels import Channel, FLG_MIRROR_PERCENT
 from .. import algebra as alg
-from ..types import Vector
+from ..types import Vector, Matrix
 import math
-from .helmgen import neutral_error
 
 M1 = [
     [ 0.7342943222452644,  0.24049249952372878, -0.15763751765949208],
@@ -360,6 +359,36 @@ NC = [
     [1.2839918126, 0.0471454107, 0.3251743578],
     [1.2847963196, 0.0467480312, 0.3251760404]
 ]
+
+
+def neutral_error(l: float, nc: Matrix) -> Vector:
+    """Neutral correction error."""
+
+    n = len(nc)
+
+    if l <= 0:
+        return [0.0, 0.0]
+
+    if l < nc[0][0]:
+        t = l / nc[0][0]
+        return [nc[0][1] * t, nc[0][2] * t]
+
+    if l >= nc[n - 1][0]:
+        return nc[n - 1][1:]
+
+    lo, hi = 0, n - 1
+    while (hi - lo) > 1:
+        mid = (lo + hi) >> 1
+        if nc[mid][0] <= l:
+            lo = mid
+        else:
+            hi = mid
+
+    t = (l - nc[lo][0]) / (nc[lo + 1][0] - nc[lo][0])
+    return [
+        nc[lo][1] + t * (nc[lo + 1][1] - nc[lo][1]),
+        nc[lo][2] + t * (nc[lo + 1][2] - nc[lo][2])
+    ]
 
 
 def xyz_d65_to_helmlab(xyz: Vector) -> Vector:
