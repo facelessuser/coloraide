@@ -55,8 +55,8 @@ The string representation of the color object and the default string output use 
 `#!css-color color(--helmlab l a b / a)` form.
 
 ```py play
-Color("helmlab", [0.7867, 0.52648, -0.20295])
-Color("helmlab", [0.97103, 0.50434, 0.27591]).to_string()
+Color("helmlab", [0.61752, 0.58275, -0.20187])
+Color("helmlab", [0.87013, 0.49555, 0.29624]).to_string()
 ```
 
 ## Registering
