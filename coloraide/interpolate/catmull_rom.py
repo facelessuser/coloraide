@@ -19,7 +19,7 @@ class InterpolatorCatmullRom(InterpolatorBSpline[AnyColor]):
 
         self.handle_undefined()
         self.spline = alg.CatmullRomInterpolator
-        self.spline.preprocess(self.coordinates)
+        self.spline.preprocess(self.coordinates, end_cond=self.end_cond)
 
 
 class CatmullRom(Interpolate[AnyColor]):
