@@ -1124,35 +1124,6 @@ class Color(metaclass=ColorMeta):
         return self._hotswap(mixed) if in_place else mixed
 
     @classmethod
-    def weighted_mix(
-        cls,
-        colors: Sequence[ColorInput],
-        weights: Sequence[float] = (1.0,),
-        *,
-        space: str | None = None,
-        method: str | None = None,
-        premultiplied: bool = True,
-        carryforward: bool = False,
-        powerless: bool = False,
-        hue: str = 'shorter',
-        **kwargs: Any
-    ) -> Self:
-        """Perform a weighted mix of multiple colors."""
-
-        return interpolate.weighted_mix(
-            cls,
-            method if method is not None else cls.INTERPOLATOR,
-            colors,
-            weights,
-            space,
-            premultiplied,
-            carryforward,
-            powerless,
-            hue,
-            **kwargs
-        )
-
-    @classmethod
     def steps(
         cls,
         colors: Sequence[ColorInput | interpolate.stop | Callable[..., float]],
@@ -1247,6 +1218,39 @@ class Color(metaclass=ColorMeta):
             powerless=powerless if powerless is not None else cls.POWERLESS,
             **kwargs
         )
+
+    @classmethod
+    def weighted_mix(
+        cls,
+        colors: Sequence[ColorInput],
+        weights: Sequence[float] = (1.0,),
+        *,
+        space: str | None = None,
+        out_space: str | None = None,
+        method: str | None = None,
+        premultiplied: bool = True,
+        carryforward: bool = False,
+        powerless: bool = False,
+        hue: str = 'shorter',
+        **kwargs: Any
+    ) -> Self:
+        """Perform a weighted mix of multiple colors."""
+
+        color = interpolate.weighted_mix(
+            cls,
+            method if method is not None else cls.INTERPOLATOR,
+            colors,
+            weights,
+            space,
+            premultiplied,
+            carryforward,
+            powerless,
+            hue,
+            **kwargs
+        )
+        if out_space is not None and color.space() != out_space:
+            color.convert(out_space, in_place=True)
+        return color
 
     @classmethod
     def average(
