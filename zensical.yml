@@ -62,7 +62,6 @@ nav:
       - The Color Object: color.md
       - Manipulating Colors: manipulation.md
       - Color Interpolation: interpolation.md
-      - Color Averaging: average.md
       - Compositing and Blending: compositing.md
       - Color Distance and Delta E: distance.md
       - Filters: filters.md

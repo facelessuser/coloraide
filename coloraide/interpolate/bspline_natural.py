@@ -23,7 +23,7 @@ class InterpolatorNaturalBSpline(InterpolatorBSpline[AnyColor]):
         self.spline.preprocess(self.coordinates, end_cond=self.end_cond)
 
 
-class NaturalBSpline(Interpolate[AnyColor]):
+class NaturalBSpline(Interpolate):
     """Natural B-spline interpolation plugin."""
 
     NAME = "natural"

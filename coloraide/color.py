@@ -15,7 +15,6 @@ from . import interpolate
 from . import filters
 from . import contrast
 from . import harmonies
-from . import average
 from . import temperature
 from . import util
 from . import algebra as alg
@@ -137,7 +136,7 @@ class ColorMeta(abc.ABCMeta):
             cls.CAT_MAP = cls.CAT_MAP.copy()  # type: dict[str, CAT]
             cls.FILTER_MAP = cls.FILTER_MAP.copy()  # type: dict[str, Filter]
             cls.CONTRAST_MAP = cls.CONTRAST_MAP.copy()  # type: dict[str, ColorContrast]
-            cls.INTERPOLATE_MAP = cls.INTERPOLATE_MAP.copy()  # type: dict[str, Interpolate[Any]]
+            cls.INTERPOLATE_MAP = cls.INTERPOLATE_MAP.copy()  # type: dict[str, Interpolate]
             cls.CCT_MAP = cls.CCT_MAP.copy()  # type: dict[str, CCT]
 
         # Ensure each derived class tracks its own conversion paths for color spaces
@@ -165,7 +164,7 @@ class Color(metaclass=ColorMeta):
     CAT_MAP = {}  # type: dict[str, CAT]
     CONTRAST_MAP = {}  # type: dict[str, ColorContrast]
     FILTER_MAP = {}  # type: dict[str, Filter]
-    INTERPOLATE_MAP = {}  # type: dict[str, Interpolate[Self]]
+    INTERPOLATE_MAP = {}  # type: dict[str, Interpolate]
     CCT_MAP = {}  # type: dict[str, CCT]
     PRECISION = util.DEF_PREC
     ROUNDING = util.DEF_ROUND_MODE
@@ -1125,6 +1124,35 @@ class Color(metaclass=ColorMeta):
         return self._hotswap(mixed) if in_place else mixed
 
     @classmethod
+    def weighted_mix(
+        cls,
+        colors: Sequence[ColorInput],
+        weights: Sequence[float] = (1.0,),
+        *,
+        space: str | None = None,
+        method: str | None = None,
+        premultiplied: bool = True,
+        carryforward: bool = False,
+        powerless: bool = False,
+        hue: str = 'shorter',
+        **kwargs: Any
+    ) -> Self:
+        """Perform a weighted mix of multiple colors."""
+
+        return interpolate.weighted_mix(
+            cls,
+            method if method is not None else cls.INTERPOLATOR,
+            colors,
+            weights,
+            space,
+            premultiplied,
+            carryforward,
+            powerless,
+            hue,
+            **kwargs
+        )
+
+    @classmethod
     def steps(
         cls,
         colors: Sequence[ColorInput | interpolate.stop | Callable[..., float]],
@@ -1240,13 +1268,14 @@ class Color(metaclass=ColorMeta):
         if out_space is None:
             out_space = space
 
-        return average.average(
+        return interpolate.multi_mix(
             cls,
             colors,
             weights,
             space,
             premultiplied,
-            carryforward if carryforward is not None else cls.CARRYFORWARD
+            carryforward if carryforward is not None else cls.CARRYFORWARD,
+            average=True
         ).convert(out_space, in_place=True)
 
     def filter(  # noqa: A003

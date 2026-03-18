@@ -7,7 +7,7 @@ from ..deprecate import deprecated
 from typing import Any
 
 
-class CSSLinear(Interpolate[AnyColor]):
+class CSSLinear(Interpolate):
     """CSS Linear interpolation plugin."""
 
     NAME = "css-linear"
