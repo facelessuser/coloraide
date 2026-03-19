@@ -1,5 +1,6 @@
 """Test Interpolation."""
 import unittest
+import math
 from coloraide.everything import ColorAll as Color
 from coloraide import NaN, stop, hint, ease_in
 from . import util
@@ -1692,3 +1693,471 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
         scale = ['#fff7ec', '#fee8c8', '#fdd49e', '#fdbb84', '#fc8d59', '#ef6548', '#d7301f', '#b30000', '#7f0000']
         with self.assertRaises(ValueError):
             Color.discrete(scale, space='srgb', padding=[0.25, 0.15], out_space='bad')
+
+    def test_weighted_mix(self):
+        """Test interpolation via mixing."""
+
+        self.assertColorEqual(
+            Color('red').mix('blue', 1),
+            Color.weighted_mix(['red', 'blue'], [0, 1])
+        )
+        self.assertColorEqual(
+            Color('red').mix('blue', 0.75),
+            Color.weighted_mix(['red', 'blue'], [0.25, 0.75])
+        )
+        self.assertColorEqual(
+            Color('red').mix('blue'),
+            Color.weighted_mix(['red', 'blue'])
+        )
+        self.assertColorEqual(
+            Color('red').mix('blue', 0.25),
+            Color.weighted_mix(['red', 'blue'], [0.75, 0.25])
+        )
+        self.assertColorEqual(
+            Color('red').mix('blue', 0.0),
+            Color.weighted_mix(['red', 'blue'], [1, 0])
+        )
+
+    def test_weighted_mix_space(self):
+        """Test color mix in different space."""
+
+        self.assertColorEqual(
+            Color('red').mix('blue', 1, space="srgb"),
+            Color.weighted_mix(['red', 'blue'], [0, 1], space='srgb')
+        )
+        self.assertColorEqual(
+            Color('red').mix('blue', 0.75, space="srgb"),
+            Color.weighted_mix(['red', 'blue'], [0.25, 0.75], space='srgb')
+        )
+        self.assertColorEqual(
+            Color('red').mix('blue', space="srgb"),
+            Color.weighted_mix(['red', 'blue'], space='srgb')
+        )
+        self.assertColorEqual(
+            Color('red').mix('blue', 0.25, space="srgb"),
+            Color.weighted_mix(['red', 'blue'], [0.75, 0.25], space='srgb')
+        )
+        self.assertColorEqual(
+            Color('red').mix('blue', 0.0, space="srgb"),
+            Color.weighted_mix(['red', 'blue'], [1, 0], space='srgb')
+        )
+
+    def test_weighted_mix_out_space(self):
+        """Test interpolation."""
+
+        self.assertColorEqual(
+            Color('red').mix('blue', 1, space="srgb", out_space='lab'),
+            Color.weighted_mix(['red', 'blue'], [0, 1], space='srgb', out_space='lab')
+        )
+        self.assertColorEqual(
+            Color('red').mix('blue', 0.75, space="srgb", out_space='lab'),
+            Color.weighted_mix(['red', 'blue'], [0.25, 0.75], space='srgb', out_space='lab')
+        )
+        self.assertColorEqual(
+            Color('red').mix('blue', space="srgb", out_space='lab'),
+            Color.weighted_mix(['red', 'blue'], space='srgb', out_space='lab')
+        )
+        self.assertColorEqual(
+            Color('red').mix('blue', 0.25, space="srgb", out_space='lab'),
+            Color.weighted_mix(['red', 'blue'], [0.75, 0.25], space='srgb', out_space='lab')
+        )
+        self.assertColorEqual(
+            Color('red').mix('blue', 0.0, space="srgb", out_space='lab'),
+            Color.weighted_mix(['red', 'blue'], [1, 0], space='srgb', out_space='lab')
+        )
+
+    def test_weighted_mix_alpha(self):
+        """Test mixing alpha."""
+
+        self.assertColorEqual(
+            Color('color(srgb 1 0 0 / 0.75)').mix('color(srgb 0 0 1 / 0.25)', space="srgb", premultiplied=False),
+            Color.weighted_mix(
+                ['color(srgb 1 0 0 / 0.75)', 'color(srgb 0 0 1 / 0.25)'], space='srgb', premultiplied=False
+            )
+        )
+
+    def test_weighted_mix_premultiplied_alpha(self):
+        """Test premultiplied alpha."""
+
+        self.assertColorEqual(
+            Color('color(srgb 1 0 0 / 0.75)').mix('color(srgb 0 0 1 / 0.25)', space="srgb"),
+            Color.weighted_mix(
+                ['color(srgb 1 0 0 / 0.75)', 'color(srgb 0 0 1 / 0.25)'], space='srgb'
+            )
+        )
+
+    def test_weighted_mix_premultiplied_cylindrical(self):
+        """Test premultiplication in a cylindrical space."""
+
+        self.assertColorEqual(
+            Color('color(--hsl 20 30% 75% / 0.5)').mix(
+                'color(--hsl 20 60% 10% / 0.75)', space="hsl"
+            ),
+            Color.weighted_mix(['color(--hsl 20 30% 75% / 0.5)', 'color(--hsl 20 60% 10% / 0.75)'], space='hsl')
+        )
+
+    def test_weighted_mix_nan(self):
+        """Test mixing with NaN."""
+
+        c1 = Color("srgb", [NaN, 1, 1])
+        c2 = Color("srgb", [0.75, 0, 0])
+        self.assertColorEqual(
+            c1.mix(c2, space="srgb"),
+            Color.weighted_mix([c1, c2], space='srgb')
+        )
+        c1 = Color("srgb", [0.25, 1, 1])
+        c2 = Color("srgb", [NaN, 0, 0])
+        self.assertColorEqual(
+            c1.mix(c2, space="srgb"),
+            Color.weighted_mix([c1, c2], space='srgb')
+        )
+        c1 = Color("srgb", [NaN, 1, 1])
+        c2 = Color("srgb", [NaN, 0, 0])
+        self.assertColorEqual(
+            c1.mix(c2, space="srgb"),
+            Color.weighted_mix([c1, c2], space='srgb')
+        )
+        c1 = Color("srgb", [NaN, 1, 1])
+        c2 = Color("srgb", [NaN, 0, 0])
+        self.assertColorEqual(
+            c1.mix(c2, 0.25, space="srgb"),
+            Color.weighted_mix([c1, c2], [0.75, 0.25], space='srgb')
+        )
+
+        c1 = Color("hsl", [NaN, 0, 1])
+        c2 = Color("hsl", [NaN, 0, 0])
+        self.assertColorEqual(
+            c1.mix(c2, 0.25, space="hsl"),
+            Color.weighted_mix([c1, c2], [0.75, 0.25], space='hsl')
+        )
+
+    def test_weighted_mix_hue_adjust(self):
+        """Test hue adjusting."""
+
+        c1 = Color('rebeccapurple')
+        c2 = Color('lch(85% 100 805)')
+        self.assertColorEqual(
+            c1.mix(c2.mask("hue", invert=True), 0.25, hue="shorter", space="lch"),
+            Color.weighted_mix([c1, c2.mask("hue", invert=True)], [0.75, 0.25], hue="shorter", space="lch")
+        )
+        self.assertColorEqual(
+            c1.mix(c2.mask("hue", invert=True), 0.25, hue="longer", space="lch"),
+            Color.weighted_mix([c1, c2.mask("hue", invert=True)], [0.75, 0.25], hue="longer", space="lch")
+        )
+        self.assertColorEqual(
+            c1.mix(c2.mask("hue", invert=True), 0.25, hue="increasing", space="lch"),
+            Color.weighted_mix([c1, c2.mask("hue", invert=True)], [0.75, 0.25], hue="increasing", space="lch")
+        )
+        self.assertColorEqual(
+            c1.mix(c2.mask("hue", invert=True), 0.25, hue="decreasing", space="lch"),
+            Color.weighted_mix([c1, c2.mask("hue", invert=True)], [0.75, 0.25], hue="decreasing", space="lch")
+        )
+        self.assertColorEqual(
+            c1.mix(c2.mask("hue", invert=True), 0.25, hue="specified", space="lch"),
+            Color.weighted_mix([c1, c2.mask("hue", invert=True)], [0.75, 0.25], hue="specified", space="lch")
+        )
+
+    def test_weighted_hue_shorter_cases(self):
+        """Cover shorter hue cases."""
+
+        # c2 - c1 > 180
+        c1 = Color('lch(75% 50 40)')
+        c2 = Color('lch(30% 30 350)')
+        self.assertColorEqual(
+            c1.mix(c2.mask("hue", invert=True), 0.50, hue="shorter", space="lch"),
+            Color.weighted_mix([c1, c2.mask('hue', invert=True)], hue="shorter", space='lch')
+        )
+
+        # c2 - c1 < -180
+        c1 = Color('lch(30% 30 350)')
+        c2 = Color('lch(75% 50 40)')
+        self.assertColorEqual(
+            c1.mix(c2.mask("hue", invert=True), 0.50, hue="shorter", space="lch"),
+            Color.weighted_mix([c1, c2.mask('hue', invert=True)], hue="shorter", space='lch')
+        )
+
+    def test_weighted_hue_longer_cases(self):
+        """Cover longer hue cases."""
+
+        # 0 < (c2 - c1) < 180
+        c1 = Color('lch(75% 50 40)')
+        c2 = Color('lch(30% 30 60)')
+        self.assertColorEqual(
+            c1.mix(c2.mask("hue", invert=True), 0.50, hue="longer", space="lch"),
+            Color.weighted_mix([c1, c2.mask('hue', invert=True)], hue="longer", space='lch')
+        )
+
+        # -180 < (c2 - c1) < 0
+        c1 = Color('lch(30% 30 60)')
+        c2 = Color('lch(75% 50 40)')
+        self.assertColorEqual(
+            c1.mix(c2.mask("hue", invert=True), 0.50, hue="longer", space="lch"),
+            Color.weighted_mix([c1, c2.mask('hue', invert=True)], hue="longer", space='lch')
+        )
+
+    def test_weighgted_hue_increasing_cases(self):
+        """Cover increasing hue cases."""
+
+        # c2 < c1
+        c1 = Color('lch(75% 50 60)')
+        c2 = Color('lch(30% 30 40)')
+        self.assertColorEqual(
+            c1.mix(c2.mask("hue", invert=True), 0.50, hue="increasing", space="lch"),
+            Color.weighted_mix([c1, c2.mask('hue', invert=True)], hue="increasing", space='lch')
+        )
+
+    def test_weighted_hue_decreasing_cases(self):
+        """Cover decreasing hue cases."""
+
+        # c1 < c2
+        c1 = Color('lch(75% 50 40)')
+        c2 = Color('lch(30% 30 60)')
+        self.assertColorEqual(
+            c1.mix(c2.mask("hue", invert=True), 0.50, hue="decreasing", space="lch"),
+            Color.weighted_mix([c1, c2.mask('hue', invert=True)], hue="decreasing", space='lch')
+        )
+
+    def test_weighted_multi_mix(self):
+        """Test weighted mixing with multiple colors."""
+
+        c1 = Color('red')
+        c2 = Color('orange')
+        c3 = Color('green')
+        c4 = Color('gray')
+
+        self.assertColorEqual(Color.weighted_mix([c1, c2, c3, c4]), Color('oklab(0.63507 0.03529 0.09873)'))
+        self.assertColorEqual(Color.weighted_mix([c1, c2, c3, c4], space='oklch'), Color('oklch(0.63507 0.15139 80.8)'))
+
+    def test_bad_weighted_interpolator(self):
+        """Test bad interpolator."""
+
+        with self.assertRaises(ValueError):
+            Color.weighted_mix(['red', 'blue'], method='bad')
+
+    def test_bad_weighted_hue(self):
+        """Test bad interpolator."""
+
+        with self.assertRaises(ValueError):
+            Color.weighted_mix(['red', 'blue'], space='oklch', hue='bad')
+
+    def test_average_achromatic(self):
+        """Test that we force achromatic hues to undefined."""
+
+        self.assertEqual(
+            Color.average(['hsl(30 0 100)', 'color(srgb 0 0 1)'], space='hsl').to_string(),
+            'hsl(240 50 75)'
+        )
+
+    def test_average_no_colors(self):
+        """Test averaging no colors."""
+
+        with self.assertRaises(ValueError):
+            Color.average([])
+
+    def test_average_one_colors(self):
+        """Test averaging one color."""
+
+        self.assertColorEqual(Color.average(['red']), Color('color(srgb-linear 1 0 0)'))
+
+    def test_average_premultiplied(self):
+        """Test averaging with premultiplication."""
+
+        colors = [Color('darkgreen'), Color('color(srgb 0 0.50196 0 / 1)'), Color('color(srgb 0 0 1)')]
+        results = []
+        for i in range(5):
+            colors[1].set('alpha', i / 4)
+            results.append(Color.average(colors, space='srgb').to_string(color=True))
+        self.assertEqual(
+            results,
+            ['color(srgb 0 0.19608 0.5 / 0.66667)',
+             'color(srgb 0 0.23007 0.44444 / 0.75)',
+             'color(srgb 0 0.25725 0.4 / 0.83333)',
+             'color(srgb 0 0.2795 0.36364 / 0.91667)',
+             'color(srgb 0 0.29804 0.33333)']
+        )
+
+    def test_average_no_premultiplied(self):
+        """Test averaging without premultiplication."""
+
+        colors = [Color('darkgreen'), Color('color(srgb 0 0.50196 0 / 1)'), Color('color(srgb 0 0 1)')]
+        results = []
+        for i in range(5):
+            colors[1].set('alpha', i / 4)
+            results.append(Color.average(colors, space='srgb', premultiplied=False).to_string(color=True))
+        self.assertEqual(
+            results,
+            ['color(srgb 0 0.19608 0.5 / 0.66667)',
+             'color(srgb 0 0.29804 0.33333 / 0.75)',
+             'color(srgb 0 0.29804 0.33333 / 0.83333)',
+             'color(srgb 0 0.29804 0.33333 / 0.91667)',
+             'color(srgb 0 0.29804 0.33333)']
+        )
+
+    def test_average_cylindrical_premultiplied(self):
+        """Test cylindrical averaging without premultiplication."""
+
+        colors = [Color('darkgreen'), Color('color(srgb 0 0.50196 0 / 1)'), Color('color(srgb 0 0 1)')]
+        results = []
+        for i in range(5):
+            colors[1].set('alpha', i / 4)
+            results.append(Color.average(colors, space='hsl').to_string(color=True))
+        self.assertEqual(
+            results,
+            ['color(--hsl 180 1 0.34804 / 0.66667)',
+             'color(--hsl 169.11 1 0.33725 / 0.75)',
+             'color(--hsl 160.89 1 0.32863 / 0.83333)',
+             'color(--hsl 154.72 1 0.32157 / 0.91667)',
+             'color(--hsl 150 1 0.31569)']
+        )
+
+    def test_average_cylindrical_no_premultiplied(self):
+        """Test cylindrical averaging without premultiplication."""
+
+        colors = [Color('darkgreen'), Color('color(srgb 0 0.50196 0 / 1)'), Color('color(srgb 0 0 1)')]
+        results = []
+        for i in range(5):
+            colors[1].set('alpha', i / 4)
+            results.append(Color.average(colors, space='hsl', premultiplied=False).to_string(color=True))
+        self.assertEqual(
+            results,
+            ['color(--hsl 180 1 0.34804 / 0.66667)',
+             'color(--hsl 150 1 0.31569 / 0.75)',
+             'color(--hsl 150 1 0.31569 / 0.83333)',
+             'color(--hsl 150 1 0.31569 / 0.91667)',
+             'color(--hsl 150 1 0.31569)']
+        )
+
+    def test_average_ignore_undefined(self):
+        """Test averaging ignores undefined."""
+
+        colors = [Color('darkgreen'), Color('color(srgb 0 none 0 / 1)'), Color('color(srgb 0 0 1)')]
+        results = []
+        for i in range(5):
+            colors[1].set('alpha', i / 4)
+            results.append(Color.average(colors, space='srgb').to_string(color=True))
+        self.assertEqual(
+            results,
+            ['color(srgb 0 0.29412 0.5 / 0.66667)',
+             'color(srgb 0 0.26144 0.44444 / 0.75)',
+             'color(srgb 0 0.23529 0.4 / 0.83333)',
+             'color(srgb 0 0.2139 0.36364 / 0.91667)',
+             'color(srgb 0 0.19608 0.33333)']
+        )
+
+    def test_average_with_undefined_alpha_result(self):
+        """Test average when the resulting alpha is undefined."""
+
+        colors = [
+            Color('color(srgb 1 1 0 / none)'),
+            Color('color(srgb 0 0.50196 0 / none)'),
+            Color('color(srgb 0 0 1 / none)')
+        ]
+        self.assertEqual(
+            Color.average(colors, space='srgb').to_string(color=True, none=True),
+            'color(srgb 0.33333 0.50065 0.33333 / none)'
+        )
+
+    def test_average_ignore_undefined_alpha_premultiplied(self):
+        """Test averaging ignores undefined."""
+
+        colors = [Color('darkgreen'), Color('color(srgb 0 0.50196 0 / none)'), Color('color(srgb 0 0 1)')]
+        self.assertEqual(Color.average(colors, space='srgb').to_string(color=True), 'color(srgb 0 0.29804 0.33333)')
+
+    def test_evenly_distributed(self):
+        """Test evenly distributed colors."""
+
+        colors = ['red', 'green', 'blue']
+        self.assertEqual(
+            Color.average(colors, space='hsl').to_string(color=True, none=True),
+            'color(--hsl none 0 0.41699)'
+        )
+
+    def test_hwb_handling(self):
+        """Test HWB handling."""
+
+        colors = ['red', 'green', 'blue']
+        self.assertEqual(
+            Color.average(colors, space='hwb').to_string(color=True, none=True),
+            'color(--hwb none 0.83399 0.16601)'
+        )
+
+        self.assertEqual(
+            Color.average(['orange', 'purple', 'darkgreen'], space='hwb').to_string(color=True),
+            'color(--hwb 38.824 0 0.36863)'
+        )
+
+    def test_average_all_undefined_hue(self):
+        """Test all hues undefined."""
+
+        a = Color.average(['white', 'gray', 'black'], space='hsl')
+        self.assertColorEqual(a, Color('hsl(none 0% 50.065%)'))
+        self.assertTrue(math.isnan(a[0]))
+
+    def test_average_all_undefined_non_hue(self):
+        """Test all non hue undefined."""
+
+        a = Color.average(['color(srgb 1 none 0)', 'color(srgb 0.1 none 0.3)', 'color(srgb 0.7 none 0)'], space='srgb')
+        self.assertColorEqual(a, Color('rgb(153 none 25.5)'))
+        self.assertTrue(math.isnan(a[1]))
+
+    def test_average_weighted_colors(self):
+        """Test weighted colors."""
+
+        a = Color.average(['red', 'green', 'yellow', 'blue'], space='srgb')
+        self.assertColorEqual(a, Color('color(srgb 0.5 0.37549 0.25 / 1)'))
+        a = Color.average(['red', 'green', 'yellow', 'blue'], [1, 1, 1, 0], space='srgb')
+        self.assertColorEqual(a, Color('rgb(170 127.67 0)'))
+        a = Color.average(['red', 'green', 'yellow', 'blue'], [1, 4, 2, 3], space='srgb')
+        self.assertColorEqual(a, Color('rgb(76.5 102.2 76.5)'))
+
+    def test_average_weighted_polar_colors(self):
+        """Test weighted colors."""
+
+        a = Color.average(['red', 'orange', 'white'], space='hsl')
+        self.assertColorEqual(a, Color('hsl(19.412 66.667% 66.667%)'))
+        a = Color.average(['red', 'orange', 'white'], [1, 1, 4], space='hsl')
+        self.assertColorEqual(a, Color('hsl(19.412 33.333% 83.333%)'))
+
+    def test_average_weighted_colors_mismatch(self):
+        """Test weighted colors."""
+
+        a = Color.average(['red', 'green', 'yellow', 'blue'], [1, 4, 2], space='srgb')
+        self.assertColorEqual(a, Color('rgb(69.545 92.909 92.727)'))
+        a = Color.average(['red', 'green', 'yellow', 'blue'], [1, 4, 2, 3, 5, 6], space='srgb')
+        self.assertColorEqual(a, Color('rgb(76.5 102.2 76.5)'))
+
+    def test_average_weighted_negative(self):
+        """Test weighted with negative weights."""
+
+        a = Color.average(['red', 'green', 'yellow', 'blue'], [1, 1, 1, -1], space='srgb')
+        self.assertColorEqual(a, Color('rgb(170 127.67 0)'))
+
+    def test_average_all_transparent(self):
+        """Test result when all colors are transparent."""
+
+        a = Color.average(['#ff000000', '#00ff0000', '#ffff0000', '#0000ff00'], space='srgb')
+        self.assertColorEqual(a, Color('color(srgb none none none / 0)'), none=True)
+        a = Color.average(['#ff000000', '#00ff0000', '#ffff0000', '#0000ff00'], space='hsl')
+        self.assertColorEqual(a, Color('hsl(none none none / 0)'), none=True)
+
+    def test_average_all_zero_weight(self):
+        """Test result when all colors have a weight of zero."""
+
+        a = Color.average(['#ff0000', '#00ff00', '#ffff00', '#0000ff'], [0.0] * 4, space='srgb')
+        self.assertColorEqual(a, Color('color(srgb none none none / none)'), none=True)
+        a = Color.average(['#ff0000', '#00ff00', '#ffff00', '#0000ff'], [0.0] * 4, space='hsl')
+        self.assertColorEqual(a, Color('hsl(none none none / none)'), none=True)
+
+    def test_average_carryforward(self):
+        """Test carry forwarding."""
+
+        c = [
+            Color.average(['darkgreen', f'color(srgb 0 none 0 / {i / 11})', 'color(srgb 0 0 1)'], carryforward=True)
+            for i in range(12)
+        ]
+
+        self.assertColorEqual(c[0], Color('color(srgb-linear 0 0.09558 0.5 / 0.66667)'))
+        self.assertColorEqual(c[3], Color('color(srgb-linear 0 0.08411 0.44 / 0.75758)'))
+        self.assertColorEqual(c[6], Color('color(srgb-linear 0 0.0751 0.39286 / 0.84848)'))
+        self.assertColorEqual(c[9], Color('color(srgb-linear 0 0.06783 0.35484 / 0.93939)'))
+        self.assertColorEqual(c[11], Color('color(srgb-linear 0 0.06372 0.33333)'))

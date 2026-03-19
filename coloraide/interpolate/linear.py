@@ -157,7 +157,7 @@ class InterpolatorLinear(Interpolator[AnyColor]):
         return channels
 
 
-class Linear(Interpolate[AnyColor]):
+class Linear(Interpolate):
     """Linear interpolation plugin."""
 
     NAME = "linear"

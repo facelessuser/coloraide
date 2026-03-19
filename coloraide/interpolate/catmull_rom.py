@@ -22,7 +22,7 @@ class InterpolatorCatmullRom(InterpolatorBSpline[AnyColor]):
         self.spline.preprocess(self.coordinates, end_cond=self.end_cond)
 
 
-class CatmullRom(Interpolate[AnyColor]):
+class CatmullRom(Interpolate):
     """Catmull-Rom interpolation plugin."""
 
     NAME = "catrom"

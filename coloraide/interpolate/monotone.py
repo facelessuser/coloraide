@@ -18,7 +18,7 @@ class InterpolatorMonotone(InterpolatorBSpline[AnyColor]):
         self.spline.preprocess(self.coordinates, end_cond=self.end_cond)
 
 
-class Monotone(Interpolate[AnyColor]):
+class Monotone(Interpolate):
     """Monotone interpolation plugin."""
 
     NAME = "monotone"

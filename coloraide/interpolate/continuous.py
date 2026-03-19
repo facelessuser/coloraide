@@ -253,7 +253,7 @@ class InterpolatorContinuous(Interpolator[AnyColor]):
         return channels
 
 
-class Continuous(Interpolate[AnyColor]):
+class Continuous(Interpolate):
     """Continuous interpolation plugin."""
 
     NAME = "continuous"

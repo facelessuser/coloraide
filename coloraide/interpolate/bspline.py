@@ -57,7 +57,7 @@ class InterpolatorBSpline(InterpolatorContinuous[AnyColor]):
         return channels
 
 
-class BSpline(Interpolate[AnyColor]):
+class BSpline(Interpolate):
     """B-spline interpolation plugin."""
 
     NAME = "bspline"

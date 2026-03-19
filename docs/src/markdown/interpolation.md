@@ -462,6 +462,140 @@ Color("red").mix("blue", 0.2)
 
 Mixing will always return a new color unless `in_place` is set `#!py3 True`.
 
+## Weighted Mixing
+
+While [`mix`](#mixing) provides a way to mix any two colors together, `weighted_mix` allows the mixing of any number of
+colors.
+
+Instead of using a single percentage to indicate  what color on an interpolation line you desire, `weighted_mix` takes a
+list of weights that allows you to specify ratios of colors.
+
+Below, we are going to mix 3 parts orange to 2 parts purple to 1 part white within Oklab.
+
+```py play
+Color.weighted_mix(['orange', 'purple', 'white'], [3, 2, 1])
+```
+
+By changing the weights, we can change the color.
+
+```py play
+from coloraide import algebra as alg
+Steps(
+    [Color.weighted_mix(['orange', 'purple', 'white'], [3, i, j])
+    for i, j in zip(alg.linspace(0, 10, 100), alg.linspace(10, 0, 100))]
+)
+```
+
+Weights can be any positive value at any scale; weights are relative to each other. Any negative weights are clamped to
+zero.
+
+```py play
+Color.weighted_mix(['orange', 'purple', 'white'], [1, 2 / 3, 1 / 3])
+```
+
+If weights are omitted, each color is considered at full-weight.
+
+```py play
+Color.weighted_mix(['orange', 'purple', 'white'])
+Color.weighted_mix(['orange', 'purple', 'white'], [1, 1, 1])
+```
+
+If more colors are provided than weights, colors without defined weights are assumed to be full weight.
+
+```py play
+Color.weighted_mix(['orange', 'purple', 'white'], [0, 1])
+```
+
+If mixing within a rectangular space, order of colors shouldn't matter, and the result will be the same.
+
+```py play
+Color.weighted_mix(['orange', 'purple', 'green'], [3, 2, 1], space='oklab', hue='longer')
+Color.weighted_mix(['purple', 'green', 'orange'], [2, 1, 3], space='oklab', hue='longer')
+Color.weighted_mix(['green', 'orange', 'purple'], [1, 3, 2], space='oklab', hue='longer')
+```
+
+If mixing in a polar color space, due to the way hues are mixed, the result could differ depending on the order of colors,
+especially when mixing in certain hue modes.
+
+```py play
+Color.weighted_mix(['orange', 'purple', 'green'], [3, 2, 1], space='oklch', hue='longer')
+Color.weighted_mix(['purple', 'green', 'orange'], [2, 1, 3], space='oklch', hue='longer')
+Color.weighted_mix(['green', 'orange', 'purple'], [1, 3, 2], space='oklch', hue='longer')
+```
+
+While you can specify any interpolation method, most just default to linear logic when not mixing a long sequence of colors. Since weighted mix blends all of the colors as a single color, opposed to creating a gradient through the colors, results between the different methods will likely be identical. With that said, there may be more unique weighted mixing approaches in the future.
+
+Like normal `mix`, the default space is Oklab, and it supports options such as [`carryforward`](#carrying-forward),
+[`powerless`](#powerless-hues), and disabling premultiplication with `premultiply`.
+
+Unlike normal `mix`, it ignore special progress easings, requests to specify domains and padding, and does not perform
+extrapolation.
+
+## Averaging
+
+Color averaging is a specialized form of [`weighted_mix`](#weighted-mixing) that takes a list of colors and returns the average of a
+rectangular color space, the default being linear sRGB.
+
+![Average RGB](images/avg-rgb.png)
+
+```py play
+Color.average(['red', 'green', 'yellow', 'blue'], [1, 1, 1, 1])
+```
+
+Rectangular space averaging results will often be comparable to just using `weighted_mix`, but there are some
+differences; when performed in a polar spaces, the hue will be returned as the circular mean. Averaging this way will
+always return the same results regardless of ordering.
+
+![Average HSL](images/avg-hsl.png)
+
+```py play
+Color.average(['red', 'green', 'yellow', 'blue'], space='hsl')
+```
+
+It should be noted that when averaging colors with hues which are evenly distributed around the color space, the result
+will produce an achromatic hue. When achromatic hues are produced during circular mean, the color will discard
+chroma/saturation information, producing an achromatic color.
+
+![Evenly Distributed Angles](images/avg-evenly-distributed.png)
+
+```py play
+Color.average(['red', 'green', 'blue'], space='hsl')
+```
+
+When averaging with transparency, results will be similar to `weighted_mix` if using premultiplication (the default).
+If premultiplication is disabled, averaging will specifically ignore colors with full transparency as such colors
+provide no meaningful information to an average. This differs from how `weighted_mix` behaves.
+
+```py play
+Steps(
+    [
+        Color.average(
+            [f'color(srgb 0 1 0 / {i / 11})', 'color(srgb 0 0 1)'],
+            premultiplied=False, space='srgb-linear'
+        )
+        for i in range(12)
+    ]
+)
+Steps(
+    [
+        Color.weighted_mix(
+            [f'color(srgb 0 1 0 / {i / 11})', 'color(srgb 0 0 1)'],
+            premultiplied=False, space='srgb-linear'
+        )
+        for i in range(12)
+    ]
+)
+```
+
+Lastly, [`powerless`](#powerless-hues) logic is always applied when averaging. This also differs from `weighted_miz` and
+means that implied achromatic colors are treated as such. This is to prevent powerless hues from distorting the color
+average.
+
+```py play
+Color.average(['hsl(30 0 100)', 'hsl(240 100 50 / 1)'], space='hsl')
+Color.weighted_mix(['hsl(30 0 100)', 'hsl(240 100 50 / 1)'], space='hsl')
+```
+
 ## Steps
 
 > [!tip] Interpolation Options

@@ -3,8 +3,10 @@ icon: lucide/scroll-text
 ---
 # Changelog
 
-## 8.7.1
+## 8.8
 
+-   **NEW**: Added a general purpose weighted mixing method which can match CSS multi-mixing logic of colors into a
+    single color.
 -   **FIX**: Ensure end conditions can be controlled within Catmull-Rom interpolation.
 
 ## 8.7
