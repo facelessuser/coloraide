@@ -1223,7 +1223,7 @@ class Color(metaclass=ColorMeta):
     def weighted_mix(
         cls,
         colors: Sequence[ColorInput],
-        weights: Sequence[float] = (1.0,),
+        weights: Sequence[float] | None = None,
         *,
         space: str | None = None,
         out_space: str | None = None,

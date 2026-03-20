@@ -857,6 +857,7 @@ Description
     `natural`  | A natural interpolation spline based on the cubic B-spline curve.
     `monotone` | An interpolation method that utilizes a monotonic cubic spline based on the Hermite spline.
     `catrom`   | Interpolation based on the Catmull-Rom cubic spline.
+    `spectral` | A paint like approach to mixing.
 
 Parameters
 
@@ -1020,6 +1021,56 @@ Return
 -   Returns a reference to the new [`Color`](#color) object or a reference to the current [`Color`](#color) if
     `in_place` is `#!py3 True`.
 ///
+
+## `#!py3 Color.weighted_mix` {#weighted_mix}
+
+```py
+@classmethod
+def weighted_mix(
+    cls,
+    colors: Sequence[ColorInput],
+    weights: Sequence[float] | None = None,
+    *,
+    space: str | None = None,
+    out_space: str | None = None,
+    method: str | None = None,
+    premultiplied: bool = True,
+    carryforward: bool = False,
+    powerless: bool = False,
+    hue: str = 'shorter',
+    **kwargs: Any
+) -> Self:
+```
+
+/// define
+Description
+
+-   Apply the mixing of multiple colors using weights.
+
+Parameters
+
+- 
+    Parameters      | Defaults         | Description
+    --------------- | ---------------- | -----------
+    `colors`        |                  | An iterable of color strings, [`Color`](#color) objects, and/or dictionaries representing a color.
+    `weights`       | `#!py None`      | An iterable of floats representing weights for the given `colors`.
+    `space`         | `#!py None`      | An optional string to specify what color space the colors should be averaged in. If none is provided, Oklab is assumed.
+    `out_space`     | `#!py None`      | Color space that the new color should be in. If `#!py None`, the return color will be in the same color space as specified via `space`.
+    `method`        | `#!py "linear"`  | The interpolation method to use.
+    `premultiplied` | `#!py True`      | Specify whether colors should be premultiplied during the averaging process.
+    `carryforward`  | `#!py False`     | Carry forward undefined channels when converting to the interpolation space. If `#!py None`, will use the class default which is `#!py False` by default.
+    `powerless`     | `#!py None`      | Treat explicitly defined hues as powerless when the color is considered achromatic. If `#!py None`, will use the class default which is `#!py False` by default.
+    `hue`           | `#!py "shorter"` | Define how color spaces which have hue angles are interpolated. Default evaluates between the shortest angle.
+
+Return
+
+-   Returns a reference to the new [`Color`](#color) object representing the average of the input colors.
+
+///
+
+> [!warning] Deprecated 4.1
+> `powerless` parameter has been deprecated in 4.1 and as it is now always enabled. The parameter no longer does anything
+> and will be removed in the future.
 
 ## `#!py3 Color.average` {#average}
 

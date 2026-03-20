@@ -247,6 +247,8 @@ sometimes be too constrained and give less smooth results.
 
 ### Spectral
 
+> [!new] New in 8.8
+
 > [!failure] Spectral interpolation is not registered in `Color` by Default
 
 ![Spectral](images/spectral-interpolation.png)
@@ -623,6 +625,8 @@ Color("red").mix("blue", 0.2)
 Mixing will always return a new color unless `in_place` is set `#!py3 True`.
 
 ## Weighted Mixing
+
+> [!new] New in 8.8
 
 While [`mix`](#mixing) provides a way to mix any two colors together, `weighted_mix` allows the mixing of any number of
 colors.
