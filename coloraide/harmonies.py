@@ -171,7 +171,7 @@ class Monochromatic(Harmony):
             ltrim, rtrim = slice(None, -1, None), slice(None, None, None)
 
         # Calculate how many tints and shades we need to generate
-        luminance = color1.luminance(white=None)
+        luminance = color.Y()
         if luminance <= min_lum:
             steps_w = min_steps
             steps_b = 0

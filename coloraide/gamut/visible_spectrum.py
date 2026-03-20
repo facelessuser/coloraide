@@ -159,8 +159,9 @@ def in_visible_spectrum(
 
     # Get white and xyY coordinates
     white = color.white('xy-1931')
-    l = color.luminance(white=white)
-    xy = color.xy()
+    xyY = color.split_chromaticity('xy-1931')
+    xy = xyY[:2]
+    l = xyY[-1]
 
     # Get the dominant wavelength which will yield the point on the spectral locus in our direction
     wave, dominant = color.wavelength()[:2]
@@ -195,8 +196,9 @@ def fit_visible_spectrum(
 
     # Get white and xyY coordinates
     white = color.white('xy-1931')
-    l = color.luminance(white=white)
-    xy = color.xy()
+    xyY = color.split_chromaticity('xy-1931')
+    xy = xyY[:2]
+    l = xyY[-1]
 
     # Get the dominant wavelength which will yield the point on the spectral locus in our direction
     wave, dominant = color.wavelength()[:2]

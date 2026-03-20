@@ -801,6 +801,11 @@ class Color(metaclass=ColorMeta):
 
         return self.split_chromaticity('xy-1931', white=white)[:-1]
 
+    def Y(self, *, white: VectorLike | None = None) -> float:
+        """Convert to `Y` (luminance)."""
+
+        return self.split_chromaticity('xy-1931', white=white)[-1]
+
     def split_chromaticity(
         self,
         cspace: str = 'uv-1976',

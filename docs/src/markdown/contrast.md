@@ -48,6 +48,10 @@ Color('prophoto-rgb', [1, 0, 0]).luminance(white=None)
 Color('prophoto-rgb', [1, 0, 0]).luminance(white=cat.WHITES['2deg']['E'])
 ```
 
+> [!tip]
+> Alternatively, the `Y()` function is a luminance function that returns luminance relative to the current space's white
+> point by default. It also accepts the `white` parameter.
+
 > [!new] New 2.4
 > The `white` parameter is new in 2.4.
 

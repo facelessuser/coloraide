@@ -169,6 +169,13 @@ class TestChromaticitySpecificCases(util.ColorAsserts, unittest.TestCase):
         self.assertListEqual(c1.uv(), [0.4507042253521127, 0.522887323943662])
         self.assertListEqual(c1.uv(white=cat.WHITES['2deg']['D50']), [0.45718361011203107, 0.5248532543501369])
 
+    def test_Y(self):
+        """Test xy with white parameter."""
+
+        c1 = Color('red')
+        self.assertEqual(c1.Y(), 0.21263900587151024)
+        self.assertEqual(c1.Y(white=cat.WHITES['2deg']['D50']), 0.22249317711056513)
+
     def test_uv_1960_to_xy(self):
         """Test `uv` 1960 to `xy`."""
 
