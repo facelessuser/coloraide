@@ -2404,6 +2404,16 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
             Color.weighted_mix([c1, c2], [0.5, 0.5], method='spectral')
         )
 
+    def test_spectral_too_many_weights(self):
+        """Test with too many weights."""
+
+        c1 = Color('#002185').set('alpha', NaN)
+        c2 = Color('#FCD200').set('alpha', NaN)
+        self.assertColorEqual(
+            c1.mix(c2, 0.5, method='spectral'),
+            Color.weighted_mix([c1, c2], [0.5, 0.5, 0.5], method='spectral')
+        )
+
     def test_spectral_no_weights(self):
         """Test with no weights."""
 
