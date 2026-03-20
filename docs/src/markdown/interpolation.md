@@ -198,7 +198,7 @@ In principle, if we were to approximate the reflectance curves of `#!color rgb(2
 `#!color rgb(0 0 255)`, using the approach by Scott Burns, such that they also summed up to 1, we could likely calculate
 reflectance curves from these three colors and approximate reflectance curves for almost any other color in the sRGB
 gamut. Unfortunately, this creates a non-linearity problem that is difficult to solve with high precision, so instead,
-we calculate primary reflectance curves from 7 colors so that we can generate smooth approximation for almost any color
+we calculate primary reflectance curves from 7 colors so that we can generate smooth approximations for almost any color
 within the sRGB gamut.
 
 Primary\ Reflectance\ Curves |
