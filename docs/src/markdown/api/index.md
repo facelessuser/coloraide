@@ -616,9 +616,9 @@ Description
 Parameters
 
 - 
-    Parameters  | Defaults           | Description
-    ----------- | ------------------ | -----------
-    `white`     | `#!py None`        | Specify the white in which to chromatically adapt the points from, if none is specified, the current color's white point is assumed.
+    Parameters  | Defaults                         | Description
+    ----------- | -------------------------------- | -----------
+    `white`     | `#!py cat.WHITES['2deg']['D65']` | Specify the white in which to chromatically adapt the points from, if none is specified, the current color's white point is assumed.
 
 Return
 
