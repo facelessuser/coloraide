@@ -5,12 +5,13 @@ icon: lucide/scroll-text
 
 ## 8.8
 
--   **NEW**: Added a general purpose, weighted mixing method which can match CSS mixing logic of multiple colors into a
+-   **NEW**: Added a general purpose, weighted mixing method that can match CSS mixing logic of multiple colors into a
     single color.
 -   **NEW**: Officially support spectral (paint-like) mixing in ColorAide (formally included only in ColorAide Extras).
 -   **NEW**: Add new function `Y()` which returns luminance relative to the current space's white point, unlike
     `luminance()` which always returns luminance relative to D65 by default as the WCAG recommends.
--   **FIX**: Fix an issue where relative white point specified by the user wasn't being respected in `xy()` and `uv()`.
+-   **FIX**: Fix an issue where the relative white point specified by the user wasn't being respected in `xy()` and
+    `uv()`.
 -   **FIX**: Ensure end conditions can be controlled within Catmull-Rom interpolation.
 -   **FIX**: Fix corner case where average would not treat colors as full weight if fed an empty list of weights.
 
