@@ -5,9 +5,8 @@ icon: lucide/scroll-text
 
 ## 8.8
 
--   **NEW**: Added a general purpose weighted mixing method which can match CSS multi-mixing logic of colors into a
+-   **NEW**: Added a general purpose, weighted mixing method which can match CSS mixing logic of multiple colors into a
     single color.
-
 -   **NEW**: Officially support spectral (paint-like) mixing in ColorAide (formally included only in ColorAide Extras).
 -   **NEW**: Add new function `Y()` which returns luminance relative to the current space's white point, unlike
     `luminance()` which always returns luminance relative to D65 by default as the WCAG recommends.
