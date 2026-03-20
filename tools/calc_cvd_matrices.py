@@ -11,7 +11,7 @@ from coloraide import Color
 M = [
     [0.15514, 0.54312, -0.03286],
     [-0.15514, 0.45684, 0.03286],
-    [0, 0, 0.01608]
+    [0.0, 0.0, 0.01608]
 ]
 
 # Linear sRGB to Judd-Vos corrected XYZ (approximation)
@@ -79,7 +79,7 @@ alg.pprint(m)
 
 ####################
 # Brettel matrices
-# https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.496.7153&rep=rep1&type=pdf
+# https://vision.psychol.cam.ac.uk/jdmollon/papers/Dichromatsimulation.pdf
 ####################
 LMS_WHITE = alg.matmul(T, [1, 1, 1])
 

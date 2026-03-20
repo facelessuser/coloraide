@@ -190,7 +190,7 @@ class Sharp(VonKries):
     """
     Sharp CAT.
 
-    https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.14.918&rep=rep1&type=pdf
+    https://acorn.stanford.edu/psych221/projects/2010/JasonSu/Papers/Two%20New%20von%20Kries%20Based%20Chromatic%20Adaptation.pdf
     """
 
     NAME = "sharp"
@@ -207,7 +207,6 @@ class CMCCAT2000(VonKries):
     CMCCAT2000 CAT.
 
     https://hrcak.srce.hr/file/95370
-    https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.14.918&rep=rep1&type=pdf
     """
 
     NAME = 'cmccat2000'

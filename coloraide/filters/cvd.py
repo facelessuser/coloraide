@@ -128,7 +128,7 @@ def brettel(color: Color, severity: float, wings: tuple[Matrix, Matrix, Vector])
     """
     Calculate color blindness using Brettel 1997.
 
-    https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.496.7153&rep=rep1&type=pdf
+    https://vision.psychol.cam.ac.uk/jdmollon/papers/Dichromatsimulation.pdf
 
     Probably the only accurate approach for tritanopia, but is more expensive to calculate.
     """
