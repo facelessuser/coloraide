@@ -94,7 +94,7 @@ white point.
 
 > [!tip] Luminance
 > ColorAide also allows for grabbing luminance via the `luminance()` method, but this differs from `Y()` in that it
-> returns luminance relative to D65 by default. This is provided as a convienance for those that are only interested in
+> returns luminance relative to D65 by default. This is provided as a convenience for those that are only interested in
 > WCAG luminance, which is always relative to D65. If `white` is set to `#!py None`, it will behave like `Y()`.
 >
 > ```py play
