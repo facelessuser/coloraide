@@ -261,9 +261,6 @@ Any omitted list values will be assumed `#!py False`.
 Color('rebeccapurple').convert('lab').to_string(alpha=True, percent=[True])
 ```
 
-> [!new] New 2.12
-> Boolean sequence support for `percent` added in 2.12.
-
 ## Format Specific Options
 
 These options may occur in various color spaces depending on the CSS output format.

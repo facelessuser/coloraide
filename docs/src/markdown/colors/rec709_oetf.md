@@ -1,7 +1,5 @@
 # Rec. 709 (OETF)
 
-> [!new] New 2.4
-
 > [!failure] The Rec. 709 (OETF) color space is not registered in `Color` by default
 
 /// html | div.info-container

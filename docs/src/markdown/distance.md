@@ -23,9 +23,6 @@ Color("red").distance("blue", space="srgb")
 Color("red").distance("blue", space="lab")
 ```
 
-> [!new] New 3.3
-> Handling spaces with polar coordinates is new in 3.3.
-
 ## Delta E
 
 The `delta_e` function gives access to various ∆E implementations, which are just different algorithms to calculate

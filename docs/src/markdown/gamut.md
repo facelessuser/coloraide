@@ -996,8 +996,6 @@ Steps(
 
 ## Pointer's Gamut
 
-> [!new] New in 2.4
-
 The Pointer's gamut is (an approximation of) the gamut of real surface colors as can be seen by the human eye, based on
 the research by Michael R. Pointer (1980). What this means is that every color that can be reflected by the surface of
 an object of any material should be is inside the Pointer’s gamut. This does not include, however, those that do not

@@ -409,8 +409,6 @@ sometimes be too constrained and give less smooth results.
 
 ## Discrete Interpolation
 
-> [!new] New 2.5
-
 So far, we've only shown examples of continuous interpolation methods. To clarify, we are using "continuous" in a
 slightly different way than we discussed [earlier](#continuous-interpolation). When we say "continuous" here, we simply
 mean that the colors in the interpolation smoothly transition from one color to the other. But when creating charts or
@@ -1069,8 +1067,6 @@ Color.interpolate(['orange', hint(0.75), 'purple', 'green'])
 ```
 
 ## Padding
-
-> [!new] New 2.6
 
 Particularly when interpolating a color scale, it can be useful to "resize" the area of the color scale being evaluated.
 This can generally be done using the `padding` parameter. Consider the following example using the ColorBrewer scale

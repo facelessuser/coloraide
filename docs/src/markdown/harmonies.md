@@ -150,9 +150,6 @@ Steps(Color('red').harmony('mono', count=8))
 > Pure `#!color white` and `#!color black` will not be included in a monochromatic color harmony unless the color is
 > achromatic.
 
-> [!new] New 3.3
-> The `count` parameter is new in 3.3.
-
 ### Complementary
 
 Complementary harmonies use a dyad of colors at opposite ends of the color wheel.
@@ -231,9 +228,6 @@ Steps(Color('ryb', [1, 0, 0]).harmony('wheel', space='ryb', count=48))
 ```
 
 ## Changing the Default Harmony Color Space
-
-> [!new] New 2.7
-> Non-cylindrical space support was added in 2.7.
 
 If you'd like to change the `#!py3 Color()` class's default harmony color space, it can be done with
 [class override](./color.md#override-default-settings). Simply derive a new `#!py3 Color()` class from the original and

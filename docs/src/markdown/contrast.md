@@ -19,10 +19,6 @@ Color("white").luminance()
 Color("blue").luminance()
 ```
 
-It should be noted that this luminance is relative to the XYZ D65 color space by default as this is how it is defined
-in the WCAG 2.1. What this means is that luminance is equivalent to the Y value of XYZ D65. We follow this convention
-as many people expect it in this format.
-
 > [!tip] Luminance and WCAG 2.1
 > Luminance as described in the WCAG 2.1 spec is essentially the exact same as what the luminance method returns. The
 > only difference is the lower precision by which they calculate the value:
@@ -37,8 +33,21 @@ as many people expect it in this format.
 > Color('purple').convert('xyz-d65')['y']
 > ```
 
-If you'd like to have luminance in relation to a given color's white point, you can set `white` to `#!py None`. If you'd
-like to get the luminance relative to some other white point, you can specify the white point as
+
+It should be noted that luminance, as returned by `luminance()` is relative to the XYZ D65 color space by default as
+this is how it is defined in the WCAG 2.1. What this means is that luminance is equivalent to the Y value of XYZ D65.
+For a non WCAG specific luminance, you can use `Y()` which will return luminance relative to the actual space's white
+point.
+
+```py
+Color('prophoto-rgb', [1, 0, 0]).luminance()
+Color('prophoto-rgb', [1, 0, 0]).Y()
+```
+
+Additionally, setting the `white` parameter to `#!py None` will also force `luminance()` to behave like `Y()`. If you'd
+like to have luminance in relation to a given color's white point, you can set `white` to `#!py None`.
+
+If you'd like to get the luminance relative to some other white point, you can specify the white point as
 [xy chromaticity points](./chromaticity.md).
 
 ```py play
@@ -47,13 +56,6 @@ Color('prophoto-rgb', [1, 0, 0]).luminance()
 Color('prophoto-rgb', [1, 0, 0]).luminance(white=None)
 Color('prophoto-rgb', [1, 0, 0]).luminance(white=cat.WHITES['2deg']['E'])
 ```
-
-> [!tip]
-> Alternatively, the `Y()` function is a luminance function that returns luminance relative to the current space's white
-> point by default. It also accepts the `white` parameter.
-
-> [!new] New 2.4
-> The `white` parameter is new in 2.4.
 
 ## Contrast
 

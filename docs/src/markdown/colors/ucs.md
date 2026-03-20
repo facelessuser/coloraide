@@ -1,7 +1,5 @@
 # CIE 1960 UCS
 
-> [!new] New 2.4
-
 > [!failure] The CIE 1960 UCS color space is not registered in `Color` by default
 
 /// html | div.info-container

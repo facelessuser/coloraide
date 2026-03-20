@@ -68,19 +68,19 @@ Color('red').split_chromaticity(white=cat.WHITES['2deg']['D50'])
 ```
 
 > [!tip]
-> If you ever need to get the white point from an already registered, supported color space, ColorAide makes these
-> available via `white()`. The value is returned by default as the tristimulus values (XYZ coordinates), but it can also
-> be returned as any of the supported chromaticity coordinate formats by specifying the desired output.
+> If you ever need to get the white point from an already registered color space, ColorAide makes these available via
+> `white()`. The value is returned by default as the tristimulus values (XYZ coordinates), but it can also be returned
+> as any of the supported chromaticity coordinate formats by specifying the desired output.
 >
 > ```py play
 > Color('red').white()
 > Color('red').white('uv-1960')
 > ```
 
-If all that is desired is the 2D chromaticity coordinates, you can also use the two, simple convenience methods: `xy()`
-and `uv()`. `xy()` will return chromaticity in the CIE 1931 xy system and `uv()` will return chromaticity within the
-CIE 1976 u'v' system (default) or the CIE 1960 uv system, uv output is controlled by explicitly passing the desired
-year of the uv system. If all that is required is the luminance, `Y()` can be used.
+If all that is desired is the 2D chromaticity coordinates _or_ the luminance, you can also use the convenience methods:
+`xy()`, `uv()`, and `Y()`, which will return 2D xy, 2D uv, or luminance, respectively. `uv()` will return chromaticity
+within the CIE 1976 u'v' system (default) or the CIE 1960 uv system; uv output is controlled by explicitly passing the
+desired year of the uv system.
 
 ```py play
 Color('red').xy()
@@ -89,26 +89,19 @@ Color('red').uv('1960')
 Color('red').Y()
 ```
 
-The `white` parameter is also accepted by `xy()`, `uv()`, and `Y()`.
+The `white` parameter is also accepted by `xy()`, `uv()`, and `Y()` if values are desired to be relative to a specific
+white point.
 
 > [!tip] Luminance
-> ColorAide also allows for grabbing luminance via the `luminance()` method. It should be noted that by default this
-> function returns luminance relative to the D65 white point as it is common for people to use luminance normalized like
-> this, but if you'd like to quickly get luminance and have it relative to the current color's white point, just set
-> `white` to `#!py None` or use `Y()` and ColorAide will calculate the value relative to the current color.
+> ColorAide also allows for grabbing luminance via the `luminance()` method, but this differs from `Y()` in that it
+> returns luminance relative to D65 by default. This is provided as a convienance for those that are only interested in
+> WCAG luminance, which is always relative to D65. If `white` is set to `#!py None`, it will behave like `Y()`.
 >
 > ```py play
 > Color('red').luminance(white=None)
 > ```
 
-> [!new] New 2.4
-> - `split_chromaticity()` is new in 2.4.
-> - Chromaticity specifier in `white()` is new in 2.4.
-> - `white` parameter of `luminance()` is new in 2.4.
-
 ## Create Color From Chromaticity Coordinates
-
-> [!new] New 2.4
 
 ColorAide also provides an easy way to create colors from chromaticity coordinates. `chromaticity()` is a generalized
 method that takes a color space to create the color in and a set of chromaticity coordinates. The coordinates should be
@@ -178,8 +171,6 @@ c1, c2.convert('prophoto-rgb')
 ```
 
 ## Converting Chromaticity Coordinates
-
-> [!new] New 2.4
 
 ColorAide normally expects you are working with chromaticity points that are compatible with at least one of the
 registered color spaces. In general, the API is set up with this expectation to make things easy for users. Normally,

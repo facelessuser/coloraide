@@ -87,8 +87,6 @@ color
 
 ### Access by Type
 
-> [!new] New 2.0
-
 When dealing with colors, you have two types of channels: color channels and an alpha channel. These values can be
 accessed and separated by [slicing](#access-by-slicing) as mentioned earlier, but some convenience functions have
 been added to make this easier. `coords()` and `alpha()` will retrieve the color channels and the alpha channel
@@ -156,10 +154,6 @@ color
 color.get('0')
 color.get('oklch.0')
 ```
-
-> [!new] New in 2.14
-> Parsing numerical representations of channels is new in 2.14
-
 
 Like `get()`, `set()` is a method that allows for the setting of any color channel via the color channel names. The
 value can be set via numerical values or functions with more complex logic.
@@ -466,11 +460,6 @@ always be true.
     aces.in_gamut()
     ```
 
-    > [!new] New 2.3
-    > ACEScc, another color space that performs a logarithmic encoding of ACES, will also resolve undefined channels to a
-    > non-zero value, not because zero is out of gamut, but to ensure consistency across all ACES color spaces which
-    > resolve to zero or non-zero equivalent values.
-
 ## Achromatic Colors
 
 An achromatic color is a color without any real hue. Essentially, it is devoid of color leaving only shades of gray.
@@ -479,8 +468,6 @@ Different color spaces represent achromatic colors in different ways.
 ColorAide has some special handling of achromatic colors and a few ways to test if a color is achromatic.
 
 ### Checking For Achromatic Colors
-
-> [!new] New 2.0
 
 ColorAide generally respects an input color's defined channels, but during conversion, or if `normalize()` is called,
 cylindrical color spaces will have their hue set to undefined if the color is achromatic (or very close to achromatic).
