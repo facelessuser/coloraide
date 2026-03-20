@@ -794,12 +794,12 @@ class Color(metaclass=ColorMeta):
     def uv(self, mode: str = '1976', *, white: VectorLike | None = None) -> Vector:
         """Convert to `xy`."""
 
-        return self.split_chromaticity('uv-' + mode)[:-1]
+        return self.split_chromaticity('uv-' + mode, white=white)[:-1]
 
     def xy(self, *, white: VectorLike | None = None) -> Vector:
         """Convert to `xy`."""
 
-        return self.split_chromaticity('xy-1931')[:-1]
+        return self.split_chromaticity('xy-1931', white=white)[:-1]
 
     def split_chromaticity(
         self,

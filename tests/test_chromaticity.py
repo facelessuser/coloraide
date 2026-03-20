@@ -3,6 +3,7 @@ from coloraide import Color
 from . import util
 import pytest
 import unittest
+from coloraide import cat
 from coloraide import util as cutil
 
 
@@ -153,6 +154,20 @@ class TestChromaticitySpecificCases(util.ColorAsserts, unittest.TestCase):
         c2 = Color.chromaticity('srgb', xy, 'xy-1931', scale=True, scale_space='srgb-linear')
         self.assertEqual(c2.to_string(fit=False), 'rgb(255 0 0)')
         [self.assertCompare(v1, v2) for v1, v2 in zip(c2.xy(), xy)]
+
+    def test_xy_white(self):
+        """Test xy with white parameter."""
+
+        c1 = Color('red')
+        self.assertListEqual(c1.xy(), [0.64, 0.33])
+        self.assertListEqual(c1.xy(white=cat.WHITES['2deg']['D50']), [0.6484414432665045, 0.3308533126407731])
+
+    def test_uv_white(self):
+        """Test xy with white parameter."""
+
+        c1 = Color('red')
+        self.assertListEqual(c1.uv(), [0.4507042253521127, 0.522887323943662])
+        self.assertListEqual(c1.uv(white=cat.WHITES['2deg']['D50']), [0.45718361011203107, 0.5248532543501369])
 
     def test_uv_1960_to_xy(self):
         """Test `uv` 1960 to `xy`."""
