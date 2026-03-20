@@ -250,7 +250,7 @@ reflectance values above 1 well.
 
 Borrowing an idea from the [paper][mixbox-paper] released by the creators of [Mixbox][mixbox], ColorAide goes further
 and first ensures a given approximated color curve does not exceed a reflectance of 1 at any point within the curve.
-Then we calculate the residual XYZ values between the original color and what are limited reflectance curve can produce.
+Then we calculate the residual XYZ values between the original color and what our limited reflectance curve can produce.
 The residuals of the colors being mixed are interpolated directly within the XYZ space and added back into the final
 result once the reflectance curves have been mixed. This allows for sane handling for wider gamut colors.
 
