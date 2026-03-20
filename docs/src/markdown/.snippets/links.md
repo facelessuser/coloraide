@@ -22,8 +22,12 @@
 [issues]: https://github.com/facelessuser/coloraide/issues
 [lch-chroma]: https://colorjs.io/docs/gamut-mapping.html#so-how-does-colorjs-handle-all-this
 [machado]: https://www.inf.ufrgs.br/~oliveira/pubs_files/CVD_Simulation/CVD_Simulation.html#Reference
+[mixbox-paper]: https://scrtwpns.com/mixbox.pdf
+[mixbox]: https://github.com/scrtwpns/mixbox
 [pillow]: https://pypi.org/project/Pillow/
 [plus-darker-fix]: https://github.com/w3c/fxtf-drafts/issues/447#issuecomment-1699293766
 [porter-duff]: https://www.w3.org/TR/compositing-1/#porterduffcompositingoperators
+[scott-burns-reflect]: http://scottburns.us/reflectance-curves-from-srgb-10/
 [source-over]: https://www.w3.org/TR/compositing-1/#porterduffcompositingoperators_srcover
+[spectral-js]: https://github.com/rvanwijnen/spectral.js
 [vienot]: http://vision.psychol.cam.ac.uk/jdmollon/papers/colourmaps.pdf

@@ -149,7 +149,7 @@ def multi_mix(
     if hue_index != -1:
         avgs[hue_index] = math.nan
     wavg = 0.0
-    no_weights = weights is None
+    no_weights = not weights
     if no_weights:
         weights = ()
     mx = 0.0

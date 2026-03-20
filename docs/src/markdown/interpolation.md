@@ -124,6 +124,168 @@ Color.interpolate(colors, space='oklab', method='continuous')
 This approach is useful for more natural, multi-color interpolations and is used as foundation for our spline
 interpolation approaches which often require the context of at least four colors when applying their logic.
 
+## Spectral
+
+> [!new] New in 8.8
+
+> [!failure] Spectral interpolation is not registered in `Color` by Default
+
+![Spectral](images/spectral-interpolation.png)
+
+```py play
+from coloraide import Color
+from coloraide.interpolate.spectral import Spectral
+
+class Custom(Color): ...
+
+Custom.register(Spectral())
+
+Custom.interpolate(['#51A5E6', '#79AF58', '#92A854', '#A097BE', '#CF8E38', '#CF83A1', '#F76B5C'], method='spectral')
+```
+
+Spectral interpolation attempts to mix colors similar to how they are done in paint using Kubelka-Munk theory.
+
+```py play
+red = Color('rgb(128, 2, 46)').mix('white', 0.25, method='spectral')
+yellow = Color('rgb(252, 211, 0)').mix('white', 0.25, method='spectral')
+blue = Color('rgb(13, 27, 68)').mix('white', 0.25, method='spectral')
+Wheel(Color.steps([red, yellow, blue, red], steps=13, method='spectral', out_space='srgb')[:-1])
+Steps(Color.steps([red, yellow, blue, red], steps=13, method='spectral', out_space='srgb')[:-1])
+```
+
+> [!tip]
+> Unlike other interpolation methods, the default interpolation space is treated as XYZ D65 instead of Oklab. This is
+> true regardless of what the default for the `Color` object is. If a space is explicitly defined, the color will be
+> output in that space (unless `output_space` overrides it), but the color will still be processed in XYZ D65.
+
+Light, on its own, doesn't mix like pigments due to the way pigments absorb and scatter light. [Kubelka-Munk theory](
+https://en.wikipedia.org/wiki/Kubelka%E2%80%93Munk_theory) is a fundamental approach to modelling the appearance of
+paint films and predicting this absorption and scattering. Utilizing Kubelka-Munk theory, colors can be simulated to
+mix more like paints.
+
+/// tab | Spectral Mix
+
+```py play
+c1 = Color('#002185')
+c2 = Color('#FCD200')
+Color.interpolate([c1, c2], method='spectral')
+Steps(Color.steps([c1, c2], method='spectral', steps=9))
+```
+///
+
+/// tab | RGB Mix
+```py play
+c1 = Color('#002185')
+c2 = Color('#FCD200')
+Color.interpolate([c1, c2], space='srgb')
+Steps(Color.steps([c1, c2], space='srgb', steps=9))
+```
+///
+
+It is important to note that actual paint mixing is more complicated than what we do here in ColorAide. Every paint has
+its own specific properties related to the absorption and scattering of light due to the properties of the paint
+particles. Since we are not basing our approach off real paint data, we do not have these specific constants and opt
+for a simplified, single-constant approach when applying Kubelka-Munk theory, opposed to the more accurate two-constant
+approach.
+
+Paint-like mixing, as is implemented here, is a more simplified approach that approximates the look and feel of paint
+mixing in general. This is based on the work of [Scott Burns][scott-burns-reflect] who developed a way to approximate
+reflectance curves from sRGB triplets. The project [Spectral.js][spectral-js] ran with this idea and applied
+Kubelka-Munk theory to transform these reflectance curves into scattering/absorption coefficients so that the curves
+could be mixed linearly, producing paint like mixing. ColorAide adopts this same approach with minor modifications.
+
+In principle, if we were to approximate the reflectance curves of `#!color rgb(255 0 0)`, `#!color rgb(0 255 0 )`, and
+`#!color rgb(0 0 255)`, using the approach by Scott Burns, such that they also summed up to 1, we could likely calculate
+reflectance curves from these three colors and approximate reflectance curves for almost any other color in the sRGB
+gamut. Unfortunately, this creates a non-linearity problem that is difficult to solve with high precision, so instead,
+we calculate primary reflectance curves from 7 colors so that we can generate smooth approximation for almost any color
+within the sRGB gamut.
+
+Primary\ Reflectance\ Curves |
+---------------------------- |
+`#!color rgb(255 0 0)`       |
+`#!color rgb(0 255 0)`       |
+`#!color rgb(0 0 255)`       |
+`#!color rgb(0 255 255)`     |
+`#!color rgb(255 0 255)`     |
+`#!color rgb(255 255 0)`     |
+`#!color rgb(255 255 255)`   |
+
+![Primary Reflectance Curves](images/reflectance-curves.png)
+/// figure-caption
+Reflectance curves of white, cyan, magenta, yellow, red, green, and blue as approximated using the methods proposed by
+Scott Burns.
+///
+
+With our primary colors selected, and the reflectance curves created for each one, we can use these curves to
+approximate smooth reflectance curves for almost any color within the sRGB gamut by deconstructing a given color into
+concentrations of these primary reflectance curves and then combining them into a new curve that represents the color.
+
+![Decomposition of Color Reflectance Concentrations](images/reflect-orange.png)
+/// figure-caption
+Orange decomposed into white, cyan, magenta, yellow, red, green, and blue reflectance curves and then reconstructed into
+its own curve.
+///
+
+With the ability to represent almost any color within our gamut as a reflectance curve, we then can mix colors by
+generating their curve and then applying Kubelka-Munk theory by converting those curves into absorption and scattering
+coefficients and mixing them linearly. Once mixed, we can transform them back to a reflectance curve and then back to
+our target color space.
+
+![Reflectance Mix](images/reflect-mix.png)
+/// figure-caption
+Mixing a blue and yellow color with Kubelka-Munk theory.
+///
+
+It should be noted that using this approach, the mixing of the colors can turn out a bit dark. The author of Spectral.js
+noticed this and found that weighting the mix such that more luminous colors had more weight produced more natural
+mixing.
+
+One way that ColorAide deviates from the original implementation is that we ensure sane behavior for colors that extend
+beyond the sRGB gamut.
+
+Using the method as outlined previously works for most colors within the sRGB gamut, but doesn't precisely cover every
+color perfectly, and will be less usable for colors outside the sRGB gamut. This is because Kubelka-Munk does not handle
+reflectance values above 1 well.
+
+Borrowing an idea from the [paper][mixbox-paper] released by the creators of [Mixbox][mixbox], ColorAide goes further
+and first ensures a given approximated color curve does not exceed a reflectance of 1 at any point within the curve.
+Then we calculate the residual XYZ values between the original color and what are limited reflectance curve can produce.
+The residuals of the colors being mixed are interpolated directly within the XYZ space and added back into the final
+result once the reflectance curves have been mixed. This allows for sane handling for wider gamut colors.
+
+```py play
+c1 = Color('color(display-p3 0 0 1)')
+c2 = Color('color(display-p3 1 1 0)')
+Color.interpolate([c1, c2], method='spectral')
+Steps(Color.steps([c1, c2], method='spectral', steps=9))
+```
+
+Spectral mixing comes in too flavors: normal and continuous.
+
+```py play
+colors = [
+    Color('#00000000'),
+    Color('#002185').set('alpha', NaN),
+    Color('#FFFFFFFF')
+]
+Color.interpolate(colors, method='spectral')
+Color.interpolate(colors, method='spectral-continuous')
+```
+
+To enable `spectral-continuous`, simply register register it like you would `spectral`.
+
+```py play
+from coloraide import Color
+from coloraide.interpolate.spectral import SpectralContinuous
+
+class Custom(Color): ...
+
+Custom.register(SpectralContinuous())
+
+Custom.interpolate(['#51A5E6', '#79AF58', '#92A854', '#A097BE', '#CF8E38', '#CF83A1', '#F76B5C'], method='spectral-continuous')
+```
+
 ## Cubic Spline Interpolation
 
 Linear interpolation is nice because it is easy to implement, and due to its straight forward nature, pretty fast. With
@@ -430,9 +592,9 @@ need to mimic the same behavior of a system that does not use premultiplied inte
 > Any options not consumed by `mix` will be passed to the underlying `interpolation` function. This includes options
 > like `hue`, `progress`, etc.
 
-The `mix` function is built on top of the [`interpolate`](#linear-interpolation) function and provides a simple, quick, and
-intuitive simple mixing of two colors. Just pass in a color to mix with the base color, and you'll get an equal mix of
-the two.
+The `mix` function is built on top of the [`interpolate`](#linear-interpolation) function and provides a simple, quick,
+and intuitive simple mixing of two colors. Just pass in a color to mix with the base color, and you'll get an equal mix
+of the two.
 
 ```py play
 Color("red").mix(Color("blue"))
@@ -463,6 +625,8 @@ Color("red").mix("blue", 0.2)
 Mixing will always return a new color unless `in_place` is set `#!py3 True`.
 
 ## Weighted Mixing
+
+> [!new] New in 8.8
 
 While [`mix`](#mixing) provides a way to mix any two colors together, `weighted_mix` allows the mixing of any number of
 colors.
@@ -514,8 +678,8 @@ Color.weighted_mix(['purple', 'green', 'orange'], [2, 1, 3], space='oklab', hue=
 Color.weighted_mix(['green', 'orange', 'purple'], [1, 3, 2], space='oklab', hue='longer')
 ```
 
-If mixing in a polar color space, due to the way hues are mixed, the result could differ depending on the order of colors,
-especially when mixing in certain hue modes.
+If mixing in a polar color space, due to the way hues are mixed, the result could differ depending on the order of
+colors, especially when mixing in certain hue modes.
 
 ```py play
 Color.weighted_mix(['orange', 'purple', 'green'], [3, 2, 1], space='oklch', hue='longer')
@@ -523,7 +687,16 @@ Color.weighted_mix(['purple', 'green', 'orange'], [2, 1, 3], space='oklch', hue=
 Color.weighted_mix(['green', 'orange', 'purple'], [1, 3, 2], space='oklch', hue='longer')
 ```
 
-While you can specify any interpolation method, most just default to linear logic when not mixing a long sequence of colors. Since weighted mix blends all of the colors as a single color, opposed to creating a gradient through the colors, results between the different methods will likely be identical. With that said, there may be more unique weighted mixing approaches in the future.
+While you can specify any interpolation method, most just default to linear logic when not mixing a long sequence of
+colors with no observable differences, but methods like spectral mixing still provide unique, novel outputs.
+
+```py play
+from coloraide import algebra as alg
+colors = ['#002185', '#FCD200', '#FFFFEE']
+Steps(colors)
+Steps([Color.weighted_mix(colors, [1, 1, i], method='linear') for i in alg.linspace(0.0, 3.0, 9)])
+Steps([Color.weighted_mix(colors, [1, 1, i], method='spectral') for i in alg.linspace(0.0, 3.0, 9)])
+```
 
 Like normal `mix`, the default space is Oklab, and it supports options such as [`carryforward`](#carrying-forward),
 [`powerless`](#powerless-hues), and disabling premultiplication with `premultiply`.
@@ -533,8 +706,8 @@ extrapolation.
 
 ## Averaging
 
-Color averaging is a specialized form of [`weighted_mix`](#weighted-mixing) that takes a list of colors and returns the average of a
-rectangular color space, the default being linear sRGB.
+Color averaging is a specialized form of [`weighted_mix`](#weighted-mixing) that takes a list of colors and returns the
+average of a rectangular color space, the default being linear sRGB.
 
 ![Average RGB](images/avg-rgb.png)
 

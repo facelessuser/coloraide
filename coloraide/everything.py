@@ -48,6 +48,7 @@ from .distance.delta_e_cam02 import DECAM02
 from .distance.delta_e_hct import DEHCT
 from .gamut.fit_hct_chroma import HCTChroma
 from .interpolate.catmull_rom import CatmullRom
+from .interpolate.spectral import Spectral, SpectralContinuous
 from .contrast.lstar import LstarContrast
 from .cat import VonKries, XYZScaling, CAT02, CMCCAT97, Sharp, CMCCAT2000, CAT16
 from .color import ColorMatch
@@ -132,6 +133,8 @@ ColorAll.register(
 
         # Interpolation
         CatmullRom(),
+        Spectral(),
+        SpectralContinuous(),
 
         # Contrast
         LstarContrast()

@@ -1207,7 +1207,7 @@ class Color(metaclass=ColorMeta):
             method if method is not None else cls.INTERPOLATOR,
             colors=colors,
             space=space,
-            out_space=out_space,
+            out_space=space if out_space is None else out_space,
             progress=progress,
             hue=hue,
             premultiplied=premultiplied,
@@ -1223,7 +1223,7 @@ class Color(metaclass=ColorMeta):
     def weighted_mix(
         cls,
         colors: Sequence[ColorInput],
-        weights: Sequence[float] = (1.0,),
+        weights: Sequence[float] | None = None,
         *,
         space: str | None = None,
         out_space: str | None = None,
@@ -1248,6 +1248,8 @@ class Color(metaclass=ColorMeta):
             hue,
             **kwargs
         )
+        if out_space is None:
+            out_space = space
         if out_space is not None and color.space() != out_space:
             color.convert(out_space, in_place=True)
         return color
@@ -1266,21 +1268,21 @@ class Color(metaclass=ColorMeta):
     ) -> Self:
         """Average the colors."""
 
-        if space is None:
-            space = cls.AVERAGE
-
-        if out_space is None:
-            out_space = space
-
-        return interpolate.multi_mix(
+        color = interpolate.multi_mix(
             cls,
             colors,
             weights,
-            space,
+            space if space is not None else cls.AVERAGE,
             premultiplied,
             carryforward if carryforward is not None else cls.CARRYFORWARD,
             average=True
-        ).convert(out_space, in_place=True)
+        )
+
+        if out_space is None:
+            out_space = space
+        if out_space is not None and color.space() != out_space:
+            color.convert(out_space, in_place=True)
+        return color
 
     def filter(  # noqa: A003
         self,

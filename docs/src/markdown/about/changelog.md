@@ -7,7 +7,9 @@ icon: lucide/scroll-text
 
 -   **NEW**: Added a general purpose weighted mixing method which can match CSS multi-mixing logic of colors into a
     single color.
+-   **NEW**: Officially support spectral (paint-like) mixing in ColorAide (formally included only in ColorAide Extras).
 -   **FIX**: Ensure end conditions can be controlled within Catmull-Rom interpolation.
+-   **FIX**: Fix corner case where average would not treat colors as full weight if fed an empty list of weights.
 
 ## 8.7
 

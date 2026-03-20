@@ -43,6 +43,19 @@ class Interpolate(Generic[AnyColor], Plugin, metaclass=ABCMeta):
 
         If no space is defined, return an appropriate default color space.
         """
+    def weighted_mix(
+        self,
+        color_cls: type[AnyColor],
+        colors: Iterable[ColorInput],
+        weights: Iterable[float] | None,
+        space: str | None,
+        premultiplied: bool = True,
+        carryforward: bool = False,
+        powerless: bool = False,
+        hue: str = 'shorter',
+        **kwargs: Any
+    ) -> AnyColor:
+        """Mix a list of colors together with weights."""
 ```
 
 Once registered, the plugin can then be used via `interpolate`, `steps`, or `mix` by passing its `NAME` via the `method`
@@ -53,6 +66,11 @@ The `Interpolate` class also defines a `get_space` method that will be passed a 
 specified) and can validate whether the space is supported, raising an error if not, or return the space. If a space
 is not specified, an appropriate default can be returned, usually `Color.INTERPOLATE` but can differ if the interpolator
 can only support very specific spaces.
+
+Lastly, the `weighted_mix` method is provided if the interpolator needs to provide some specialized logic for weighted
+mix. Most approaches will likely just use the default which provides weighted mix of multiple colors using a linear
+approach. ColorAide's default spline approaches default to linear. Only an approach that uses a completely novel
+approach, like the `spectral` approach does, would you override the default implementation.
 
 ```py
 color.interpolate(colors, method=NAME)
