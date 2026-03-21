@@ -133,7 +133,7 @@ class TestRYBRoundTrip(TestRoundTrip):
     class Color(Base):
         """Local color object."""
 
-    SPACES = {'srgb': 8}
+    SPACES = {'srgb': 10, 'ryb': 10, 'ryb-biased': 10}
 
     COLORS = [
         Color('ryb', [1, 1, 1]),
@@ -151,44 +151,6 @@ class TestRYBRoundTrip(TestRoundTrip):
         Color('ryb', [0.8, 0.65, 0.21]),
         Color('ryb', [0.9, 0.8, 0.21]),
         Color('ryb', [0.1, 0.3, 0.05])
-    ]
-
-    @pytest.mark.parametrize('space', SPACES)
-    def test_round_trip(self, space):
-        """Test round trip."""
-
-        for c in self.COLORS:
-            self.assert_round_trip(c, space)
-
-
-class TestRYBBiasedRoundTrip(TestRoundTrip):
-    """
-    Test RYB round trip.
-
-    We are only interested in testing this against sRGB.
-    """
-
-    class Color(Base):
-        """Local color object."""
-
-    SPACES = {'srgb': 8}
-
-    COLORS = [
-        Color('ryb-biased', [1, 1, 1]),
-        Color('ryb-biased', [1, 0, 0]),
-        Color('ryb-biased', [1, 0, 0]),
-        Color('ryb-biased', [0, 1, 0]),
-        Color('ryb-biased', [0, 0, 1]),
-        Color('ryb-biased', [1, 1, 0]),
-        Color('ryb-biased', [0, 1, 1]),
-        Color('ryb-biased', [1, 0, 1]),
-        Color('ryb-biased', [0, 0, 0]),
-        Color('ryb-biased', [0.2, 5, 0.7]),
-        Color('ryb-biased', [0.8, 0.65, 0.21]),
-        Color('ryb-biased', [0.8, 0.65, 0.21]),
-        Color('ryb-biased', [0.8, 0.65, 0.21]),
-        Color('ryb-biased', [0.9, 0.8, 0.21]),
-        Color('ryb-biased', [0.1, 0.3, 0.05])
     ]
 
     @pytest.mark.parametrize('space', SPACES)
