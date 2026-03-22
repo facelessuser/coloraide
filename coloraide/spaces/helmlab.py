@@ -394,17 +394,17 @@ def neutral_error(l: float, nc: Matrix) -> Vector:
 def xyz_d65_to_helmlab(xyz: Vector) -> Vector:
     """Convert XYZ to Helmlab."""
 
-    lms = alg.matmul(M1, xyz, dims=alg.D2_D1)
-    c = [alg.spow(v, GAMMA[e]) for e, v in enumerate(lms)]
-    return alg.matmul(M2, c, dims=alg.D2_D1)
+    lms = alg.matmul_x3(M1, xyz, dims=alg.D2_D1)
+    cx = [alg.spow(a, b) for a, b in zip(lms, GAMMA)]
+    return alg.matmul_x3(M2, cx, dims=alg.D2_D1)
 
 
 def helmlab_to_xyz(lab: Vector) -> Vector:
     """Convert Helmlab to XYZ."""
 
-    c = alg.matmul(M2_INV, lab, dims=alg.D2_D1)
-    lms = [alg.spow(v, 1 / GAMMA[e]) for e, v in enumerate(c)]
-    return alg.matmul(M1_INV, lms, dims=alg.D2_D1)
+    cx = alg.matmul_x3(M2_INV, lab, dims=alg.D2_D1)
+    lms = [alg.spow(a, 1 / b) for a, b in zip(cx, GAMMA)]
+    return alg.matmul_x3(M1_INV, lms, dims=alg.D2_D1)
 
 
 def hue_delta(h: float) -> float:

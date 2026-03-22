@@ -50,17 +50,17 @@ M2_INV = [
 def xyz_d65_to_helmgen(xyz: Vector) -> Vector:
     """Convert XYZ to Helmgen."""
 
-    lms = alg.matmul(M1, xyz, dims=alg.D2_D1)
+    lms = alg.matmul_x3(M1, xyz, dims=alg.D2_D1)
     c = [alg.nth_root(v, 3) for v in lms]
-    return alg.matmul(M2, c, dims=alg.D2_D1)
+    return alg.matmul_x3(M2, c, dims=alg.D2_D1)
 
 
 def helmgen_to_xyz(lab: Vector) -> Vector:
     """Convert Helmgen to XYZ."""
 
-    c = alg.matmul(M2_INV, lab, dims=alg.D2_D1)
+    c = alg.matmul_x3(M2_INV, lab, dims=alg.D2_D1)
     lms = [alg.spow(v, 3) for v in c]
-    return alg.matmul(M1_INV, lms, dims=alg.D2_D1)
+    return alg.matmul_x3(M1_INV, lms, dims=alg.D2_D1)
 
 
 class Helmgen(Lab):
