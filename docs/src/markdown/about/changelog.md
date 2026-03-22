@@ -3,6 +3,10 @@ icon: lucide/scroll-text
 ---
 # Changelog
 
+## 8.8.1
+
+-   **ENHANCE**: Minor speed improvements related to chromatic adaptation.
+
 ## 8.8
 
 -   **NEW**: Added a general purpose, weighted mixing method that can match CSS mixing logic of multiple colors into a
