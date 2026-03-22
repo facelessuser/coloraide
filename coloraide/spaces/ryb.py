@@ -77,7 +77,7 @@ def srgb_to_ryb(rgb: Vector, cube_t: Matrix, cube: Matrix, biased: bool) -> Vect
     """Convert RYB to sRGB."""
 
     # Calculate the RYB value
-    ryb = alg.ilerp3d(cube_t, rgb, vertices_t=cube)
+    ryb = alg.ilerp3d(cube_t, rgb, vertices_t=cube, tol=1e-14)
     # Remove smoothstep easing if "biased" is enabled.
     return [solve_cubic_poly(-2.0, 3.0, 0.0, t) if 0 <= t <= 1 else t for t in ryb] if biased else ryb
 

@@ -6,6 +6,8 @@ icon: lucide/scroll-text
 ## 8.8.1
 
 -   **ENHANCE**: Minor speed improvements related to chromatic adaptation.
+-   **FIX**: Small regression in RYB round-trip precision due to global tolerance change. Ensure RYB uses a tolerance
+    specific for its needs.
 
 ## 8.8
 
