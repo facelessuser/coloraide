@@ -2537,7 +2537,7 @@ class vectorize:
             bcast = broadcast(*vinputs)
             new_shape = bcast.shape
             # Build up the matrix
-            m = []  # type: Any
+            m = []  # type: Array
             with ArrayBuilder(m, new_shape) as build:
                 for vargs in bcast:
                     # Update arguments with vectorized arguments
@@ -2599,7 +2599,7 @@ class _vectorize1:
             return [[func(c) for c in r] for r in a]  # type: ignore[union-attr]
 
         # Unknown size or larger than 2D (slow)
-        m = []  # type: Any
+        m = []  # type: Array
         with ArrayBuilder(m, shape(a)) as build:
             for f in flatiter(a):
                 next(build).append(func(f))
@@ -2657,7 +2657,7 @@ class _vectorize2:
 
             # Handle matrices of N-D and M-D size
             if dims_a > 2 or dims_b > 2:
-                m = []  # type: Any
+                m = []  # type: Array
                 # Apply math to two N-D matrices
                 if dims_a == dims_b:
                     empty = (not shape_a or 0 in shape_a) and (not shape_b or 0 in shape_b)
@@ -4161,7 +4161,7 @@ def _back_sub_matrix(a: Matrix, b: Matrix, s: ArrayShape) -> Matrix:
 
     size1, size2 = s
     for i in range(size1 - 1, -1, -1):
-        v = b[i]  # type: Any
+        v = b[i]
         for j in range(i + 1, size1):
             for k in range(size2):
                 v[k] -= a[i][j] * b[j][k]
@@ -4592,7 +4592,7 @@ def _qr(a: Matrix, m: int, n: int, mode: str = 'reduced') -> Any:
 
     # Initialize containers for householder reflections and tau values if raw mode
     if mode_raw:
-        h = []  # type: Any
+        h = []
         tau = [0.0] * (m if not tall else n)
 
     for k in range(0, m - 1 if not tall else n):
@@ -4680,9 +4680,9 @@ def qr(
         rows = [*_extract_rows(a, s)]
         step = last[-2]
         m, n = last
-        r = []  # type: Any
+        r = []  # type: Array
         if not mode_r:
-            q = []  # type: Any
+            q = []  # type: Array
             builder = MultiArrayBuilder([q, r], [first, first])
         else:
             builder = MultiArrayBuilder([r], [first])
@@ -4728,7 +4728,7 @@ def matrix_rank(a: MatrixLike | TensorLike) -> Any:
     rows = [*_extract_rows(a, s)]
     step = last[-2]
     m, n = last
-    ranks = []  # type: Any
+    ranks = []  # type: Array
     with ArrayBuilder(ranks, first) as build:
         for r in range(0, len(rows), step):
             sigma = _svd(rows[r:r + step], m, n, False, False)
@@ -4814,7 +4814,7 @@ def solve(a: MatrixLike | TensorLike, b: ArrayLike) -> Array:
 
     # More complex, deeply nested cases that require more analyzing
     s2 = shape(b)
-    m = []  # type: Any
+    m = []  # type: Array
 
     # Matrices and vectors
     if dim1:
@@ -4833,7 +4833,7 @@ def solve(a: MatrixLike | TensorLike, b: ArrayLike) -> Array:
                     raise ValueError('Matrix is singular')
 
                 next(build).append(_back_sub_vector(u, _forward_sub_vector(l, [b[i] for i in p], size), size))  # type: ignore[misc]
-        return m  # type: ignore[no-any-return]
+        return m
 
     # Matrices and matrices
     new_shape = _broadcast_shape((s[:-1], s2[:-1]), max(dims - 1, len(s2) - 1))  # type: ignore[misc]
@@ -4857,7 +4857,7 @@ def solve(a: MatrixLike | TensorLike, b: ArrayLike) -> Array:
             bi = [[*mb[i]] for i in p]
             s3 = (size, len(bi[0]))
             next(build).append(_back_sub_matrix(u, _forward_sub_matrix(l, bi, s3), s3))
-    return m  # type: ignore[no-any-return]
+    return m
 
 
 def trace(matrix: Matrix) -> float:
