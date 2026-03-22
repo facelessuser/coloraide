@@ -8,7 +8,7 @@ import json
 
 sys.path.insert(0, os.getcwd())
 
-import tools.gamut_3d_plotly as plt3d
+import tools.gamut_3d_diagram as plt3d
 from coloraide.gamut import fit_raytrace as fit, clip_channels
 from coloraide.everything import ColorAll as Color
 from coloraide import algebra as alg

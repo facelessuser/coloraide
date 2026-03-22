@@ -1027,7 +1027,7 @@ def plot_spectral_locus(fig, space):
 def main():
     """Main."""
 
-    parser = argparse.ArgumentParser(prog='3d_diagrams', description='Plot 3D gamut in a different color spaces.')
+    parser = argparse.ArgumentParser(prog='gamut_3d_diagram', description='Plot 3D gamut in a different color spaces.')
     parser.add_argument('--space', '-s', help='Desired space.')
 
     # Gamut and gamut mapping
