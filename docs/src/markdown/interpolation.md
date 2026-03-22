@@ -198,8 +198,8 @@ In principle, if we were to approximate the reflectance curves of `#!color rgb(2
 `#!color rgb(0 0 255)`, using the approach by Scott Burns, such that they also summed up to 1, we could likely calculate
 reflectance curves from these three colors and approximate reflectance curves for almost any other color in the sRGB
 gamut. Unfortunately, this creates a non-linearity problem that is difficult to solve with high precision, so instead,
-we calculate primary reflectance curves from 7 colors so that we can generate smooth approximations for almost any color
-within the sRGB gamut.
+we calculate primary reflectance curves from 7 colors individually so that, when combined, we can generate smooth
+approximations for almost any color within the sRGB gamut.
 
 Primary\ Reflectance\ Curves |
 ---------------------------- |
@@ -237,16 +237,15 @@ our target color space.
 Mixing a blue and yellow color with Kubelka-Munk theory.
 ///
 
-It should be noted that using this approach, the mixing of the colors can turn out a bit dark. The author of Spectral.js
-noticed this and found that weighting the mix such that more luminous colors had more weight produced more natural
-mixing.
+It should be noted that when using this approach, the mixing of the colors can turn out a bit dark. The author of
+Spectral.js noticed this and found that weighting the mix such that more luminous colors had more weight produced more
+natural lighting when mixing.
 
-One way that ColorAide deviates from the original implementation is that we ensure sane behavior for colors that extend
-beyond the sRGB gamut.
-
-Using the method as outlined previously works for most colors within the sRGB gamut, but doesn't precisely cover every
-color perfectly, and will be less usable for colors outside the sRGB gamut. This is because Kubelka-Munk does not handle
-reflectance values above 1 well.
+One way that ColorAide deviates from the Spectral.js is that we ensure sane behavior for colors that extend beyond the
+sRGB gamut. Using the approach as described works for most colors within the sRGB gamut, but doesn't precisely cover
+every color perfectly, and will be less usable for colors outside the sRGB gamut. This is because Kubelka-Munk does not
+handle reflectance values above 1 well. Certain combinations of reflectance curves will produce reflectance values that
+exceed 1.
 
 Borrowing an idea from the [paper][mixbox-paper] released by the creators of [Mixbox][mixbox], ColorAide goes further
 and first ensures a given approximated color curve does not exceed a reflectance of 1 at any point within the curve.
