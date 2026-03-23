@@ -1211,7 +1211,7 @@ Ramp([i((r * factor / 100) - offset) for r in range(101)])
 ```
 
 Lastly, it is important to note that this affects stops as well, mainly stops applied to interpolation endpoints. When
-an endpoint is moved inwards via a color stop, the end range of the interpolation is clamped, extending the star and
+an endpoint is moved inwards via a color stop, the end range of the interpolation is clamped, extending the start and
 end color. But when extrapolation is enabled, a color stop on an endpoint essentially moves the start and end
 interpolation. And since there are no other colors on either end to interpolate with, extrapolation occurs.
 
