@@ -11,11 +11,11 @@ import gulpSass from "gulp-sass"
 import * as sassCompiler from "sass"
 import postcss from "gulp-postcss"
 import scss from "postcss-scss"
+import sortCssMq from 'postcss-sort-media-queries'
 import autoprefixer from "autoprefixer"
 import childProcess from "child_process"
 import gulpif from "gulp-if"
 import concat from "gulp-concat"
-import mqpacker from "css-mqpacker"
 import terser from '@rollup/plugin-terser'
 import {rollup} from "rollup"
 import {babel as rollupBabel, getBabelOutputPlugin} from "@rollup/plugin-babel"
@@ -172,7 +172,8 @@ gulp.task("scss:build:sass", () => {
         encode: false
       }
     ),
-    mqpacker,
+    sortCssMq(
+    ),
     autoprefixer
   ].filter(t => t)
 
