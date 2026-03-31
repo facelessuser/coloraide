@@ -6,10 +6,11 @@ sys.path.insert(0, os.getcwd())
 
 from coloraide import util
 from coloraide import algebra as alg
+from coloraide import cat
 
-white_d65 = util.xy_to_xyz((0.31270, 0.32900))
-white_d50 = util.xy_to_xyz((0.34570, 0.35850))
-white_aces = util.xy_to_xyz((0.32168, 0.33767))
+white_d65 = util.xy_to_xyz(cat.WHITES['2deg']['D65'])
+white_d50 = util.xy_to_xyz(cat.WHITES['2deg']['D50'])
+white_aces = util.xy_to_xyz(cat.WHITES['2deg']['ACES-D60'])
 
 
 def get_matrix(wp, space):
