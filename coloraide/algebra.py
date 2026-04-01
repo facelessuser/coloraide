@@ -3771,7 +3771,7 @@ def reshape(array: ArrayLike | float, new_shape: int | Shape) -> float | Array:
     m = []  # type: Array
     with ArrayBuilder(m, new_shape) as build:
         # Create an iterator to traverse the data
-        for data in flatiter(array) if len(current_shape) > 1 else iter(array):  # type: ignore[arg-type]
+        for data in flatiter(array) if len(current_shape) > 1 else iter(array):
             next(build).append(data)
 
     return m

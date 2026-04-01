@@ -66,7 +66,7 @@ class Channel(str):
             limit = float
         # If a tuple of min/max is provided, create a function to clamp to the range
         elif isinstance(limit, tuple):
-            limit = lambda x, l=limit: float(alg.clamp(x, l[0], l[1]))  # type: ignore[misc]
+            limit = lambda x, l=limit: float(alg.clamp(x, l[0], l[1]))
         obj.limit = limit
         obj.nans = nans
 
