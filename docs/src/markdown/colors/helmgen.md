@@ -55,8 +55,8 @@ The string representation of the color object and the default string output use 
 `#!css-color color(--helmgen l a b / a)` form.
 
 ```py play
-Color("helmgen", [0.64405, 0.26587, 0.13741])
-Color("helmgen", [0.80957, 0.12402, 0.16774]).to_string()
+Color("helmgen", [0.56358, 0.28763, 0.18093])
+Color("helmgen", [0.75771, 0.07633, 0.24769]).to_string()
 ```
 
 ## Registering
