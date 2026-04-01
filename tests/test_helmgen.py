@@ -9,18 +9,18 @@ class TestHelmgen(util.ColorAssertsPyTest):
     """Test Helmgen."""
 
     COLORS = [
-        ('red', 'color(--helmgen 0.64405 0.26587 0.13741)'),
-        ('orange', 'color(--helmgen 0.80957 0.12402 0.16774)'),
-        ('yellow', 'color(--helmgen 0.9882 0.01774 0.20186)'),
-        ('green', 'color(--helmgen 0.53125 -0.08866 0.10654)'),
-        ('blue', 'color(--helmgen 0.43897 -0.13584 -0.3167)'),
-        ('indigo', 'color(--helmgen 0.32837 0.02477 -0.15215)'),
-        ('violet', 'color(--helmgen 0.75323 0.10444 -0.09715)'),
+        ('red', 'color(--helmgen 0.56358 0.28763 0.18093)'),
+        ('orange', 'color(--helmgen 0.75771 0.07633 0.24769)'),
+        ('yellow', 'color(--helmgen 0.96486 -0.0828 0.31422)'),
+        ('green', 'color(--helmgen 0.44109 -0.17567 0.18227)'),
+        ('blue', 'color(--helmgen 0.36553 -0.04097 -0.4854)'),
+        ('indigo', 'color(--helmgen 0.23764 0.11887 -0.2513)'),
+        ('violet', 'color(--helmgen 0.72132 0.19702 -0.16488)'),
         ('white', 'color(--helmgen 1 0 0)'),
-        ('gray', 'color(--helmgen 0.59987 0 0)'),
+        ('gray', 'color(--helmgen 0.53175 0 0)'),
         ('black', 'color(--helmgen 0 0 0)'),
-        ('color(srgb 1.01 1.01 1.01)', 'color(--helmgen 1.0076 0 0)'),
-        ('color(srgb 1e-3 1e-3 1e-3)', 'color(--helmgen 0.04262 0 0)'),
+        ('color(srgb 1.01 1.01 1.01)', 'color(--helmgen 1.0077 0 0)'),
+        ('color(srgb 1e-3 1e-3 1e-3)', 'color(--helmgen 0.00074 0 0)'),
         # Test color
         ('color(--helmgen 0.5 0.1 -0.1)', 'color(--helmgen 0.5 0.1 -0.1)'),
         ('color(--helmgen 0.5 0.1 -0.1 / 0.5)', 'color(--helmgen 0.5 0.1 -0.1 / 0.5)'),
