@@ -23,12 +23,15 @@ from .. import algebra as alg
 from ..types import Vector
 
 # Depressed cubic parameter
-ALPHA = 0.02
+ALPHA = 0.021
 S = math.sqrt(ALPHA / 3)
 S3 = S ** 3
 
+# Chroma power
+CP = 0.978
+
 # L-gated hue enrichment parameters
-ENR_AMP = 0.055
+ENR_AMP = 0.058
 ENR_CENTER = 264.5 * math.pi / 180 # radians
 ENR_SIGMA = 0.7
 ENR_LLO = 0.37
@@ -59,17 +62,17 @@ M2_INV = [
     [0.9933334327571621, -0.12386097008215027, -0.8351991365871065]
 ]
 
+# Piecewise linear L correction (21 breakpoints, v0.11.1)
 PW_L_IN = [
     0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5,
     0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1.0
 ]
 
 PW_L_OUT = [
-    0, 0.009494013522189627, 0.02564569838030986, 0.05525966165868908,
-    0.10574901531227408, 0.16055853320726027, 0.2140596489299375, 0.2678623050881122,
-    0.3220435246104499, 0.3739052098520243, 0.43020997780918835, 0.4835465162128873,
-    0.5399824670411352, 0.5956710081330342, 0.6542161666450477, 0.7115380216519989,
-    0.7702762412711669, 0.8293313467712836, 0.889406386197059, 0.9462829573474727,
+    0, 0.009494013522189627, 0.02564569838030986, 0.055259661658689105, 0.10574901531227408,
+    0.16055853320726027, 0.21405964892993756, 0.26786230508811226, 0.3220435246104499, 0.3739052098520243,
+    0.43020997780918835, 0.4835465162128873, 0.5399824670411353, 0.5956710081330342, 0.6542161666450478,
+    0.7115380216519989, 0.7702762412711669, 0.8293313467712837, 0.889406386197059, 0.9462829573474728,
     1.0
 ]
 
@@ -203,6 +206,14 @@ def xyz_d65_to_helmgen(xyz: Vector) -> Vector:
     # Stage 3: LMS_c -> Lab (M2)
     l, a, b = alg.matmul_x3(M2, c, dims=alg.D2_D1)
 
+    # Stage 3.5: Chroma power (`cp=0.978`)
+    chroma = math.sqrt(a ** 2 + b ** 2)
+    if chroma > 1e-12:
+        c_new = math.pow(chroma, CP)
+        s = c_new / chroma
+        a *= s
+        b *= s
+
     # Stage 4: Piecewise-linear L correction
     l = pw_l_fwd(l)
 
@@ -222,6 +233,14 @@ def helmgen_to_xyz(lab: Vector) -> Vector:
 
     # Undo Stage 4: PW L correction
     l = pw_l_inv(l)
+
+    # Undo Stage 3.5: Chroma power inverse (`C^(1/cp)`)
+    chroma = math.sqrt(a ** 2 + b ** 2)
+    if chroma > 1e-12:
+        c_orig = math.pow(chroma, 1 / CP)
+        s = c_orig / chroma
+        a *= s
+        b *= s
 
     # Undo Stage 3: Lab -> LMS_c (`M2_INV`)
     c = alg.matmul_x3(M2_INV, [l, a, b], dims=alg.D2_D1)
