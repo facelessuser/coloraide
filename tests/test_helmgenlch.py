@@ -10,15 +10,15 @@ class TestHelmgenlch(util.ColorAssertsPyTest):
     """Test Helmgenlch."""
 
     COLORS = [
-        ('red', 'color(--helmgenlch 0.56358 0.3398 32.171)'),
-        ('orange', 'color(--helmgenlch 0.75771 0.25919 72.872)'),
-        ('yellow', 'color(--helmgenlch 0.96486 0.32495 104.76)'),
-        ('green', 'color(--helmgenlch 0.44109 0.25314 133.94)'),
-        ('blue', 'color(--helmgenlch 0.36553 0.48713 265.18)'),
-        ('indigo', 'color(--helmgenlch 0.23764 0.278 295.32)'),
-        ('violet', 'color(--helmgenlch 0.72132 0.2569 320.07)'),
-        ('white', 'color(--helmgenlch 1 0 0)'),
-        ('gray', 'color(--helmgenlch 0.53175 0 0)'),
+        ('red', 'color(--helmgenlch 0.56298 0.34823 32.189)'),
+        ('orange', 'color(--helmgenlch 0.75721 0.26718 72.88)'),
+        ('yellow', 'color(--helmgenlch 0.96449 0.33324 104.76)'),
+        ('green', 'color(--helmgenlch 0.4404 0.26129 133.94)'),
+        ('blue', 'color(--helmgenlch 0.36475 0.49529 265.15)'),
+        ('indigo', 'color(--helmgenlch 0.23658 0.28644 295.32)'),
+        ('violet', 'color(--helmgenlch 0.7208 0.26484 320.14)'),
+        ('white', 'color(--helmgenlch 0.99964 0 0)'),
+        ('gray', 'color(--helmgenlch 0.53112 0 0)'),
         ('black', 'color(--helmgenlch 0 0 none)'),
         # Test color
         ('color(--helmgenlch 1.0 0.5 270)', 'color(--helmgenlch 1 0.5 270)'),
