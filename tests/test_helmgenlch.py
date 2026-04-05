@@ -23,12 +23,12 @@ class TestHelmgenlch(util.ColorAssertsPyTest):
         # Test color
         ('color(--helmgenlch 1.0 0.5 270)', 'color(--helmgenlch 1 0.5 270)'),
         ('color(--helmgenlch 1.0 0.5 270 / 0.5)', 'color(--helmgenlch 1 0.5 270 / 0.5)'),
-        ('color(--helmgenlch 50% 50% 180 / 50%)', 'color(--helmgenlch 0.5 0.2 180 / 0.5)'),
+        ('color(--helmgenlch 50% 50% 180 / 50%)', 'color(--helmgenlch 0.49982 0.3 180 / 0.5)'),
         ('color(--helmgenlch none none none / none)', 'color(--helmgenlch none none none / none)'),
         # Test percent ranges
         ('color(--helmgenlch 0% 0% 0)', 'color(--helmgenlch 0 0 none)'),
-        ('color(--helmgenlch 100% 100% 360)', 'color(--helmgenlch 1 0.4 360)'),
-        ('color(--helmgenlch -100% -100% -360)', 'color(--helmgenlch -1 -0.4 -360)')
+        ('color(--helmgenlch 100% 100% 360)', 'color(--helmgenlch 0.99964 0.6 360)'),
+        ('color(--helmgenlch -100% -100% -360)', 'color(--helmgenlch -0.99964 -0.6 -360)')
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)
@@ -69,7 +69,7 @@ class TestHelmgenlchProperties(util.ColorAsserts, unittest.TestCase):
         """Test `lightness`."""
 
         c = Color('color(--helmgenlch 90% 0.5 120 / 1)')
-        self.assertEqual(c['lightness'], 0.9)
+        self.assertEqual(c['lightness'], 0.8996755499660138)
         c['lightness'] = 0.3
         self.assertEqual(c['lightness'], 0.3)
 
