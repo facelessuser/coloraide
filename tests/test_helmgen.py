@@ -24,12 +24,12 @@ class TestHelmgen(util.ColorAssertsPyTest):
         # Test color
         ('color(--helmgen 0.5 0.1 -0.1)', 'color(--helmgen 0.5 0.1 -0.1)'),
         ('color(--helmgen 0.5 0.1 -0.1 / 0.5)', 'color(--helmgen 0.5 0.1 -0.1 / 0.5)'),
-        ('color(--helmgen 50% 50% -50% / 50%)', 'color(--helmgen 0.5 0.2 -0.2 / 0.5)'),
+        ('color(--helmgen 50% 50% -50% / 50%)', 'color(--helmgen 0.49982 0.3 -0.3 / 0.5)'),
         ('color(--helmgen none none none / none)', 'color(--helmgen none none none / none)'),
         # Test percent ranges
         ('color(--helmgen 0% 0% 0%)', 'color(--helmgen 0 0 0)'),
-        ('color(--helmgen 100% 100% 100%)', 'color(--helmgen 1 0.4 0.4)'),
-        ('color(--helmgen -100% -100% -100%)', 'color(--helmgen -1 -0.4 -0.4)')
+        ('color(--helmgen 100% 100% 100%)', 'color(--helmgen 0.99964 0.6 0.6)'),
+        ('color(--helmgen -100% -100% -100%)', 'color(--helmgen -0.99964 -0.6 -0.6)')
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)

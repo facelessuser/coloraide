@@ -267,9 +267,9 @@ class Helmgen(Lab):
     NAME = "helmgen"
     SERIALIZE = ("--helmgen",)
     CHANNELS = (
-        Channel("l", 0.0, 1.0),
-        Channel("a", -0.4, 0.4, flags=FLG_MIRROR_PERCENT),
-        Channel("b", -0.4, 0.4, flags=FLG_MIRROR_PERCENT)
+        Channel("l", 0.0, 0.9996394999622376),
+        Channel("a", -0.6, 0.6, flags=FLG_MIRROR_PERCENT),
+        Channel("b", -0.6, 0.6, flags=FLG_MIRROR_PERCENT)
     )
     WHITE = WHITES['2deg']['ASTM-E308-D65']
 

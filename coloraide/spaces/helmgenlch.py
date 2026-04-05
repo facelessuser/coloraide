@@ -29,8 +29,8 @@ class Helmgenlch(LCh):
     NAME = "helmgenlch"
     SERIALIZE = ("--helmgenlch",)
     CHANNELS = (
-        Channel("l", 0.0, 1.0),
-        Channel("c", 0.0, 0.4),
+        Channel("l", 0.0, 0.9996394999622376),
+        Channel("c", 0.0, 0.6),
         Channel("h", flags=FLG_ANGLE)
     )
     CHANNEL_ALIASES = {
