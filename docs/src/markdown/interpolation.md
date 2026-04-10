@@ -1323,8 +1323,8 @@ derived from `RGBish`, so `x`, `y`, and `z` is treated like super saturated `r`,
 Space\ Type  | Channel\ Equivalents
 ------------ | --------
 `RGBish`     | `r`, `g`, `b`
-`LABish`     | `l`
-`LCHish`     | `l`, `c`, `h`
+`Labish`     | `l`
+`LChish`     | `l`, `c`, `h`
 `HSLish`     | `h`, `s`, `l`
 `HSVish`     | `h`, `s`, `v`
 `Cylindrical`| `h`
@@ -1342,6 +1342,11 @@ Hue          | `h`
 Opponent a   | `a`
 Opponent b   | `b`
 Value        | `v`
+
+Additionally, `carryforward` is applied to analogous sets as well. This means that a combination of components are
+considered equivalent to another set of components. For instance, if an `LChish` space has an undefined chroma and hue,
+when converting to a `Labish` space, `a` and `b` would be considered undefined (and vice versa). If all color components
+are undefined, then when converted, all components in the new space would also be undefined.
 
 ## Powerless Hues
 

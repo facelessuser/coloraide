@@ -3,6 +3,10 @@ icon: lucide/scroll-text
 ---
 # Changelog
 
+## 8.9
+
+-   **NEW**: Add support for CSS analogous component sets in interpolation and mixing.
+
 ## 8.8.1
 
 -   **ENHANCE**: Minor speed improvements related to chromatic adaptation.

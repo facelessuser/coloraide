@@ -2457,3 +2457,34 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
 
         with self.assertRaises(ValueError):
             Color.weighted_mix([], method='spectral')
+
+    def test_carryforward_sets(self):
+        """Test analogous sets."""
+
+        result = Color.interpolate(
+            ['color(srgb none none none)', 'oklch(70% 0.1 240)'],
+            space='oklch',
+            carryforward=True
+        )(0.5)
+        self.assertColorEqual(result, Color('oklch(0.7 0.1 240)'))
+
+        result = Color.interpolate(
+            ['oklab(40% none none)', 'oklch(70% 0.1 240)'],
+            space='oklch',
+            carryforward=True
+        )(0.5)
+        self.assertColorEqual(result, Color('oklch(0.55 0.1 240)'))
+
+        result = Color.interpolate(
+            ['oklch(40% none none)', 'oklab(70% 0.1 -1.5)'],
+            space='oklab',
+            carryforward=True
+        )(0.5)
+        self.assertColorEqual(result, Color('oklab(0.55 0.1 -1.5)'))
+
+        result = Color.interpolate(
+            ['hsl(none none 40%)', 'oklab(70% 0.1 -1.5)'],
+            space='oklab',
+            carryforward=True
+        )(0.5)
+        self.assertColorEqual(result, Color('oklab(0.60514 0.1 -1.5)'))
