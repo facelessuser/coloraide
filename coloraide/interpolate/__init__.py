@@ -829,6 +829,9 @@ def carryforward_convert(color: Color, space: str, hue_index: int, powerless: bo
             'L': False, 'V': False, 'a': False, 'b': False
         }
 
+        # Analogous components: all undefined
+        all_undefined = all(math.isnan(c) for c in color[:-1])
+
         # Gather undefined channels
         if isinstance(cs1, RGBish):
             for i, name in zip(cs1.indexes(), ('R', 'G', 'B')):
@@ -838,18 +841,34 @@ def carryforward_convert(color: Color, space: str, hue_index: int, powerless: bo
             for i, name in zip(cs1.indexes(), ('L', 'C', 'H')):
                 if math.isnan(color[i]):
                     channels[name] = True
+            # Analogous components: chroma and hue
+            if channels['C'] and channels['H']:
+                channels['a'] = True
+                channels['b'] = True
         elif isinstance(cs1, Labish):
             for i, name in zip(cs1.indexes(), ('L', 'a', 'b')):
                 if math.isnan(color[i]):
                     channels[name] = True
+            # Analogous components: chroma and hue
+            if channels['a'] and channels['b']:
+                channels['C'] = True
+                channels['H'] = True
         elif isinstance(cs1, HSLish):
             for i, name in zip(cs1.indexes(), ('H', 'C', 'L')):
                 if math.isnan(color[i]):
                     channels[name] = True
+            # Analogous components: chroma and hue
+            if channels['C'] and channels['H']:
+                channels['a'] = True
+                channels['b'] = True
         elif isinstance(cs1, HSVish):
             for i, name in zip(cs1.indexes(), ('H', 'C', 'V')):
                 if math.isnan(color[i]):
                     channels[name] = True
+            # Analogous components: chroma and hue
+            if channels['C'] and channels['H']:
+                channels['a'] = True
+                channels['b'] = True
         elif cs1.is_polar():
             if math.isnan(color[cs1.hue_index()]):  # type: ignore[attr-defined]
                 channels['H'] = True
@@ -859,7 +878,9 @@ def carryforward_convert(color: Color, space: str, hue_index: int, powerless: bo
             carry.append(-1)
 
         # Channels that need to be carried forward
-        if isinstance(cs2, RGBish):
+        if all_undefined:
+            carry.extend(cs2.indexes())
+        elif isinstance(cs2, RGBish):
             indexes = cs2.indexes()
             for e, name in enumerate(('R', 'G', 'B')):
                 if channels[name]:
