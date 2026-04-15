@@ -5272,7 +5272,7 @@ def fnnls(
     A fast non-negativity-constrained least squares
     https://www.researchgate.net/publication/230554373_A_Fast_Non-negativity-constrained_Least_Squares_Algorithm
     Rasmus Bro and Sijmen De Jong
-    Journal of Chemometrics. 11, 393–401 (1997)
+    Journal of Chemometrics. 11, 393-401 (1997)
     """
 
     m, n = _quick_shape(A)
