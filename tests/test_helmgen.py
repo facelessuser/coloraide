@@ -9,27 +9,27 @@ class TestHelmgen(util.ColorAssertsPyTest):
     """Test Helmgen."""
 
     COLORS = [
-        ('red', 'color(--helmgen 0.56298 0.29471 0.18551)'),
-        ('orange', 'color(--helmgen 0.75721 0.07865 0.25534)'),
-        ('yellow', 'color(--helmgen 0.96449 -0.08492 0.32224)'),
-        ('green', 'color(--helmgen 0.4404 -0.1813 0.18815)'),
-        ('blue', 'color(--helmgen 0.36475 -0.04189 -0.49352)'),
-        ('indigo', 'color(--helmgen 0.23658 0.1225 -0.25893)'),
-        ('violet', 'color(--helmgen 0.7208 0.2033 -0.16972)'),
-        ('white', 'color(--helmgen 0.99964 0 0)'),
-        ('gray', 'color(--helmgen 0.53112 0 0)'),
+        ('red', 'color(--helmgen 0.56321 0.29471 0.18551)'),
+        ('orange', 'color(--helmgen 0.75752 0.07865 0.25534)'),
+        ('yellow', 'color(--helmgen 0.96484 -0.08492 0.32224)'),
+        ('green', 'color(--helmgen 0.44058 -0.1813 0.18815)'),
+        ('blue', 'color(--helmgen 0.36491 -0.04189 -0.49352)'),
+        ('indigo', 'color(--helmgen 0.2367 0.1225 -0.25893)'),
+        ('violet', 'color(--helmgen 0.7211 0.2033 -0.16973)'),
+        ('white', 'color(--helmgen 1 0 0)'),
+        ('gray', 'color(--helmgen 0.53135 0 0)'),
         ('black', 'color(--helmgen 0 0 0)'),
-        ('color(srgb 1.01 1.01 1.01)', 'color(--helmgen 1.0073 0 0)'),
+        ('color(srgb 1.01 1.01 1.01)', 'color(--helmgen 1.0077 0 0)'),
         ('color(srgb 1e-3 1e-3 1e-3)', 'color(--helmgen 0.0007 0 0)'),
         # Test color
         ('color(--helmgen 0.5 0.1 -0.1)', 'color(--helmgen 0.5 0.1 -0.1)'),
         ('color(--helmgen 0.5 0.1 -0.1 / 0.5)', 'color(--helmgen 0.5 0.1 -0.1 / 0.5)'),
-        ('color(--helmgen 50% 50% -50% / 50%)', 'color(--helmgen 0.49982 0.3 -0.3 / 0.5)'),
+        ('color(--helmgen 50% 50% -50% / 50%)', 'color(--helmgen 0.5 0.3 -0.3 / 0.5)'),
         ('color(--helmgen none none none / none)', 'color(--helmgen none none none / none)'),
         # Test percent ranges
         ('color(--helmgen 0% 0% 0%)', 'color(--helmgen 0 0 0)'),
-        ('color(--helmgen 100% 100% 100%)', 'color(--helmgen 0.99964 0.6 0.6)'),
-        ('color(--helmgen -100% -100% -100%)', 'color(--helmgen -0.99964 -0.6 -0.6)')
+        ('color(--helmgen 100% 100% 100%)', 'color(--helmgen 1 0.6 0.6)'),
+        ('color(--helmgen -100% -100% -100%)', 'color(--helmgen -1 -0.6 -0.6)')
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)

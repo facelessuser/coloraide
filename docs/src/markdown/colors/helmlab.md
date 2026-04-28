@@ -12,7 +12,7 @@
 >
 > Name | Range^\*^
 > ---- | -----
-> `l`  | [0, ~1.143]
+> `l`  | [0, ~1.121]
 > `a`  | [-1, 1]
 > `b`  | [-1, 1]
 >
@@ -55,8 +55,8 @@ The string representation of the color object and the default string output use 
 `#!css-color color(--helmlab l a b / a)` form.
 
 ```py play
-Color("helmlab", [0.61752, 0.58275, -0.20187])
-Color("helmlab", [0.87013, 0.49555, 0.29624]).to_string()
+Color("helmlab", [0.9207, 0.74399, -0.40641])
+Color("helmlab", [1.0056, 0.64512, 0.50666]).to_string()
 ```
 
 ## Registering
