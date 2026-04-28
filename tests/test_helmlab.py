@@ -9,27 +9,27 @@ class TestHelmlab(util.ColorAssertsPyTest):
     """Test Helmlab."""
 
     COLORS = [
-        ('red', 'color(--helmlab 0.61752 0.58275 -0.20187)'),
-        ('orange', 'color(--helmlab 0.87013 0.49555 0.29624)'),
-        ('yellow', 'color(--helmlab 0.9855 0.16195 0.50526)'),
-        ('green', 'color(--helmlab 0.50464 -0.11043 0.55474)'),
-        ('blue', 'color(--helmlab 0.47312 -0.15706 -0.4441)'),
-        ('indigo', 'color(--helmlab 0.35922 -0.01904 -0.3189)'),
-        ('violet', 'color(--helmlab 0.8309 0.09765 -0.37128)'),
-        ('white', 'color(--helmlab 1.0894 0 0)'),
-        ('gray', 'color(--helmlab 0.66349 0.00001 0)'),
+        ('red', 'color(--helmlab 0.9207 0.74399 -0.40641)'),
+        ('orange', 'color(--helmlab 1.0056 0.64512 0.50666)'),
+        ('yellow', 'color(--helmlab 0.89977 -0.02679 0.67923)'),
+        ('green', 'color(--helmlab 0.37812 -0.23089 0.50167)'),
+        ('blue', 'color(--helmlab 0.76231 -0.36331 -0.36541)'),
+        ('indigo', 'color(--helmlab 0.58174 -0.07853 -0.33853)'),
+        ('violet', 'color(--helmlab 1.0991 0.05297 -0.31664)'),
+        ('white', 'color(--helmlab 1.1211 0 0)'),
+        ('gray', 'color(--helmlab 0.77788 0.00002 0)'),
         ('black', 'color(--helmlab 0 0 0)'),
-        ('color(srgb 1.5 1.5 1.5)', 'color(--helmlab 1.3392 -0.02214 0.00215)'),
-        ('color(srgb 1e-3 1e-3 1e-3)', 'color(--helmlab 0.02807 0.02767 -0.00283)'),
+        ('color(srgb 1.5 1.5 1.5)', 'color(--helmlab 1.5448 -0.02113 -0.06347)'),
+        ('color(srgb 1e-3 1e-3 1e-3)', 'color(--helmlab 0.02104 0.00143 -0.00146)'),
         # Test color
         ('color(--helmlab 0.5 0.1 -0.1)', 'color(--helmlab 0.5 0.1 -0.1)'),
         ('color(--helmlab 0.5 0.1 -0.1 / 0.5)', 'color(--helmlab 0.5 0.1 -0.1 / 0.5)'),
-        ('color(--helmlab 50% 50% -50% / 50%)', 'color(--helmlab 0.54468 0.5 -0.5 / 0.5)'),
+        ('color(--helmlab 50% 50% -50% / 50%)', 'color(--helmlab 0.56057 0.5 -0.5 / 0.5)'),
         ('color(--helmlab none none none / none)', 'color(--helmlab none none none / none)'),
         # Test percent ranges
         ('color(--helmlab 0% 0% 0%)', 'color(--helmlab 0 0 0)'),
-        ('color(--helmlab 100% 100% 100%)', 'color(--helmlab 1.0894 1 1)'),
-        ('color(--helmlab -100% -100% -100%)', 'color(--helmlab -1.0894 -1 -1)')
+        ('color(--helmlab 100% 100% 100%)', 'color(--helmlab 1.1211 1 1)'),
+        ('color(--helmlab -100% -100% -100%)', 'color(--helmlab -1.1211 -1 -1)')
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)

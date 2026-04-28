@@ -12,9 +12,9 @@
 >
 > Name | Range^\*^
 > ---- | -----
-> `l`  | [0, ~0.9996]
-> `a`  | [-0.4, 0.4]
-> `b`  | [-0.4, 0.4]
+> `l`  | [0, 1.0]
+> `a`  | [-0.6, 0.6]
+> `b`  | [-0.6, 0.6]
 >
 > ^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs.
 
@@ -55,7 +55,7 @@ The string representation of the color object and the default string output use 
 `#!css-color color(--helmgen l a b / a)` form.
 
 ```py play
-Color("helmgen", [0.56358, 0.28763, 0.18093])
+Color("helmgen", [0.56321, 0.29471, 0.18551])
 Color("helmgen", [0.75771, 0.07633, 0.24769]).to_string()
 ```
 
