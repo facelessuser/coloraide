@@ -1,10 +1,10 @@
-# Helmgenlch
+# Helmlab Metric
 
-> [!failure] The Helmgenlch color space is not registered in `Color` by default
+> [!failure] The Helmlab Metric color space is not registered in `Color` by default
 
 /// html | div.info-container
 > [!info | inline | end] Properties
-> **Name:** `helmgenlch`
+> **Name:** `helmlab-metric`
 >
 > **White Point:** D65 / 2˚ (Variant from ASTM-E308)
 >
@@ -12,15 +12,15 @@
 >
 > Name | Range^\*^
 > ---- | -----
-> `l`  | [0, 1.0]
-> `c`  | [0, 0.65]
-> `h`  | [0, 360]
+> `l`  | [0, ~1.6]
+> `a`  | [-1.5, 1.5]
+> `b`  | [-1.5, 1.5]
 >
 > ^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs.
 
-![Helmgenlch](../images/helmgenlch-3d.png)
+![Helmlab Metric](../images/helmlab-metric-3d.png)
 //// figure-caption
-The sRGB gamut represented within the Helmgenlch color space.
+The sRGB gamut represented within the Helmlab Metric color space.
 ////
 
 Helmlab is a family of purpose-built color spaces, two to be exact. The first is the Helmlab Metric space which is
@@ -28,8 +28,8 @@ designed for perceptual distance measurements, claiming STRESS 23.30 on COMBVD -
 is the Helmgen space which is designed for gradient and palette generation (60-8 vs Oklab on ColorBench's 83 metrics,
 360/360/360 gamut cusps, zero monotonicity violations).
 
-Helmgenlch is the polar form of Helmgen and is the generation-optimized space and is specifically used for
-interpolation, palettes, etc. It is the general purpose color space of the Helmlab family.
+Helmlab Metric is the metric space and is specifically used for [color distancing](../distance.md#delta-e-helmlab) and
+is not meant to be used for interpolation and palettes, and least not directly.
 
 [Learn more](https://arxiv.org/abs/2602.23010).
 ///
@@ -39,33 +39,33 @@ interpolation, palettes, etc. It is the general purpose color space of the Helml
 Channels | Aliases
 -------- | -------
 `l`      | `lightness`
-`c`      | `chroma`
-`hue`    | `hue`
+`a`      |
+`b`      |
 
 **Inputs**
 
-The Helmlab space is not currently supported in the CSS spec, the parsed input and string output formats use the
-`#!css-color color()` function format using the custom name `#!css-color --helmgenlch`:
+The Helmlab Metric space is not currently supported in the CSS spec, the parsed input and string output formats use the
+`#!css-color color()` function format using the custom name `#!css-color --helmlab-metric`:
 
 ```css-color
-color(--helmgenlch l a b / a)  // Color function
+color(--helmlab-metric l a b / a)  // Color function
 ```
 
 The string representation of the color object and the default string output use the
-`#!css-color color(--helmgenlch l a b / a)` form.
+`#!css-color color(--helmlab-metric l a b / a)` form.
 
 ```py play
-Color("helmgenlch", [0.56321, 0.34823, 32.189])
-Color("helmgenlch", [0.75752, 0.26718, 72.88]).to_string()
+Color("helmlab-metric", [0.9207, 0.94084, -0.2063])
+Color("helmlab-metric", [1.0056, 0.80476, 0.71403]).to_string()
 ```
 
 ## Registering
 
 ```py
 from coloraide import Color as Base
-from coloraide.spaces.helmgenlch import Helmgenlch
+from coloraide.spaces.helmlab_metric import HelmlabMetric
 
 class Color(Base): ...
 
-Color.register(Helmgenlch())
+Color.register(HelmlabMetric())
 ```

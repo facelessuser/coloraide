@@ -23,13 +23,13 @@
 The sRGB gamut represented within the Helmgen color space.
 ////
 
-Helmlab is a family of purpose-built color spaces: MetricSpace (72-parameter enriched pipeline for perceptual distance)
-and GenSpace (generation-optimized pipeline for gradients and palettes). MetricSpace achieves STRESS 23.30 on COMBVD
-(3,813 color pairs) - a 20.1% improvement over CIEDE2000. GenSpace + arc-length reparameterization produces perfectly
-uniform gradients (CV ≈ 0% on any color pair).
+Helmlab is a family of purpose-built color spaces, two to be exact. The first is the Helmlab Metric space which is
+designed for perceptual distance measurements, claiming STRESS 23.30 on COMBVD - 20% better than CIEDE2000. The second
+is the Helmgen space which is designed for gradient and palette generation (60-8 vs Oklab on ColorBench's 83 metrics,
+360/360/360 gamut cusps, zero monotonicity violations).
 
-Helmgen is the GenSpace and is specifically used for interpolation, palettes, etc. It is the general purpose color space
-of the Helmlab family.
+Helmgen is the generation-optimized space and is specifically used for interpolation, palettes, etc. It is the general
+purpose color space of the Helmlab family.
 
 [Learn more](https://arxiv.org/abs/2602.23010).
 ///
@@ -44,7 +44,7 @@ Channels | Aliases
 
 **Inputs**
 
-The Helmlab space is not currently supported in the CSS spec, the parsed input and string output formats use the
+The Helmgen space is not currently supported in the CSS spec, the parsed input and string output formats use the
 `#!css-color color()` function format using the custom name `#!css-color --helmgen`:
 
 ```css-color

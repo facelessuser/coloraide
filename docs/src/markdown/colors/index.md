@@ -103,7 +103,7 @@ flowchart LR
 
     xyz-d65 --- hct
 
-    xyz-d65 --- helmlab
+    xyz-d65 --- helmlab-metric
 
     xyz-d65 --- helmgen --- helmgenlch
 
@@ -154,7 +154,7 @@ flowchart LR
     hellwig-jmh(Hellwig JMh)
     helmgen(Helmgen)
     helmgenlch(Helmgenlch)
-    helmlab(Helmlab)
+    helmlab-metric(Helmlab Metric)
     hpluv(HPLuv)
     hsi(HSI)
     hsl(HSL)
@@ -230,7 +230,7 @@ flowchart LR
     click hellwig-jmh "./hellwig/" _self
     click helmgen "./helmgen/" _self
     click helmgenlch "./helmgenlch/" _self
-    click helmlab "./helmlab/" _self
+    click helmlab-metric "./helmlab_metric/" _self
     click hpluv "./hpluv/" _self
     click hsi "./hsi/" _self
     click hsl "./hsl/" _self
@@ -314,7 +314,7 @@ Color Space                                     | ID
 [Hellwig JMh](./hellwig.md)                     | `hellwig-jmh`
 [Helmgen](./helmgen.md)                         | `helmgen`
 [Helmgenlch](./helmgenlch.md)                   | `helmgenlch`
-[Helmlab](./helmlab.md)                         | `helmlab`
+[Helmlab](./helmlab_metric.md)                  | `helmlab-metric`
 [HPLuv](./hpluv.md)                             | `hpluv`
 [HSI](./hsi.md)                                 | `hsi`
 [HSL](./hsl.md)                                 | `hsl`

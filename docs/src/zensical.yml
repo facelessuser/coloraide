@@ -132,7 +132,7 @@ nav:
         - CAM16 LCD: colors/cam16_lcd.md
         - XYB: colors/xyb.md
         - Helmgen: colors/helmgen.md
-        - Helmlab: colors/helmlab.md
+        - Helmlab Metric: colors/helmlab-metric.md
 
       - LCh Like Spaces:
         - LCh D50: colors/lch.md

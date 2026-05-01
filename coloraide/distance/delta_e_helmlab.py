@@ -26,11 +26,13 @@ class DEHelmlab(DeltaE):
     def distance(self, color: AnyColor, sample: AnyColor, **kwargs: Any) -> float:
         """Delta E Helmlab color distance formula."""
 
+        space = 'helmlab-metric'
+
         l1, a1, b1 = (
-            color.convert('helmlab') if color.space() != 'helmlab' else color.clone().normalize(nans=False)
+            color.convert(space) if color.space() != space else color.clone().normalize(nans=False)
         )[:-1]
         l2, a2, b2 = (
-            sample.convert('helmlab') if color.space() != 'helmlab' else sample.clone().normalize(nans=False)
+            sample.convert(space) if color.space() != space else sample.clone().normalize(nans=False)
         )[:-1]
 
         dl = l1 - l2
