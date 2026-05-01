@@ -17,7 +17,7 @@ from .lab import Lab
 from ..cat import WHITES
 from ..channels import Channel, FLG_MIRROR_PERCENT
 from .. import algebra as alg
-from ..types import Vector, Matrix
+from ..types import Vector
 import math
 
 M1 = [
