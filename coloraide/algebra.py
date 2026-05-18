@@ -1183,7 +1183,7 @@ def interpolate(
 
     if points and isinstance(points[0], Sequence):
         return SPLINES[method](
-            cast('list[Vector]', points[:]),
+            points[:],
             domain=domain,
             extrapolate=extrapolate,
             **kwargs
