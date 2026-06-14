@@ -1,6 +1,8 @@
 """
 Helmlab MetricSpace - 13-stage perceptual color space.
 
+MetricSpace~v21.
+
 A data-driven analytical color space trained on 64,000+ individual human
 color perception observations. Achieves 20.1% lower STRESS than CIEDE2000
 on the COMBVD dataset (3,813 color pairs).

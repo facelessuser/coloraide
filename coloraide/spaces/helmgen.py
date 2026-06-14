@@ -1,6 +1,8 @@
 """
 Helmlab GenSpace: generation-optimized color space for interpolation.
 
+GenSpace~v0.11.1.
+
 A simplified pipeline (`XYZ -> M1 -> cbrt -> M2 -> NC`) optimized for
 perceptually uniform gradients, palette generation, and color-mix.
 Achieves 6x better hue accuracy than Oklab with 10% better perceptual
