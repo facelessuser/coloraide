@@ -6,6 +6,8 @@ icon: lucide/scroll-text
 ## 8.9
 
 -   **NEW**: Add support for CSS analogous component sets in interpolation and mixing.
+-   **NEW**: Add new spaces: `helmlab`, `helmgen`, and `helmgenlch`.
+-   **NEW**: Add new distancing algorithm: `helmlab`.
 
 ## 8.8.1
 

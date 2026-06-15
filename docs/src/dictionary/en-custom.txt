@@ -32,6 +32,7 @@ CMF
 CMFs
 CMY
 CMYK
+COMBVD
 CSS
 CVD
 CVDs
@@ -44,6 +45,7 @@ Chromaticities
 Chromaticity
 Colaboratory
 ColorAide
+ColorBench
 ColorBrewer
 ColorHelper
 Colorimetry
@@ -74,12 +76,14 @@ Florian
 Formatter
 Fortran
 GMA
+GenSpace
 Golub
 Gosset
 Gossett
 Grau
 HCT
 HDR
+HLC
 HLG
 HPE
 HPLuv
@@ -94,6 +98,9 @@ HUSL
 HWB
 HWBish
 Hellwig
+Helmgen
+Helmgenlch
+Helmlab
 Hermann
 Horner
 HyAB
@@ -147,6 +154,8 @@ MINDE
 MacAdam
 Machado
 Matcher
+MetricSpace
+Minkowski
 Miquel
 Mixbox
 MkDocs
@@ -362,6 +371,7 @@ quantizer
 rc
 reflectance
 reflectances
+reparameterization
 repurpose
 rgb
 sCAM
