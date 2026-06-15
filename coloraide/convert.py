@@ -1,5 +1,6 @@
 """Convert the color."""
 from __future__ import annotations
+import math
 from .types import Vector
 from typing import TYPE_CHECKING
 
@@ -125,13 +126,26 @@ def convert(color: Color, space: str) -> tuple[Space, Vector]:
     # Grab the convert for the current space to the desired space
     # Result is cached for quicker future conversions.
     chain = color._get_convert_chain(color._space, space)  # type: ignore[attr-defined]
+    last = color._space
+
+    # Determine if hue is undefined
+    null_hue = False
+    if (
+        last.is_polar() and last.radial_is_colorfulness() and math.isnan(color[last.hue_index()]) and  # type: ignore[attr-defined]
+        not color.is_achromatic()
+    ):
+        null_hue = True
 
     # Get coordinates and convert NaN values to 0
     coords = color.coords(nans=False)
 
+    # CSS requires chroma to be zero of hue is undefined.
+    if null_hue:
+        idx = last.radial_index()  # type: ignore[attr-defined]
+        coords[idx] = last.channels[idx].nans
+
     # Navigate the conversion chain translating the coordinates along the way.
     # Perform chromatic adaption if needed (a conversion to or from XYZ D65).
-    last = color._space
     for a, b, direction, adapt in chain:
         if direction and adapt:
             coords = color.chromatic_adaptation(
