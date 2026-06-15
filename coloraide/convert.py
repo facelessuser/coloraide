@@ -128,7 +128,9 @@ def convert(color: Color, space: str) -> tuple[Space, Vector]:
     chain = color._get_convert_chain(color._space, space)  # type: ignore[attr-defined]
     last = color._space
 
-    # Determine if hue is undefined
+    # Determine if hue is undefined. We only care if the color is not considered achromatic already
+    # as adjusting chroma can affect round trip precision. If hue is undefined and the color is not
+    # achromatic, make it achromatic.
     null_hue = False
     if (
         last.is_polar() and last.radial_is_colorfulness() and math.isnan(color[last.hue_index()]) and  # type: ignore[attr-defined]
