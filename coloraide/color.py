@@ -729,9 +729,18 @@ class Color(metaclass=ColorMeta):
         return self
 
     def to_string(self, **kwargs: Any) -> str:
-        """To string."""
+        """Serialize color to a string, gamut mapping the colors by default."""
 
         return self._space.to_string(self, **kwargs)
+
+    def serialize(self, *, fit: bool = False, **kwargs: Any) -> str:
+        """
+        Serialize color to a string.
+
+        Does not gamut map by default.
+        """
+
+        return self._space.to_string(self, fit=fit, **kwargs)
 
     def __repr__(self) -> str:
         """Representation."""
@@ -780,7 +789,7 @@ class Color(metaclass=ColorMeta):
                 '<div style="box-sizing: border-box; width: 50px; height: 50px; '
                 f'background-color: {self.convert("oklab").to_string()}; border: 2px solid hsl(0, 0%, 90%);"></div>',
                 '</div>',
-                f'<div>{self.to_string(fit=False)}</div>'
+                f'<div>{self.serialize()}</div>'
                 '</div>'
             ]
         )

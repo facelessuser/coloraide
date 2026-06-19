@@ -8,6 +8,8 @@ icon: lucide/scroll-text
 -   **NEW**: Add support for CSS analogous component sets in interpolation and mixing.
 -   **NEW**: Add new spaces: `helmlab`, `helmgen`, and `helmgenlch`.
 -   **NEW**: Add new distancing algorithm: `helmlab`.
+-   **NEW**: Add new `serialize` function that behaves like `to_string` except that it does not apply gamut mapping by
+    default.
 
 ## 8.8.1
 

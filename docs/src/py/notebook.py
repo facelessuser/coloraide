@@ -213,7 +213,7 @@ def get_colors(result):
     if isinstance(result, Row):
         yield Row(
             [
-                ColorTuple(c.to_string(fit=False), c.clone()) if isinstance(c, Color) else ColorTuple(c, ColorAll(c))
+                ColorTuple(c.serialize(), c.clone()) if isinstance(c, Color) else ColorTuple(c, ColorAll(c))
                 for c in result
             ]
         )
@@ -221,7 +221,7 @@ def get_colors(result):
         t = type(result)
         yield t([c.clone() if isinstance(c, Color) else ColorAll(c) for c in result])
     elif isinstance(result, Color):
-        yield [ColorTuple(result.to_string(fit=False), result.clone())]
+        yield [ColorTuple(result.serialize(), result.clone())]
     elif isinstance(result, Interpolator):
         # Since we are auto showing the gradient, we need to scale the domain to something we expect.
         if result._domain:
@@ -669,7 +669,7 @@ def _color_command_console(colors, gamut=WEBSPACE):
                 stops = []
                 for e, color in enumerate(rcolors):
                     color.fit()
-                    color_str = color.convert(gamut).to_string(fit=False)
+                    color_str = color.convert(gamut).serialize()
                     if current:
                         stops.append(f'{color_str} {last!s}%')
                         stops.append(f'{color_str} {current!s}%')
@@ -702,7 +702,7 @@ def _color_command_console(colors, gamut=WEBSPACE):
             stops = []
             for e, color in enumerate(item):
                 color.fit()
-                color_str = color.convert(gamut).to_string(fit=False)
+                color_str = color.convert(gamut).serialize()
                 if is_steps:
                     stops.append(f'{color_str} {last!s}%')
                     if e < l - 1:
@@ -734,8 +734,8 @@ def _color_command_console(colors, gamut=WEBSPACE):
                     base_classes += " out-of-gamut"
                 color.color.fit()
                 srgb = color.color.convert(gamut)
-                value1 = srgb.to_string(fit=False, alpha=False)
-                value2 = srgb.to_string(fit=False)
+                value1 = srgb.serialize(alpha=False)
+                value2 = srgb.serialize()
                 style = f"--swatch-stops: {value1} 50%, {value2} 50%"
                 title = color.string
                 classes = base_classes
@@ -852,17 +852,17 @@ def _color_formatter(src="", language="", class_name=None, md="", exceptions=Tru
             color.fit(gamut)
             attributes = {'class': "swatch out-of-gamut", "title": result}
             sub_el = Etree.SubElement(el, 'span', attributes)
-            stops.append(color.convert(gamut).to_string(fit=False, alpha=False))
+            stops.append(color.convert(gamut).serialize(alpha=False))
             if color[-1] < 1.0:
                 stops[-1] += ' 50%'
-                stops.append(color.convert(gamut).to_string(fit=False) + ' 50%')
+                stops.append(color.convert(gamut).serialize() + ' 50%')
         else:
             attributes = {'class': "swatch", "title": result}
             sub_el = Etree.SubElement(el, 'span', attributes)
-            stops.append(color.convert(gamut).to_string(fit=False, alpha=False))
+            stops.append(color.convert(gamut).serialize(alpha=False))
             if color[-1] < 1.0:
                 stops[-1] += ' 50%'
-                stops.append(color.convert(gamut).to_string(fit=False) + ' 50%')
+                stops.append(color.convert(gamut).serialize() + ' 50%')
 
         if not stops:
             stops.extend(['transparent'] * 2)
