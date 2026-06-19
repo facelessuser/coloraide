@@ -203,7 +203,7 @@ def serialize_css(
     alpha: bool | None = None,
     precision: int | Sequence[int] | None = None,
     rounding: str | None = None,
-    fit: bool | str | dict[str, Any] = True,
+    fit: bool | str | dict[str, Any] = False,
     none: bool = False,
     percent: bool | Sequence[bool] = False,
     hexa: bool = False,

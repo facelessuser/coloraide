@@ -548,6 +548,56 @@ Return
 -   A dictionary containing the color space name and channel values.
 ///
 
+## `#!py Color.serialize` {#serialize}
+
+```py
+def serialize(
+    self,
+    *,
+    fit: bool = False,
+    **kwargs: Any
+) -> str:
+    ...
+```
+
+/// define
+Description
+
+-   Method that converts the current color to an output format supported by the color space. While a number of the
+    parameters are common, some may be specific to the color space. The [usage guide](../strings.md#) covers color space
+    specific options in more details.
+
+Parameters
+
+-   Common parameters:
+
+    Parameters | Defaults     | Description
+    ---------- | -------------| -----------
+    `alpha`    | `#!py None`  | Boolean or `#!py3 None` value which determines whether the output includes `alpha`. If `#!py3 None`, the default alpha will only be shown if less than 1. If `#!py3 True`, alpha will always be shown. If `#!py3 False`, alpha will be omitted.
+    `precision`| `#!py 5`     | Integer value that sets precision and scale. Precision and scale will match the value if greater than zero. If `0`, values will be rounded to the nearest integer. If `-1`, number will be output at the highest precision.
+    `fit`      | `#!py False` | A boolean, string, or dictionary that controls whether gamut mapping is performed on string creation. By default, colors will **not** be fit to their own color space. A string can be used to set a specific gamut mapping method, or a dictionary that defines the method with parameters.
+    `color`    | `#!py False` | A boolean that will determine if the `color(space coord+ / alpha)` format is used for string output. Has highest precedence.
+    `percent`  | Varies       | A boolean that will output color channels as percents. Not all color spaces support percents, or may support percents only in certain scenarios. Default value may be determined by the color space.
+
+    sRGB specific parameters:
+
+    Parameters | Defaults     | Description
+    ---------- | ------------ | -----------
+    `hex`.     | `#!py False` | String output will be in `#RRGGBBAA` format.
+    `names`    | `#!py False` | Boolean indicating a preference for CSS color names. When translating a color to it's closest hex form, if that hex value matches a CSS color name, that color name will be returned as the output. `hex` does not have to be `#!py3 True` for this to apply.
+    `compress` | `#!py False` | If `hex` is `#!py3 True` and `compress` is `#!py3 True`, hex values will be compressed if possible: `#RRGGBBAA` --> `#RGBA`.
+
+    Space dependent parameters:
+
+    Parameters | Defaults     | Description
+    ---------- | -------------| -----------
+    `comma`    | `#!py False` | If supported by the color space and the current output format, commas will be used instead of space format: `rgba(0, 0, 0, 1)` --> `rgb(0 0 0 /1)`.
+
+Return
+
+-   Returns a string representation of the current color.
+///
+
 ## `#!py Color.to_string` {#to_string}
 
 ```py
@@ -573,7 +623,7 @@ Parameters
     ---------- | -------------| -----------
     `alpha`    | `#!py None`  | Boolean or `#!py3 None` value which determines whether the output includes `alpha`. If `#!py3 None`, the default alpha will only be shown if less than 1. If `#!py3 True`, alpha will always be shown. If `#!py3 False`, alpha will be omitted.
     `precision`| `#!py 5`     | Integer value that sets precision and scale. Precision and scale will match the value if greater than zero. If `0`, values will be rounded to the nearest integer. If `-1`, number will be output at the highest precision.
-    `fit`      | `#!py True`  | A boolean that controls whether gamut mapping is performed on string creation. By default, colors will be fit to their own color space. This can be disabled by setting to `#!py3 False`.
+    `fit`      | `#!py True`  | A boolean, string, or dictionary that controls whether gamut mapping is performed on string creation. By default, colors will be fit to their own color space. This can be disabled by setting to `#!py3 False`. A string can be used to set a specific gamut mapping method, or a dictionary that defines the method with parameters.
     `color`    | `#!py False` | A boolean that will determine if the `color(space coord+ / alpha)` format is used for string output. Has highest precedence.
     `percent`  | Varies       | A boolean that will output color channels as percents. Not all color spaces support percents, or may support percents only in certain scenarios. Default value may be determined by the color space.
 
