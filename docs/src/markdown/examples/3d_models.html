@@ -196,8 +196,8 @@
   <div>Copyright &copy; 2020 - 2025 <a href="https://github.com/facelessuser">Isaac Muse</a></div>
 </footer>
 </div>
-<script src="https://cdn.plot.ly/plotly-3.3.1.min.js"></script>
-<script src="https://cdn.jsdelivr.net/pyodide/v0.29.0/full/pyodide.js"></script>
+<script src="https://cdn.plot.ly/plotly-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pyodide@314.0.0/pyodide.min.js"></script>
 <script id="init" type="text/python">
 from coloraide.everything import ColorAll as Color
 from coloraide.spaces import Prism, Luminant
@@ -1386,7 +1386,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   busyTarget = document.getElementsByTagName('body')[0]
   showBusy(busyTarget, 'Setting up Environment...')
   pyodide = await loadPyodide({
-    indexURL: "https://cdn.jsdelivr.net/pyodide/v0.29.0/full/",
+    indexURL: "https://cdn.jsdelivr.net/pyodide/v314.0.0/full/",
     fullStdLib: false
   })
 
@@ -1395,7 +1395,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     'numpy',
     'scipy',
     'narwhals',
-    'https://files.pythonhosted.org/packages/e7/c3/3031c931098de393393e1f93a38dc9ed6805d86bb801acc3cf2d5bd1e6b7/plotly-6.5.0-py3-none-any.whl',
+    'https://files.pythonhosted.org/packages/f9/14/abe5ce876ab5b66ee3c691bf537fcd43d037aea55d447aacf74630a8f31e/plotly-6.8.0-py3-none-any.whl',
     package])
 
   // Set background color
