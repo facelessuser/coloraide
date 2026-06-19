@@ -68,13 +68,13 @@ class TestRoundTrip:
             if isinstance(c1._space, (HSLish, HSVish)) and math.isnan(c1['hue']):
                 c1[c1._space.indexes()[1]] = 0.0
             # Run rounded string back through parsing in case we hit something like a hue that needs normalization.
-            str1 = self.Color(c1.to_string(color=True, fit=False)).to_string(color=True, fit=False, precision=p)
-            str2 = self.Color(c2.to_string(color=True, fit=False)).to_string(color=True, fit=False, precision=p)
+            str1 = self.Color(c1.serialize(color=True)).serialize(color=True, precision=p)
+            str2 = self.Color(c2.serialize(color=True)).serialize(color=True, precision=p)
             # Print failing results for debug purposes
             if str1 != str2:
                 print(f'----- Convert: {c1.space()} <=> {space} -----')
                 print('Name: ', name)
-                print('Original: ', color.to_string(color=True, fit=False, precision=p))
+                print('Original: ', color.serialize(color=True, precision=p))
                 print(c1.space() + ': ', str1, c1[:])
                 print(space + ': ', str2, c2[:])
                 assert str1 == str2

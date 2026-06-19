@@ -9,11 +9,17 @@ ColorAide exposes various options to allow users to serialize in the form they m
 
 ## Convert to Strings
 
-Colors can be serialized to strings by using the `to_string` method. The color class will convert the current color into
-one of the many of CSS formats supported for the given color space.
+> [!new] New in 8.9
+> `serialize` function was added in 8.9.
+
+Colors can be serialized to strings by using either the `serialize` or `to_string` method. These methods convert the
+current color into one of the many of CSS formats supported for the given color space. The difference between the two
+methods is that `serialize` does not gamut map the color by default and `to_string` does. In all other ways, the
+`serialize` and `to_string` are identical.
 
 ```py play
-Color("srgb", [0.5, 0, 1], 0.3).to_string()
+Color("srgb", [0.5, 0, 1.2], 0.3).to_string()
+Color("srgb", [0.5, 0, 1.2], 0.3).serialize()
 ```
 
 There are a number of options that are common among all color spaces, but there are also some color space specific
@@ -171,24 +177,34 @@ Color("rgb(30.3456% 75% 100% / 0.75)").to_string(precision=[0, 0, 0])
 
 ### Fit
 
-`fit` is set to `#!py3 True` by default and controls whether colors are fit to their gamut or not. Some color spaces are
-technically unbounded, so no fitting may occur in those color spaces. Additionally, some color formats, like sRGB hex,
-are always fitted (regardless of this setting) as they must fit into the gamut or they cannot be translated.
+Both `serialize` and `to_string` both utilize the parameter `fit` to control whether colors are fit to their current
+gamut using gamut mapping. Bye default, `to_string` sets this value to `#!py3 True` while `serialize` sets this value
+to `#!py3 False`.
+
+```py play
+Color("rgb(30% 105% 0%)").to_string()
+Color("rgb(30% 105% 0%)").serialize()
+```
+
+Some color spaces are technically unbounded, so no gamut mapping may occur in such color spaces regardless of what `fit`
+is set to. Additionally, some color formats, like sRGB hex, always apply gamut mapping as they must fit into the gamut
+or they cannot be translated.
 
 ```py play
 Color("rgb(30% 105% 0%)").to_string()
 Color("rgb(30% 105% 0%)").to_string(fit=False)
+Color("rgb(30% 105% 0%)").serialize(fit=True)
 ```
 
-Additionally, we can choose a different fitting method by passing `fit` the name of the method we would like.
+Additionally, we can choose a different gamut mapping method by passing `fit` the name of the method we would like to
+use.
 
 ```py play
-Color("rgb(30% 105% 0%)").to_string()
 Color("rgb(30% 105% 0%)").to_string(fit='clip')
 ```
 
 Some gamut mapping plugins may expose more options. To set these options, you can use a dictionary. Specify the method
-via the `method` and any other options by their name.
+via the `method` parameter and any other options by their name.
 
 ```py play
 Color("rgb(30% 105% 0%)").to_string(fit={'method': 'oklch-chroma', 'jnd': 0.002})

@@ -259,7 +259,7 @@ def simulate_raytrace_gamut_mapping(args):
         plt3d.plot_interpolation(
             fig,
             space if mode == 'rgb' else pspace,
-            first.to_string(fit=False) + ';' + achroma.to_string(fit=False),
+            first.serialize() + ';' + achroma.serialize(),
             {"method": "linear", "hue": "shorter", "steps": 100, "space": pspace},
             gmap,
             False,
