@@ -6,7 +6,7 @@ This employs a faster approach than bisecting to reduce chroma.
 from __future__ import annotations
 import math
 from functools import lru_cache
-from . import Fit
+from . import Fit, clip_channels
 from .. import util
 from ..cat import WHITES
 from .. import algebra as alg
@@ -95,6 +95,7 @@ class OkLChCubic(Fit):
     ) -> None:
         """Scale the color within its gamut but preserve L and h as much as possible."""
 
+        orig_space = space
         cs = color.CS_MAP[space]
 
         # If there is a linear version of the RGB space, results will be better if we use that.
@@ -133,4 +134,5 @@ class OkLChCubic(Fit):
             max_t = min(max_t, first_root([d[i], 3 * b[i], 3 * a[i], 1 - target], 1e-9, max_t))
 
         mapcolor[1] = l * max_t
+        clip_channels(mapcolor.convert(orig_space, in_place=True))
         color.update(mapcolor)
