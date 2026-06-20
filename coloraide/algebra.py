@@ -310,7 +310,7 @@ def solve_bisect(
     return t, math.isclose(x, 0, rel_tol=rtol, abs_tol=atol)  # pragma: no cover
 
 
-def _solve_quadratic(poly: Vector) -> Vector:
+def _solve_quadratic(poly: VectorLike) -> Vector:
     """
     Solve a quadratic equation.
 
@@ -344,7 +344,7 @@ def _solve_quadratic(poly: Vector) -> Vector:
     return [m]
 
 
-def _solve_cubic(poly:Vector) -> Vector:
+def _solve_cubic(poly: VectorLike) -> Vector:
     """
     Solve a cubic equation using Cardano's Method.
 
@@ -417,7 +417,7 @@ def _solve_cubic(poly:Vector) -> Vector:
     ]
 
 
-def solve_poly(poly: Vector) -> Vector:
+def solve_poly(poly: VectorLike) -> Vector:
     """
     Solve the given polynomial.
 
