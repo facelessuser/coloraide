@@ -40,6 +40,8 @@ class DisplayP3Linear(sRGBLinear):
     BASE = "xyz-d65"
     NAME = "display-p3-linear"
     SERIALIZE = ('display-p3-linear', '--display-p3-linear')
+    TO_XYZ = RGB_TO_XYZ
+    TO_RGB = XYZ_TO_RGB
 
     def to_base(self, coords: Vector) -> Vector:
         """To XYZ from Linear Display P3."""

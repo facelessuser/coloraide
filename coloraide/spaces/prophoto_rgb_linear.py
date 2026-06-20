@@ -42,6 +42,8 @@ class ProPhotoRGBLinear(sRGBLinear):
     NAME = "prophoto-rgb-linear"
     SERIALIZE = ('--prophoto-rgb-linear',)
     WHITE = WHITES['2deg']['D50']
+    TO_XYZ = RGB_TO_XYZ
+    TO_RGB = XYZ_TO_RGB
 
     def to_base(self, coords: Vector) -> Vector:
         """To XYZ from Linear Pro Photo RGB."""

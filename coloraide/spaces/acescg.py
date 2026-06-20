@@ -48,6 +48,8 @@ class ACEScg(sRGBLinear):
         Channel("b", 0.0, 65504.0, bound=True)
     )
     DYNAMIC_RANGE = 'hdr'
+    TO_XYZ = AP1_TO_XYZ
+    TO_RGB = XYZ_TO_AP1
 
     def to_base(self, coords: Vector) -> Vector:
         """To XYZ."""

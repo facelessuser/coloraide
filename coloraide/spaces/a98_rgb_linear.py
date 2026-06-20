@@ -46,6 +46,8 @@ class A98RGBLinear(sRGBLinear):
     BASE = "xyz-d65"
     NAME = "a98-rgb-linear"
     SERIALIZE = ('--a98-rgb-linear',)
+    TO_XYZ = RGB_TO_XYZ
+    TO_RGB = XYZ_TO_RGB
 
     def to_base(self, coords: Vector) -> Vector:
         """To XYZ from A98 RGB."""

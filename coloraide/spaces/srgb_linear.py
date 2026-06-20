@@ -55,6 +55,9 @@ class sRGBLinear(RGBish, Space):
         "blue": 'b'
     }
 
+    TO_XYZ = RGB_TO_XYZ
+    TO_RGB = XYZ_TO_RGB
+
     def is_achromatic(self, coords: Vector) -> bool:
         """Test if color is achromatic."""
 
