@@ -86,7 +86,7 @@ def get_hue_data_cached(name: str, cs: Space, h: float) -> tuple[Vector, Vector,
 def get_lms_to_rgb(name: str, space: Space) -> Matrix:
     """Get LMS to RGB matrix."""
 
-    m = cast(Matrix, space.TO_RGB)  # type: ignore[attr-defined]
+    m = space.TO_RGB  # type: ignore[attr-defined]
     return alg.matmul_x3(m, LMS_TO_XYZD65, dims=alg.D2)
 
 
