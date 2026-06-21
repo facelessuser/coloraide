@@ -424,10 +424,11 @@ def solve_poly(poly: VectorLike) -> Vector:
     Currently, only up to 3rd degree polynomials are supported.
     """
 
-    # Remove leading zeros
+    # Remove leading zeros and/or demote polynomial if leading values
+    # are very small to avoid floating point numerical instability.
     count = 0
     for pi in poly:
-        if pi == 0:
+        if abs(pi) < 1e-12:
             count += 1
             continue
         break
@@ -437,7 +438,7 @@ def solve_poly(poly: VectorLike) -> Vector:
     # Select the appropriate solver
     l = len(poly)
     if l > 4:
-        raise ValueError('Polynomials of degrees great than 3 are not currently supported')
+        raise ValueError('Polynomials of degrees greater than 3 are not currently supported')
     elif l == 4:
         return _solve_cubic(poly)
     elif l == 3:
