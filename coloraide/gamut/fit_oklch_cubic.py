@@ -149,7 +149,7 @@ class OkLChCubic(Fit):
             space = linear
             cs = color.CS_MAP[space]
 
-        if not isinstance(cs, RGBish):
+        if not isinstance(cs, RGBish) or not hasattr(cs, 'TO_RGB'):
             raise ValueError(f"'{space}' is not supported in OkLCh Cubic")
 
         orig = color.space()
