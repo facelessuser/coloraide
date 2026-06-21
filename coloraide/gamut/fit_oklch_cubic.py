@@ -31,7 +31,7 @@ def first_root(coeff: VectorLike, mn: float, mx: float) -> float:
     return best
 
 
-def get_hue_data(m: Matrix, h: float) -> tuple[Vector, Vector, Vector, float, list[float]]:
+def get_hue_data(name: str, cs: Space, h: float) -> tuple[Vector, Vector, Vector, float, list[float]]:
     """
     Get hue data.
 
@@ -46,6 +46,7 @@ def get_hue_data(m: Matrix, h: float) -> tuple[Vector, Vector, Vector, float, li
     gray and the rows of LMS to RGB sum to 1.
     """
 
+    m = get_lms_to_rgb(name, cs)
     rad = math.radians(h)
     q = alg.matmul_x3(OKLAB_TO_LMS3, [0, math.cos(rad), math.sin(rad)], dims=alg.D2_D1)
     a = alg.matmul_x3(m, q, dims=alg.D2_D1)
@@ -72,6 +73,13 @@ def get_hue_data(m: Matrix, h: float) -> tuple[Vector, Vector, Vector, float, li
         t_lower = min(t_lower, first_root([d[i], 3 * b[i], 3 * a[i], 1], 1e-9, 1))
         turn[i] = first_root([0, d[i], 2 * b[i], a[i]], 1e-12, math.inf)
     return a, b, d, t_lower, turn
+
+
+@lru_cache(maxsize=1024)
+def get_hue_data_cached(name: str, cs: Space, h: float) -> tuple[Vector, Vector, Vector, float, list[float]]:
+    """Get hue data but use a hue_cache."""
+
+    return get_hue_data(name, cs, h)
 
 
 @lru_cache(maxsize=10)
@@ -103,12 +111,18 @@ class OkLChCubic(Fit):
         self,
         color: Color,
         space: str,
+        *,
+        cache: bool = False,
+        clear_cache: bool = False,
         **kwargs: Any
     ) -> None:
         """Scale the color within its gamut but preserve L and h as much as possible."""
 
         orig_space = space
         cs = color.CS_MAP[space]
+
+        if clear_cache:
+            get_hue_data_cached.cache_clear()
 
         # If there is a linear version of the RGB space, results will be better if we use that.
         # Recalculate the bounding box relative to the linear version.
@@ -131,7 +145,7 @@ class OkLChCubic(Fit):
             color.update('xyz-d65', WHITE)
             return
 
-        a, b, d, t_lower, turn = get_hue_data(get_lms_to_rgb(space, cs), h)
+        a, b, d, t_lower, turn = get_hue_data_cached(space, cs, h) if cache else get_hue_data(space, cs, h)
         # Work in `t = c/L`. The cap starts at the input chroma and the (hue-only) lower
         # exit; the white bound below can only pull it lower.
         max_t = min(c / l, t_lower)
