@@ -83,7 +83,19 @@ def get_lms_to_rgb(name: str, space: Space) -> Matrix:
 
 
 class OkLChCubic(Fit):
-    """Gamut mapping by using ray tracing."""
+    """
+    Gamut mapping by using a OkLCh cubic solver.
+
+    It is based on the observation that at fixed L and H each linear-P3 channel is exactly a cubic equation in chroma
+    (l' is affine in C, then cubed), so the C boundary is the smallest chroma at which any channel reaches 0 or 1 -
+    found via standard closed form cubic equation solving formulas and optimized further through some observations about
+    the types of equations produced and a lazily populated hue cache (which is not necessary, just an additional
+    optimization).
+
+    We apply this approach to all linear gamuts.
+
+    https://github.com/LeaVerou
+    """
 
     NAME = "oklch-cubic"
 
