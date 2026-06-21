@@ -4,6 +4,7 @@ import math
 from coloraide.everything import ColorAll as Color
 from coloraide import gamut
 from coloraide.gamut.fit_raytrace import raytrace_box
+from coloraide.gamut.fit_oklch_cubic import get_hue_data_cached
 from . import util
 
 
@@ -769,3 +770,67 @@ class TestVisibleSpectrum(util.ColorAsserts, unittest.TestCase):
             Color('rec2100-hlg', [0, 1, 0]).fit('visible-spectrum', ignore_luminance=True),
             Color('color(rec2100-hlg 0 1 0)')
         )
+
+
+class TestOkLChCubic(util.ColorAsserts, unittest.TestCase):
+    """Test OkLCh cubic gamut mapping."""
+
+    def test_map(self):
+        """Test gamut mapping."""
+
+        self.assertColorEqual(
+            Color('rec2020', [1, 0, 0]).fit('display-p3', method='oklch-cubic').convert('display-p3'),
+            Color('color(display-p3 1 0.28951 0.29785)')
+        )
+        self.assertColorEqual(
+            Color('rec2020', [0, 1, 0]).fit('display-p3', method='oklch-cubic').convert('display-p3'),
+            Color('color(display-p3 0 0.95922 0.42473)')
+        )
+        self.assertColorEqual(
+            Color('rec2020', [0, 0, 1]).fit('display-p3', method='oklch-cubic').convert('display-p3'),
+            Color('color(display-p3 0 0.31148 0.55913)')
+        )
+        self.assertColorEqual(
+            Color('rec2020', [1.1, 1.1, 1.1]).fit('display-p3', method='oklch-cubic').convert('display-p3'),
+            Color('color(display-p3 1 1 1)')
+        )
+        self.assertColorEqual(
+            Color('rec2020', [-0.1, -0.1, -0.1]).fit('display-p3', method='oklch-cubic').convert('display-p3'),
+            Color('color(display-p3 0 0 0)')
+        )
+
+    def test_cached_map(self):
+        """Test gamut mapping with hue data cache."""
+
+        self.assertColorEqual(
+            Color('rec2020', [1, 0, 0]).fit('display-p3', method='oklch-cubic', cache=True).convert('display-p3'),
+            Color('color(display-p3 1 0.28951 0.29785)')
+        )
+        self.assertColorEqual(
+            Color('rec2020', [0, 1, 0]).fit('display-p3', method='oklch-cubic', cache=True).convert('display-p3'),
+            Color('color(display-p3 0 0.95922 0.42473)')
+        )
+        self.assertColorEqual(
+            Color('rec2020', [0, 0, 1]).fit('display-p3', method='oklch-cubic', cache=True).convert('display-p3'),
+            Color('color(display-p3 0 0.31148 0.55913)')
+        )
+        self.assertColorEqual(
+            Color('rec2020', [1.1, 1.1, 1.1]).fit('display-p3', method='oklch-cubic', cache=True).convert('display-p3'),
+            Color('color(display-p3 1 1 1)')
+        )
+        self.assertColorEqual(
+            Color(
+                'rec2020', [-0.1, -0.1, -0.1]
+            ).fit('display-p3', method='oklch-cubic', cache=True).convert('display-p3'),
+            Color('color(display-p3 0 0 0)')
+        )
+
+        self.assertTrue(get_hue_data_cached.cache_info().currsize != 0)
+        Color('rec2020', [1, 0, 0]).fit('display-p3', method='oklch-cubic', clear_cache=True)
+        self.assertTrue(get_hue_data_cached.cache_info().currsize == 0)
+
+    def test_bad_space(self):
+        """Test unsupported space."""
+
+        with self.assertRaises(ValueError):
+            Color('rec2020', [1, 0, 0]).fit('hpluv', method='oklch-cubic')
