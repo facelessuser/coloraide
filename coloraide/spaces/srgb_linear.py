@@ -38,12 +38,12 @@ def xyz_to_lin_srgb(xyz: Vector) -> Vector:
     return alg.matmul_x3(XYZ_TO_RGB, xyz, dims=alg.D2_D1)
 
 
-class sRGBLinear(RGBish, Space):
+class RGB(RGBish, Space):
     """sRGB linear."""
 
     BASE = 'xyz-d65'
-    NAME = "srgb-linear"
     WHITE = WHITES['2deg']['D65']
+
     CHANNELS = (
         Channel("r", 0.0, 1.0, bound=True),
         Channel("g", 0.0, 1.0, bound=True),
@@ -55,9 +55,6 @@ class sRGBLinear(RGBish, Space):
         "blue": 'b'
     }
 
-    TO_XYZ = RGB_TO_XYZ
-    TO_RGB = XYZ_TO_RGB
-
     def is_achromatic(self, coords: Vector) -> bool:
         """Test if color is achromatic."""
 
@@ -66,6 +63,14 @@ class sRGBLinear(RGBish, Space):
             if not math.isclose(0.0, x, abs_tol=util.ACHROMATIC_THRESHOLD_SM):
                 return False
         return True
+
+
+class sRGBLinear(RGB):
+    """sRGB linear."""
+
+    NAME = "srgb-linear"
+    TO_XYZ = RGB_TO_XYZ
+    TO_RGB = XYZ_TO_RGB
 
     def to_base(self, coords: Vector) -> Vector:
         """To XYZ from sRGB Linear."""

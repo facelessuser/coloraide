@@ -7,7 +7,7 @@ Uses the display referred EOTF as specified in BT.1886.
 - https://www.itu.int/dms_pubrec/itu-r/rec/bt/r-rec-bt.1886-0-201103-i!!pdf-e.pdf
 """
 from __future__ import annotations
-from .srgb_linear import sRGBLinear
+from .srgb_linear import RGB
 from .. import algebra as alg
 from ..types import Vector
 
@@ -53,7 +53,7 @@ def eotf_bt1886(rgb: Vector) -> Vector:
     return [alg.spow(v, GAMMA) for v in rgb]
 
 
-class Rec2020(sRGBLinear):
+class Rec2020(RGB):
     """Rec 2020 class."""
 
     BASE = "rec2020-linear"

@@ -6,7 +6,7 @@ https://www.oscars.org/science-technology/aces/aces-documentation
 from __future__ import annotations
 import math
 from ..channels import Channel
-from .srgb_linear import sRGBLinear
+from .srgb_linear import RGB
 from ..cat import WHITES
 from ..types import Vector
 
@@ -51,7 +51,7 @@ def acescg_to_acescc(acescg: Vector) -> Vector:
     return acescc
 
 
-class ACEScc(sRGBLinear):
+class ACEScc(RGB):
     """The ACEScc color class."""
 
     BASE = "acescg"

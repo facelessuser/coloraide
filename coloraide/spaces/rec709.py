@@ -11,12 +11,12 @@ but uses the same gamma correction as Rec. 2020.
 - https://www.itu.int/dms_pubrec/itu-r/rec/bt/r-rec-bt.1886-0-201103-i!!pdf-e.pdf
 """
 from __future__ import annotations
-from .srgb_linear import sRGBLinear
+from .srgb_linear import RGB
 from .rec2020 import inverse_eotf_bt1886, eotf_bt1886
 from ..types import Vector
 
 
-class Rec709(sRGBLinear):
+class Rec709(RGB):
     """Rec. 709 class Using the display-referred EOTF as specified in BT.1886."""
 
     BASE = "srgb-linear"

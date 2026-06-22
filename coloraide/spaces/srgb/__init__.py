@@ -1,6 +1,6 @@
 """sRGB color class."""
 from __future__ import annotations
-from ..srgb_linear import sRGBLinear
+from ..srgb_linear import RGB
 from ... import algebra as alg
 from ...types import Vector
 import math
@@ -42,7 +42,7 @@ def inverse_eotf_srgb(rgb: Vector) -> Vector:
     return result
 
 
-class sRGB(sRGBLinear):
+class sRGB(RGB):
     """sRGB class."""
 
     BASE = "srgb-linear"

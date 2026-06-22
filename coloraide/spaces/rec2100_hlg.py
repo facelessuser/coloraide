@@ -16,7 +16,7 @@ Suggests the scale of 0.26496256042100724 to satisfy the above requirement.
 """
 from __future__ import annotations
 from ..cat import WHITES
-from .srgb_linear import sRGBLinear
+from .srgb_linear import RGB
 from .. import algebra as alg
 from ..types import Vector
 import math
@@ -85,7 +85,7 @@ def inverse_oetf_hlg(values: Vector, env: Environment) -> Vector:
     return adjusted
 
 
-class Rec2100HLG(sRGBLinear):
+class Rec2100HLG(RGB):
     """Rec. 2100 HLG class."""
 
     BASE = "rec2100-linear"

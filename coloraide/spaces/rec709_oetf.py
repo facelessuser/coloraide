@@ -11,7 +11,7 @@ Transfer function of BT.709 matches BT.601.
 - https://www.itu.int/dms_pubrec/itu-r/rec/bt/R-REC-BT.601-7-201103-I!!PDF-E.pdf
 """
 from __future__ import annotations
-from .srgb_linear import sRGBLinear
+from .srgb_linear import RGB
 import math
 from .. import algebra as alg
 from ..types import Vector
@@ -50,7 +50,7 @@ def oetf_bt709(rgb: Vector) -> Vector:
     return result
 
 
-class Rec709OETF(sRGBLinear):
+class Rec709OETF(RGB):
     """Rec. 709 class using the OETF in the BT. 709 specification."""
 
     BASE = "srgb-linear"
