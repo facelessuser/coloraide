@@ -93,9 +93,9 @@ def main():
         title = args.title
     elif gmap['method'] == 'clip':
         title = f'Clipping shown in {t_space}'
-    elif gmap['method'] == 'scale' and gmap.get('preserve_luminance', False) == False:
+    elif gmap['method'] == 'scale' and not gmap.get('preserve_luminance', False):
         title = f'Scale shown in {t_space}'
-    elif gmap['method'] == 'scale' and gmap.get('preserve_luminance', False) == True:
+    elif gmap['method'] == 'scale' and gmap.get('preserve_luminance', False):
         title = f'Scale (Preserve Luminance) shown in {t_space}'
     elif gmap['method'].endswith('-chroma'):
         title = f'MINDE and Chroma Reduction in {t_space}'
