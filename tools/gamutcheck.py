@@ -3,13 +3,30 @@ import sys
 import os
 import argparse
 import itertools as it
+import json
+import math
 
 sys.path.insert(0, os.getcwd())
 
 from coloraide.everything import ColorAll as Color
+from coloraide import algebra as alg
 
 
-def run(gamut, space, max_chroma, adaptive, calc_near):
+def to_rect(coords, c, h):
+    """Polar to rectangular."""
+
+    coords[c], coords[h] = alg.polar_to_rect(coords[c], coords[h])
+    return coords
+
+
+def to_polar(coords, c, h):
+    """Rectangular to rectangular."""
+
+    coords[c], coords[h] = alg.rect_to_polar(coords[c], coords[h])
+    return coords
+
+
+def run(gamut, space, gmap, max_chroma, calc_near):
     """Test the gamut mapping algorithm noting the ∆L, ∆h, and the worst ∆h offender."""
 
     far_delta_h = max_delta_h = 0
@@ -17,23 +34,37 @@ def run(gamut, space, max_chroma, adaptive, calc_near):
     far_de = max_de = 0
     far_worst = worst = None
     lch = Color('white').convert(space)
-    l, c, h = lch._space.indexes()
-    max_hue = lch._space.channels[h].high
-    half_hue = max_hue / 2
-    scale = max_hue / 360
-
+    polar = lch._space.is_polar()
+    if polar:
+        l, c, h = lch._space.indexes()
+        max_hue = lch._space.channels[h].high
+        min_hue = lch._space.channels[h].low
+        half_hue = max_hue / 2
+        to_hue = max_hue / math.tau
+    else:
+        l, a, b = lch._space.indexes()
+        max_hue = 360
+        min_hue = 0
+        half_hue = 180
+        to_hue = 1
     scale = lch[l] / 100
 
     start = 0
-    for light in range(0, 100):
+    steps = 100
+    for e, light in enumerate(alg.linspace(0.0, 100.0, steps, endpoint=False)):
         end = light
-        for hue in range(360):
+        for hue in alg.linspace(min_hue, max_hue, 360):
             coords = [0.0] * 3
             coords[l] = light * scale
-            coords[c] = max_chroma
-            coords[h] = (hue * scale) / 2
+            if polar:
+                coords[c] = max_chroma
+                coords[h] = hue
+            else:
+                coords[a] = max_chroma
+                coords[b] = hue
+                coords = to_rect(coords, a, b)
             c1 = Color(space, coords)
-            c2 = c1.clone().fit(gamut, method='raytrace', pspace=space, adaptive=adaptive)
+            c2 = c1.clone().fit(gamut, **gmap)
             de = c1.delta_e(c2, method='2000')
             dl = (c1[l] - c2[l])
             if abs(dl) > abs(max_delta_l):
@@ -42,8 +73,18 @@ def run(gamut, space, max_chroma, adaptive, calc_near):
             if de > max_de:
                 max_de = de
 
-            h1, h2 = c1[h], c2[h]
-            dh = (h1 - h2)
+            if polar:
+                h1, h2 = c1[h], c2[h]
+            else:
+                coords = c1[:-1]
+                h1 = to_polar(coords, a, b)[b]
+                coords = c2[:-1]
+                h2 = to_polar(coords, a, b)[b]
+                if max_hue != 360:
+                    h1 *= to_hue
+                    h2 *= to_hue
+
+            dh = (h1 % 360 - h2 % 360)
             if dh > half_hue:
                 dh -= max_hue
             elif dh < -half_hue:
@@ -52,7 +93,7 @@ def run(gamut, space, max_chroma, adaptive, calc_near):
                 max_delta_h = dh
                 worst = c1
 
-        if light in (25, 50, 75, 99):
+        if e in (steps // 4, steps // 2, steps // (4 / 3), steps - 1):
             print(f'=== Far: Chroma {max_chroma} (Lightness {start} - {end}) ===')
             print('∆L =', max_delta_l)
             print('∆h =', max_delta_h)
@@ -81,10 +122,21 @@ def run(gamut, space, max_chroma, adaptive, calc_near):
     if calc_near:
         for r, g, b in it.product(range(101), range(101), range(101)):
             c1 = Color('display-p3', [r / 100, g / 100, b / 100]).convert(space)
-            c2 = c1.clone().fit(gamut, method='raytrace', lch=space)
+            c2 = c1.clone().fit('srgb', **gmap)
             dl = (c1[l] - c2[l])
             if abs(dl) > abs(max_delta_l):
                 max_delta_l = dl
+
+            if polar:
+                h1, h2 = c1[h], c2[h]
+            else:
+                coords = c1[:-1]
+                h1 = to_polar(coords, a, b)[b]
+                coords = c2[:-1]
+                h2 = to_polar(coords, a, b)[b]
+                if max_hue != 360:
+                    h1 *= to_hue
+                    h2 *= to_hue
 
             h1, h2 = c1[h], c2[h]
             dh = (h1 - h2)
@@ -122,23 +174,31 @@ def main():
     )
     # Flag arguments
     parser.add_argument(
-        '--lch', '-l', default='oklch', help="LCh space to use as the mapping space."
+        '--pspace', '-l',
+        default='oklch',
+        help="Perspetual space to use as the mapping space. If `pspace` of method is used, this will be ignored."
     )
     parser.add_argument(
         '--gamut', '-g', default='display-p3', help="Gamut to test.",
     )
     parser.add_argument(
-        '--max-chroma', '-c', type=float, default=0.8, help="Max chroma to test GMA with."
+        '--gmap', '-m', default='raytrace:{"pspace": "oklch"}', help="Specify GMA method to use (default is clip)."
     )
     parser.add_argument(
-        '--adaptive', '-a', type=float, default=0.0, help="Adaptive value."
+        '--max-chroma', '-c', type=float, default=0.8, help="Max chroma to test GMA with."
     )
     parser.add_argument(
         '--near', '-n', action='store_true', help="Calculate deltas when out of gamut color is close to boundary."
     )
     args = parser.parse_args()
 
-    run(args.gamut, args.lch, args.max_chroma, args.adaptive, args.near)
+    parts = [p.strip() if not e else json.loads(p) for e, p in enumerate(args.gmap.split(':', 1))]
+    gmap = {'method': parts[0]}
+    if len(parts) == 2:
+        gmap.update(parts[1])
+
+    pspace = gmap.get('pspace', args.pspace)
+    run(args.gamut, pspace, gmap, args.max_chroma, args.near)
 
     return 0
 

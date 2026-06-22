@@ -4,7 +4,7 @@ Linear A98 RGB color class.
 - https://www.adobe.com/digitalimag/pdfs/AdobeRGB1998.pdf
 """
 from __future__ import annotations
-from .srgb_linear import sRGBLinear
+from .srgb_linear import RGB
 from .. import algebra as alg
 from ..types import Vector
 
@@ -40,12 +40,14 @@ def xyz_to_lin_a98rgb(xyz: Vector) -> Vector:
     return alg.matmul_x3(XYZ_TO_RGB, xyz, dims=alg.D2_D1)
 
 
-class A98RGBLinear(sRGBLinear):
+class A98RGBLinear(RGB):
     """Linear A98 RGB class."""
 
     BASE = "xyz-d65"
     NAME = "a98-rgb-linear"
     SERIALIZE = ('--a98-rgb-linear',)
+    TO_XYZ = RGB_TO_XYZ
+    TO_RGB = XYZ_TO_RGB
 
     def to_base(self, coords: Vector) -> Vector:
         """To XYZ from A98 RGB."""

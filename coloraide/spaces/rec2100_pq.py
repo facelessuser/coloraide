@@ -5,14 +5,14 @@ https://www.itu.int/dms_pubrec/itu-r/rec/bt/R-REC-BT.2100-2-201807-I!!PDF-E.pdf
 """
 from __future__ import annotations
 from ..cat import WHITES
-from .srgb_linear import sRGBLinear
+from .srgb_linear import RGB
 from ..types import Vector
 from .. import util
 
 YW = 203
 
 
-class Rec2100PQ(sRGBLinear):
+class Rec2100PQ(RGB):
     """Rec. 2100 PQ class."""
 
     BASE = "rec2100-linear"

@@ -4,7 +4,7 @@ A98 RGB color class.
 - https://www.adobe.com/digitalimag/pdfs/AdobeRGB1998.pdf
 """
 from __future__ import annotations
-from .srgb_linear import sRGBLinear
+from .srgb_linear import RGB
 from .. import algebra as alg
 from ..types import Vector
 
@@ -21,7 +21,7 @@ def gam_a98rgb(rgb: Vector) -> Vector:
     return [alg.spow(val, 256 / 563) for val in rgb]
 
 
-class A98RGB(sRGBLinear):
+class A98RGB(RGB):
     """A98 RGB class."""
 
     BASE = "a98-rgb-linear"

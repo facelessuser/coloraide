@@ -1,7 +1,7 @@
 """Linear Pro Photo RGB color class."""
 from __future__ import annotations
 from ..cat import WHITES
-from .srgb_linear import sRGBLinear
+from .srgb_linear import RGB
 from .. import algebra as alg
 from ..types import Vector
 
@@ -35,13 +35,15 @@ def xyz_to_lin_prophoto(xyz: Vector) -> Vector:
     return alg.matmul_x3(XYZ_TO_RGB, xyz, dims=alg.D2_D1)
 
 
-class ProPhotoRGBLinear(sRGBLinear):
+class ProPhotoRGBLinear(RGB):
     """Linear Pro Photo RGB class."""
 
     BASE = "xyz-d50"
     NAME = "prophoto-rgb-linear"
     SERIALIZE = ('--prophoto-rgb-linear',)
     WHITE = WHITES['2deg']['D50']
+    TO_XYZ = RGB_TO_XYZ
+    TO_RGB = XYZ_TO_RGB
 
     def to_base(self, coords: Vector) -> Vector:
         """To XYZ from Linear Pro Photo RGB."""

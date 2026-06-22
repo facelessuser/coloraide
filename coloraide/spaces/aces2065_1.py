@@ -5,7 +5,7 @@ https://www.oscars.org/science-technology/aces/aces-documentation
 """
 from __future__ import annotations
 from ..channels import Channel
-from .srgb_linear import sRGBLinear
+from .srgb_linear import RGB
 from .. import algebra as alg
 from ..cat import WHITES
 from ..types import Vector
@@ -38,7 +38,7 @@ def xyz_to_aces(xyz: Vector) -> Vector:
     return alg.matmul_x3(XYZ_TO_AP0, xyz, dims=alg.D2_D1)
 
 
-class ACES20651(sRGBLinear):
+class ACES20651(RGB):
     """The ACES color class."""
 
     BASE = "xyz-d65"
@@ -51,6 +51,8 @@ class ACES20651(sRGBLinear):
         Channel("b", 0.0, 65504.0, bound=True)
     )
     DYNAMIC_RANGE = 'hdr'
+    TO_XYZ = AP0_TO_XYZ
+    TO_RGB = XYZ_TO_AP0
 
     def to_base(self, coords: Vector) -> Vector:
         """To XYZ."""

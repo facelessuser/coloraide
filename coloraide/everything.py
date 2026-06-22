@@ -51,6 +51,7 @@ from .distance.delta_e_cam02 import DECAM02
 from .distance.delta_e_hct import DEHCT
 from .distance.delta_e_helmlab import DEHelmlab
 from .gamut.fit_hct_chroma import HCTChroma
+from .gamut.fit_oklch_cubic import OkLChCubic
 from .interpolate.catmull_rom import CatmullRom
 from .interpolate.spectral import Spectral, SpectralContinuous
 from .contrast.lstar import LstarContrast
@@ -129,6 +130,7 @@ ColorAll.register(
 
         # Gamut Mapping
         HCTChroma(),
+        OkLChCubic(),
 
         # CAT
         VonKries(),

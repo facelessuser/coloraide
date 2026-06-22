@@ -1,11 +1,11 @@
 """Display-p3 color class."""
 from __future__ import annotations
-from .srgb_linear import sRGBLinear
+from .srgb_linear import RGB
 from .srgb import inverse_eotf_srgb, eotf_srgb
 from ..types import Vector
 
 
-class DisplayP3(sRGBLinear):
+class DisplayP3(RGB):
     """Display-p3 class."""
 
     BASE = "display-p3-linear"

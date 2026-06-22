@@ -13,7 +13,7 @@ from ..spaces import Prism, Luminant, Space, HSLish, HSVish, HWBish
 from ..spaces.hsl import hsl_to_srgb, srgb_to_hsl
 from ..spaces.hsv import hsv_to_srgb, srgb_to_hsv
 from ..spaces.hwb import hwb_to_hsv, hsv_to_hwb
-from ..spaces.srgb_linear import sRGBLinear
+from ..spaces.srgb_linear import RGB
 from typing import Any, TYPE_CHECKING, Callable  # noqa: F401
 
 if TYPE_CHECKING:  #pragma: no cover
@@ -75,7 +75,7 @@ def coerce_to_rgb(cs: Space) -> Space:
     else:  # pragma: no cover
         raise ValueError(f'Cannot coerce {cs.NAME} to an RGB space.')
 
-    class RGB(sRGBLinear):
+    class xRGB(RGB):
         """Custom RGB class."""
 
         NAME = f'-rgb-{cs.NAME}'
@@ -113,7 +113,7 @@ def coerce_to_rgb(cs: Space) -> Space:
             coords = to_(coords)
             return coords
 
-    return RGB()
+    return xRGB()
 
 
 def adjust_luminance(

@@ -314,7 +314,7 @@ def _solve_quadratic(poly: VectorLike) -> Vector:
     """
     Solve a quadratic equation.
 
-    a - c represent the coefficients of the polynomial and t equals the target value.
+    The vector represents the polynomial coefficients of an equation set to zero.
 
     All non-real roots are filtered out at the end.
     """
@@ -348,7 +348,7 @@ def _solve_cubic(poly: VectorLike) -> Vector:
     """
     Solve a cubic equation using Cardano's Method.
 
-    a - d represent the coefficients of the polynomial and t equals the target value.
+    The vector represents the polynomial coefficients of an equation set to zero.
 
     All non-real roots are filtered out at the end.
 

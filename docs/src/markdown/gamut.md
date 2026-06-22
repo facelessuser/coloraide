@@ -680,6 +680,59 @@ class Color(Base): ...
 Color.register([HCT(), DEHCT(), HCTChroma()])
 ```
 
+### OkLCh Cubic Chroma Reduction
+
+> [!new] New in 8.9
+
+> [!example] Experimental
+
+> [!failure] The `oklch-cubic` gamut mapping is **not** registered in `Color` by default
+
+OkLCh Cubic is an approach created by @LeaVerou at the CSS Working Group. This approach capitalizes on an observation
+that at a fixed lightness and hue, each linear Display P3 channel is exactly a cubic equation in chroma (l' is affine in
+C, then cubed),so the chroma boundary is the smallest chroma at which any channel reaches 0 or 1. This is found via
+standard closed form cubic equation solving formulas and optimized further through some observations about the types of
+equations produced. As an additional optimization, a lazily populated hue cache is suggested.
+
+What is nice about this approach is that it is by far the fastest chroma reduction approach, when using OkLCh as the
+working perceptual space.
+
+> [!note]
+> While OkLCh is the fastest OkLCh chroma reduction method, it can only be used with OkLCh. If needing a more generic
+> approach that can be paired with other perceptual spaces, see [Ray Trace](#ray-tracing-chroma-reduction).
+
+It's speed is comes from the fact that it is not an iterative approach. The [MINDE](#minde-chroma-reduction) approach
+has an unknown number of iterations and the [Ray Trace](#ray-tracing-chroma-reduction) approach uses a constant 4
+iterations, but OkLCh Cubic is completed in a single pass.
+
+Additionally, not only is it faster, but it preserves lightness and hue generally better in most linear RGB spaces that
+we tested. The improvements are likely not perceptible to the human eye, but worth calling attention to.
+
+It should be noted that OkLCh can only be used with spaces that have a gamut that can be associated with a linear RGB
+gamut. Spaces like `hpluv` cannot be resolved using this approach.
+
+```py play
+Steps([c.fit('srgb', method='oklch-cubic') for c in Color.steps(['oklch(90% 0.4 0)', 'oklch(90% 0.4 360)'], steps=100, space='oklch', hue='longer')])
+```
+
+ColorAide does implement a bounded cache for the hue data that can give an increase performance when gamut mapping
+a series of colors with the same hue. The cache can be enabled and used by setting `cache` to `#!py True`.
+
+> [!note]
+> The cache is currently limited to 1024. As this approach is considered experimental, the exact size could change in
+> the future.
+
+```py play
+Steps([c.fit('srgb', method='oklch-cubic', cache=True) for c in Color.steps(['oklch(90% 0.0 270)', 'oklch(90% 0.4 270)'], steps=100, space='oklch')])
+```
+
+The cache can be cleared at any time by setting `clear_cache` to `#!py True`. This can be done whether you are using
+the cache or not.
+
+```py play
+Steps([c.fit('srgb', method='oklch-cubic', clear_cache=True) for c in Color.steps(['oklch(90% 0.0 270)', 'oklch(90% 0.4 270)'], steps=100, space='oklch')])
+```
+
 ### Gamut Mapping in Any Perceptual Space
 
 ColorAide provides a couple gamut mapping approaches and a few using different perceptual spaces to perform the

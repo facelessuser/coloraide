@@ -1,7 +1,7 @@
 """Linear Rec 2020 color class."""
 from __future__ import annotations
 from ..cat import WHITES
-from .srgb_linear import sRGBLinear
+from .srgb_linear import RGB
 from .. import algebra as alg
 from ..types import Vector
 
@@ -39,13 +39,15 @@ def xyz_to_lin_2020(xyz: Vector) -> Vector:
     return alg.matmul_x3(XYZ_TO_RGB, xyz, dims=alg.D2_D1)
 
 
-class Rec2020Linear(sRGBLinear):
+class Rec2020Linear(RGB):
     """Linear Rec 2020 class."""
 
     BASE = "xyz-d65"
     NAME = "rec2020-linear"
     SERIALIZE = ('--rec2020-linear',)
     WHITE = WHITES['2deg']['D65']
+    TO_XYZ = RGB_TO_XYZ
+    TO_RGB = XYZ_TO_RGB
 
     def to_base(self, coords: Vector) -> Vector:
         """To XYZ from Linear Rec 2020."""
