@@ -225,8 +225,8 @@ class RayTrace(Fit):
 
             # Offset is required for some perceptual spaces that are sensitive
             # to anchors that get too close to the surface.
-            low = mn + 1e-6
-            high = mx + 1e-6
+            low = mn + 1e-12
+            high = mx + 1e-12
 
             # Use an iterative process of casting rays to find the intersect with the RGB gamut
             # and correcting the intersection onto the LCh chroma reduction path.

@@ -10,6 +10,7 @@ icon: lucide/scroll-text
 -   **NEW**: Add new distancing algorithm: `helmlab`.
 -   **NEW**: Add new `serialize` function that behaves like `to_string` except that it does not apply gamut mapping by
     default.
+-   **FIX**: Update `raytrace` threshold for anchor near gamut surface to improve hue deviation.
 
 ## 8.8.1
 
