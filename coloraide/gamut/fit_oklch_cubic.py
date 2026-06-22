@@ -28,7 +28,7 @@ import math
 from functools import lru_cache
 from . import Fit, clip_channels
 from .. import util
-from ..cat import WHITES
+from ..cat import WHITES, calc_adaptation_matrices, Bradford
 from .. import algebra as alg
 from ..spaces import Space, RGBish
 from ..types import Vector, VectorLike, Matrix
@@ -107,6 +107,12 @@ def get_lms_to_rgb(name: str, space: Space) -> Matrix:
     """Get LMS to RGB matrix."""
 
     m = space.TO_RGB  # type: ignore[attr-defined]
+    if space.WHITE != WHITES['2deg']['D65']:
+        m = alg.matmul_x3(
+            m,
+            calc_adaptation_matrices(WHITES['2deg']['D65'], space.WHITE, Bradford.MATRIX),
+            dims=alg.D2
+        )
     return alg.matmul_x3(m, LMS_TO_XYZD65, dims=alg.D2)
 
 

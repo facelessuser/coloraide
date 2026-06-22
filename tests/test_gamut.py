@@ -799,6 +799,14 @@ class TestOkLChCubic(util.ColorAsserts, unittest.TestCase):
             Color('color(display-p3 0 0 0)')
         )
 
+    def test_map_white_point(self):
+        """Test gamut mapping with different white point."""
+
+        self.assertColorEqual(
+            Color('oklch', [0.5, 0.8, 100]).fit('prophoto-rgb', method='oklch-cubic').convert('prophoto-rgb'),
+            Color('color(prophoto-rgb 0.32585 0.31658 0)')
+        )
+
     def test_cached_map(self):
         """Test gamut mapping with hue data cache."""
 
