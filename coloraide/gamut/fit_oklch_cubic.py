@@ -106,11 +106,12 @@ def get_hue_data_cached(name: str, cs: Space, h: float) -> tuple[Vector, Vector,
 def get_lms_to_rgb(name: str, space: Space) -> Matrix:
     """Get LMS to RGB matrix."""
 
+    d65 = WHITES['2deg']['D65']
     m = space.TO_RGB  # type: ignore[attr-defined]
-    if space.WHITE != WHITES['2deg']['D65']:
+    if space.WHITE != d65:
         m = alg.matmul_x3(
             m,
-            calc_adaptation_matrices(WHITES['2deg']['D65'], space.WHITE, Bradford.MATRIX),
+            calc_adaptation_matrices(d65, space.WHITE, Bradford.MATRIX),
             dims=alg.D2
         )
     return alg.matmul_x3(m, LMS_TO_XYZD65, dims=alg.D2)

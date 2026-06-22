@@ -71,6 +71,7 @@ def calc_adaptation_matrices(
     m2 = alg.diag(alg.divide_x3(dest, src, dims=alg.D1))
     return alg.matmul_x3(alg.solve(m, m2), m, dims=alg.D2)
 
+
 class CAT(Plugin, metaclass=ABCMeta):
     """Chromatic adaptation."""
 
