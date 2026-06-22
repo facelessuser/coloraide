@@ -71,7 +71,7 @@ def main():
         yaxis = 'l:0:100'
         x = 'c'
         y = 'l'
-    elif pspace == 'oklch':
+    elif pspace == 'oklch' or method in ('oklch-cubic', 'scale'):
         space = 'oklch'
         t_space = 'OkLCh'
         xaxis = 'c:0:1.5'
@@ -93,10 +93,16 @@ def main():
         title = args.title
     elif gmap['method'] == 'clip':
         title = f'Clipping shown in {t_space}'
+    elif gmap['method'] == 'scale' and gmap.get('preserve_luminance', False) == False:
+        title = f'Scale shown in {t_space}'
+    elif gmap['method'] == 'scale' and gmap.get('preserve_luminance', False) == True:
+        title = f'Scale (Preserve Luminance) shown in {t_space}'
     elif gmap['method'].endswith('-chroma'):
         title = f'MINDE and Chroma Reduction in {t_space}'
-    elif gmap['method'].endswith('raytrace') or args.method.startswith('raytrace'):
+    elif gmap['method'].endswith('raytrace') or method.startswith('raytrace'):
         title = f'Ray Tracing Chroma Reduction in {t_space}'
+    elif gmap['method'].endswith('cubic'):
+        title = f'OkLCh Cubic Chroma Reduction in {t_space}'
 
     colors = args.color.split(';')
     count = len(colors)
