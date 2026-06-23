@@ -336,9 +336,10 @@ def _solve_quadratic(poly: VectorLike) -> Vector:
         return []
     elif discriminant > 0:
         # Two real roots
+        r = math.sqrt(discriminant)
         return [
-            m + math.sqrt(discriminant),
-            m - math.sqrt(discriminant)
+            m + r,
+            m - r
         ]
     # Double root
     return [m]
@@ -374,8 +375,9 @@ def _solve_cubic(poly: VectorLike) -> Vector:
     # Cube root must not use `** (1 / 3)` if real.
     # Should use `math.cbrt` or some signed power equivalent
     # on systems that don't support it.
-    u3 = -q / 2 + cmath.sqrt(discriminant)
-    v3 = -q / 2 - cmath.sqrt(discriminant)
+    r = cmath.sqrt(discriminant)
+    u3 = -q / 2 + r
+    v3 = -q / 2 - r
     u = u3 ** (1 / 3) if u3.imag else nth_root(u3.real, 3)
     v = v3 ** (1 / 3) if v3.imag else nth_root(v3.real, 3)
     t = u + v
@@ -399,20 +401,22 @@ def _solve_cubic(poly: VectorLike) -> Vector:
     # x2 = -0.5 * (u + v) + (u - v) * prc - k
     # x3 = -0.5 * (u + v) - (u - v) * prc - k
     # ```
-    td = (u - v)
+    td = u - v
+    # Convert `t` back to `x`
+    x = t - k
     if discriminant > 0:
         # One real root
-        return [(t - k).real]
+        return [x.real]
     elif discriminant < 0:
         # Three real roots
         return [
-            (t - k).real,
+            x.real,
             (-0.5 * t + td * prc - k).real,
             (-0.5 * t - td * prc - k).real
         ]
     # Three real roots, two of which are doubles
     return [
-        (t - k).real,
+        x.real,
         (-0.5 * t + td * prc - k).real
     ]
 
