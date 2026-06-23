@@ -428,7 +428,7 @@ def solve_poly(poly: VectorLike) -> Vector:
     # are very small to avoid floating point numerical instability.
     count = 0
     for pi in poly:
-        if abs(pi) < 1e-12:
+        if abs(pi) < ATOL:
             count += 1
             continue
         break
