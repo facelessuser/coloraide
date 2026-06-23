@@ -380,8 +380,8 @@ def _solve_cubic(poly: VectorLike) -> Vector:
     v = v3 ** (1 / 3) if v3.imag else nth_root(v3.real, 3)
     t = u + v
 
-    # Precalculate conversion from `t` back to `x`
-    # `x = t - b / 3`
+    # Precalculate offset for conversion from `t` back to `x`
+    # `x = t - b / 3` -> `x = t - k`
     k = b / 3
 
     # Primitive roots: `pr = (-1 +/- -3 ** (1/2)) / 2 ~= -0.5 +/- 0.8660254037844386j`
