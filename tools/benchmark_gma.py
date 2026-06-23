@@ -49,12 +49,18 @@ def run_oklch(gamut, gmap):
     c = 0.4
     color = Color('oklch', [0, c, 0])
 
+    n = 1000
+    total = n * n
+    factor = 100 / total
+    print(f'Colors: {total}')
+    print('> 0%', end='\r')
     start = time.perf_counter_ns()
-    for l in alg.linspace(0, 1, 1000):
-        for h in alg.linspace(0, 360, 1000):
-            color[0] = l
-            color[2] = h
-            color.clone().fit(gamut, **gmap)
+    for i, l in enumerate(alg.linspace(0, 1, n)):
+        for j, h in enumerate(alg.linspace(0, 360, n)):
+            color[:-1] = [l, c, h]
+            color.fit(gamut, **gmap)
+        print(f'> {int((i * j) * factor)}%', end="\r")
+    print('> 100%')
     t = time.perf_counter_ns() - start
     printt(t)
 
@@ -65,13 +71,20 @@ def run_rec2020(gamut, gmap):
     hsl = Color('hsl', [0, 1, 0.5])
     rec2020 = Color('rec2020', [0, 0, 0])
 
+    n = 1000
+    total = n * n
+    factor = 100 / total
+    print(f'Colors: {total}')
+    print('> 0%', end='\r')
     start = time.perf_counter_ns()
-    for l in alg.linspace(0, 1, 1000):
-        for h in alg.linspace(0, 360, 1000):
+    for i, l in enumerate(alg.linspace(0, 1, n)):
+        for j, h in enumerate(alg.linspace(0, 360, n)):
             hsl[2] = l
             hsl[0] = h
             rec2020[:-1] = hsl.convert('srgb')[:-1]
             rec2020.fit(gamut, **gmap)
+        print(f'> {int((i * j) * factor)}%', end="\r")
+    print('> 100%')
     t = time.perf_counter_ns() - start
     printt(t)
 
