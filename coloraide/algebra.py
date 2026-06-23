@@ -337,8 +337,8 @@ def _solve_quadratic(poly: VectorLike) -> Vector:
     elif discriminant > 0:
         # Two real roots
         return [
-            m + cmath.sqrt(discriminant).real,
-            m - cmath.sqrt(discriminant).real
+            m + math.sqrt(discriminant),
+            m - math.sqrt(discriminant)
         ]
     # Double root
     return [m]
