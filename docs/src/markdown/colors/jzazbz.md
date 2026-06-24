@@ -24,7 +24,7 @@
 The sRGB gamut represented within the Jzazbz color space.
 ////
 
-Jzazbz is a a color space designed for perceptual uniformity in high dynamic range (HDR) and wide color gamut (WCG)
+Jzazbz is a color space designed for perceptual uniformity in high dynamic range (HDR) and wide color gamut (WCG)
 applications. Conceptually it is similar to [CIELab](./lab.md), but claims the following improvements:
 
 - Perceptual color difference is predicted by Euclidean distance.

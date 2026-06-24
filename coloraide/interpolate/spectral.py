@@ -249,7 +249,7 @@ def single_constant_xyz_to_reflectance(xyz: Vector) -> tuple[Vector, Vector]:
     """
     Linear sRGB to a reflectance.
 
-    For out of gamut colors, our concentration concentration are clipped to 0 - 1. Lastly, we ensure the
+    For out of gamut colors, our concentrations are clipped to 0 - 1. Lastly, we ensure the
     final reflectance result is never zero with a small epsilon.
 
     Because out of gamut colors may be attenuated due to constraints on concentrations, we must
@@ -275,7 +275,7 @@ def spectral_mix(xyz1: Vector, xyz2: Vector, t: float) -> Vector:
     # Convert the colors into a reflectance curve
     r1, res1 = single_constant_xyz_to_reflectance(xyz1)
     r2, res2 = single_constant_xyz_to_reflectance(xyz2)
-    # Calculate weighting for for the given interpolation factor using luminance.
+    # Calculate weighting for the given interpolation factor using luminance.
     # This gives more weight to high luminance colors.
     c1, c2 = calculate_mixing_concentration(t, xyz1[1], xyz2[1])
 

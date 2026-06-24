@@ -119,7 +119,7 @@ def prepare_msh_divergent_interpolation(c1, c2):
             else:
                 return h_sat - h_spin
 
-    # Normalize values and and remove NaNs.
+    # Normalize values and remove NaNs.
     c1 = Color(c1).convert('msh', norm=False).normalize(nans=False)
     c2 = Color(c2).convert('msh', norm=False).normalize(nans=False)
 

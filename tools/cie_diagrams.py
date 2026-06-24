@@ -181,7 +181,7 @@ class Polygon:
 
         px, py = p
 
-        # If point is outside the the bounding box, it is not in the 2D polygon.
+        # If point is outside the bounding box, it is not in the 2D polygon.
         if px > self.xmax or px < self.xmin or py > self.ymax or py < self.ymin:
             return False
 

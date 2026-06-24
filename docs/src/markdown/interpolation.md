@@ -272,7 +272,7 @@ Color.interpolate(colors, method='spectral')
 Color.interpolate(colors, method='spectral-continuous')
 ```
 
-To enable `spectral-continuous`, simply register register it like you would `spectral`.
+To enable `spectral-continuous`, simply register it like you would `spectral`.
 
 ```py play
 from coloraide import Color

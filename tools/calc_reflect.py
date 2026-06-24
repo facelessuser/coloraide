@@ -19,7 +19,7 @@ from coloraide.illuminants import D65
 targets = ['#ff0000', '#00ff00', '#0000ff', '#00ffff', '#ff00ff', '#ffff00', '#ffffff']
 space = 'srgb'
 # With the current settings, method2 requires an epsilon of 1e-14, while method 3 can use 1e-15
-# More iterations may be required for for higher step resolutions.
+# More iterations may be required for higher step resolutions.
 # For our purposes, method 3 delivers colors with estimated reflectance below 1.
 # Sum of RGB is close to 1.
 START = 380

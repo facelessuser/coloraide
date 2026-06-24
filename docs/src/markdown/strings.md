@@ -82,7 +82,7 @@ most needs. The following modes can be selected via the `rounding` parameter:
     while negative values will round to integer positions (before the decimal).
 
     This can be good for being precise about how many decimals of precision a current color space may be accurate to,
-    but it doesn't scale very very well as a default for various color spaces which may have reference ranges that
+    but it doesn't scale very well as a default for various color spaces which may have reference ranges that
     differ by orders of magnitude. For this reason, it is recommended to use this if you are working in a specific color
     space and which to control the rounding to an exact precision.
 

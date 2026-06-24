@@ -7,7 +7,7 @@ Matrix method APIs are implemented often to mimic the familiar Numpy library or 
 The API for a given function may look very similar to those found in either of the two
 scientific libraries. Our intent is not implement a full matrix library, but mainly the
 parts that are most useful for what we do with colors. Functions may not have all the
-features as found in the aforementioned libraries, and the returns may may vary in format,
+features as found in the aforementioned libraries, and the returns may vary in format,
 and it also not guaranteed the algorithms behind the scene are identical, but the API should
 be similar.
 

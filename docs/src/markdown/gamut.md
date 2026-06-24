@@ -327,7 +327,7 @@ Steps(
 ```
 
 As previously mentioned, the scale method is performed in an RGB space (preferably a linear one). If a polar
-representation of an RGB space is specified that does not have an an associated RGB gamut, it will be transformed to a
+representation of an RGB space is specified that does not have an associated RGB gamut, it will be transformed to a
 cube and have scaling applied. Other RGB-like spaces will also pass through this approach. It should be noted though
 that reliability of the results, in either of these cases, may vary depending on the color space and the range in which
 the method is applied. Generally, if possible, using the closest RGB gamut is advised as this approach is not guaranteed
@@ -1109,7 +1109,7 @@ Looking at the shape in 3D, we can get a full visualization of its geometry.
 
 ![Rösch-MacAdam Color Solid](images/rosch-macadam.png)
 
-Some color spaces can exceed these MacAdam limits as can be be seen with Rec. 2020 color at higher luminance. The below
+Some color spaces can exceed these MacAdam limits as can be seen with Rec. 2020 color at higher luminance. The below
 image shows the Rösch-MacAdam color solid and Rec. 2020 gamut rendered within xyY.
 
 ![Rösch-MacAdam Color Solid](images/rosch-macadam-rec2020.png)

@@ -1048,7 +1048,7 @@ def main():
         '--gmap',
         default='raytrace',
         help=(
-            "Gamut mapping algorithm. To set additional options, follow the algorithm with with a JSON string and "
+            "Gamut mapping algorithm. To set additional options, follow the algorithm with a JSON string and "
             "containing the parameters in the form of 'algorithm:{}'."
         )
     )
