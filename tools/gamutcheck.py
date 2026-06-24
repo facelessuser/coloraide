@@ -65,6 +65,7 @@ def run(gamut, space, gmap, max_chroma, calc_near):
                 coords = to_rect(coords, a, b)
             c1 = Color(space, coords)
             c2 = c1.clone().fit(gamut, **gmap)
+            assert c2.in_gamut(gamut), c2.convert(gamut).serialize()
             de = c1.delta_e(c2, method='2000')
             dl = (c1[l] - c2[l])
             if abs(dl) > abs(max_delta_l):
@@ -120,9 +121,11 @@ def run(gamut, space, gmap, max_chroma, calc_near):
             start = end + 1
 
     if calc_near:
-        for r, g, b in it.product(range(101), range(101), range(101)):
-            c1 = Color('display-p3', [r / 100, g / 100, b / 100]).convert(space)
-            c2 = c1.clone().fit('srgb', **gmap)
+        gamut = 'srgb'
+        for r, g, b in it.product(range(steps + 1), range(steps + 1), range(steps + 1)):
+            c1 = Color('display-p3', [r / steps, g / steps, b / steps]).convert(space)
+            c2 = c1.clone().fit(gamut, **gmap)
+            assert c2.in_gamut(gamut), c2.convert(gamut).serialize()
             dl = (c1[l] - c2[l])
             if abs(dl) > abs(max_delta_l):
                 max_delta_l = dl

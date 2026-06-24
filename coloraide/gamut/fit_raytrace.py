@@ -7,7 +7,7 @@ from __future__ import annotations
 import math
 from .. import util
 from .. import algebra as alg
-from . import Fit, clip_channels, coerce_to_rgb
+from . import Fit, coerce_to_rgb
 from ..spaces import Prism, Luminant
 from ..cat import WHITES
 from .tools import adaptive_hue_independent
@@ -142,7 +142,6 @@ class RayTrace(Fit):
 
         if pspace is None:
             pspace = self.PSPACE
-        orig_space = space
         cs = color.CS_MAP[space]
 
         # Requires an RGB-ish or Prism space, preferably a linear space.
@@ -191,14 +190,11 @@ class RayTrace(Fit):
         # chroma by the max lightness to get lightness between 0 and 1.
         if adaptive:
             max_light = color.new('xyz-d65', WHITE).convert(pspace, in_place=True)[l]
-            alight = adaptive_hue_independent(
+            achroma[l] = adaptive_hue_independent(
                 mapcolor[l] / max_light,
                 max(mapcolor[c] if polar else alg.rect_to_polar(mapcolor[a], mapcolor[b])[0], 0) / max_light,
                 adaptive
             ) * max_light
-            achroma[l] = alight
-        else:
-            alight = mapcolor[l]
 
         # Some perceptual spaces, such as CAM16 or HCT, may compensate for adapting
         # luminance which may give an achromatic that is not quite achromatic.
@@ -275,5 +271,8 @@ class RayTrace(Fit):
                     continue
 
             # Remove noise from floating point conversion.
-            clip_channels(mapcolor.convert(orig_space, in_place=True))
+            if coerced:
+                mapcolor[:-1] = cs.to_base([max(mn, min(mx, x)) for x in cs.from_base(mapcolor[:-1])])
+            else:
+                mapcolor[:-1] = [max(mn, min(mx, x)) for x in mapcolor[:-1]]
             color.update(mapcolor)
