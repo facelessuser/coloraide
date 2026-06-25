@@ -3,6 +3,11 @@ icon: lucide/scroll-text
 ---
 # Changelog
 
+## 8.10
+
+-   **NEW** Provide an more optimized path for the default Ray Trace when using OkLCh as the perceptual space and gamut
+    mapping linear RGB gamuts.
+
 ## 8.9
 
 -   **NEW**: Add support for CSS analogous component sets in interpolation and mixing.

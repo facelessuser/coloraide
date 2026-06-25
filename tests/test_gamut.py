@@ -344,6 +344,40 @@ class TestRayTrace(util.ColorAsserts, unittest.TestCase):
             Color('color(display-p3 0.89593 0.90035 0.29412)')
         )
 
+    def test_raytrace_adaptive_lightness_generic_lab(self):
+        """Test ray trace adaptive lightness in ray trace using generic path."""
+
+        options = {"method": 'raytrace', "pspace": 'lab-d65', "adaptive": 0.05}
+
+        self.assertColorEqual(
+            Color('display-p3', [1, 1, 0]).fit('srgb', **options),
+            Color('color(display-p3 0.97355 0.94922 0.31413)')
+        )
+
+        options['adaptive'] = 5
+
+        self.assertColorEqual(
+            Color('display-p3', [1, 1, 0]).fit('srgb', **options),
+            Color('color(display-p3 0.83876 0.81766 0.26577)')
+        )
+
+    def test_raytrace_adaptive_lightness_generic_lch(self):
+        """Test ray trace adaptive lightness in ray trace using generic path."""
+
+        options = {"method": 'raytrace', "pspace": 'lch-d65', "adaptive": 0.05}
+
+        self.assertColorEqual(
+            Color('display-p3', [1, 1, 0]).fit('srgb', **options),
+            Color('color(display-p3 0.97355 0.94922 0.31413)')
+        )
+
+        options['adaptive'] = 5
+
+        self.assertColorEqual(
+            Color('display-p3', [1, 1, 0]).fit('srgb', **options),
+            Color('color(display-p3 0.83876 0.81766 0.26577)')
+        )
+
     def test_edge_case_raytrace_adaptive_lightness_lch(self):
         """Test edge case ray trace adaptive lightness."""
 
