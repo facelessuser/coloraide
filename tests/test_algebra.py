@@ -3481,9 +3481,11 @@ class TestAlgebra(unittest.TestCase):
         self.assertEqual(alg.solve_poly([3]), [])
         self.assertEqual(alg.solve_poly([0, 0, 0, 3]), [])
 
+        # 4th degree
+        self.assertEqual(alg.solve_poly([-1, 4, -2, 9, 3]), [-0.30034240252377803, 4.092439383430102])
+
         # 4th+ degree
-        with self.assertRaises(ValueError):
-            alg.solve_poly([1, 2, 3, 4, 5])
+        self.assertEqual(alg.solve_poly([7, 3, -1, 4, -2, 9, 3]), [-0.3001501530989436, -1.3147435529574867])
 
     def test_flip(self):
         """Test flip."""

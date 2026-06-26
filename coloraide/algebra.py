@@ -421,6 +421,54 @@ def _solve_cubic(poly: VectorLike) -> Vector:
     ]
 
 
+def _solve_nth_poly(coef: VectorLike, maxiter: int = 50, rtol: float = RTOL, atol: float = ATOL) -> Vector:
+    """
+    Solve polynomial of nth degree.
+
+    Takes a polynomial of any degree greater outputs all real roots (assuming it can find them).
+
+    Approach uses Newton's method to find a root and then uses synthetic division to reduce the degree
+    of the polynomial simplifying the solution for the next root. If the degree falls below 4, solve
+    the for the remaining roots using more precise approaches.
+
+    If we can no longer converge upon roots, give up, assuming there are no more real roots.
+
+    If it is found that we are not finding roots as needed, we could increase the iterations
+    of Newton's method.
+    """
+
+    roots = []  # type: Vector
+    while len(coef) > 4:
+        root, status = solve_newton(
+            1,
+            lambda x, coef=coef: sum([c * x ** i for i, c in enumerate(coef[::-1], 0)]),
+            lambda x, coef=coef: sum([i * c * x ** (i - 1) for i, c in enumerate(coef[-2::-1], 1)]),
+            maxiter=maxiter,
+            rtol=rtol,
+            atol=atol
+        )
+
+        # Can't find any more roots
+        if not status:
+            break
+
+        roots.append(root)
+
+        # Perform synthetic division to reduce the order of the equation
+        quotient = [coef[0]]
+        for c in coef[1:]:
+            quotient.append(quotient[-1] * root + c)
+        # Ignore remainder
+        quotient.pop()
+        coef = quotient
+
+    # Solve the rest with lower order approaches
+    if 4 >= len(coef) > 1:
+        roots.extend(solve_poly(coef))
+
+    return roots
+
+
 def solve_poly(poly: VectorLike) -> Vector:
     """
     Solve the given polynomial.
@@ -442,7 +490,7 @@ def solve_poly(poly: VectorLike) -> Vector:
     # Select the appropriate solver
     l = len(poly)
     if l > 4:
-        raise ValueError('Polynomials of degrees greater than 3 are not currently supported')
+        return _solve_nth_poly(poly)
     elif l == 4:
         return _solve_cubic(poly)
     elif l == 3:
