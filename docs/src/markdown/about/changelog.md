@@ -8,6 +8,7 @@ icon: lucide/scroll-text
 -   **NEW**: Provide a more optimized path for the default Ray Trace GMA when using OkLCh as the perceptual space and
     gamut mapping linear RGB gamuts.
 -   **NEW**: Ensure new `oklch-cubic` GMA handles different default CAT matrices.
+-   **FIX**: Fix issue in `oklch-cubic` where black and white were not returned with proper transparency.
 
 ## 8.9
 

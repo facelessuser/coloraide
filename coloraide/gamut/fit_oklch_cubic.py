@@ -160,10 +160,10 @@ class OkLChCubic(Fit):
         l, c, h = mapcolor[:-1]
 
         if l <= 0:
-            color.update('xyz-d65', [0, 0, 0])
+            color.update('xyz-d65', [0, 0, 0], mapcolor[-1])
             return
         elif l >= 1:
-            color.update('xyz-d65', WHITE)
+            color.update('xyz-d65', WHITE, mapcolor[-1])
             return
 
         cat = color.CHROMATIC_ADAPTATION
