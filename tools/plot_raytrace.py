@@ -210,7 +210,10 @@ def simulate_raytrace_gamut_mapping(args):
                 mapcolor[:-1] = last = cs.to_base(intersection) if coerced else intersection
 
         print('Final:', mapcolor.convert(pspace, norm=False))
-        clip_channels(mapcolor.convert(orig_space, in_place=True))
+        if coerced:
+            mapcolor[:-1] = cs.to_base([max(mn, min(mx, x)) for x in cs.from_base(mapcolor[:-1])])
+        else:
+            mapcolor[:-1] = [max(mn, min(mx, x)) for x in mapcolor[:-1]]
         color.update(mapcolor)
         print('Clipped RGB:', color.convert(space))
 
