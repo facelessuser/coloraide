@@ -27,12 +27,13 @@ from __future__ import annotations
 import math
 from functools import lru_cache
 from . import Fit, clip_channels
+from .fit_raytrace import get_conversion_matrices
 from .. import util
-from ..cat import WHITES, calc_adaptation_matrices, Bradford
+from ..cat import WHITES, CAT
 from .. import algebra as alg
 from ..spaces import Space, RGBish
-from ..types import Vector, VectorLike, Matrix
-from ..spaces.oklab import LMS_TO_XYZD65, OKLAB_TO_LMS3
+from ..types import VectorLike, Matrix
+from ..spaces.oklab import OKLAB_TO_LMS3
 from typing import Any, TYPE_CHECKING  # noqa: F401
 
 if TYPE_CHECKING:  #pragma: no cover
@@ -51,14 +52,14 @@ def first_root(coeff: VectorLike, mn: float, mx: float) -> float:
     return best
 
 
-def get_hue_data(name: str, cs: Space, h: float) -> tuple[Vector, Vector, Vector, float, list[float]]:
+def get_hue_data(name: str, cs: Space, cat: str, adapt: CAT, h: float) -> tuple[Matrix, float, list[float]]:
     """
     Get hue data.
 
     At fixed L and H, each linear RGB channel is exactly cubic in chroma c:
 
     ```
-    channelᵢ(c) = L³ + 3L²·Aᵢ·c + 3L·Bᵢ·c² + Dᵢ·c³
+    channelᵢ(c) = Aᵢ·c³ + 3L·Bᵢ·c² + 3L²·Dᵢ·c + L³
     ```
 
     because `l'ₖ = L + Qₖ·c` is affine in c (the a, b axes enter Oklab→LMS
@@ -66,17 +67,27 @@ def get_hue_data(name: str, cs: Space, h: float) -> tuple[Vector, Vector, Vector
     gray and the rows of LMS to RGB sum to 1.
     """
 
-    m = get_lms_to_rgb(name, cs)
+    m = get_conversion_matrices(name, cs, cat, adapt)[0]
     rad = math.radians(h)
-    q = alg.matmul_x3(OKLAB_TO_LMS3, [0, math.cos(rad), math.sin(rad)], dims=alg.D2_D1)
-    a = alg.matmul_x3(m, q, dims=alg.D2_D1)
-    b = alg.matmul_x3(m, [x * x for x in q], dims=alg.D2_D1)
-    d = alg.matmul_x3(m, [x ** 3 for x in q], dims=alg.D2_D1)
+    q1, q2, q3 = alg.matmul_x3(
+        OKLAB_TO_LMS3,
+        [0, math.cos(rad), math.sin(rad)],
+        dims=alg.D2_D1
+    )
+    m2 = alg.matmul_x3(
+        m,
+        [
+            [q1 ** 3, q1 ** 2, q1],
+            [q2 ** 3, q2 ** 2, q2],
+            [q3 ** 3, q3 ** 2, q3]
+        ],
+        dims=alg.D2
+    )
 
     # Substituting `c = L·t` factors L out entirely: `channelᵢ(c) = L³·Pᵢ(t)` with
     #
     # ```
-    # Pᵢ(t) = 1 + 3Aᵢ·t + 3Bᵢ·t² + Dᵢ·t³
+    # Pᵢ(t) = Aᵢ·t³ + 3Bᵢ·t² + 3Dᵢ·t + 1
     # ```
     #
     # so `Pᵢ` — hence the lower-gamut exit and the monotonicity structure — depends
@@ -89,32 +100,17 @@ def get_hue_data(name: str, cs: Space, h: float) -> tuple[Vector, Vector, Vector
     t_lower = math.inf
     # First turning point of each channel in t-space (infinity if monotonic)
     turn = [0.0] * 3
-    for i in range(3):
-        t_lower = min(t_lower, first_root([d[i], 3 * b[i], 3 * a[i], 1], 1e-9, 1))
-        turn[i] = first_root([0, d[i], 2 * b[i], a[i]], 1e-12, math.inf)
-    return a, b, d, t_lower, turn
+    for i, v in enumerate(m2):
+        t_lower = min(t_lower, first_root([v[0], 3 * v[1], 3 * v[2], 1], 1e-9, 1))
+        turn[i] = first_root([0, v[0], 2 * v[1], v[2]], 1e-12, math.inf)
+    return m2, t_lower, turn
 
 
 @lru_cache(maxsize=1024)
-def get_hue_data_cached(name: str, cs: Space, h: float) -> tuple[Vector, Vector, Vector, float, list[float]]:
+def get_hue_data_cached(name: str, cs: Space, cat: str, adapt: CAT, h: float) -> tuple[Matrix, float, list[float]]:
     """Get hue data but use a hue_cache."""
 
-    return get_hue_data(name, cs, h)
-
-
-@lru_cache(maxsize=10)
-def get_lms_to_rgb(name: str, space: Space) -> Matrix:
-    """Get LMS to RGB matrix."""
-
-    d65 = WHITES['2deg']['D65']
-    m = space.TO_RGB  # type: ignore[attr-defined]
-    if space.WHITE != d65:
-        m = alg.matmul_x3(
-            m,
-            calc_adaptation_matrices(d65, space.WHITE, Bradford.MATRIX),
-            dims=alg.D2
-        )
-    return alg.matmul_x3(m, LMS_TO_XYZD65, dims=alg.D2)
+    return get_hue_data(name, cs, cat, adapt, h)
 
 
 class OkLChCubic(Fit):
@@ -170,19 +166,23 @@ class OkLChCubic(Fit):
             color.update('xyz-d65', WHITE)
             return
 
-        a, b, d, t_lower, turn = get_hue_data_cached(space, cs, h) if cache else get_hue_data(space, cs, h)
+        cat = color.CHROMATIC_ADAPTATION
+        adapt = color.CAT_MAP[cat]
+        m, t_lower, turn = (
+            get_hue_data_cached(space, cs, cat, adapt, h) if cache else get_hue_data(space, cs, cat, adapt, h)
+        )
         # Work in `t = c/L`. The cap starts at the input chroma and the (hue-only) lower
         # exit; the white bound below can only pull it lower.
         max_t = min(c / l, t_lower)
         target = 1 / (l ** 3)
-        for i in range(3):
+        for i, v in enumerate(m):
             if turn[i] > max_t:
-                if a[i] < 0:
+                if v[2] < 0:
                     continue
-                p_max_t = ((d[i] * max_t + 3 * b[i]) * max_t + 3 * a[i]) * max_t + 1
+                p_max_t = ((v[0] * max_t + 3 * v[1]) * max_t + 3 * v[2]) * max_t + 1
                 if p_max_t < target:
                     continue
-            max_t = min(max_t, first_root([d[i], 3 * b[i], 3 * a[i], 1 - target], 1e-9, max_t))
+            max_t = min(max_t, first_root([v[0], 3 * v[1], 3 * v[2], 1 - target], 1e-9, max_t))
 
         mapcolor[1] = l * max_t
         clip_channels(mapcolor.convert(orig_space, in_place=True))
