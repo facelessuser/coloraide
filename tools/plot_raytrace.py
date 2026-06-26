@@ -156,8 +156,8 @@ def simulate_raytrace_gamut_mapping(args):
             end = fit.to_polar(achroma[:-1], a, b)
             end[b] = start[b]
 
-        low = mn + 1e-6
-        high = mx + 1e-6
+        low = mn + 1e-12
+        high = mx + 1e-12
 
         mapcolor.convert(space, in_place=True)
         last = mapcolor[:-1]
