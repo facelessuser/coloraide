@@ -387,7 +387,7 @@ def _solve_cubic(poly: VectorLike) -> Vector:
     k = b / 3
 
     # Primitive roots: `pr = (-1 +/- -3 ** (1/2)) / 2 ~= -0.5 +/- 0.8660254037844386j`
-    # The complex part (`prc`) equivalent calculation: `(0.8660254037844386j) = 3 ** (1/3) / 2j`
+    # The complex part (`prc`) equivalent calculation: `(0.8660254037844386j) = 3 ** (1/2) / 2j`
     prc = cmath.sqrt(3) / 2j
 
     # We can find the other two roots by multiplying u and v with the primitive roots:
