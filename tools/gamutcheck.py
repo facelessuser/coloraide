@@ -35,6 +35,9 @@ def run(gamut, space, gmap, max_chroma, calc_near):
     far_worst = worst = None
     lch = Color('white').convert(space)
     polar = lch._space.is_polar()
+    max_oc_delta = 0
+    far_oc_delta = 0
+    far_worst_oc = worst_oc = None
     if polar:
         l, c, h = lch._space.indexes()
         max_hue = lch._space.channels[h].high
@@ -66,12 +69,25 @@ def run(gamut, space, gmap, max_chroma, calc_near):
             c1 = Color(space, coords)
             c2 = c1.clone().fit(gamut, **gmap)
             assert c2.in_gamut(gamut), c2.convert(gamut).serialize()
-            de = c1.delta_e(c2, method='2000')
+
+            if not c1.in_gamut(gamut):
+                c3 = c2.convert(gamut)
+                coords = c3[:-1]
+                mx = max(coords)
+                mn = min(coords)
+                dc1 = abs(1 - mx)
+                dc2 = abs(mn - 0)
+                dc = dc1 if dc1 < dc2 else dc2
+                if dc > max_oc_delta:
+                    max_oc_delta = dc
+                    worst_oc = c1
+
             dl = (c1[l] - c2[l])
             if abs(dl) > abs(max_delta_l):
                 max_delta_l = dl
 
-            if de > max_de:
+            de = c1.delta_e(c2, method='2000')
+            if abs(de) > abs(max_de):
                 max_de = de
 
             if polar:
@@ -96,28 +112,37 @@ def run(gamut, space, gmap, max_chroma, calc_near):
 
         if e in (steps // 4, steps // 2, steps // (4 / 3), steps - 1):
             print(f'=== Far: Chroma {max_chroma} (Lightness {start} - {end}) ===')
-            print('∆L =', max_delta_l)
-            print('∆h =', max_delta_h)
-            print('∆E =', max_de)
-            print('Worst ∆h offender =>', worst)
+            print('∆L  =', max_delta_l)
+            print('∆h  =', max_delta_h)
+            print('∆E  =', max_de)
+            print('∆OC = ', max_oc_delta)
+            print('Worst ∆h offender  =>', worst)
+            print('Worst ∆OC offender =>', worst_oc)
 
             if abs(far_delta_h) > abs(max_delta_h):
                 max_delta_h = far_delta_h
                 worst = far_worst
             if abs(far_delta_l) > abs(max_delta_l):
                 max_delta_l = far_delta_l
-            if far_de > max_de:
+            if abs(far_de) > abs(max_de):
                 max_de = far_de
+            if abs(far_oc_delta) > abs(max_oc_delta):
+                max_oc_delta = far_oc_delta
+                worst_oc = far_worst_oc
 
             far_delta_h = max_delta_h
             far_delta_l = max_delta_l
+            far_oc_delta = max_oc_delta
             far_de = max_de
             far_worst = worst
+            far_worst_oc = worst_oc
 
+            max_oc_delta = 0
             max_delta_h = 0
             max_delta_l = 0
             max_de = 0
             worst = None
+            worst_oc = None
             start = end + 1
 
     if calc_near:
@@ -126,6 +151,23 @@ def run(gamut, space, gmap, max_chroma, calc_near):
             c1 = Color('display-p3', [r / steps, g / steps, b / steps]).convert(space)
             c2 = c1.clone().fit(gamut, **gmap)
             assert c2.in_gamut(gamut), c2.convert(gamut).serialize()
+
+            if not c1.in_gamut(gamut):
+                c3 = c2.convert(gamut)
+                coords = c3[:-1]
+                mx = max(coords)
+                mn = min(coords)
+                dc1 = abs(1 - mx)
+                dc2 = abs(mn - 0)
+                dc = dc1 if dc1 < dc2 else dc2
+                if dc > max_oc_delta:
+                    max_oc_delta = dc
+                    worst_oc = c1
+
+            de = c1.delta_e(c2, method='2000')
+            if de > max_de:
+                max_de = de
+
             dl = (c1[l] - c2[l])
             if abs(dl) > abs(max_delta_l):
                 max_delta_l = dl
@@ -152,20 +194,31 @@ def run(gamut, space, gmap, max_chroma, calc_near):
                 worst = c1
 
         print('=== Near: Display-P3 to sRGB ===')
-        print('∆L =', max_delta_l)
-        print('∆h =', max_delta_h)
-        print('Worst ∆h offender =>', worst)
+        print('∆L  =', max_delta_l)
+        print('∆h  =', max_delta_h)
+        print('∆E  =', max_de)
+        print('∆OC = ', max_oc_delta)
+        print('Worst ∆h offender  =>', worst)
+        print('Worst ∆OC offender =>', worst_oc)
 
     if abs(far_delta_h) > abs(max_delta_h):
         max_delta_h = far_delta_h
         worst = far_worst
     if abs(far_delta_l) > abs(max_delta_l):
         max_delta_l = far_delta_l
+    if abs(far_de) > abs(max_de):
+        max_de = far_de
+    if abs(far_oc_delta) > abs(max_oc_delta):
+        max_oc_delta = far_oc_delta
+        worst_oc = far_worst_oc
 
     print('=== Final ===')
-    print('∆L =', max_delta_l)
-    print('∆h =', max_delta_h)
-    print('Worst ∆h offender =>', worst)
+    print('∆L  =', max_delta_l)
+    print('∆h  =', max_delta_h)
+    print('∆E  =', max_de)
+    print('∆OC = ', max_oc_delta)
+    print('Worst ∆h offender  =>', worst)
+    print('Worst ∆OC offender =>', worst_oc)
 
 
 def main():
