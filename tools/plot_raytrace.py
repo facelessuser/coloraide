@@ -9,7 +9,7 @@ import json
 sys.path.insert(0, os.getcwd())
 
 import tools.gamut_3d_diagram as plt3d
-from coloraide.gamut import fit_raytrace as fit, clip_channels
+from coloraide.gamut import fit_raytrace as fit
 from coloraide.everything import ColorAll as Color
 from coloraide import algebra as alg
 from coloraide.channels import ANGLE_DEG
@@ -74,8 +74,6 @@ def simulate_raytrace_gamut_mapping(args):
     points = []
     color = Color(args.gamut_color)
 
-    orig_space = color.space()
-
     gmap = json.loads(args.gmap)
     gmap['method'] = 'raytrace'
 
@@ -103,11 +101,12 @@ def simulate_raytrace_gamut_mapping(args):
         else:
             mx = color.new(space, [mx] * 3).convert(linear, in_place=True)[0]
         space = linear
+    mn = cs.CHANNELS[0].low
+
     print('Target RGB Space:', space)
     print('Perceptual Space', pspace)
 
     bmax = [mx] * 3
-    mn = cs.CHANNELS[0].low
     bmin = [mn] * 3
 
     orig = color.space()
@@ -126,14 +125,11 @@ def simulate_raytrace_gamut_mapping(args):
 
     if adaptive:
         max_light = color.new('xyz-d65', fit.WHITE).convert(pspace, in_place=True)[l]
-        alight = fit.adaptive_hue_independent(
+        achroma[l] = fit.adaptive_hue_independent(
             mapcolor[l] / max_light,
             max(mapcolor[c] if polar else alg.rect_to_polar(mapcolor[a], mapcolor[b])[0], 0) / max_light,
             adaptive
         ) * max_light
-        achroma[l] = alight
-    else:
-        alight = mapcolor[l]
 
     anchor = cs.from_base(achroma.convert(space)[:-1]) if coerced else achroma.convert(space)[:-1]
     anchor = fit.project_onto(anchor, bmax, bmin)
