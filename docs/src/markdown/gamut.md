@@ -701,12 +701,15 @@ working perceptual space.
 > While OkLCh is the fastest OkLCh chroma reduction method, it can only be used with OkLCh. If needing a more generic
 > approach that can be paired with other perceptual spaces, see [Ray Trace](#ray-tracing-chroma-reduction).
 
-It's speed is comes from the fact that it is not an iterative approach. The [MINDE](#minde-chroma-reduction) approach
-has an unknown number of iterations and the [Ray Trace](#ray-tracing-chroma-reduction) approach uses a constant 4
-iterations, but OkLCh Cubic is completed in a single pass.
+Its speed comes from the fact that it is not an iterative approach. The [MINDE](#minde-chroma-reduction) approach has
+an unknown number of iterations and the [Ray Trace](#ray-tracing-chroma-reduction) approach that uses a constant 4
+iterations, but OkLCh Cubic is completed in a single pass. Additionally, it is not a general approach, but it relies
+heavily on specifics related to the Oklab color spaces.
 
-Additionally, not only is it faster, but it preserves lightness and hue generally better in most linear RGB spaces that
-we tested. The improvements are likely not perceptible to the human eye, but worth calling attention to.
+Additionally, not only is it faster, but it does preserve lightness and hue generally better in most linear RGB spaces
+when compared Ray Trace. Since the MINDE approach can improve it's lightness and hue deviation by lowering the JND (at
+the cost of speed), it can at least be stated it does better with preservation compared to MINDE with a default JND of
+`0.02` with OkLCh. The improvements are likely not perceptible to the human eye, but worth calling attention to.
 
 It should be noted that OkLCh can only be used with spaces that have a gamut that can be associated with a linear RGB
 gamut. Spaces like `hpluv` cannot be resolved using this approach.
