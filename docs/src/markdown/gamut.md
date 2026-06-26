@@ -698,8 +698,8 @@ What is nice about this approach is that it is by far the fastest chroma reducti
 working perceptual space.
 
 > [!note]
-> While OkLCh is the fastest OkLCh chroma reduction method, it can only be used with OkLCh. If needing a more generic
-> approach that can be paired with other perceptual spaces, see [Ray Trace](#ray-tracing-chroma-reduction).
+> While OkLCh is the fastest OkLCh chroma reduction method, it can only be used with OkLCh. If a more generic approach
+> that can be paired with other perceptual spaces is needed, see [Ray Trace](#ray-tracing-chroma-reduction).
 
 Its speed comes from the fact that it is not an iterative approach. The [MINDE](#minde-chroma-reduction) approach has
 an unknown number of iterations and the [Ray Trace](#ray-tracing-chroma-reduction) approach that uses a constant 4
