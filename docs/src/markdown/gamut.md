@@ -707,9 +707,9 @@ iterations, but OkLCh Cubic is completed in a single pass. Additionally, it is n
 heavily on specifics related to the Oklab color spaces.
 
 Additionally, not only is it faster, but it does preserve lightness and hue generally better in most linear RGB spaces
-when compared Ray Trace. Since the MINDE approach can improve it's lightness and hue deviation by lowering the JND (at
-the cost of speed), it can at least be stated it does better with preservation compared to MINDE with a default JND of
-`0.02` with OkLCh. The improvements are likely not perceptible to the human eye, but worth calling attention to.
+when compared to Ray Trace. Since the MINDE approach can improve it's lightness and hue deviation by lowering the JND
+(at the cost of speed), it can at least be stated it does better with preservation compared to MINDE with a default JND
+of `0.02` with OkLCh. The improvements are likely not perceptible to the human eye, but worth calling attention to.
 
 It should be noted that OkLCh can only be used with spaces that have a gamut that can be associated with a linear RGB
 gamut. Spaces like `hpluv` cannot be resolved using this approach.
