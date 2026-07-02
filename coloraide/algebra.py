@@ -621,7 +621,6 @@ def ilerp2d(
     vertices: Matrix,
     point: Vector,
     *,
-    vertices_t: Matrix | None = None,
     max_iter: int = 20,
     tol: float = ATOL
 ) -> Vector:
@@ -638,9 +637,6 @@ def ilerp2d(
     ```
     """
 
-    if vertices_t is None:  # pragma: no cover
-        vertices_t = transpose(vertices)
-
     # Initial guess
     xy = [0.5, 0.5]
 
@@ -656,14 +652,18 @@ def ilerp2d(
 
             # Build up the Jacobian matrix so we can solve for the next, closer guess.
             x, y = xy
-            _x = [-(1 - y), 1 - y, -y, y]
-            jx = [sum(i) for i in zip(*[[xi * c for c in ci] for ci, xi in zip(vertices_t, _x)])]
 
-            _y = [-(1 - x), -x, x, 1 - x]
-            jy = [sum(i) for i in zip(*[[yi * c for c in ci] for ci, yi in zip(vertices_t, _y)])]
+            wx = 1 - x
+            wy = 1 - y
 
-            # Create the Jacobian matrix, but we need it in column form
-            j = [*zip(jx, jy)]
+            m = [
+                [-wy, -wx],
+                [wy,  -x],
+                [-y,  wx],
+                [y,   x]
+            ]
+
+            j = matmul(vertices, m, dims=D2)
 
             # Solve for new guess
             xy = subtract(xy, solve(j, residual), dims=D1)
@@ -712,7 +712,6 @@ def ilerp3d(
     vertices: Matrix,
     point: Vector,
     *,
-    vertices_t: Matrix | None = None,
     max_iter: int = 20,
     tol: float = ATOL
 ) -> Vector:
@@ -750,9 +749,6 @@ def ilerp3d(
     will just stop at `0.9xxxx`, etc. Some sets of vertices have no issues at all.
     """
 
-    if vertices_t is None:  # pragma: no cover
-        vertices_t = transpose(vertices)
-
     # Initial guess.
     xyz = [0.5, 0.5, 0.5]
 
@@ -768,44 +764,22 @@ def ilerp3d(
 
             # Build up the Jacobian matrix so we can solve for the next, closer guess
             x, y, z = xyz
-            _x = [
-                -(1 - y) * (1 - z),
-                (1 - y) * (1 - z),
-                -y * (1 - z),
-                y * (1 - z),
-                -(1 - y) * z,
-                (1 - y) * z,
-                -y * z,
-                y * z
-            ]
-            jx = [sum(i) for i in zip(*[[xi * c for c in ci] for ci, xi in zip(vertices_t, _x)])]
+            wx = 1 - x
+            wy = 1 - y
+            wz = 1 - z
 
-            _y = [
-                -(1 - x) * (1 - z),
-                -x * (1 - z),
-                (1 - x) * (1 - z),
-                x * (1 - z),
-                -(1 - x) * z,
-                -x * z,
-                (1 - x) * z,
-                x * z,
+            m = [
+                [-wy * wz, -wx * wz, -wx * wy],
+                [wy * wz,  -x * wz,  -x * wy],
+                [-y * wz,  wx * wz,  -wx * y],
+                [y * wz,   x * wz,   -x * y],
+                [-wy * z,  -wx * z,  wx * wy],
+                [wy * z,   -x * z,   x * wy],
+                [-y * z,   wx * z,   wx * y],
+                [y * z,    x * z,    x * y]
             ]
-            jy = [sum(i) for i in zip(*[[yi * c for c in ci] for ci, yi in zip(vertices_t, _y)])]
 
-            _z = [
-                -(1 - x) * (1 - y),
-                -x * (1 - y),
-                -(1 - x) * y,
-                -x * y,
-                (1 - x) * (1 - y),
-                x * (1 - y),
-                (1 - x) * y,
-                x * y
-            ]
-            jz = [sum(i) for i in zip(*[[zi * c for c in ci] for ci, zi in zip(vertices_t, _z)])]
-
-            # Create the Jacobian matrix, but we need it in column form
-            j = [*zip(jx, jy, jz)]
+            j = matmul(vertices, m, dims=D2)
 
             # Solve for new guess
             xyz = subtract(xyz, solve(j, residual), dims=D1)

@@ -73,11 +73,11 @@ def solve_cubic_poly(a: float, b: float, c: float, d: float) -> float:
     return alg.solve_bisect(0.0, 1.0, f0, start=d, atol=eps)[0]
 
 
-def srgb_to_ryb(rgb: Vector, cube_t: Matrix, cube: Matrix, biased: bool) -> Vector:
+def srgb_to_ryb(rgb: Vector, cube_t: Matrix, biased: bool) -> Vector:
     """Convert RYB to sRGB."""
 
     # Calculate the RYB value
-    ryb = alg.ilerp3d(cube_t, rgb, vertices_t=cube, tol=1e-14)
+    ryb = alg.ilerp3d(cube_t, rgb, tol=1e-14)
     # Remove smoothstep easing if "biased" is enabled.
     return [solve_cubic_poly(-2.0, 3.0, 0.0, t) if 0 <= t <= 1 else t for t in ryb] if biased else ryb
 
@@ -113,8 +113,7 @@ class RYB(Prism, Space):
         "blue": 'b'
     }
     WHITE = WHITES['2deg']['D65']
-    RYB_CUBE = GOSSET_CHEN_CUBE
-    RYB_CUBE_T = alg.transpose(RYB_CUBE)
+    RYB_CUBE = alg.transpose(GOSSET_CHEN_CUBE)
     BIASED = False
     SUBTRACTIVE = True
 
@@ -135,12 +134,12 @@ class RYB(Prism, Space):
     def to_base(self, coords: Vector) -> Vector:
         """To sRGB."""
 
-        return ryb_to_srgb(coords, self.RYB_CUBE_T, self.BIASED)
+        return ryb_to_srgb(coords, self.RYB_CUBE, self.BIASED)
 
     def from_base(self, coords: Vector) -> Vector:
         """From sRGB."""
 
-        return srgb_to_ryb(coords, self.RYB_CUBE_T, self.RYB_CUBE, self.BIASED)
+        return srgb_to_ryb(coords, self.RYB_CUBE, self.BIASED)
 
 
 class RYBBiased(RYB):
