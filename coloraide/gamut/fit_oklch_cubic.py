@@ -90,7 +90,7 @@ def get_hue_data(name: str, cs: Space, cat: str, adapt: CAT, h: float) -> tuple[
     # Pᵢ(t) = Aᵢ·t³ + 3Bᵢ·t² + 3Dᵢ·t + 1
     # ```
     #
-    # so `Pᵢ` — hence the lower-gamut exit and the monotonicity structure — depends
+    # so `Pᵢ` - hence the lower-gamut exit and the monotonicity structure - depends
     # only on H and is pre-computed here, once per hue. Only the white bound stays
     # per color (it lands at `Pᵢ = L⁻³`); see compute.
     #
