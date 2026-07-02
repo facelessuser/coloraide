@@ -440,7 +440,7 @@ def _solve_nth_poly(coef: VectorLike, maxiter: int = 50, rtol: float = RTOL, ato
     roots = []  # type: Vector
     while len(coef) > 4:
         root, status = solve_newton(
-            1,
+            0.5,
             lambda x, coef=coef: sum([c * x ** i for i, c in enumerate(coef[::-1], 0)]),
             lambda x, coef=coef: sum([i * c * x ** (i - 1) for i, c in enumerate(coef[-2::-1], 1)]),
             maxiter=maxiter,
