@@ -421,7 +421,13 @@ def _solve_cubic(poly: VectorLike) -> Vector:
     ]
 
 
-def _solve_nth_poly(coef: VectorLike, maxiter: int = 50, rtol: float = RTOL, atol: float = ATOL) -> Vector:
+def solve_nth_poly(
+    coef: VectorLike,
+    guess: float = 0.5,
+    maxiter: int = 50,
+    rtol: float = RTOL,
+    atol: float = ATOL
+) -> Vector:
     """
     Solve polynomial of nth degree.
 
@@ -431,16 +437,14 @@ def _solve_nth_poly(coef: VectorLike, maxiter: int = 50, rtol: float = RTOL, ato
     of the polynomial simplifying the solution for the next root. If the degree falls below 4, solve
     the for the remaining roots using more precise approaches.
 
-    If we can no longer converge upon roots, give up, assuming there are no more real roots.
-
-    If it is found that we are not finding roots as needed, we could increase the iterations
-    of Newton's method.
+    Newton's method is not guarunteed to converge. If we can no longer converge upon roots, give up,
+    assuming there are no more real roots, even if that is not true.
     """
 
     roots = []  # type: Vector
     while len(coef) > 4:
         root, status = solve_newton(
-            0.5,
+            guess,
             lambda x, coef=coef: sum([c * x ** i for i, c in enumerate(coef[::-1], 0)]),
             lambda x, coef=coef: sum([i * c * x ** (i - 1) for i, c in enumerate(coef[-2::-1], 1)]),
             maxiter=maxiter,
@@ -490,7 +494,7 @@ def solve_poly(poly: VectorLike) -> Vector:
     # Select the appropriate solver
     l = len(poly)
     if l > 4:
-        return _solve_nth_poly(poly)
+        return solve_nth_poly(poly)
     elif l == 4:
         return _solve_cubic(poly)
     elif l == 3:
@@ -551,7 +555,7 @@ def solve_newton(
 
         # Cannot find a solution if derivative is zero
         d1 = dx(x0, *args) if args else dx(x0)
-        if d1 == 0:
+        if abs(d1) < 1e-12:
             return x0, None  # pragma: no cover
 
         # Calculate new, hopefully closer value with Newton's method
