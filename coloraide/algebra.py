@@ -437,7 +437,7 @@ def solve_nth_poly(
     of the polynomial simplifying the solution for the next root. If the degree falls below 4, solve
     the for the remaining roots using more precise approaches.
 
-    Newton's method is not guarunteed to converge. If we can no longer converge upon roots, give up,
+    Newton's method is not guaranteed to converge. If we can no longer converge upon roots, give up,
     assuming there are no more real roots, even if that is not true.
     """
 
