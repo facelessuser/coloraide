@@ -2877,6 +2877,48 @@ class TestAlgebra(unittest.TestCase):
         # Ostrowski
         self.assertEqual(alg.solve_newton(1, f0, dx, ostrowski=True), (0.5, True))
 
+
+    def test_solve_newton_bracketed(self):
+        """Solve newton bracketed."""
+
+        def cubic_poly(t, a, b, c, d):
+            return a * t ** 3 + b * t ** 2 + c * t + d
+
+        def cubic_poly_dt(t, a, b, c):
+            return 3 * a * t ** 2 + 2 * b * t + c
+
+        def cubic_poly_dt2(t, a, b):
+            return 6 * a * t + 2 * b
+
+        args = [4.0, -6.0, 3.0, -0.22]
+
+        # Cannot solve
+        results = alg.solve_newton(
+            0.5,
+            lambda t, args=args: cubic_poly(t, *args),
+            lambda t, args=args: cubic_poly_dt(t, *args[:-1]),
+        )
+        self.assertEqual(results, (0.5, None))
+
+        # Solved
+        results = alg.solve_newton(
+            0.5,
+            lambda t, args=args: cubic_poly(t, *args),
+            lambda t, args=args: cubic_poly_dt(t, *args[:-1]),
+            bounds=(0, 1)
+        )
+        self.assertEqual(results, (0.08787147001914433, True))
+
+        # Solved
+        results = alg.solve_newton(
+            0.5,
+            lambda t, args=args: cubic_poly(t, *args),
+            lambda t, args=args: cubic_poly_dt(t, *args[:-1]),
+            lambda t, args=args: cubic_poly_dt2(t, *args[:-2]),
+            bounds=(0, 1)
+        )
+        self.assertEqual(results, (0.0878714700191443, True))
+
     def test_pinv(self):
         """Test Moore-Penrose pseudo inverse."""
 

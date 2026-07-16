@@ -41,6 +41,7 @@ NaN = math.nan
 INF = math.inf
 MAX_10_EXP = sys.float_info.max_10_exp
 MIN_FLOAT = sys.float_info.min
+MAX_FLOAT = sys.float_info.max
 
 # Keeping for backwards compatibility
 _all = builtins.all
@@ -513,7 +514,8 @@ def solve_newton(
     maxiter: int = 50,
     rtol: float = RTOL,
     atol: float = ATOL,
-    ostrowski: bool = False
+    ostrowski: bool = False,
+    bounds: tuple[float, float] | None = None,
 ) -> tuple[float, bool | None]:
     """
     Solve equation using Newton's method.
@@ -523,15 +525,17 @@ def solve_newton(
 
     ```
     newton = yn = xn - f(xn) / f'(xn)
-    halley = xn - (f(xn) * f'(xn)) / (f'(xn) ** 2 - 0.5 * f(xn) * f''(xn))
+    halley = xn - 2 f(xn) f'(xn) / (2 f'(xn)^2 - f(xn) f''(xn))
     ```
 
     Algebraically, we can pull the Newton stop out of the Halley method into two separate steps
     that can be applied on top of each other.
 
     ```
-    Step1: yn = f(xn) / f'(xn)
-    Step2: halley = xn - yn / (1 - 0.5 * yn * f''(xn) / f'(xn))
+    Step1: halley = xn - f(xn) * f'(xn) / (f'(xn) ** 2 - 0.5 * f(xn) * f''(xn))
+    Step2: yn = f(xn) / f'(xn)
+    Step3: halley = xn - f(xn) / (f'(xn) - (0.5 * yn * f''(xn))
+    Step4: halley = xn - yn / (1 - 0.5 * yn * f''(xn) / f'(xn))
     ```
 
     If Ostrowski method is enabled, only one derivative is needed, but you can get 4th order convergence.
@@ -544,47 +548,69 @@ def solve_newton(
     Return result along with True if converged, False if did not converge, None if could not converge.
     """
 
+    if bounds is not None:
+        lo, hi = bounds
+        bracketed = True
+    else:
+        lo, hi = -math.inf, math.inf
+        bracketed = False
+
     for _ in range(maxiter):
         # Get result form equation when setting value to expected result
         fx = f0(x0, *args) if args else f0(x0)
         prev = x0
 
         # If the result is zero, we've converged
-        if fx == 0:
+        if fx == 0 and (not bracketed or lo <= x0 <= hi):
             return x0, True
+
+        # Update brackets
+        if bracketed:
+            if fx > 0:
+                hi = min(x0, hi)
+            else:
+                lo = max(x0, lo)
 
         # Cannot find a solution if derivative is zero
         d1 = dx(x0, *args) if args else dx(x0)
         if abs(d1) < 1e-12:
-            return x0, None  # pragma: no cover
+            # Try to bisect to a different location
+            if bracketed:
+                x0 = (hi + lo) * 0.5
+                if x0 != prev:
+                    continue
+            return x0, None
 
-        # Calculate new, hopefully closer value with Newton's method
+        # Newton step
         newton =  fx / d1
 
-        # If second derivative is provided, apply the Halley's method step: 3rd order convergence
+        # If second derivative is provided, apply the Halley's method step: 3rd order convergence.
+        # The Newton step has been factored out of Halley's such that we can apply the rest to make
+        # it Halley's, and if we can't, or shouldn't apply it, it remains a Newton step.
         if dx2 is not None and not ostrowski:
             d2 = dx2(x0, *args) if args else dx2(x0)
-            value = (0.5 * newton * d2) / d1
-            # If the value is greater than one, the solution is deviating away from the newton step
-            if abs(value) < 1:
-                newton /= 1 - value
+            denom = 1 - (0.5 * newton * d2) / d1
+            if abs(denom) > 1e-12:
+                newton /= denom
 
         # If change is under our epsilon, we can consider the result converged.
         x0 -= newton
-        if math.isclose(x0, prev, rel_tol=rtol, abs_tol=atol):
-            return x0, True  # pragma: no cover
+
         # Use Ostrowski method: 4th order convergence
         if ostrowski:
             fy = f0(x0, *args) if args else f0(x0)
-            if fy == 0:
-                return x0, True
-            fy_x2 = 2 * fy
-            if fy_x2 == fx:  # pragma: no cover
-                return x0, None
-            x0 -= fx / (fx - fy_x2) * (fy / d1)
+            denom = fx - 2 * fy
+            if abs(denom) > 1e-12:
+                x0 -= fx / denom * (fy / d1)
 
-            if math.isclose(x0, prev, rel_tol=rtol, abs_tol=atol):  # pragma: no cover
-                return x0, True
+        if bracketed and not (lo <= x0 <= hi):
+            x0 = (hi + lo) * 0.5
+            if x0 == prev:  # pragma: no cover
+                return x0, None
+            continue
+
+        if math.isclose(x0, prev, rel_tol=rtol, abs_tol=atol):
+            return x0, True
 
     return x0, False  # pragma: no cover
 
