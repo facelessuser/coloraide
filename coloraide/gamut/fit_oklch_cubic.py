@@ -77,7 +77,7 @@ def get_max_chroma(name: str, cs: Space, cat: str, adapt: CAT, l: float, h: floa
         # Use `c = 0.5` which is far enough outside the visible spectrum
         # without OkLCh becoming distorted in the blue region.
         s = c1 * 0.125 + c2 * 0.25 + c3 * 0.5 + c4
-        target = 1 if abs(s - 1) < abs(-s) else 0
+        target = 1 if abs(s - 1) < abs(s) else 0
 
         # Solve for channel maximum (1) or minimum (0)
         for _x in alg.solve_poly([c1, c2, c3, c4 - target]):
