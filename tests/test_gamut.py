@@ -4,7 +4,7 @@ import math
 from coloraide.everything import ColorAll as Color
 from coloraide import gamut
 from coloraide.gamut.fit_raytrace import raytrace_box
-from coloraide.gamut.fit_oklch_cubic import get_hue_data_cached
+from coloraide.gamut.fit_oklch_cubic import get_hue_data
 from . import util
 
 
@@ -867,9 +867,9 @@ class TestOkLChCubic(util.ColorAsserts, unittest.TestCase):
             Color('color(display-p3 0 0 0)')
         )
 
-        self.assertTrue(get_hue_data_cached.cache_info().currsize != 0)
+        self.assertTrue(get_hue_data.cache_info().currsize != 0)
         Color('rec2020', [1, 0, 0]).fit('display-p3', method='oklch-cubic', clear_cache=True)
-        self.assertTrue(get_hue_data_cached.cache_info().currsize == 0)
+        self.assertTrue(get_hue_data.cache_info().currsize == 0)
 
     def test_bad_space(self):
         """Test unsupported space."""

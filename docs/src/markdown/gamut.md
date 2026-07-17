@@ -688,14 +688,20 @@ Color.register([HCT(), DEHCT(), HCTChroma()])
 
 > [!failure] The `oklch-cubic` gamut mapping is **not** registered in `Color` by default
 
-OkLCh Cubic is an approach created by @LeaVerou at the CSS Working Group. This approach capitalizes on an observation
-that at a fixed lightness and hue, each linear Display P3 channel is exactly a cubic equation in chroma (l' is affine in
-C, then cubed),so the chroma boundary is the smallest chroma at which any channel reaches 0 or 1. This is found via
-standard closed form cubic equation solving formulas and optimized further through some observations about the types of
-equations produced. As an additional optimization, a lazily populated hue cache is suggested.
+OkLCh Cubic is an approach created by @LeaVerou, at the CSS Working Group, that uses a cubic solver. It is similar to
+some other approaches used to reduced chroma in OkLCh, such as one approach the creator of OkLCh posted [about]
+(https://bottosson.github.io/posts/gamutclipping/#intersection-with-srgb-gamut), that also use cubic solver.
 
-What is nice about this approach is that it is by far the fastest chroma reduction approach, when using OkLCh as the
-working perceptual space.
+While the author of OkLCh used a Halley's Method solver, which is an iterative approach, Lea opted for a non-iterative
+approach relying on a Cardano's Method. Additionally, the solving was split such that the hue related data could be
+cached for faster repeat solving on a specific hue.
+
+Caching can obviously store a lot of data in memory, so by default, we provide a modified non-caching Cardano's solver
+which is optimized for speed without caching. Caching can be enabled via the `cache` option and will increase speed at
+the cost of storing a cached look-up-table in memory.
+
+What is nice about this approach is that it is by far the fastest chroma reduction approach, that ColorAide offers
+when using OkLCh as the working perceptual space. This is true with and without `cache` enabled.
 
 > [!note]
 > While OkLCh is the fastest OkLCh chroma reduction method, it can only be used with OkLCh. If a more generic approach

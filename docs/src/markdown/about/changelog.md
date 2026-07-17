@@ -3,6 +3,10 @@ icon: lucide/scroll-text
 ---
 # Changelog
 
+## 8.11
+
+-   **NEW**: Add a faster non-cached path for `oklch-cubic` that is optimized for when caching is disabled.
+
 ## 8.10
 
 -   **NEW**: Provide a more optimized path for the default Ray Trace GMA when using OkLCh as the perceptual space and

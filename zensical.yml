@@ -357,7 +357,7 @@ extra_javascript:
   - assets/pymdownx-extras/extra-loader-Ccztcqfq.js
   - https://cdn.jsdelivr.net/npm/ace-builds@1.44.0/src-min-noconflict/ace.js
   - https://cdn.jsdelivr.net/npm/mermaid@11.15.0/dist/mermaid.min.js
-  - playground-config-331fdad2.js
+  - playground-config-5de793fe.js
   - https://cdn.jsdelivr.net/npm/pyodide@314.0.0/pyodide.min.js
   - assets/coloraide-extras/extra-notebook-u1GgjYsQ.js
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
