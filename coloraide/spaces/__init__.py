@@ -224,7 +224,7 @@ class Space(Plugin, metaclass=SpaceMeta):
         return coords
 
     def powerless(self, coords: Vector) -> Vector:
-        """Adjust color channels based on powerless ruless."""
+        """Adjust color channels based on powerless rules."""
 
         return coords
 

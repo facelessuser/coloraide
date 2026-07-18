@@ -70,7 +70,7 @@ class LCh(LChish, Space):
         return abs(coords[1]) < self.achromatic_threshold
 
     def powerless(self, coords: Vector) -> Vector:
-        """Adjust color channels based on powerless ruless."""
+        """Adjust color channels based on powerless rules."""
 
         if math.isnan(coords[2]):
             if not self.is_achromatic([self.resolve_channel(i, coords) for i in range(3)]):
