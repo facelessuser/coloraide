@@ -1,6 +1,5 @@
 """Convert the color."""
 from __future__ import annotations
-import math
 from .types import Vector
 from typing import TYPE_CHECKING
 
@@ -128,24 +127,12 @@ def convert(color: Color, space: str) -> tuple[Space, Vector]:
     chain = color._get_convert_chain(color._space, space)  # type: ignore[attr-defined]
     last = color._space
 
-    # Determine if hue is undefined. We only care if the color is not considered achromatic already
-    # as adjusting chroma can affect round trip precision. If hue is undefined and the color is not
-    # achromatic, make it achromatic.
-    null_hue = False
-    if (
-        last.is_polar() and
-        last.radial_is_colorfulness() and  math.isnan(color[last.hue_index()]) and  # type: ignore[attr-defined]
-        not color.is_achromatic()
-    ):
-        null_hue = True
-
-    # Get coordinates and convert NaN values to 0
-    coords = color.coords(nans=False)
-
-    # CSS requires chroma to be zero if hue is undefined.
-    if null_hue:
-        idx = last.radial_index()  # type: ignore[attr-defined]
-        coords[idx] = last.channels[idx].nans
+    coords = color[:-1]
+    # Determine channels for powerlessness. Usually when hue is undefined, we should treat
+    # the chroma channel as zero.
+    coords = last.powerless(coords)
+    # Get coordinates and convert NaN to real values
+    coords[:] = [last.resolve_channel(i, coords) for i in range(len(coords))]
 
     # Navigate the conversion chain translating the coordinates along the way.
     # Perform chromatic adaption if needed (a conversion to or from XYZ D65).

@@ -69,6 +69,16 @@ class LCh(LChish, Space):
         # Account for both positive and negative chroma
         return abs(coords[1]) < self.achromatic_threshold
 
+    def powerless(self, coords: Vector) -> Vector:
+        """Adjust color channels based on powerless ruless."""
+
+        if math.isnan(coords[2]):
+            if not self.is_achromatic([self.resolve_channel(i, coords) for i in range(3)]):
+                if not math.isnan(coords[1]):
+                    coords[1] = 0
+
+        return coords
+
     def to_base(self, coords: Vector) -> Vector:
         """To Lab from LCh."""
 

@@ -1,5 +1,6 @@
 """HSL class."""
 from __future__ import annotations
+import math
 from ... import algebra as alg
 from .. import HSLish, Space
 from ...cat import WHITES
@@ -108,6 +109,15 @@ class HSL(HSLish, Space):
             coords[2] == 0.0 or
             abs(1 - coords[2]) < self.achromatic_threshold
         )
+
+    def powerless(self, coords: Vector) -> Vector:
+        """Adjust color channels based on powerless ruless."""
+
+        if math.isnan(coords[0]):
+            if not self.is_achromatic([self.resolve_channel(i, coords) for i in range(3)]):
+                coords[1] = 0
+
+        return coords
 
     def to_base(self, coords: Vector) -> Vector:
         """To sRGB from HSL."""
