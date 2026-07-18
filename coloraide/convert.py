@@ -141,7 +141,7 @@ def convert(color: Color, space: str) -> tuple[Space, Vector]:
     # Get coordinates and convert NaN values to 0
     coords = color.coords(nans=False)
 
-    # CSS requires chroma to be zero of hue is undefined.
+    # CSS requires chroma to be zero if hue is undefined.
     if null_hue:
         idx = last.radial_index()  # type: ignore[attr-defined]
         coords[idx] = last.channels[idx].nans
