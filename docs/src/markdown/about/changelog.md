@@ -8,6 +8,7 @@ icon: lucide/scroll-text
 -   **NEW**: Add a faster non-cached path for `oklch-cubic` that is optimized for when caching is disabled.
 -   **NEW**: `algebra.clamp()` no longer accepts `None` for a minimum or maximum. Use `min()` or `max()` if no lower or
     upper bound is provided.
+-   **NEW**: When hue is undefined, and a color is not achromatic, it will be treated as achromatic during conversion.
 -   **ENHANCE**: Improve HCT's conversion to XYZ by increasing the speed and quality of the results.
 -   **ENHANCE**: Improve RYB conversion to make it slightly faster and more accurate.
 

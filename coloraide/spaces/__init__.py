@@ -223,6 +223,11 @@ class Space(Plugin, metaclass=SpaceMeta):
 
         return coords
 
+    def powerless(self, coords: Vector) -> Vector:
+        """Adjust color channels based on powerless ruless."""
+
+        return coords
+
     def is_achromatic(self, coords: Vector) -> bool | None:  # pragma: no cover
         """Check if color is achromatic."""
 
