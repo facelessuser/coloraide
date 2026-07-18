@@ -133,7 +133,8 @@ def convert(color: Color, space: str) -> tuple[Space, Vector]:
     # achromatic, make it achromatic.
     null_hue = False
     if (
-        last.is_polar() and last.radial_is_colorfulness() and math.isnan(color[last.hue_index()]) and  # type: ignore[attr-defined]
+        last.is_polar() and
+        last.radial_is_colorfulness() and  math.isnan(color[last.hue_index()]) and  # type: ignore[attr-defined]
         not color.is_achromatic()
     ):
         null_hue = True
