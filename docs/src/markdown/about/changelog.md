@@ -6,6 +6,7 @@ icon: lucide/scroll-text
 ## 8.11
 
 -   **NEW**: Add a faster non-cached path for `oklch-cubic` that is optimized for when caching is disabled.
+-   **NEW**: When hue is undefined, and a color is not achromatic, it will be treated as achromatic during conversion.
 
 ## 8.10
 

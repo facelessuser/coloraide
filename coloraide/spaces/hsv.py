@@ -1,5 +1,6 @@
 """HSV class."""
 from __future__ import annotations
+import math
 from .. import algebra as alg
 from . import Space, HSVish
 from ..cat import WHITES
@@ -103,6 +104,16 @@ class HSV(HSVish, Space):
         """Check if color is achromatic."""
 
         return abs(coords[1]) < self.achromatic_threshold or coords[2] == 0.0
+
+    def powerless(self, coords: Vector) -> Vector:
+        """Adjust color channels based on powerless rules."""
+
+        if math.isnan(coords[0]):
+            if not self.is_achromatic([self.resolve_channel(i, coords) for i in range(3)]):
+                if not math.isnan(coords[1]):
+                    coords[1] = 0
+
+        return coords
 
     def to_base(self, coords: Vector) -> Vector:
         """To HSL from HSV."""
