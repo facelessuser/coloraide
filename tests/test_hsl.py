@@ -126,6 +126,12 @@ class TestHSLSerialize(util.ColorAssertsPyTest):
 class TestHSLProperties(util.ColorAsserts, unittest.TestCase):
     """Test HSL."""
 
+    def test_radial_colorfulness(self):
+        """Test if radial channel is colorfulness."""
+
+        c = Color('color(--hsl 120 50% 90% / 1)')
+        self.assertTrue(c._space.is_radial_colorfulness())
+
     def test_names(self):
         """Test HSL-ish names."""
 
