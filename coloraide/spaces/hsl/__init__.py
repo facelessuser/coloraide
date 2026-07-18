@@ -111,7 +111,7 @@ class HSL(HSLish, Space):
         )
 
     def powerless(self, coords: Vector) -> Vector:
-        """Adjust color channels based on powerless ruless."""
+        """Adjust color channels based on powerless rules."""
 
         if math.isnan(coords[0]):
             if not self.is_achromatic([self.resolve_channel(i, coords) for i in range(3)]):
