@@ -3,6 +3,10 @@ icon: lucide/scroll-text
 ---
 # Changelog
 
+## Unreleased
+
+-   **NEW**: When hue is undefined, and a color is not achromatic, it will be treated as achromatic during conversion.
+
 ## 8.16
 
 -   **NEW**: Ray Trace gamut mapping method allows specifying number of rays to cast (default 4).
