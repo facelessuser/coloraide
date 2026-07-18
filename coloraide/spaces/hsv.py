@@ -106,7 +106,7 @@ class HSV(HSVish, Space):
         return abs(coords[1]) < self.achromatic_threshold or coords[2] == 0.0
 
     def powerless(self, coords: Vector) -> Vector:
-        """Adjust color channels based on powerless ruless."""
+        """Adjust color channels based on powerless rules."""
 
         if math.isnan(coords[0]):
             if not self.is_achromatic([self.resolve_channel(i, coords) for i in range(3)]):
