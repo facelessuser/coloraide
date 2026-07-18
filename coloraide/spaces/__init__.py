@@ -39,7 +39,7 @@ class Cylindrical:
 
     get_channel_index: Callable[[str], int]
 
-    def radial_is_colorfulness(self) -> bool:
+    def is_radial_colorfulness(self) -> bool:
         """
         Test if radial channel is also the colorfulness channel.
 
@@ -96,6 +96,16 @@ class HSVish(Luminant, Cylindrical):
 
 class HWBish(Cylindrical):
     """HWB-ish space."""
+
+    def is_radial_colorfulness(self) -> bool:
+        """
+        Test if radial channel is also the colorfulness channel.
+
+        There are some spaces, like HWB, which may encode other info in the radial channel making it
+        something different than colorfulness/saturation/chroma.
+        """
+
+        return False
 
     def radial_name(self) -> str:
         """Radial name."""

@@ -87,6 +87,12 @@ class TestHWBSerialize(util.ColorAssertsPyTest):
 class TestHWBProperties(util.ColorAsserts, unittest.TestCase):
     """Test HWB."""
 
+    def test_radial_colorfulness(self):
+        """Test if radial channel is colorfulness."""
+
+        c = Color('color(--hwb 120 50% 90% / 1)')
+        self.assertFalse(c._space.is_radial_colorfulness())
+
     def test_names(self):
         """Test HWB-ish names."""
 

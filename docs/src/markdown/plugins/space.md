@@ -294,6 +294,16 @@ more of the following mixins.
 class Cylindrical:
     """Cylindrical space."""
 
+    def is_radial_colorfulness(self) -> bool:
+        """
+        Test if radial channel is also the colorfulness channel.
+
+        There are some spaces, like HWB, which may encode other info in the radial channel making it
+        something different than colorfulness/saturation/chroma.
+        """
+
+        return True
+
     def radial_name(self) -> str:
         """Radial name."""
 
@@ -366,6 +376,16 @@ class HSVish(Luminant, Cylindrical):
 ```py
 class HWBish(Cylindrical):
     """HWB-ish space."""
+
+    def is_radial_colorfulness(self) -> bool:
+        """
+        Test if radial channel is also the colorfulness channel.
+
+        There are some spaces, like HWB, which may encode other info in the radial channel making it
+        something different than colorfulness/saturation/chroma.
+        """
+
+        return False
 
     def radial_name(self) -> str:
         """Radial name."""
