@@ -76,7 +76,7 @@ def hct_to_xyz(coords: Vector, env: Environment) -> Vector:
 
     epsilon = 1e-12
 
-    maxiter = 16
+    maxiter = 8
     last = math.inf
     best = xyz = [0.0] * 3
 
@@ -97,19 +97,24 @@ def hct_to_xyz(coords: Vector, env: Environment) -> Vector:
             best = xyz
             last = delta
 
-        # ```
-        # f(j_root) = (j ** (1 / 2)) * 0.1
-        # f(j) = ((f(j_root) * 100) ** 2) / j - 1 = 0
-        # f(j_root) = Y = y / 100
-        # f(j) = (y ** 2) / j - 1
-        # f'(j) = (2 * y) / j
-        # f'(j) = dx
-        # j = j - f0 / dx
-        # ```
-
         # Newton: 2nd order convergence
-        # `dx` fraction is flipped so we can multiply by the derivative instead of divide
-        j -= f0 * alg.zdiv(j, 2 * xyz[1])
+        # `J' = c * y / j`. This is an approximation only and  `c` usually falls between
+        # `1.8 - 2`, but on average is around 1.832. Material Color Utilities settled on
+        # `2`, but this is less ideal for color points on average. Instead, we use the average
+        # value which causes faster convergence in most cases. To compensate for some edge
+        # cases where a value of `2` would be more ideal, we employ Ostrowski Method's
+        # additional correction which further refines the solution on each iteration.
+        # NOTE: `d1` fraction is inverted so we can multiply by the derivative instead of divide.
+        d1 = alg.zdiv(j, 1.832 * xyz[1])
+        j -= f0 * d1
+
+        # Ostrowski: 4th order convergence
+        if d1:
+            xyz2 = cam_to_xyz(J=j, C=c, h=h, env=env)
+            f2 = xyz2[1] - y
+            denom = f0 - 2 * f2
+            if abs(denom) > 1e-12:
+                j -= f0 / denom * (f2 * d1)
 
         # If J is zero, the next round will yield zero, so quit
         if j == 0 or abs(prev - j) < epsilon:  # pragma: no cover
