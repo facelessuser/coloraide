@@ -651,6 +651,7 @@ def ilerp2d(
     vertices: Matrix,
     point: Vector,
     *,
+    guess: Vector | None = None,
     max_iter: int = 20,
     tol: float = ATOL
 ) -> Vector:
@@ -668,7 +669,7 @@ def ilerp2d(
     """
 
     # Initial guess
-    xy = [0.5, 0.5]
+    xy = guess if guess is not None else [0.5, 0.5]
 
     try:
         for _ in range(max_iter):
@@ -742,7 +743,8 @@ def ilerp3d(
     vertices: Matrix,
     point: Vector,
     *,
-    max_iter: int = 20,
+    guess: Vector | None = None,
+    max_iter: int = 50,
     tol: float = ATOL
 ) -> Vector:
     """
@@ -780,7 +782,7 @@ def ilerp3d(
     """
 
     # Initial guess.
-    xyz = [0.5, 0.5, 0.5]
+    xyz = guess if guess is not None else [0.5, 0.5, 0.5]
 
     try:
         for _ in range(max_iter):
