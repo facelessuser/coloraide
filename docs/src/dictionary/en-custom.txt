@@ -330,6 +330,7 @@ ixora
 jonsneyers
 js
 jz
+linearized
 luma
 luminance
 macOS
