@@ -98,13 +98,14 @@ def hct_to_xyz(coords: Vector, env: Environment) -> Vector:
             last = delta
 
         # Newton: 2nd order convergence
-        # `J' = c * y / j`. This is an approximation only and  `c` usually falls between
+        # `J' ~= c * y / j`. This is an approximation only and  `c` usually falls between
         # `1.8 - 2`, but on average is around 1.832. Material Color Utilities settled on
-        # `2`, but this is less ideal for color points on average. Instead, we use the average
-        # value which causes faster convergence in most cases. To compensate for some edge
-        # cases where a value of `2` would be more ideal, we employ Ostrowski Method's
-        # additional correction which further refines the solution on each iteration.
-        # NOTE: `d1` fraction is inverted so we can multiply by the derivative instead of divide.
+        # `2`, but this is less ideal for color points on average. How and why they chose 2
+        # is unknown, but we use a calculated average for `c` that provides faster convergence
+        # in most cases than if we had used `2`. As it is possible for some colors to perform
+        # better if a different `c` is used, we employ Ostrowski's Method for additional
+        # correction which further refines the solution on each iteration.
+        # NOTE: `d1` derivative is inverted so we can multiply by the derivative instead of divide.
         d1 = alg.zdiv(j, 1.832 * xyz[1])
         j -= f0 * d1
 

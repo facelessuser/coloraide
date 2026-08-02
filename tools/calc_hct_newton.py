@@ -43,20 +43,12 @@ for r in range(200001):
 print(np.polyfit(t, j, 2).tolist())
 
 print("==== Estimate c for Approximate J' Derivative: (c * y) / J ====")
-# When we manually estimate the approximate rate of change we can see
-# that it is fairly constant, roughly in the range of 1.8 - 2. If we average
-# the rate of change, divide by the ratio of the current Y and J, we get
-# an approximate first derivative of `avg(dy/dx) = c * Y / J` where `c` is
-# some constant.
-#
-# Depending on how small `dy` is for our original estimate of the
-# results, `c` will be somewhat different for our estimated derivative,
-# but the smaller `dy` we use, the more consistent this value is.
-# Using a very small `dy` gives us a better rate of change. If using a `dy`
-# of about 0.1, we may get an average closer to 2 (what we used before),
-# but with a smaller value, we can get a value that approaches ~1.832/1.833
-# which gives us a better, faster overall convergence as it is a better
-# average overall.
+# When we manually estimate the approximate rate of change and divide by
+# `(Y/J)`, we get a value that it is fairly constant, roughly in the
+# range of 1.8 - 2. This means we can roughly approximate the first
+# derivative with  `dy/dx ~= c * Y / J` where `c` is a constant between
+# 1.8 - 2. But since we don't know exactly what the constant is, and it's
+# deviation is so not huge, we can take the average.
 #
 # It can be noted that we do not just focus on achromatic values, but
 # calculate the derivative on random colors in the Rec. 2020 gamut.
