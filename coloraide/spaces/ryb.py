@@ -11,7 +11,22 @@ from . import Prism, Space
 from .. import algebra as alg
 from ..channels import Channel
 from ..cat import WHITES
+from ..easing import _solve_bezier, _bezier
 from ..types import Vector, Matrix
+
+# RYB corners that correspond to the RGB cube map
+RYB_MAP = alg.transpose(
+    [
+        [0.0, 0.0, 0.0],  # White
+        [1.0, 0.0, 0.0],  # Red
+        [0.0, 1.0, 0.0],  # Yellow
+        [1.0, 1.0, 0.0],  # Orange
+        [0.0, 0.0, 1.0],  # Blue
+        [1.0, 0.0, 1.0],  # Violet
+        [0.0, 1.0, 1.0],  # Green
+        [1.0, 1.0, 1.0]   # Black
+    ]
+)
 
 # In terms of RGB
 GOSSET_CHEN_CUBE = [
@@ -25,61 +40,42 @@ GOSSET_CHEN_CUBE = [
     [0.2, 0.094, 0.0]     # Black (c111)
 ]  # type: Matrix
 
-
-def cubic_poly(t: float, a: float, b: float, c: float, d: float) -> float:
-    """Cubic polynomial."""
-
-    return a * t ** 3 + b * t ** 2 + c * t + d
+SMOOTH_STEP_COEFF = (-2, 3, 0)
+cubic_poly = _bezier(*SMOOTH_STEP_COEFF)
 
 
-def cubic_poly_dt(t: float, a: float, b: float, c: float) -> float:
-    """Derivative of cubic polynomial."""
-
-    return 3 * a * t ** 2 + 2 * b * t + c
-
-
-def solve_cubic_poly(a: float, b: float, c: float, d: float) -> float:
+def barycentric_guess(cube: Matrix, target: Vector) -> Vector:
     """
-    Solve curve to find a `t` that satisfies our desired `x`.
+    Weight each corner by inverse physical distance to the target.
 
-    Using `alg.solve_poly` is actually faster and more accurate as it is an
-    analytical approach. Since we are using Newton's method for the inverse
-    trilinear interpolation, which is only accurate to around 1e-6 in our case,
-    applying a very accurate cubic solver to a not so accurate inverse interpolation
-    can actually give us an even more inaccurate result. This is evident in our use
-    case around RYB [1, 1, 0] which can drop to around 1e-3 accuracy.
-
-    Using an approach where we can better control accuracy and limit it to a similar accuracy
-    of 1e-6 actually helps us maintain a minimum of 1e-6 accuracy through the sRGB
-    gamut giving more consistent results within the trilinear cube.
+    Bias the guess toward the corner/edge the target is actually near.
     """
 
-    eps = 1e-6
-    maxiter = 8
+    r, g, b = target
+    # Inverse distance of target from corners in respect to RGB coordinates
+    d_inv = [
+        alg.zdiv(1.0, math.sqrt(d_rgb[0] ** 2 + d_rgb[1] ** 2 + d_rgb[2] ** 2), 1e12)
+        for d_rgb in [[cube[0][i] - r, cube[1][i] - g, cube[2][i] - b] for i in range(8)]
+    ]
+    # Create weights we can apply to the coordinate corners
+    s = sum(d_inv)
+    w = [v / s for v in d_inv]
 
-    if d <= 0.0 or d >= 1.0:
-        return d
-
-    # Try Newtons method to see if we can find a suitable value
-    f0 = lambda t: cubic_poly(t, a, b, c, -d)
-    dx = lambda t: cubic_poly_dt(t, a, b, c)
-    t, converged = alg.solve_newton(0.5, f0, dx, maxiter=maxiter, atol=eps)
-
-    # We converged or we are close enough
-    if converged:
-        return t
-
-    # Fallback to bisection
-    return alg.solve_bisect(0.0, 1.0, f0, start=d, atol=eps)[0]
+    # Calculate a RYB guess based on where the RGB color is in relation to the RYB corners.
+    return [alg.clamp(guess, 0.0, 1.0) for guess in alg.matmul(RYB_MAP, w, dims=alg.D2_D1)]
 
 
 def srgb_to_ryb(rgb: Vector, cube_t: Matrix, biased: bool) -> Vector:
     """Convert RYB to sRGB."""
 
+    # Improve inverse trilinear interpolation by weighting
+    # the initial guess towards the closest corner/edge.
+    guess = barycentric_guess(cube_t, rgb)
+
     # Calculate the RYB value
-    ryb = alg.ilerp3d(cube_t, rgb, tol=1e-14)
+    ryb = alg.ilerp3d(cube_t, rgb, guess=guess, tol=1e-15)
     # Remove smoothstep easing if "biased" is enabled.
-    return [solve_cubic_poly(-2.0, 3.0, 0.0, t) if 0 <= t <= 1 else t for t in ryb] if biased else ryb
+    return [_solve_bezier(t, *SMOOTH_STEP_COEFF) if 0 <= t <= 1 else t for t in ryb] if biased else ryb
 
 
 def ryb_to_srgb(ryb: Vector, cube_t: Matrix, biased: bool) -> Vector:
@@ -87,7 +83,7 @@ def ryb_to_srgb(ryb: Vector, cube_t: Matrix, biased: bool) -> Vector:
 
     # Apply cubic easing function
     if biased:
-        ryb = [cubic_poly(t, -2.0, 3.0, 0.0, 0.0) if 0 <= t <= 1 else t for t in ryb]
+        ryb = [cubic_poly(t) if 0 <= t <= 1 else t for t in ryb]
     # Bias interpolation towards corners if "biased" enable. Bias is a smoothstep easing function.
     return alg.lerp3d(cube_t, ryb)
 

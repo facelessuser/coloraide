@@ -7,6 +7,7 @@ icon: lucide/scroll-text
 
 -   **NEW**: Add a faster non-cached path for `oklch-cubic` that is optimized for when caching is disabled.
 -   **ENHANCE**: Improve HCT's conversion to XYZ by increasing the speed and quality of the results.
+-   **ENHANCE**: Improve RYB conversion to make it slightly faster and more accurate.
 
 ## 8.10
 
