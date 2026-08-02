@@ -70,7 +70,7 @@ Color(d)
 
 You can also control the precision of your output values with the `precision` parameter. For more information or to
 learn more about more advanced controls of precision, see the sections on [precision](./strings.md#precision) and
-[rounding](./strings.md#rounding.md) which applies to both serialization and coordinate retrieval.
+[rounding](./strings.md#rounding) which applies to both serialization and coordinate retrieval.
 
 ```py play
 d = Color('purple').to_dict(precision=3)

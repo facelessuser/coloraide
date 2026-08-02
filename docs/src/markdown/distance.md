@@ -211,7 +211,7 @@ Delta\ E                                 | Symmetrical           | Name         
 ---------------------------------------- | --------------------- | --------------- | --------------------
 [∆E~helmlab~][dehelmlab]\ (Helmlab)      | :octicons-check-16:   | `helmlab`       |
 
-∆E~helmlab~ uses a special algorithm to compute distance in the [Helmlab](./colors/helmlab.md) color space.
+∆E~helmlab~ uses a special algorithm to compute distance in the [Helmlab](./colors/helmlab_metric.md) color space.
 
 Both the Helmlab color space and the ∆E algorithm must be registered to use.
 
@@ -285,7 +285,7 @@ Delta\ E                                 | Symmetrical           | Name         
 
 This takes the HCT color space C and H components (CAM16's M and h) and converts them to CAM16 UCS M and h, and applies
 Euclidean distancing on them along with the T component (CIELab's L\*). This is necessary for the
-[HCT Chroma gamut mapping approach](./gamut.md/#hct-chroma).
+[HCT Chroma gamut mapping approach](./gamut.md#hct-chroma).
 
 ```py
 from coloraide import Color as Base

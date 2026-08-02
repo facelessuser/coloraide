@@ -111,7 +111,7 @@ color.coords(nans=False)
 
 Lastly, you can control the precision of your output values with the `precision` parameter in either `coords()` or
 `alpha()`. For more information or to learn more about more advanced controls of precision, see the sections on
-[precision](./strings.md#precision) and [rounding](./strings.md#rounding.md) which applies to both serialization and
+[precision](./strings.md#precision) and [rounding](./strings.md#rounding) which applies to both serialization and
 coordinate retrieval.
 
 ```py play
@@ -213,7 +213,7 @@ color.set(
 
 Lastly, you can control the precision of your output values with the `precision` parameter. For more information or
 to learn more about more advanced controls of precision, see the sections on [precision](./strings.md#precision) and
-[rounding](./strings.md#rounding.md) which applies to both serialization and coordinate retrieval.
+[rounding](./strings.md#rounding) which applies to both serialization and coordinate retrieval.
 
 ```py play
 color = Color("hsl", [NaN, 0, 0.7534848], 0.523456)

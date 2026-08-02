@@ -29,7 +29,7 @@ vision, i.e. viewing conditions under which the appearance of a color does not t
 measurement of the stimulus source.
 
 The simple Color Appearance Model (sCAM) is a CAM model that is built on top of the simple Uniform Color Space (sUCS)
-whose structure is based on that of [IPT](./ipt.md) and [CAM16-UCS](./cam16-ucs.md) for their hue linearity, and
+whose structure is based on that of [IPT](./ipt.md) and [CAM16-UCS](./cam16_ucs.md) for their hue linearity, and
 space uniformity, respectively. The model has a simple structure but provides comprehensive functions for color related
 applications.
 
