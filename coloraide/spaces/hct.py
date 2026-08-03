@@ -119,8 +119,9 @@ def hct_to_xyz(coords: Vector, env: Environment) -> Vector:
         xyz2 = cam_to_xyz(J=j, C=c, h=h, env=env)
         f2 = xyz2[1] - y
         denom = f1 - 2 * f2
-        if abs(denom) > epsilon:
-            j -= f1 / denom * (f2 * d1)
+        if abs(denom) < epsilon:
+            continue
+        j -= f1 / denom * (f2 * d1)
 
     # ```
     # print('FAIL:', [h, c, t], xyz[1], y)
