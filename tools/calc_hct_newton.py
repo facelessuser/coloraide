@@ -44,12 +44,12 @@ for r in range(200001):
 print(np.polyfit(t, j, 2).tolist())
 
 print("==== Estimate c for Approximate J' Derivative: (c * y) / J ====")
-# When we manually estimate the approximate rate of change and divide by
-# `(Y/J)`, we get a value that it is fairly constant, roughly in the
-# range of 1.8 - 2. This means we can roughly approximate the first
-# derivative with  `dy/dx ~= c * Y / J` where `c` is a constant between
-# 1.8 - 2. But since we don't know exactly what the constant is, and it's
-# deviation is so not huge, we can take the average.
+# To obtain the first derivative for `J'`, we manually measure the rate of change
+# at various points for `J` in relation to `y` in a CAM16 with the same environment
+# that HCT uses. From this, it can be noted that if `dy / dJ` is divided by `y / J`,
+# we get a fairly constant value (roughly between 1.8 - 2). From this, we have a
+# rough approximation of `J' ~= K * y / J`, where we set `K` to measured average of
+# `~1.832`.
 #
 # It can be noted that we do not just focus on achromatic values, but
 # calculate the derivative on random colors in the Rec. 2020 gamut.

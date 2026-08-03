@@ -46,6 +46,18 @@ from .lab import y_to_lstar, lstar_to_y
 from ..types import Vector
 import math
 
+# To obtain the first derivative for `J'`, we manually measure the rate of change
+# at various points for `J` in relation to `y` in a CAM16 with the same environment
+# that HCT uses. From this, it can be noted that if `dy / dJ` is divided by `y / J`,
+# we get a fairly constant value (roughly between 1.8 - 2). From this, we have a
+# rough approximation of `J' ~= K * y / J`, where we set `K` to measured average of
+# `~1.832`.
+#
+# As it is possible for some colors to perform better if a different `K` is used, so
+# we employ Ostrowski's Method to further refine the Newton iteration which helps to
+# compensates for any deviation and to converge on a more precise solution quicker.
+K = 1.832
+
 
 def hct_to_xyz(coords: Vector, env: Environment) -> Vector:
     """
@@ -82,44 +94,33 @@ def hct_to_xyz(coords: Vector, env: Environment) -> Vector:
 
     # Try to find a J such that the returned y matches the returned y of the L*
     for _ in range(maxiter):
-        prev = j
         xyz = cam_to_xyz(J=j, C=c, h=h, env=env)
+        f1 = xyz[1] - y
 
         # If we are within range, return XYZ
-        # If we are closer than last time, save the values
-        f0 = xyz[1] - y
-        delta = abs(f0)
-
+        delta = abs(f1)
         if delta < epsilon:
             return xyz
 
+        # If we are closer than last time, save the values
         if delta < last:
             best = xyz
             last = delta
 
         # Newton: 2nd order convergence
-        # `J' ~= c * y / j`. This is an approximation only and  `c` usually falls between
-        # `1.8 - 2`, but on average is around 1.832. Material Color Utilities settled on
-        # `2`, but this is less ideal for color points on average. How and why they chose 2
-        # is unknown, but we use a calculated average for `c` that provides faster convergence
-        # in most cases than if we had used `2`. As it is possible for some colors to perform
-        # better if a different `c` is used, we employ Ostrowski's Method for additional
-        # correction which further refines the solution on each iteration.
-        # NOTE: `d1` derivative is inverted so we can multiply by the derivative instead of divide.
-        d1 = alg.zdiv(j, 1.832 * xyz[1])
-        j -= f0 * d1
+        # NOTE: The first derivative is inverted so we can multiply
+        # by the derivative instead of dividing.
+        d1 = alg.zdiv(j, K * xyz[1])
+        if abs(d1) < epsilon: # pragma: no cover
+            break
+        j -= f1 * d1
 
         # Ostrowski: 4th order convergence
-        if d1:
-            xyz2 = cam_to_xyz(J=j, C=c, h=h, env=env)
-            f2 = xyz2[1] - y
-            denom = f0 - 2 * f2
-            if abs(denom) > 1e-12:
-                j -= f0 / denom * (f2 * d1)
-
-        # If J is zero, the next round will yield zero, so quit
-        if j == 0 or abs(prev - j) < epsilon:  # pragma: no cover
-            break
+        xyz2 = cam_to_xyz(J=j, C=c, h=h, env=env)
+        f2 = xyz2[1] - y
+        denom = f1 - 2 * f2
+        if abs(denom) > epsilon:
+            j -= f1 / denom * (f2 * d1)
 
     # ```
     # print('FAIL:', [h, c, t], xyz[1], y)
