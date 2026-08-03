@@ -53,7 +53,7 @@ import math
 # rough approximation of `J' ~= K * y / J`, where we set `K` to measured average of
 # `~1.832`.
 #
-# As it is possible for some colors to perform better if a different `K` is used, so
+# As it is possible for some colors to perform better if a different `K` is used,
 # we employ Ostrowski's Method to further refine the Newton iteration which helps to
 # compensates for any deviation and to converge on a more precise solution quicker.
 K = 1.832
@@ -87,7 +87,6 @@ def hct_to_xyz(coords: Vector, env: Environment) -> Vector:
         j = 9.514281401058887e-06 * t * t + 0.08693011228986187 * t - 21.92910930537688
 
     epsilon = 1e-12
-
     maxiter = 8
     last = math.inf
     best = xyz = [0.0] * 3
@@ -97,19 +96,18 @@ def hct_to_xyz(coords: Vector, env: Environment) -> Vector:
         xyz = cam_to_xyz(J=j, C=c, h=h, env=env)
         f1 = xyz[1] - y
 
-        # If we are within range, return XYZ
         delta = abs(f1)
-        if delta < epsilon:
-            return xyz
-
-        # If we are closer than last time, save the values
         if delta < last:
+            # If we are within range, return XYZ
+            if delta < epsilon:
+                return xyz
+
+            # If we are closer than last time, save the values
             best = xyz
             last = delta
 
         # Newton: 2nd order convergence
         # NOTE: The first derivative is inverted so we can multiply
-        # by the derivative instead of dividing.
         d1 = alg.zdiv(j, K * xyz[1])
         if abs(d1) < epsilon: # pragma: no cover
             break
