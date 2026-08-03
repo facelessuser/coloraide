@@ -4,11 +4,12 @@ Calculate values for the Newton approximation of CAM16 J from HCT T (tone) appro
 - Calculate a simple polynomial that describes a rough relationship between HCT T and CAM16 J. This
   is used to get an initial guess of CAM16 lightness (J) from HCT tone (T).
 - Calculate the constant for the first derivative approximation for Newton's Method. It is too
-  difficult to provide an exact first derivative for CAM16 relationship of XYZ's Y and CAM16 J. But
-  we can calculate a reasonable approximation of the first derivative (the rate of change) and then
-  see that it is somewhat constant in relation to J and Y. There is some deviation, but it is small
-  enough that we can calculate a fairly reliable first derivative approximation. To further refine
-  it, we can use Ostrowski's Method without having to estimate a second derivative.
+  difficult to provide an exact first derivative for CAM16 J'. But we can calculate a reasonable
+  approximation of the first derivative by dividing the rate of change by (Y / J) and seeing we
+  get a fairly constant value. With that knowledge, we are able to derive an approximate formula
+  of `J' ~= c * Y / J`. There is some deviation in the constant, but it is small enough that we
+  can take the average and get good results. To further refine it, we can use Ostrowski's Method
+  without having to estimate a second derivative.
 """
 import sys
 import os
