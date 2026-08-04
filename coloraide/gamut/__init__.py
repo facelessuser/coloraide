@@ -206,7 +206,12 @@ def scale_rgb(
 
 
 def clip_channels(color: Color, nans: bool = True) -> bool:
-    """Clip channels."""
+    """
+    Clip channels.
+
+    We don't check for undefined values (NaN) as they will pass through
+    naturally and more quickly than checking for them explicitly.
+    """
 
     clipped = False
 
@@ -216,7 +221,7 @@ def clip_channels(color: Color, nans: bool = True) -> bool:
         chan = cs.channels[i]
 
         # Ignore angles, undefined, or unbounded channels
-        if not chan.bound or chan.flags & FLG_ANGLE or math.isnan(value):
+        if not chan.bound or chan.flags & FLG_ANGLE:
             color[i] = value
             continue
 

@@ -207,7 +207,11 @@ def clamp(
 ) -> SupportsFloatOrInt:
     """Clamp the value to the given minimum and maximum."""
 
-    return max(min(value, mx), mn)
+    if value > mx:
+        value = mx
+    if value < mn:
+        value = mn
+    return value
 
 
 def zdiv(a: float, b: float, default: float = 0.0) -> float:
