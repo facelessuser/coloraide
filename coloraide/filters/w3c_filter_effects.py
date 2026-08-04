@@ -68,7 +68,7 @@ class Saturate(Filter):
     def filter(self, color: Color, amount: float | None, **kwargs: Any) -> None:  # noqa: A003
         """Apply a saturation filter to the color."""
 
-        amount = alg.clamp(1 if amount is None else amount, 0)
+        amount = max(1 if amount is None else amount, 0)
 
         m = [
             [0.213 + 0.787 * amount, 0.715 - 0.715 * amount, 0.072 - 0.072 * amount],
@@ -115,7 +115,7 @@ class Brightness(Filter):
     def filter(self, color: Color, amount: float | None, **kwargs: Any) -> None:  # noqa: A003
         """Apply a brightness filter."""
 
-        amount = alg.clamp(1 if amount is None else amount, 0)
+        amount = max(1 if amount is None else amount, 0)
         for e, c in enumerate(color[:-1]):
             color[e] = linear_transfer(c, amount)
 
@@ -129,7 +129,7 @@ class Contrast(Filter):
     def filter(self, color: Color, amount: float | None, **kwargs: Any) -> None:  # noqa: A003
         """Apply a contrast filter."""
 
-        amount = alg.clamp(1 if amount is None else amount, 0)
+        amount = max(1 if amount is None else amount, 0)
         for e, c in enumerate(color[:-1]):
             color[e] = linear_transfer(c, amount, (1 - amount) * 0.5)
 

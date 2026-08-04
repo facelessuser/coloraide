@@ -202,19 +202,12 @@ def minmax(value: VectorLike | Iterable[float]) -> tuple[float, float]:
 
 def clamp(
     value: SupportsFloatOrInt,
-    mn: SupportsFloatOrInt | None = None,
-    mx: SupportsFloatOrInt | None = None
+    mn: SupportsFloatOrInt,
+    mx: SupportsFloatOrInt
 ) -> SupportsFloatOrInt:
     """Clamp the value to the given minimum and maximum."""
 
-    if mn is not None and mx is not None:
-        return max(min(value, mx), mn)
-    elif mn is not None:
-        return max(value, mn)
-    elif mx is not None:
-        return min(value, mx)
-    else:
-        return value
+    return max(min(value, mx), mn)
 
 
 def zdiv(a: float, b: float, default: float = 0.0) -> float:
