@@ -29,16 +29,18 @@ RYB_MAP = alg.transpose(
 )
 
 # In terms of RGB
-GOSSET_CHEN_CUBE = [
-    [1.0, 1.0, 1.0],      # White (c000)
-    [1.0, 0.0, 0.0],      # Red (c100)
-    [1.0, 1.0, 0.0],      # Yellow (C010)
-    [1.0, 0.5, 0.0],      # Orange (c110)
-    [0.163, 0.373, 0.6],  # Blue (c001)
-    [0.5, 0.0, 0.5],      # Violet (c101)
-    [0.0, 0.66, 0.2],     # Green (c011)
-    [0.2, 0.094, 0.0]     # Black (c111)
-]  # type: Matrix
+GOSSET_CHEN_CUBE = alg.transpose(
+    [
+        [1.0, 1.0, 1.0],      # White (c000)
+        [1.0, 0.0, 0.0],      # Red (c100)
+        [1.0, 1.0, 0.0],      # Yellow (C010)
+        [1.0, 0.5, 0.0],      # Orange (c110)
+        [0.163, 0.373, 0.6],  # Blue (c001)
+        [0.5, 0.0, 0.5],      # Violet (c101)
+        [0.0, 0.66, 0.2],     # Green (c011)
+        [0.2, 0.094, 0.0]     # Black (c111)
+    ]
+)
 
 SMOOTH_STEP_COEFF = (-2, 3, 0)
 cubic_poly = _bezier(*SMOOTH_STEP_COEFF)
@@ -109,7 +111,7 @@ class RYB(Prism, Space):
         "blue": 'b'
     }
     WHITE = WHITES['2deg']['D65']
-    RYB_CUBE = alg.transpose(GOSSET_CHEN_CUBE)
+    RYB_CUBE = GOSSET_CHEN_CUBE
     BIASED = False
     SUBTRACTIVE = True
 
