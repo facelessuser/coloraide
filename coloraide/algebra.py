@@ -3834,65 +3834,40 @@ def reshape(array: ArrayLike | float, new_shape: int | Shape) -> float | Array:
 
 
 @overload
-def _quick_shape(a: float) -> EmptyShape:
+def shape(a: float, *, quick: bool = ...) -> EmptyShape:
     ...
 
 
 @overload
-def _quick_shape(a: VectorLike) -> VectorShape:
+def shape(a: VectorLike, *, quick: bool = ...) -> VectorShape:
     ...
 
 
 @overload
-def _quick_shape(a: MatrixLike) -> MatrixShape:
+def shape(a: MatrixLike, *, quick: bool = ...) -> MatrixShape:
     ...
 
 
 @overload
-def _quick_shape(a: TensorLike) -> TensorShape:
+def shape(a: TensorLike, *, quick: bool = ...) -> TensorShape:
     ...
 
 
-def _quick_shape(a: ArrayLike | float) -> Shape:
-    """
-    Acquire shape taking shortcuts by assuming a non-ragged, consistently shaped array.
-
-    No checking for consistency is performed allowing for a quicker check.
-    """
-
-    t = a  # type: Any
-    s = []
-    while isinstance(t, Sequence):
-        l = len(t)
-        s.append(l)
-        if not l:
-            break
-        t = t[0]
-    return tuple(s)
-
-
-@overload
-def shape(a: float) -> EmptyShape:
-    ...
-
-
-@overload
-def shape(a: VectorLike) -> VectorShape:
-    ...
-
-
-@overload
-def shape(a: MatrixLike) -> MatrixShape:
-    ...
-
-
-@overload
-def shape(a: TensorLike) -> TensorShape:
-    ...
-
-
-def shape(a: ArrayLike | float) -> Shape:
+def shape(a: ArrayLike | float, *, quick: bool = False) -> Shape:
     """Get the shape of a list."""
+
+    # Perform a quick shape calculation that will not validate all indexes.
+    # This can allow a ragged shape to slip through, but is much faster.
+    if quick:
+        t = a  # type: Any
+        s = []
+        while isinstance(t, Sequence):
+            l = len(t)
+            s.append(l)
+            if not l:
+                break
+            t = t[0]
+        return tuple(s)
 
     # Found a scalar input
     if not isinstance(a, Sequence):
@@ -5331,7 +5306,7 @@ def fnnls(
     Journal of Chemometrics. 11, 393-401 (1997)
     """
 
-    m, n = _quick_shape(A)
+    m, n = shape(A, quick=True)
 
     if m != len(b):
         raise ValueError(f'Vector length of b must match first dimension of A: {m} != {len(b)}')
