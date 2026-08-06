@@ -785,7 +785,7 @@ def ilerp3d(
         for _ in range(max_iter):
 
             # Calculate the residual by using our guess to calculate the what should be the input and compare
-            residual = subtract(lerp3d(vertices, xyz), point, dims=D1)
+            residual = subtract_x3(lerp3d(vertices, xyz), point, dims=D1)
 
             # If we are close enough to our input, we can quit
             if math.sqrt(residual[0] ** 2 + residual[1] ** 2 + residual[2] ** 2) < tol:
@@ -811,7 +811,7 @@ def ilerp3d(
             j = matmul(vertices, m, dims=D2)
 
             # Solve for new guess
-            xyz = subtract(xyz, solve(j, residual), dims=D1)
+            xyz = subtract_x3(xyz, solve(j, residual), dims=D1)
     except ValueError:  # pragma: no cover
         # The Jacobian matrix shouldn't fail inversion if we are in range.
         # Out of range may give us values we cannot invert. There are potential
@@ -1173,7 +1173,7 @@ class SpragueInterpolator(Interpolator):
             # and we use the first 6 starting points as context. The last two
             # relate to the end points and use the last t points as context.
             s0[i], s1[i], e0[i], e1[i] = [
-                matmul(row, [j[i] for j in (p1 if e < 2 else p2)], dims = D1) / 209
+                matmul(row, [j[i] for j in (p1 if e < 2 else p2)], dims=D1) / 209
                 for e, row in enumerate(cls.SPRAGUE_COEFFICIENTS)
             ]
         points.insert(0, s0)
@@ -1714,7 +1714,7 @@ def dot(
                 n = shape_b[-1]  # type: ignore[misc]
                 with ArrayBuilder(result, shape_a[:-1] + shape_b[:-2]) as build:
                     for row in _extract_rows(a, shape_a):  # type: ignore[arg-type]
-                        r = [sum(multiply(row, col)) for col in cols]
+                        r = [sum(multiply(row, col, dims=D1)) for col in cols]
                         start = 0
                         for _ in range(len(r) // n):
                             end = start + n
@@ -2089,12 +2089,17 @@ def multi_dot(arrays: Sequence[ArrayLike]) -> Any:
     if count == 1:
         raise ValueError('At least 2 arrays must be provided')
 
-    # If there are only 2 arrays, just send them through normal dot
-    elif count == 2:
-        return dot(arrays[0], arrays[1])
-
     # Calculate the shapes
     shapes = [shape(a) for a in arrays]
+
+    # Make sure everything is either a 2-D matrix or a 1-D vector calculations only work for these.
+    last = len(shapes) - 1
+    if not _all((1 <= len(s) <= 2) if e in (0, last) else (len(s) == 2) for e, s in enumerate(shapes)):
+        raise ValueError('All arrays must be 2-D matrices except for the first and last which can also be 1-D vectors')
+
+    # If there are only 2 arrays, just send them through normal dot
+    if count == 2:
+        dot(arrays[0], arrays[1], dims=(len(shapes[0]), len(shapes[1])))
 
     # We need the list mutable if we are going to update the entries
     _arrays = [*arrays] if not isinstance(arrays, list) else arrays  # type: Any

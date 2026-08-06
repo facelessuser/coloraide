@@ -86,7 +86,7 @@ class Environment(_Environment):
         self.d_rgb = [(self.yw * (self.d / coord) + 1 - self.d) for coord in self.rgb_w]
         self.d_rgb_inv = [1 / coord for coord in self.d_rgb]
         self.rgb_cw = alg.multiply_x3(self.d_rgb, self.rgb_w, dims=alg.D1)
-        self.rgb_pw = alg.matmul_x3(alg.matmul_x3(XYZ_TO_HPE, M02_INV), self.rgb_cw)
+        self.rgb_pw = alg.matmul_x3(alg.matmul_x3(XYZ_TO_HPE, M02_INV, dims=alg.D2), self.rgb_cw, dims=alg.D2_D1)
 
         # Achromatic response
         rgb_aw = adapt(self.rgb_pw, self.fl)

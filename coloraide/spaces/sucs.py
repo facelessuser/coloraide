@@ -14,7 +14,7 @@ from ..types import Vector
 
 # Iab transformation matrices
 TO_IAB = [
-    # `alg.divide([200.0, 100.0, 5.0], 3.05, dims=alg.D1_SC),`
+    # `alg.divide_x3([200.0, 100.0, 5.0], 3.05, dims=alg.D1_SC),`
     [65.57377049180329, 32.786885245901644, 1.639344262295082],
     [430.0, -470.0, 40.0],
     [49.0, 49.0, -98.0]

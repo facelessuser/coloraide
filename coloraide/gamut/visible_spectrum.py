@@ -81,14 +81,14 @@ def fit_macadam_limits(color: AnyColor, **kwargs: Any) -> AnyColor:
     xyz = (color.convert('xyz-d65', norm=False) if color.space() != 'xyz-d65' else color.normalize(nans=False))[:-1]
     x, y, Y = util.xyz_to_xyY(xyz, WHITES['2deg']['D65'])
     # Operate in a polar configuration
-    c, h = alg.rect_to_polar(*alg.subtract((x, y), WHITES['2deg']['D65']))
+    c, h = alg.rect_to_polar(*alg.subtract((x, y), WHITES['2deg']['D65'], dims=alg.D1))
 
     # Clamp lightness
     new_Y = min(LUMINANCE[-1], max(LUMINANCE[0], Y))
 
     # Get optimal chromaticity points
     new_c = min(c, get_chroma_limit(Y, h))
-    x, y = alg.add(alg.polar_to_rect(new_c, h), WHITES['2deg']['D65'])
+    x, y = alg.add(alg.polar_to_rect(new_c, h), WHITES['2deg']['D65'], dims=alg.D1)
 
     # Check if we made any changes
     adjusted = Y != new_Y or c != new_c
@@ -110,7 +110,7 @@ def in_macadam_limits(color: Color, tolerance: float, **kwargs: Any) -> bool:
     xyz = (color.convert('xyz-d65', norm=False) if color.space() != 'xyz-d65' else color.normalize(nans=False))[:-1]
     x, y, Y = util.xyz_to_xyY(xyz, WHITES['2deg']['D65'])
     # Operate in a polar configuration
-    c, h = alg.rect_to_polar(*alg.subtract((x, y), WHITES['2deg']['D65']))
+    c, h = alg.rect_to_polar(*alg.subtract((x, y), WHITES['2deg']['D65'], dims=alg.D1))
 
     # If lightness exceeds the acceptable range, then we are not in gamut
     if (Y < (LUMINANCE[0] - tolerance)) or (Y > (LUMINANCE[-1] + tolerance)):
@@ -138,7 +138,7 @@ def macadam_limits(luminance: float | None = None) -> Matrix:
     elif LUMINANCE[0] <= luminance <= LUMINANCE[-1]:
         li, lf = closest_luminance(luminance)
         chroma = [alg.lerp(row[li], row[li + 1], lf) for row in LUT[:-1]]
-        return [[*alg.add(alg.polar_to_rect(c, h), XYw), luminance] for c, h in zip(chroma, HUE[:-1])]
+        return [[*alg.add(alg.polar_to_rect(c, h), XYw, dims=alg.D1), luminance] for c, h in zip(chroma, HUE[:-1])]
 
     # Luminance exceeds threshold
     else:
