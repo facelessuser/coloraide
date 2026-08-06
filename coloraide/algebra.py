@@ -2089,17 +2089,12 @@ def multi_dot(arrays: Sequence[ArrayLike]) -> Any:
     if count == 1:
         raise ValueError('At least 2 arrays must be provided')
 
+    # If there are only 2 arrays, just send them through normal dot
+    elif count == 2:
+        return dot(arrays[0], arrays[1])
+
     # Calculate the shapes
     shapes = [shape(a) for a in arrays]
-
-    # Make sure everything is either a 2-D matrix or a 1-D vector calculations only work for these.
-    last = len(shapes) - 1
-    if not _all((1 <= len(s) <= 2) if e in (0, last) else (len(s) == 2) for e, s in enumerate(shapes)):
-        raise ValueError('All arrays must be 2-D matrices except for the first and last which can also be 1-D vectors')
-
-    # If there are only 2 arrays, just send them through normal dot
-    if count == 2:
-        dot(arrays[0], arrays[1], dims=(len(shapes[0]), len(shapes[1])))
 
     # We need the list mutable if we are going to update the entries
     _arrays = [*arrays] if not isinstance(arrays, list) else arrays  # type: Any
