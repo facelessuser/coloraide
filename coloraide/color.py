@@ -587,12 +587,14 @@ class Color(metaclass=ColorMeta):
     def normalize(self, *, nans: bool = True) -> Self:
         """Normalize the color."""
 
-        self[:-1] = self._space.normalize(self.coords(nans=False))
-        if nans and self._space.is_polar() and self.is_achromatic():
-            i = self._space.hue_index()  # type: ignore[attr-defined]
+        space = self._space
+        coords = space.powerless(self[:-1])
+        self[:-1] = space.normalize([space.resolve_channel(i, coords) for i in range(len(coords))])
+        if math.isnan(self[-1]):
+            self[-1] = 0
+        if nans and space.is_polar() and self.is_achromatic():
+            i = space.hue_index()  # type: ignore[attr-defined]
             self[i] = math.nan
-        alpha = self[-1]
-        self[-1] = 0.0 if math.isnan(alpha) else alpha
         return self
 
     def is_nan(self, name: str) -> bool:  # pragma: no cover
@@ -1623,10 +1625,8 @@ class Color(metaclass=ColorMeta):
             if nans:
                 return self[:-1]
             else:
-                return [
-                    self._space.resolve_channel(index, self._coords)
-                    for index in range(len(self._coords) - 1)
-                ]
+                coords = self._coords
+                return [self._space.resolve_channel(i, coords) for i in range(len(coords) - 1)]
 
         pint = isinstance(precision, int)
         if rounding is None:
@@ -1634,11 +1634,11 @@ class Color(metaclass=ColorMeta):
 
         return [
             alg.round_to(
-                self[index] if nans else self._space.resolve_channel(index, self._coords),
-                precision if pint else util.get_index(precision, index, self.PRECISION),  # type: ignore[arg-type]
+                self[i] if nans else self._space.resolve_channel(i, self._coords),
+                precision if pint else util.get_index(precision, i, self.PRECISION),  # type: ignore[arg-type]
                 rounding
             )
-            for index in range(len(self._coords) - 1)
+            for i in range(len(self._coords) - 1)
         ]
 
     def alpha(

@@ -39,6 +39,16 @@ class Cylindrical:
 
     get_channel_index: Callable[[str], int]
 
+    def is_radial_colorfulness(self) -> bool:
+        """
+        Test if radial channel is also the colorfulness channel.
+
+        There are some spaces, like HWB, which may encode other info in the radial channel making it
+        something different than colorfulness/saturation/chroma.
+        """
+
+        return True
+
     def radial_name(self) -> str:
         """Radial name."""
 
@@ -86,6 +96,16 @@ class HSVish(Luminant, Cylindrical):
 
 class HWBish(Cylindrical):
     """HWB-ish space."""
+
+    def is_radial_colorfulness(self) -> bool:
+        """
+        Test if radial channel is also the colorfulness channel.
+
+        There are some spaces, like HWB, which may encode other info in the radial channel making it
+        something different than colorfulness/saturation/chroma.
+        """
+
+        return False
 
     def radial_name(self) -> str:
         """Radial name."""
@@ -210,6 +230,11 @@ class Space(Plugin, metaclass=SpaceMeta):
         often have a valid, positive chroma/saturation and hue configuration that
         matches the same color.
         """
+
+        return coords
+
+    def powerless(self, coords: Vector) -> Vector:
+        """Adjust color channels based on powerless rules."""
 
         return coords
 
