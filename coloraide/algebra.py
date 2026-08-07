@@ -570,7 +570,7 @@ def solve_newton(
 
         # Cannot find a solution if derivative is zero
         d1 = dx(x0, *args) if args else dx(x0)
-        if abs(d1) < 1e-12:
+        if abs(d1) < ATOL:
             # Try to bisect to a different location
             if bracketed:
                 x0 = (hi + lo) * 0.5
@@ -587,7 +587,7 @@ def solve_newton(
         if dx2 is not None and not ostrowski:
             d2 = dx2(x0, *args) if args else dx2(x0)
             denom = 1 - (0.5 * newton * d2) / d1
-            if abs(denom) >= 1e-12:
+            if abs(denom) >= ATOL:
                 newton /= denom
 
         # If change is under our epsilon, we can consider the result converged.
@@ -597,7 +597,7 @@ def solve_newton(
         if ostrowski:
             fy = f0(x0, *args) if args else f0(x0)
             denom = fx - 2 * fy
-            if abs(denom) >= 1e-12:
+            if abs(denom) >= ATOL:
                 x0 -= fx / denom * (fy / d1)
 
         if bracketed and not (lo <= x0 <= hi):

@@ -93,6 +93,7 @@ def hct_to_xyz(coords: Vector, env: Environment) -> Vector:
 
     # Try to find a J such that the returned y matches the returned y of the L*
     for _ in range(maxiter):
+        prev = j
         xyz = cam_to_xyz(J=j, C=c, h=h, env=env)
         f1 = xyz[1] - y
 
@@ -117,9 +118,12 @@ def hct_to_xyz(coords: Vector, env: Environment) -> Vector:
         xyz2 = cam_to_xyz(J=j, C=c, h=h, env=env)
         f2 = xyz2[1] - y
         denom = f1 - 2 * f2
-        if abs(denom) < epsilon:  # pragma: no cover
-            continue
-        j -= f1 / denom * (f2 * d1)
+        if abs(denom) >= epsilon:  # pragma: no cover
+            j -= f1 / denom * (f2 * d1)
+
+        # Quit if there has been little to no change
+        if abs(j - prev) < epsilon:  # pragma: no cover
+            break
 
     # ```
     # print('FAIL:', [h, c, t], xyz[1], y)
