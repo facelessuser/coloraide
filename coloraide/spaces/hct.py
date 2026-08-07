@@ -71,7 +71,7 @@ def hct_to_xyz(coords: Vector, env: Environment) -> Vector:
     just return the closest we were able to get.
     """
 
-    h, c, t = coords[:]
+    h, c, t = coords
 
     if t == 0 and c == 0:
         return [0.0, 0.0, 0.0]
@@ -104,6 +104,10 @@ def hct_to_xyz(coords: Vector, env: Environment) -> Vector:
                 return xyz
 
             # If we are closer than last time, save the values
+            # This is to ensure we take the best value when
+            # iterations can't are struggling to find a good value,
+            # e.g. Prophoto RGB in the blue region which is outside
+            # the visible spectrum and the CAM16 algorithm breaks down.
             best = xyz
             last = delta
 
@@ -122,7 +126,7 @@ def hct_to_xyz(coords: Vector, env: Environment) -> Vector:
             j -= f1 / denom * (f2 * d1)
 
         # Quit if there has been little to no change
-        if abs(j - prev) < epsilon:  # pragma: no cover
+        if abs(j - prev) < epsilon:
             break
 
     # ```
