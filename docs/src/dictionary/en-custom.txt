@@ -232,6 +232,7 @@ TODO
 TORTIOUS
 Tetradic
 Tokenize
+Traub
 Triadic
 Trichromacy
 Trilinear

@@ -511,13 +511,13 @@ def solve_newton(
     maxiter: int = 50,
     rtol: float = RTOL,
     atol: float = ATOL,
-    ostrowski: bool = False,
+    order: int = 2,
     bounds: tuple[float, float] | None = None,
 ) -> tuple[float, bool | None]:
     """
     Solve equation using Newton's method.
 
-    If the second derivative is given, Halley's method will be used as an additional step.
+    If order <= 3 and second derivative is given, Halley's method will be used as an additional step.
     Newton provides 2nd order convergence and Halley provides 3rd order convergence.
 
     ```
@@ -535,7 +535,16 @@ def solve_newton(
     Step4: halley = xn - yn / (1 - 0.5 * yn * f''(xn) / f'(xn))
     ```
 
-    If Ostrowski method is enabled, only one derivative is needed, but you can get 4th order convergence.
+    If order == 3 and 2nd derivative is not provided, we can use Traub's method which gives 3rd order convergence
+    without a second derivative.
+
+    ```
+    yn = xn - f(xn) / f'(xn)
+    traub = yn - f(yn) / f'(xn)
+    ```
+
+    If order >= 3, we can use Ostrowski method where only one derivative is needed, but you can get 4th order
+    convergence.
 
     ```
     yn = xn - f(xn) / f'(xn)
@@ -544,6 +553,9 @@ def solve_newton(
 
     Return result along with True if converged, False if did not converge, None if could not converge.
     """
+
+    if dx2 is not None and order < 3:
+        order = 3
 
     if bounds is not None:
         lo, hi = bounds
@@ -579,22 +591,26 @@ def solve_newton(
             return x0, None
 
         # Newton step
-        newton =  fx / d1
+        newton = fx / d1
 
-        # If second derivative is provided, apply the Halley's method step: 3rd order convergence.
-        # The Newton step has been factored out of Halley's such that we can apply the rest to make
-        # it Halley's, and if we can't, or shouldn't apply it, it remains a Newton step.
-        if dx2 is not None and not ostrowski:
-            d2 = dx2(x0, *args) if args else dx2(x0)
-            denom = 1 - (0.5 * newton * d2) / d1
-            if abs(denom) >= ATOL:
-                newton /= denom
+        if order == 3:
+            # Halley's method: 3rd order convergence.
+            if dx2 is not None:
+                d2 = dx2(x0, *args) if args else dx2(x0)
+                denom = 1 - (0.5 * newton * d2) / d1
+                if abs(denom) >= ATOL:
+                    newton /= denom
+
+            # Traub's method: 3rd order convergence
+            else:
+                fy = f0(x0 - newton, *args) if args else f0(x0 - newton)
+                newton -= fy / d1
 
         # If change is under our epsilon, we can consider the result converged.
         x0 -= newton
 
-        # Use Ostrowski method: 4th order convergence
-        if ostrowski:
+        # Ostrowski's method: 4th order convergence
+        if order == 4:
             fy = f0(x0, *args) if args else f0(x0)
             denom = fx - 2 * fy
             if abs(denom) >= ATOL:

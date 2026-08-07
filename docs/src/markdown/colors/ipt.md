@@ -31,7 +31,7 @@ The IPT color appearance model excels at providing a formulation for hue where a
 perceived hue independent of the values of lightness and chroma (which is the general ideal for any color appearance
 model, but hard to achieve). It is therefore well-suited for gamut mapping implementations.
 
-[Learn more](https://www.researchgate.net/publication/21677980_Development_and_Testing_of_a_Color_Space_IPT_with_Improved_Hue_Uniformity.).
+[Learn more](https://www.researchgate.net/publication/21677980_Development_and_Testing_of_a_Color_Space_IPT_with_Improved_Hue_Uniformity).
 ///
 
 ## Channel Aliases

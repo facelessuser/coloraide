@@ -2851,8 +2851,8 @@ class TestAlgebra(unittest.TestCase):
         self.assertEqual(alg.sign(float('inf')), 1)
         self.assertEqual(alg.sign(float('-inf')), -1)
 
-    def test_solve_newton_and_halley(self):
-        """Test solving with Newton."""
+    def test_solve_newton_variants(self):
+        """Test solving with Newton variants."""
 
         def f0(x):
             return 2 * x ** 3 - 3 * x ** 2 - 3 * x + 2
@@ -2869,8 +2869,10 @@ class TestAlgebra(unittest.TestCase):
         self.assertEqual(alg.solve_newton(1, f0, dx), (0.5, True))
         # Halley
         self.assertEqual(alg.solve_newton(1, f0, dx, dx2), (0.5, True))
+        # Traub
+        self.assertEqual(alg.solve_newton(1, f0, dx, order=3), (0.5, True))
         # Ostrowski
-        self.assertEqual(alg.solve_newton(1, f0, dx, ostrowski=True), (0.5, True))
+        self.assertEqual(alg.solve_newton(1, f0, dx, order=4), (0.5, True))
 
 
     def test_solve_newton_bracketed(self):
