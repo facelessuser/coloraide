@@ -11,7 +11,7 @@ jobs:
     strategy:
       max-parallel: 4
       matrix:
-        python-version: ['3.13']
+        python-version: ['3.14']
 
     runs-on: ubuntu-latest
 
@@ -25,13 +25,13 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
-      - uses: actions/configure-pages@v5
-      - uses: actions/checkout@v5
-      - uses: actions/setup-python@v5
+      - uses: actions/configure-pages@v6
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: ${{ matrix.python-version }}
       - name: Setup Node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v7
         with:
           node-version: '24'
       - run: |
@@ -39,7 +39,7 @@ jobs:
           npm install --legacy-peer-deps
       - run: |
           python -m hatch run docs:build
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: site
-      - uses: actions/deploy-pages@v4
+      - uses: actions/deploy-pages@v5
