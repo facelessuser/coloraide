@@ -103,9 +103,9 @@ def hct_to_xyz(coords: Vector, env: Environment) -> Vector:
             if delta < epsilon:
                 return xyz
 
-            # If we are closer than last time, save the values
+            # If we are closer than last time, save the values.
             # This is to ensure we take the best value when
-            # iterations can't are struggling to find a good value,
+            # iterations are struggling to find a good value,
             # e.g. Prophoto RGB in the blue region which is outside
             # the visible spectrum and the CAM16 algorithm breaks down.
             best = xyz
