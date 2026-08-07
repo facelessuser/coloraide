@@ -202,14 +202,14 @@ def minmax(value: VectorLike | Iterable[float]) -> tuple[float, float]:
 
 def clamp(
     value: SupportsFloatOrInt,
-    mn: SupportsFloatOrInt,
-    mx: SupportsFloatOrInt
+    mn: SupportsFloatOrInt | None = None,
+    mx: SupportsFloatOrInt | None = None
 ) -> SupportsFloatOrInt:
     """Clamp the value to the given minimum and maximum."""
 
-    if value > mx:
+    if mx is not None and value > mx:
         value = mx
-    if value < mn:
+    if mn is not None and value < mn:
         value = mn
     return value
 

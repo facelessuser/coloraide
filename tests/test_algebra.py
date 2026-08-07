@@ -1161,6 +1161,11 @@ class TestAlgebra(unittest.TestCase):
     def test_clamp(self):
         """Test clamp."""
 
+        self.assertEqual(alg.clamp(3, None, None), 3)
+        self.assertEqual(alg.clamp(3, 4, None), 4)
+        self.assertEqual(alg.clamp(4, 4, None), 4)
+        self.assertEqual(alg.clamp(4, None, 4), 4)
+        self.assertEqual(alg.clamp(5, None, 4), 4)
         self.assertEqual(alg.clamp(3, 4, 6), 4)
         self.assertEqual(alg.clamp(7, 4, 6), 6)
         self.assertEqual(alg.clamp(4, 4, 6), 4)
