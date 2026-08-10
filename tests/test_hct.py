@@ -131,13 +131,7 @@ class TestSpecialCases(util.ColorAsserts, unittest.TestCase):
         c = Color('color(--hct 30 20 0)')
         c2 = c.convert('srgb')
         self.assertEqual(c2.in_gamut(tolerance=0), False)
-        self.assertColorEqual(c2, Color('rgb(0.13637 0.00839 -0.38136)'))
-
-    def test_j_delta_too_small(self):
-        """Exercise code path where Newton's method has a delta J that is too small and kicks out of loop."""
-
-        c = Color('xyz-d65', [0.27, 0, 0]).convert('hct').convert('xyz-d65')
-        self.assertColorEqual(c, Color('color(xyz-d65 0.00926 -0.00097 -0.00005)'))
+        self.assertColorEqual(c2, Color('rgb(0.16607 0.00962 -0.6929)'))
 
 
 class TestNull(util.ColorAsserts, unittest.TestCase):

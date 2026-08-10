@@ -3,6 +3,10 @@ icon: lucide/scroll-text
 ---
 # Changelog
 
+## 8.11.1
+
+-   **FIX**: Small regression in HCT conversion.
+
 ## 8.11
 
 -   **ENHANCE**: Add a faster non-cached path for `oklch-cubic` that is optimized for when caching is disabled.

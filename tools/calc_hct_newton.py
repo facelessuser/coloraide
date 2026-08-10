@@ -1,8 +1,6 @@
 """
 Calculate values for the Newton approximation of CAM16 J from HCT T (tone) approximation polynomial.
 
-- Calculate a simple polynomial that describes a rough relationship between HCT T and CAM16 J. This
-  is used to get an initial guess of CAM16 lightness (J) from HCT tone (T).
 - Calculate the constant for the first derivative approximation for Newton's Method. It is too
   difficult to provide an exact first derivative for CAM16 J'. But we can calculate a reasonable
   approximation of the first derivative by dividing the rate of change by (Y / J) and seeing we
@@ -13,7 +11,6 @@ Calculate values for the Newton approximation of CAM16 J from HCT T (tone) appro
 """
 import sys
 import os
-import numpy as np
 
 sys.path.insert(0, os.getcwd())
 
@@ -22,26 +19,6 @@ from coloraide.spaces import cam16
 from coloraide.spaces import hct
 
 env = hct.HCT.ENV
-
-print('==== Positive Lightness ====')
-# Calculate polynomial for a reasonable J guess with positive lightness
-j = []
-t = []
-for r in range(200001):
-    xyz = Color('srgb', [r / 100000] * 3).convert('xyz-d65')
-    j.append(cam16.xyz_to_cam(xyz.coords(), env)[0])
-    t.append(hct.y_to_lstar(xyz[1]))
-print(np.polyfit(t, j, 2).tolist())
-
-print('==== Negative Lightness ====')
-# Calculate polynomial for a reasonable J guess with negative lightness
-j = []
-t = []
-for r in range(200001):
-    xyz = Color('srgb', [-r / 100000] * 3).convert('xyz-d65')
-    j.append(cam16.xyz_to_cam(xyz.coords(), env)[0])
-    t.append(hct.y_to_lstar(xyz[1]))
-print(np.polyfit(t, j, 2).tolist())
 
 print("==== Estimate c for Approximate J' Derivative: (c * y) / J ====")
 # To obtain the first derivative for `J'`, we manually measure the rate of change

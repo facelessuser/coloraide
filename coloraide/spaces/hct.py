@@ -45,6 +45,7 @@ from .cam16 import Environment, cam_to_xyz, xyz_to_cam
 from .lab import y_to_lstar, lstar_to_y
 from ..types import Vector
 import math
+from .. import util
 
 # To obtain the first derivative for `J'`, we manually measure the rate of change
 # at various points for `J` in relation to `y` in a CAM16 with the same environment
@@ -57,6 +58,7 @@ import math
 # we employ Ostrowski's Method to further refine the Newton iteration which helps to
 # compensates for any deviation and to converge on a more precise solution quicker.
 K = 1.832
+D65 = WHITES['2deg']['D65']
 
 
 def hct_to_xyz(coords: Vector, env: Environment) -> Vector:
@@ -78,13 +80,8 @@ def hct_to_xyz(coords: Vector, env: Environment) -> Vector:
 
     # Calculate the Y we need to target
     y = lstar_to_y(t)
-
-    # Try to start with a reasonable initial guess for J
-    # Calculated by curve fitting J vs T.
-    if t >= 0:
-        j = 0.003790578348640494 * t * t + 0.6089841908066893 * t + 0.9154856839591797
-    else:
-        j = 9.514281401058887e-06 * t * t + 0.08693011228986187 * t - 21.92910930537688
+    # Estimate J using assuming Y with an achromatic color.
+    j = xyz_to_cam(util.xy_to_xyz(D65, Y=y), env=env)[0]
 
     epsilon = 1e-12
     maxiter = 8
@@ -112,25 +109,24 @@ def hct_to_xyz(coords: Vector, env: Environment) -> Vector:
             last = delta
 
         # Newton: 2nd order convergence
-        # NOTE: The first derivative is inverted so we can multiply
-        d1 = alg.zdiv(j, K * xyz[1])
-        if abs(d1) < epsilon: # pragma: no cover
+        d1 = alg.zdiv(K * xyz[1], j)
+        if abs(d1) < epsilon:
             break
-        j -= f1 * d1
+        j -= f1 / d1
 
         # Ostrowski: 4th order convergence
         xyz2 = cam_to_xyz(J=j, C=c, h=h, env=env)
         f2 = xyz2[1] - y
         denom = f1 - 2 * f2
         if abs(denom) >= epsilon:  # pragma: no cover
-            j -= f1 / denom * (f2 * d1)
+            j -= f1 / denom * (f2 / d1)
 
         # Quit if there has been little to no change
-        if abs(j - prev) < epsilon:
+        if abs(j - prev) < epsilon:  # pragma: no cover
             break
 
     # ```
-    # print('FAIL:', [h, c, t], xyz[1], y)
+    # print('FAIL:', [h, c, t], j, xyz[1], y)
     # ```
 
     return best
