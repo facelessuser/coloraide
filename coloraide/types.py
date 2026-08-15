@@ -34,10 +34,20 @@ MatrixBool = List[VectorBool]
 TensorBool = List[Union[MatrixBool, 'TensorBool']]
 ArrayBool = Union[MatrixBool, VectorBool, TensorBool]
 
+VectorBoolLike = Sequence[bool]
+MatrixBoolLike = Sequence[VectorBoolLike]
+TensorBoolLike = Sequence[Union[MatrixBoolLike, 'TensorBoolLike']]
+ArrayBoolLike = Union[VectorBoolLike, MatrixBoolLike, TensorBoolLike]
+
 VectorInt = List[int]
 MatrixInt = List[VectorInt]
 TensorInt = List[Union[MatrixInt, 'TensorInt']]
 ArrayInt = Union[MatrixInt, VectorInt, TensorInt]
+
+VectorIntLike = Sequence[int]
+MatrixIntLike = Sequence[VectorIntLike]
+TensorIntLike = Sequence[Union[MatrixIntLike, 'TensorIntLike']]
+ArrayIntLike = Union[VectorIntLike, MatrixIntLike, TensorIntLike]
 
 # General algebra types
 EmptyShape = Tuple[()]
@@ -52,8 +62,6 @@ DimHints = Tuple[int, int]
 
 # For times when we must explicitly say we support `int` and `float`
 SupportsFloatOrInt = TypeVar('SupportsFloatOrInt', float, int)
-
-ArrayType = TypeVar('ArrayType', float, VectorLike, MatrixLike, TensorLike)
 
 
 class Plugin:

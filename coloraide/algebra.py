@@ -29,7 +29,8 @@ import functools
 import itertools as it
 from .types import (
     ArrayLike, MatrixLike, EmptyShape, VectorShape, MatrixShape, TensorShape, ArrayShape, VectorLike,
-    TensorLike, Array, Matrix, Tensor, Vector, VectorBool, MatrixBool, TensorBool, MatrixInt, ArrayType, VectorInt,  # noqa: F401
+    TensorLike, Array, Matrix, Tensor, Vector, VectorBool, MatrixBool, TensorBool, ArrayBool,
+    MatrixInt, VectorInt, ArrayIntLike,  # noqa: F401
     Shape, DimHints, SupportsFloatOrInt
 )
 from typing import Callable, Sequence, Iterator, Any, Iterable, overload, cast
@@ -3092,6 +3093,11 @@ def isclose(a: TensorLike, b: TensorLike, *, dims: DimHints = ..., **kwargs: Any
     ...
 
 
+@overload
+def isclose(a: ArrayLike, b: ArrayLike, *, dims: DimHints = ..., **kwargs: Any) -> ArrayBool:
+    ...
+
+
 isclose = vectorize2(_isclose, doc="Test if a value or value(s) in an array are close to another value(s).")
 
 
@@ -3112,6 +3118,11 @@ def isnan(a: MatrixLike, *, dims: DimHints = ..., **kwargs: Any) -> MatrixBool:
 
 @overload
 def isnan(a: TensorLike, *, dims: DimHints = ..., **kwargs: Any) -> TensorBool:
+    ...
+
+
+@overload
+def isnan(a: ArrayLike, *, dims: DimHints = ..., **kwargs: Any) -> ArrayBool:
     ...
 
 
@@ -3138,20 +3149,25 @@ def sign(a: TensorLike, *, dims: DimHints = ..., **kwargs: Any) -> Tensor:
     ...
 
 
+@overload
+def sign(a: ArrayLike, *, dims: DimHints = ..., **kwargs: Any) -> Array:
+    ...
+
+
 sign = vectorize2(sgn, doc="Return the sign of a number.", params=1)
 
 
-def prod(a: ArrayLike | float) -> float:
+def prod(a: ArrayIntLike | int) -> int:
     """Return the product."""
 
     s = shape(a)
     l = len(s)
     if l == 0:
-        return float(math.prod([a]))  # type: ignore[list-item]
-    return float(math.prod(flatiter(a, shape=s) if l > 1 else a)) # type: ignore[arg-type]
+        return math.prod([a])  # type: ignore[list-item]
+    return math.prod(flatiter(a, shape=s) if l > 1 else a) # type: ignore[arg-type]
 
 
-def allclose(a: ArrayType, b: ArrayType, **kwargs: Any) -> bool:
+def allclose(a: ArrayLike, b: ArrayLike, **kwargs: Any) -> bool:
     """Test if all are close."""
 
     return all(isclose(a, b, **kwargs) if kwargs else isclose(a, b))
