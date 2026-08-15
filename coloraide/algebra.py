@@ -1271,16 +1271,16 @@ def interpolate(
 ################################
 # Matrix/linear algebra math
 ################################
-def pretty(value: float | ArrayLike, *, _depth: int = 0, _shape: Shape | None = None) -> str:
+def pretty(value: float | ArrayLike, *, _depth: int = 0, shape: Shape | None = None) -> str:
     """Format the print output."""
 
-    if _shape is None:
-        _shape = shape(value)
+    if shape is None:
+        shape = _shape(value)
 
-    nl = len(_shape) - _depth - 1
+    nl = len(shape) - _depth - 1
     if isinstance(value, Sequence):
         seq = len(value) and isinstance(value[0], Sequence)
-        values = [pretty(v, _depth=_depth + 1, _shape=_shape) for v in value]
+        values = [pretty(v, _depth=_depth + 1, shape=shape) for v in value]
         spacing = _depth + 1
         return '[{}]'.format((',{}{}'.format('\n' * nl, ' ' * spacing) if seq else ', ').join(values))
 
@@ -1379,16 +1379,16 @@ def line_interesect(
     return p1
 
 
-def all(a: float | ArrayLike) -> bool:  # noqa: A001
+def all(a: float | ArrayLike, *, shape: Shape | None = None) -> bool:  # noqa: A001
     """Return true if all elements are "true"."""
 
-    return _all(flatiter(a))
+    return _all(flatiter(a, shape=shape))
 
 
-def any(a: float | ArrayLike) -> bool:  # noqa: A001
+def any(a: float | ArrayLike, *, shape: Shape | None = None) -> bool:  # noqa: A001
     """Return true if all elements are "true"."""
 
-    return _any(flatiter(a))
+    return _any(flatiter(a, shape=shape))
 
 
 def vdot(a: VectorLike, b: VectorLike) -> float:
@@ -1562,12 +1562,12 @@ def cross(a: ArrayLike, b: ArrayLike) -> Any:
     mdim = max(dims_a, dims_b)
     if mdim > 1 and new_shape[-1] == 2:
         new_shape.pop(-1)
-        _shape = tuple(new_shape)  # type: Shape
+        s = tuple(new_shape)  # type: Shape
     else:
-        _shape = tuple(new_shape)[:-1]
+        s = tuple(new_shape)[:-1]
 
     result = []
-    with ArrayBuilder(result, _shape) as build:
+    with ArrayBuilder(result, s) as build:
         for x, y in bcast:
             a2.append(x)
             b2.append(y)
@@ -2173,103 +2173,66 @@ class _BroadcastTo:
     - The new shape.
     """
 
-    def __init__(self, array: ArrayLike | float, old: Shape, new: Shape) -> None:
+    def __init__(self, array: ArrayLike | float, old: Shape, adjusted: Shape, new: Shape) -> None:
         """Initialize."""
-
-        self._loop1 = 0
-        self._loop2 = 0
-        self._chunk_subindex = 0
-        self._chunk_max = 0
-        self._chunk_index = 0
-        self._chunk = []  # type: Vector
 
         # Unravel the data as it will be quicker to slice the data in a flattened form
         # than iterating over the dimensions to replicate the data.
-        self.data = ravel(array)
+        self.data = list(ravel(array, shape=old))
         self.shape = new
 
-        # One of the common dimensions makes this result empty
-        self.empty = 0 in new
-
         # Is the new shape actually different than the original?
-        self.different = old != new
+        self.different = adjusted != new
 
-        if self.empty:
-            # There is no data
+        if 0 in new:
+            # One of the common dimensions makes this result empty
             self.amount = self.length = self.expand = self.repeat = 0
         elif self.different:
             # Calculate the shape of the data.
-            if len(old) > 1:
-                self.amount = math.prod(old[:-1])
-                self.length = old[-1]
+            if len(adjusted) > 1:
+                self.amount = math.prod(adjusted[:-1])
+                self.length = adjusted[-1]
             else:
                 # Vectors have to be handled a bit special as they only have 1-D
-                self.amount = old[-1]
+                self.amount = adjusted[-1]
                 self.length = 1
 
             # Calculate how many times we should replicate data both horizontally and vertically
             # We need to flip them based on whether the original shape has an even or odd number of
             # dimensions.
-            diff = [int(x / y) if y else y for x, y in zip(new, old)]
-            repeat = math.prod(diff[:-1]) if len(old) > 1 else 1
-            expand = diff[-1]
+            diff = [int(x / y) if y else y for x, y in zip(new, adjusted)]
+            self.repeat = math.prod(diff[:-1]) if len(adjusted) > 1 else 1
+            self.expand = diff[-1]
             if len(diff) > 1 and diff[-2] > 1:
-                self.repeat = expand
-                self.expand = repeat
-            else:
-                self.repeat = repeat
-                self.expand = expand
+                self.repeat, self.expand = self.expand, self.repeat
         else:
             # There is no modifications that need to be made on this array,
             # So we'll be chunking it without any cleverness.
-            self.amount = len(self.data)
-            self.length = 1
-            self.expand = 1
-            self.repeat = 1
+            self.amount = math.prod(new)
+            self.length = self.expand = self.repeat = 1
 
         self.reset()
 
     def reset(self) -> None:
         """Reset."""
 
-        # Setup and return the iterator.
-        self._loop1 = self.repeat
-        self._loop2 = self.expand
-        self._chunk_subindex = 0
-        self._chunk_max = self.amount * self.length
-        self._chunk_index = 0
+        if not self.different:
+            self._iter = iter(self.data)
+        else:
+            self._iter = it.chain.from_iterable(
+                (
+                    it.chain.from_iterable(
+                        self.data[i * self.length:(i + 1) * self.length] * self.expand
+                        for i in range(self.amount)
+                    )
+                )
+                for _ in range(self.repeat)
+            )
 
     def __next__(self) -> float:
         """Next."""
 
-        if self._loop1:
-            # Get the data.
-            d = self.data[self._chunk_index + self._chunk_subindex]
-
-            self._chunk_subindex += 1
-            if self._chunk_subindex >= self.length:
-                # We've processed the entirety of the current chunk
-                # Let's see if we need to process it again.
-                self._loop2 -= 1
-                self._chunk_subindex = 0
-                if not self._loop2:
-                    # We've finished processing this chunk, let's get the next.
-                    self._chunk_index += self.length
-                    self._loop2 = self.expand
-
-                    if self._chunk_index >= self._chunk_max:
-                        # We are actually at the end of all the data,
-                        # let's see if we need to process all the data again.
-                        self._loop1 -= 1
-                        if self._loop1:
-                            # We need to keep going
-                            self._chunk_index = 0
-
-            # Return the current data
-            return d
-
-        # We have nothing more to give
-        raise StopIteration
+        return next(self._iter)
 
     def __iter__(self) -> Iterator[float]:
         """Return the broadcasted array, piece by piece."""
@@ -2296,17 +2259,18 @@ class _SimpleBroadcast:
 
         total = len(arrays)
         if total == 0:
-            a, b = None, None  # type: tuple[Any, Any]
+            a, b = [], []  # type: tuple[ArrayLike | float, ArrayLike | float]
         elif total == 1:
-            a, b = arrays[0], None
+            a, b = arrays[0], []
         else:
             a, b = arrays
 
         self.a = a
-        self.dims_a = len(shapes[0]) if a is not None else 0
+        self.dims_a = len(shapes[0]) if self.a else 0
+        self.shape_a = shapes[0] if self.a else ()
 
         self.b = b
-        self.dims_b = len(shapes[1]) if b is not None else 0
+        self.dims_b = len(shapes[1]) if self.b else 0
 
         self.reset()
 
@@ -2321,12 +2285,7 @@ class _SimpleBroadcast:
 
         yield from it.zip_longest(a, b)
 
-    def broadcast(
-        self,
-        a: ArrayLike | float | None,
-        b: ArrayLike | float | None,
-        dims_a: int, dims_b: int
-    ) -> Iterator[tuple[float, ...]]:
+    def broadcast(self) -> Iterator[tuple[float, ...]]:
         """Simple broadcast of a single array or two arrays with dimensions less than 2."""
 
         # One of the common dimensions makes this result empty
@@ -2334,68 +2293,73 @@ class _SimpleBroadcast:
             return
 
         # Broadcast a single array case or empty set of arrays.
-        if b is None:
-            if a is not None:
-                yield from ((i,) for i in flatiter(a))
+        if not self.b:
+            if self.a:
+                yield from ((i,) for i in flatiter(self.a, shape=self.shape_a))
             return
+
+        a: Any = self.a
+        b: Any = self.b
+        dims_a: int = self.dims_a
+        dims_b: int = self.dims_b
 
         # Inputs have matching dimensions.
         if dims_a == dims_b:
             if dims_a == 1:
                 # Broadcast two vectors
-                yield from self.vector_broadcast(a, b)  # type: ignore[arg-type]
+                yield from self.vector_broadcast(a, b)
             elif dims_a == 2:
                 # Broadcast two 2-D matrices
-                la = len(a)  # type: ignore[arg-type]
-                lb = len(b)  # type: ignore[arg-type]
+                la = len(a)
+                lb = len(b)
                 if la == 1 and lb != 1:
-                    ra = a[0]  # type: ignore[index]
-                    for rb in b:  # type: ignore[union-attr]
-                        yield from self.vector_broadcast(ra, rb)  # type: ignore[arg-type]
+                    ra = a[0]
+                    for rb in b:
+                        yield from self.vector_broadcast(ra, rb)
                 elif lb == 1 and la != 1:
-                    rb = b[0]  # type: ignore[index]
-                    for ra in a:  # type: ignore[union-attr]
-                        yield from self.vector_broadcast(ra, rb)  # type: ignore[arg-type]
+                    rb = b[0]
+                    for ra in a:
+                        yield from self.vector_broadcast(ra, rb)
                 else:
-                    for ra, rb in it.zip_longest(a, b):  # type: ignore[arg-type]
-                        yield from self.vector_broadcast(ra, rb)  # type: ignore[arg-type]
+                    for ra, rb in it.zip_longest(a, b):
+                        yield from self.vector_broadcast(ra, rb)
             else:
-                yield a, b  # type: ignore[misc]
+                yield a, b
 
         # Inputs containing a scalar on either side
         elif not dims_a or not dims_b:
             if dims_a == 1:
                 # Apply math to a vector and number
-                for i in a:  # type: ignore[union-attr]
-                    yield i, b  # type: ignore[misc]
+                for i in a:
+                    yield i, b
             elif dims_b == 1:
                 # Apply math to a number and a vector
-                for i in b:  # type: ignore[union-attr]
-                    yield a, i  # type: ignore[misc]
+                for i in b:
+                    yield a, i
             elif dims_a == 2:
                 # Apply math to 2-D matrix and number
-                for row in a:  # type: ignore[union-attr]
-                    for i in row:  # type: ignore[union-attr]
-                        yield i, b  # type: ignore[misc]
+                for row in a:
+                    for i in row:
+                        yield i, b
             else:
-                for row in b:  # type: ignore[union-attr]
-                    for i in row:  # type: ignore[union-attr]
-                        yield a, i  # type: ignore[misc]
+                for row in b:
+                    for i in row:
+                        yield a, i
 
         # Inputs are at least 2-D dimensions or below on both sides
         elif dims_a == 1:
             # Broadcast a vector and 2-D matrix
-            for row in b:  # type: ignore[union-attr]
-                yield from self.vector_broadcast(a, row)  # type: ignore[arg-type]
+            for row in b:
+                yield from self.vector_broadcast(a, row)
         else:
             # Broadcast a 2-D matrix and a vector
-            for row in a:  # type: ignore[union-attr]
-                yield from self.vector_broadcast(row, b)  # type: ignore[arg-type]
+            for row in a:
+                yield from self.vector_broadcast(row, b)
 
     def reset(self) -> None:
         """Reset."""
 
-        self._iter = self.broadcast(self.a, self.b, self.dims_a, self.dims_b)
+        self._iter = self.broadcast()
 
     def __next__(self) -> tuple[float, ...]:
         """Next."""
@@ -2459,7 +2423,7 @@ class Broadcast:
         if self.simple:
             self.iters = [_SimpleBroadcast(arrays, shapes, common)]  # type: list[_BroadcastTo] | list[_SimpleBroadcast]
         else:
-            self.iters = [_BroadcastTo(a, s1, common) for a, s1 in zip(arrays, stage1_shapes)]
+            self.iters = [_BroadcastTo(a, s, s1, common) for a, s, s1 in zip(arrays, shapes, stage1_shapes)]
 
         # I don't think this is done the same way as `numpy`.
         # But shouldn't matter for what we do.
@@ -2542,7 +2506,7 @@ def broadcast_to(a: ArrayLike | float, s: int | Shape) -> float | Array:
         if d1 != d2 and (d1 != 1 or d1 > d2):
             raise ValueError(f"Cannot broadcast {s_orig} to {_s}")
 
-    bcast = _BroadcastTo(a, tuple(s1), tuple(_s))
+    bcast = _BroadcastTo(a, s_orig, tuple(s1), tuple(_s))
     if len(_s) > 1:
         result = [] # type: Array
         with ArrayBuilder(result, _s) as build:
@@ -2672,8 +2636,9 @@ class _vectorize1:
 
         # Unknown size or larger than 2D (slow)
         m = []  # type: Array
-        with ArrayBuilder(m, shape(a)) as build:
-            for f in flatiter(a):
+        s = shape(a)
+        with ArrayBuilder(m, s) as build:
+            for f in flatiter(a, shape=s):
                 next(build).append(func(f))
         return m
 
@@ -2736,20 +2701,20 @@ class _vectorize2:
                     if not empty and math.prod(shape_a) != math.prod(shape_b):  # pragma: no cover
                         raise ValueError(f'Shape {shape_a} does not match the data total of {shape_b}')
                     with ArrayBuilder(m, shape_a) as build:
-                        for x, y in zip(flatiter(a), flatiter(b)):
+                        for x, y in zip(flatiter(a, shape=shape_a), flatiter(b, shape=shape_b)):
                             next(build).append(func(x, y))
 
                 elif not dims_a or not dims_b:
                     # Apply math to a number and an N-D matrix
                     if not dims_a:
                         with ArrayBuilder(m, shape_b) as build:
-                            for x in flatiter(b):
+                            for x in flatiter(b, shape=shape_b):
                                 next(build).append(func(a, x))
 
                     # Apply math to an N-D matrix and a number
                     else:
                         with ArrayBuilder(m, shape_a) as build:
-                            for x in flatiter(a):
+                            for x in flatiter(a, shape=shape_a):
                                 next(build).append(func(x, b))
 
                 # Apply math to an N-D matrix and an M-D matrix by broadcasting to a common shape.
@@ -3179,10 +3144,11 @@ sign = vectorize2(sgn, doc="Return the sign of a number.", params=1)
 def prod(a: ArrayLike | float) -> float:
     """Return the product."""
 
-    l = len(shape(a))
+    s = shape(a)
+    l = len(s)
     if l == 0:
         return float(math.prod([a]))  # type: ignore[list-item]
-    return float(math.prod(flatiter(a) if l > 1 else a)) # type: ignore[arg-type]
+    return float(math.prod(flatiter(a, shape=s) if l > 1 else a)) # type: ignore[arg-type]
 
 
 def allclose(a: ArrayType, b: ArrayType, **kwargs: Any) -> bool:
@@ -3501,7 +3467,7 @@ def full(array_shape: int | Shape, fill_value: float | ArrayLike) -> Array | flo
             return fill_value
         _s = shape(fill_value)
         if math.prod(_s) == 1:
-            return ravel(fill_value)[0]
+            return ravel(fill_value, shape=_s)[0]
 
     # Normalize `fill_value` to be an array.
     elif not isinstance(fill_value, Sequence):
@@ -3644,20 +3610,20 @@ class MultiArrayBuilder(ArrayBuilder):
                 pass
 
 
-def flatiter(array: float | ArrayLike) -> Iterator[float]:
+def flatiter(array: float | ArrayLike, *, shape: Shape | None = None) -> Iterator[float]:
     """Traverse an array returning values."""
 
-    for indices in ndindex(shape(array)):
+    for indices in ndindex(_shape(array) if shape is None else shape):
         m = array  # type: Any
         for i in indices:
             m = m[i]
         yield m
 
 
-def ravel(array: float | ArrayLike) -> Vector:
+def ravel(array: float | ArrayLike, *, shape: Shape | None = None) -> Vector:
     """Return a flattened vector."""
 
-    return [*flatiter(array)]
+    return [*flatiter(array, shape=shape)]
 
 
 def _frange(start: float, stop: float, step: float) -> Iterator[float]:
@@ -3722,7 +3688,8 @@ def transpose(array: ArrayLike | float) -> float | Array:
     we don't have a need for that, nor the desire to figure it out :).
     """
 
-    s = shape(array)[::-1]  # type: Shape
+    s = shape(array)  # type: Shape
+    si = s[::-1]
     l = len(s)
 
     # Number
@@ -3736,22 +3703,22 @@ def transpose(array: ArrayLike | float) -> float | Array:
         return [[*z] for z in zip(*array)]  # type: ignore[misc]
 
     # N x M matrix
-    if s and s[0] == 0:
-        s = s[1:] + (0,)
-        total = math.prod(s[:-1])
+    if si and si[0] == 0:
+        si = si[1:] + (0,)
+        total = math.prod(si[:-1])
     else:
-        total = math.prod(s)
+        total = math.prod(si)
 
     # Create the array
     m = []  # type: Array
 
     # Calculate data sizes
-    dims = len(s)
-    length = s[-1]  # type: ignore[misc]
+    dims = len(si)
+    length = si[-1]
 
     # Initialize indexes so we can properly write our data
     idx = [0] * dims
-    data = flatiter(array)
+    data = flatiter(array, shape=s)
 
     # Traverse the provided array filling our new array
     for i in range(total):
@@ -3761,7 +3728,7 @@ def transpose(array: ArrayLike | float) -> float | Array:
         t = m  # type: Any
         for d in range(dims - 1):
             if not t:
-                for _ in range(s[d]):
+                for _ in range(si[d]):
                     t.append([])  # noqa: PERF401
             t = t[idx[d]]
 
@@ -3777,7 +3744,7 @@ def transpose(array: ArrayLike | float) -> float | Array:
         # Update the current indexes if we aren't done copying data.
         if i < (total - 1):
             for x in range(dims):
-                if (idx[x] + 1) % s[x] == 0:
+                if (idx[x] + 1) % si[x] == 0:
                     idx[x] = 0
                     x += 1
                 else:
@@ -3843,7 +3810,7 @@ def reshape(array: ArrayLike | float, new_shape: int | Shape) -> float | Array:
     m = []  # type: Array
     with ArrayBuilder(m, new_shape) as build:
         # Create an iterator to traverse the data
-        for data in flatiter(array) if len(current_shape) > 1 else iter(array):
+        for data in flatiter(array, shape=current_shape) if len(current_shape) > 1 else iter(array):
             next(build).append(data)
 
     return m
@@ -3904,6 +3871,9 @@ def shape(a: ArrayLike | float, *, quick: bool = False) -> Shape:
 
     # Construct the final shape
     return (size,) + first
+
+
+_shape = shape
 
 
 def fill_diagonal(matrix: Matrix | Tensor, val: float | ArrayLike, wrap: bool = False) -> None:
@@ -4023,7 +3993,7 @@ def lu(
     *,
     permute_l: bool = False,
     p_indices: bool = False,
-    _shape: Shape | None = None
+    shape: Shape | None = None
 ) ->  Any:
     """
     Calculate `LU` decomposition.
@@ -4041,7 +4011,7 @@ def lu(
                https://www.sciencedirect.com/topics/mathematics/partial-pivoting
     """
 
-    s = shape(matrix) if _shape is None else _shape
+    s = _shape(matrix) if shape is None else shape
     size = s[0]
     dims = len(s)
 
@@ -4063,7 +4033,7 @@ def lu(
 
         with builder as arrays:
             for r in range(0, len(rows), step):
-                result = lu(rows[r:r + step], permute_l=permute_l, p_indices=p_indices, _shape=last)
+                result = lu(rows[r:r + step], permute_l=permute_l, p_indices=p_indices, shape=last)
                 if not permute_l:
                     next(arrays[0]).append(result[0])
                     next(arrays[1]).append(result[1])
@@ -4831,7 +4801,7 @@ def solve(a: MatrixLike | TensorLike, b: ArrayLike) -> Array:
     dim2 = not dim1 and not isinstance(b[0][0], Sequence)  # type: ignore[index]
     if dims == 2 and (dim1 or dim2):
         # Get the LU decomposition
-        p, l, u = lu(a, p_indices=True, _shape=s)
+        p, l, u = lu(a, p_indices=True, shape=s)
 
         # If determinant is zero, we can't solve. Really small determinant may give bad results.
         if math.prod(l[i][i] * u[i][i] for i in range(size)) == 0.0:
@@ -4874,7 +4844,7 @@ def solve(a: MatrixLike | TensorLike, b: ArrayLike) -> Array:
                 for i in idx:
                     ma = ma[i]
 
-                p, l, u = lu(ma, p_indices=True, _shape=m_shape)
+                p, l, u = lu(ma, p_indices=True, shape=m_shape)
 
                 if math.prod(l[i][i] * u[i][i] for i in range(size)) == 0.0:  # pragma: no cover
                     raise ValueError('Matrix is singular')
@@ -4896,7 +4866,7 @@ def solve(a: MatrixLike | TensorLike, b: ArrayLike) -> Array:
             for i in idx:
                 mb = mb[i]
 
-            p, l, u = lu(ma, p_indices=True, _shape=s[-2:])  # type: ignore[misc]
+            p, l, u = lu(ma, p_indices=True, shape=s[-2:])  # type: ignore[misc]
 
             if math.prod(l[i][i] * u[i][i] for i in range(size)) == 0.0:
                 raise ValueError('Matrix is singular')
@@ -4931,7 +4901,7 @@ def det(array: MatrixLike | TensorLike) -> float | Vector:
         raise ValueError('Last two dimensions must be square')
     if len(s) == 2:
         size = s[0]
-        p, l, u = lu(array, _shape=s)
+        p, l, u = lu(array, shape=s)
         swaps = size - trace(p)
         _sign = (-1) ** (swaps - 1) if swaps else 1
         dt = _sign * math.prod(l[i][i] * u[i][i] for i in range(size))
@@ -4975,7 +4945,7 @@ def inv(matrix: MatrixLike | TensorLike) -> Matrix | Tensor:
 
     # Calculate the LU decomposition.
     size = s[0]
-    p, l, u = lu(matrix, _shape=s)
+    p, l, u = lu(matrix, shape=s)
 
     # Floating point math will produce very small, non-zero determinants for singular matrices.
     # This occurs with Numpy as well.
@@ -5091,13 +5061,13 @@ def vstack(arrays: Sequence[ArrayLike | float]) -> Matrix | Tensor:
     return m
 
 
-def _hstack_extract(a: ArrayLike | float, s: ArrayShape) -> Iterator[Array]:
+def _hstack_extract(a: ArrayLike | float, shape: ArrayShape) -> Iterator[Array]:
     """Extract data from the second axis."""
 
-    data = flatiter(a)
-    length = math.prod(s[1:])
+    data = flatiter(a, shape=shape)
+    length = math.prod(shape[1:])
 
-    for _ in range(s[0]):
+    for _ in range(shape[0]):
         yield [next(data) for _ in range(length)]
 
 
@@ -5107,6 +5077,7 @@ def hstack(arrays: Sequence[ArrayLike | float]) -> Array:
     # Gather up shapes
     columns = 0
     shapes = []
+    orig_shapes = []
 
     # Array tracking for verification
     axis = 1
@@ -5118,6 +5089,7 @@ def hstack(arrays: Sequence[ArrayLike | float]) -> Array:
     arrs = []
     for a in arrays:
         s = shape(a)
+        orig_shapes.append(s)
         dims = len(s)
 
         # Ensure we are at least 1-D
@@ -5164,8 +5136,8 @@ def hstack(arrays: Sequence[ArrayLike | float]) -> Array:
     # Handle 1-D vector cases
     if largest_length == 1:
         m1 = []  # type: Vector
-        for a in arrays:
-            m1.extend(ravel(a))
+        for a, s in zip(arrays, orig_shapes):
+            m1.extend(ravel(a, shape=s))
         return m1
 
     # Iterate the arrays returning the content per second axis
@@ -5561,7 +5533,7 @@ def roll(
         p = math.prod(s)
         _sign = sgn(shift)
         shift = shift % (p * _sign) if p and _sign else 0
-        flat = ravel(a) if len(s) != 1 else [*a]  # type: ignore[misc]
+        flat = ravel(a, shape=s) if len(s) != 1 else [*a]  # type: ignore[misc]
         sh = -shift
         flat[:] = flat[sh:] + flat[:sh]
         return reshape(flat, s)
@@ -5621,8 +5593,9 @@ def unique(
     just_values = not return_index and not return_inverse and not return_counts
 
     # If no axis, flatten data
+    s = shape(a)
     if axis is None:
-        for e, v in enumerate(flatiter(a)):
+        for e, v in enumerate(flatiter(a, shape=s)):
             if v not in track:
                 values.append(v)
                 indices.append(e)
@@ -5638,7 +5611,6 @@ def unique(
 
     # Apply to higher axes
     else:
-        s = shape(a)
         l = len(s)
 
         # Ensure axis in bound
