@@ -2179,7 +2179,7 @@ class _BroadcastTo:
 
         # Unravel the data as it will be quicker to slice the data in a flattened form
         # than iterating over the dimensions to replicate the data.
-        self.data = list(ravel(array, shape=old))
+        self.data = ravel(array, shape=old)
         self.shape = new
 
         # Is the new shape actually different than the original?

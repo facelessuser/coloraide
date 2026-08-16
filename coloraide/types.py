@@ -2,7 +2,7 @@
 """Typing."""
 from __future__ import annotations
 import sys
-from typing import Union, Any, Mapping, Sequence, List, Tuple, TypeVar, TYPE_CHECKING
+from typing import Any, Mapping, Sequence, TypeVar, Union, TypeAlias, TYPE_CHECKING
 if (3, 11) <= sys.version_info:
     from typing import Unpack
 else:
@@ -17,48 +17,48 @@ AnyColor = TypeVar('AnyColor', bound='Color')
 ColorInput = Union['Color', str, Mapping[str, Any]]
 
 # Vectors, Matrices, and Arrays are assumed to be mutable lists
-Vector = List[float]
-Matrix = List[Vector]
-Tensor = List[Union[Matrix, 'Tensor']]
-Array = Union[Matrix, Vector, Tensor]
+Vector = list[float]
+Matrix = list[Vector]
+Tensor = list[Union[Matrix, 'Tensor']]
+Array = Matrix | Vector | Tensor
 
 # Anything that resembles a sequence will be considered "like" one of our types above
 VectorLike = Sequence[float]
 MatrixLike = Sequence[VectorLike]
 TensorLike = Sequence[Union[MatrixLike, 'TensorLike']]
-ArrayLike = Union[VectorLike, MatrixLike, TensorLike]
+ArrayLike = VectorLike | MatrixLike | TensorLike
 
 # Vectors, Matrices, and Arrays of various, specific types
-VectorBool = List[bool]
-MatrixBool = List[VectorBool]
-TensorBool = List[Union[MatrixBool, 'TensorBool']]
-ArrayBool = Union[MatrixBool, VectorBool, TensorBool]
+VectorBool = list[bool]
+MatrixBool = list[VectorBool]
+TensorBool = list[Union[MatrixBool, 'TensorBool']]
+ArrayBool = MatrixBool | VectorBool | TensorBool
 
 VectorBoolLike = Sequence[bool]
 MatrixBoolLike = Sequence[VectorBoolLike]
 TensorBoolLike = Sequence[Union[MatrixBoolLike, 'TensorBoolLike']]
-ArrayBoolLike = Union[VectorBoolLike, MatrixBoolLike, TensorBoolLike]
+ArrayBoolLike = VectorBoolLike | MatrixBoolLike | TensorBoolLike
 
-VectorInt = List[int]
-MatrixInt = List[VectorInt]
-TensorInt = List[Union[MatrixInt, 'TensorInt']]
-ArrayInt = Union[MatrixInt, VectorInt, TensorInt]
+VectorInt = list[int]
+MatrixInt = list[VectorInt]
+TensorInt = list[Union[MatrixInt, 'TensorInt']]
+ArrayInt = MatrixInt | VectorInt | TensorInt
 
 VectorIntLike = Sequence[int]
 MatrixIntLike = Sequence[VectorIntLike]
 TensorIntLike = Sequence[Union[MatrixIntLike, 'TensorIntLike']]
-ArrayIntLike = Union[VectorIntLike, MatrixIntLike, TensorIntLike]
+ArrayIntLike = VectorIntLike | MatrixIntLike | TensorIntLike
 
 # General algebra types
-EmptyShape = Tuple[()]
-VectorShape = Tuple[int]
-MatrixShape = Tuple[int, int]
-TensorShape = Tuple[int, int, int, Unpack[Tuple[int, ...]]]
+EmptyShape = tuple[()]
+VectorShape = tuple[int]
+MatrixShape = tuple[int, int]
+TensorShape = tuple[int, int, int, Unpack[tuple[int, ...]]]
 
-ArrayShape = Tuple[int, ...]
-Shape = Union[EmptyShape, ArrayShape]
+ArrayShape = tuple[int, ...]
+Shape = EmptyShape | ArrayShape
 ShapeLike = Sequence[int]
-DimHints = Tuple[int, int]
+DimHints = tuple[int, int]
 
 # For times when we must explicitly say we support `int` and `float`
 SupportsFloatOrInt = TypeVar('SupportsFloatOrInt', float, int)
