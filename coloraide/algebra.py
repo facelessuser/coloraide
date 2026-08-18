@@ -33,7 +33,7 @@ from .types import (
     MatrixInt, VectorInt, ArrayIntLike, Number, StrictNumber, VectorT, MatrixT, TensorT, ArrayT,  # noqa: F401
     Shape, DimHints, VectorTLike, MatrixTLike, TensorTLike, ArrayTLike
 )
-from typing import Callable, Sequence, Iterator, Any, overload, Generic, cast
+from typing import Callable, Sequence, Iterator, Any, overload, Generic, Literal, cast
 
 EPS = sys.float_info.epsilon
 RTOL = 4 * EPS
@@ -1418,24 +1418,24 @@ def vcross(v1: VectorTLike[StrictNumber], v2: VectorTLike[StrictNumber]) -> Any:
 
 
 @overload
-def acopy(a: VectorTLike[Number]) -> VectorT[Number]:
+def ascopy(a: VectorTLike[Number]) -> VectorT[Number]:
     ...
 
 
 @overload
-def acopy(a: MatrixTLike[Number]) -> MatrixT[Number]:
+def ascopy(a: MatrixTLike[Number]) -> MatrixT[Number]:
     ...
 
 
 @overload
-def acopy(a: TensorTLike[Number]) -> TensorT[Number]:
+def ascopy(a: TensorTLike[Number]) -> TensorT[Number]:
     ...
 
 
-def acopy(a: ArrayTLike[Number]) -> ArrayT[Number]:
+def ascopy(a: ArrayTLike[Number]) -> ArrayT[Number]:
     """Array copy."""
 
-    return [(acopy(i) if isinstance(i, Sequence) else i) for i in a]  # type: ignore[return-value]
+    return [(ascopy(i) if isinstance(i, Sequence) else i) for i in a]  # type: ignore[return-value]
 
 
 @overload
@@ -1462,7 +1462,7 @@ def astype(a: ArrayTLike[bool] | ArrayTLike[int] | ArrayTLike[float], dtype: typ
 def _cross_pad(a: ArrayTLike[StrictNumber], s: ArrayShape) -> ArrayT[StrictNumber]:
     """Pad an array with 2-D vectors."""
 
-    m = acopy(a)
+    m = ascopy(a)
 
     # Initialize indexes so we can properly write our data
     total = math.prod(s[:-1])
@@ -3892,7 +3892,7 @@ def full(array_shape: int | Shape, fill_value: Number | ArrayTLike[Number]) -> A
     # If it does fit, just reshape it.
     if shape(fill_value) != s:
         return broadcast_to(fill_value, s)  # type: ignore[arg-type]
-    return acopy(fill_value)
+    return ascopy(fill_value)
 
 
 @overload
@@ -4208,7 +4208,7 @@ def reshape(array: ArrayTLike[Number] | Number, new_shape: int | Shape) -> Numbe
 
     # Copy the array and quit if we are already the requested shape
     if current_shape == new_shape:
-        return acopy(array)
+        return ascopy(array)
 
     empty = (not new_shape or 0 in new_shape) and (not current_shape or 0 in current_shape)
 
@@ -4408,13 +4408,129 @@ def diag(
         return d
 
 
+@overload
+def lu(
+    matrix: MatrixTLike[StrictNumber],
+    *,
+    permute_l: Literal[True],
+    p_indices: Literal[True] | Literal[False] | bool = False,
+    shape: Shape | None = ...
+) -> tuple[Matrix, Matrix]:
+    ...
+
+
+@overload
+def lu(
+    matrix: MatrixTLike[StrictNumber],
+    *,
+    p_indices: Literal[True],
+    permute_l: Literal[False] = False,
+    shape: Shape | None = ...
+) -> tuple[VectorT[int], Matrix, Matrix]:
+    ...
+
+
+@overload
+def lu(
+    matrix: MatrixTLike[StrictNumber],
+    *,
+    permute_l: Literal[False] = False,
+    p_indices: Literal[False] = False,
+    shape: Shape | None = ...
+) -> tuple[Matrix, Matrix, Matrix]:
+    ...
+
+
+@overload
+def lu(
+    matrix: MatrixTLike[StrictNumber],
+    *,
+    p_indices: bool,
+    permute_l: Literal[False] = False,
+    shape: Shape | None = ...
+) -> tuple[Matrix, Matrix, Matrix] | tuple[VectorT[int], Matrix, Matrix]:
+    ...
+
+
+@overload
+def lu(
+    matrix: MatrixTLike[StrictNumber],
+    *,
+    p_indices: bool,
+    permute_l: bool,
+    shape: Shape | None = ...
+) -> tuple[Matrix, Matrix] | tuple[Matrix, Matrix, Matrix] | tuple[VectorT[int], Matrix, Matrix]:
+    ...
+
+
+@overload
+def lu(
+    matrix: TensorTLike[StrictNumber],
+    *,
+    permute_l: Literal[True],
+    p_indices: Literal[True] | Literal[False] | bool = False,
+    shape: Shape | None = ...
+) -> tuple[Tensor, Tensor]:
+    ...
+
+
+@overload
+def lu(
+    matrix: TensorTLike[StrictNumber],
+    *,
+    p_indices: Literal[True],
+    permute_l: Literal[False] = False,
+    shape: Shape | None = ...
+) -> tuple[MatrixT[int], Tensor, Tensor]:
+    ...
+
+
+@overload
+def lu(
+    matrix: TensorTLike[StrictNumber],
+    *,
+    permute_l: Literal[False] = False,
+    p_indices: Literal[False] = False,
+    shape: Shape | None = ...
+) -> tuple[Tensor, Tensor, Tensor]:
+    ...
+
+
+@overload
+def lu(
+    matrix: TensorTLike[StrictNumber],
+    *,
+    p_indices: bool,
+    permute_l: Literal[False] = False,
+    shape: Shape | None = ...
+) -> tuple[Tensor, Tensor, Tensor] | tuple[MatrixT[int], Tensor, Tensor]:
+    ...
+
+@overload
+def lu(
+    matrix: TensorTLike[StrictNumber],
+    *,
+    p_indices: bool,
+    permute_l: bool,
+    shape: Shape | None = ...
+) -> tuple[Tensor, Tensor] | tuple[Tensor, Tensor, Tensor] | tuple[MatrixT[int], Tensor, Tensor]:
+    ...
+
+
 def lu(
     matrix: MatrixTLike[StrictNumber] | TensorTLike[StrictNumber],
     *,
     permute_l: bool = False,
     p_indices: bool = False,
     shape: Shape | None = None
-) ->  Any:
+) ->  (
+    tuple[Matrix, Matrix] |
+    tuple[Tensor, Tensor] |
+    tuple[Matrix, Matrix, Matrix] |
+    tuple[Tensor, Tensor, Tensor] |
+    tuple[VectorT[int], Matrix, Matrix] |
+    tuple[MatrixT[int], Tensor, Tensor]
+):
     """
     Calculate `LU` decomposition.
 
@@ -4441,35 +4557,36 @@ def lu(
     elif dims > 2:
         last = s[-2:]  # type: tuple[int, int] # type: ignore[assignment]
         first = s[:-2]  # type: Shape
-        rows = list(_extract_rows(matrix, s))
+        rows = cast('MatrixTLike[StrictNumber]', list(_extract_rows(matrix, s)))
         step = last[-2]
-        l = []  # type: Any
-        u = []  # type: Any
+        lt = []  # type: Tensor
+        ut = []  # type: Tensor
         if not permute_l:
-            p = []  # type: Any
-            builder = MultiArrayBuilder([p, l, u], [first, first, first])
+            pt = []  # type: Any
+            builder = MultiArrayBuilder([pt, lt, ut], [first, first, first])
         else:
-            builder = MultiArrayBuilder([l, u], [first, first])
+            builder = MultiArrayBuilder([lt, ut], [first, first])
 
         with builder as arrays:
             for r in range(0, len(rows), step):
-                result = lu(rows[r:r + step], permute_l=permute_l, p_indices=p_indices, shape=last)
                 if not permute_l:
-                    next(arrays[0]).append(result[0])
-                    next(arrays[1]).append(result[1])
-                    next(arrays[2]).append(result[2])
+                    r1 = lu(rows[r:r + step], permute_l=False, p_indices=p_indices, shape=last)
+                    next(arrays[0]).append(r1[0])
+                    next(arrays[1]).append(r1[1])
+                    next(arrays[2]).append(r1[2])
                 else:
-                    next(arrays[0]).append(result[0])
-                    next(arrays[1]).append(result[1])
+                    r2 = lu(rows[r:r + step], permute_l=True, p_indices=p_indices, shape=last)
+                    next(arrays[0]).append(r2[0])
+                    next(arrays[1]).append(r2[1])
         if permute_l:
-            return l, u
-        return p, l, u
+            return lt, ut
+        return pt, lt, ut
 
     # Wide or tall matrices
     wide = tall = False
     diff = s[0] - s[1]
     empty = diff == s[0]
-    fmatrix = astype(cast('MatrixTLike[StrictNumber]', matrix), float)
+    fmatrix = [[float(c) for c in row] for row in cast('MatrixTLike[StrictNumber]', matrix)]
     if not empty and diff:
         # Wide
         if diff < 0:
@@ -4486,7 +4603,7 @@ def lu(
 
     # Initialize the triangle matrices along with the permutation matrix.
     if empty:
-        p = []
+        p = [] # type: Any
         l = fmatrix
         u = []
         size = 0
@@ -4877,7 +4994,46 @@ def _diagonalization_of_bidiagonal(
             raise ValueError('Could not converge on an SVD solution')
 
 
-def _svd(a: MatrixTLike[StrictNumber], m: int, n: int, full_matrices: bool = True, compute_uv: bool = True) -> Any:
+@overload
+def _svd(
+    a: MatrixTLike[StrictNumber],
+    m: int,
+    n: int,
+    full_matrices: bool,
+    compute_uv: Literal[False]
+) ->  Vector:
+    ...
+
+
+@overload
+def _svd(
+    a: MatrixTLike[StrictNumber],
+    m: int,
+    n: int,
+    full_matrices: bool,
+    compute_uv: Literal[True] = True
+) ->  tuple[Matrix, Vector, Matrix]:
+    ...
+
+
+@overload
+def _svd(
+    a: MatrixTLike[StrictNumber],
+    m: int,
+    n: int,
+    full_matrices: bool,
+    compute_uv: bool,
+) ->  tuple[Matrix, Vector, Matrix] | Vector:
+    ...
+
+
+def _svd(
+    a: MatrixTLike[StrictNumber],
+    m: int,
+    n: int,
+    full_matrices: bool = True,
+    compute_uv: bool = True
+) -> tuple[Matrix, Vector, Matrix] | Vector:
     """
     Compute the singular value decomposition of a matrix.
 
@@ -4894,7 +5050,7 @@ def _svd(a: MatrixTLike[StrictNumber], m: int, n: int, full_matrices: bool = Tru
     eps = EPS
     tol = MIN_FLOAT / EPS
 
-    u = astype(a, float)
+    u = [[float(c) for c in row] for row in a]
     square = m == n
     wide = not square and m < n
     diff = 0
@@ -4935,11 +5091,69 @@ def _svd(a: MatrixTLike[StrictNumber], m: int, n: int, full_matrices: bool = Tru
     return q
 
 
+@overload
+def svd(
+    a: MatrixTLike[StrictNumber],
+    full_matrices: bool,
+    compute_uv: Literal[False]
+) -> Vector:
+    ...
+
+
+@overload
+def svd(
+    a: MatrixTLike[StrictNumber],
+    full_matrices: bool,
+    compute_uv: Literal[True] = True,
+) -> tuple[Matrix, Vector, Matrix]:
+    ...
+
+
+@overload
+def svd(
+    a: MatrixTLike[StrictNumber],
+    full_matrices: bool,
+    compute_uv: bool,
+) -> tuple[Matrix, Vector, Matrix] | Vector:
+    ...
+
+
+@overload
+def svd(
+    a: TensorTLike[StrictNumber],
+    full_matrices: bool,
+    compute_uv: Literal[False]
+) ->  Matrix | Tensor:
+    ...
+
+
+@overload
+def svd(
+    a: TensorTLike[StrictNumber],
+    full_matrices: bool,
+    compute_uv: Literal[True] = True
+) ->  tuple[Tensor, Matrix | Tensor, Tensor]:
+    ...
+
+
+@overload
+def svd(
+    a: TensorTLike[StrictNumber],
+    full_matrices: bool,
+    compute_uv: bool
+) ->  tuple[Tensor, Matrix | Tensor, Tensor] | Matrix | Tensor:
+    ...
+
+
 def svd(
     a: MatrixTLike[StrictNumber] | TensorTLike[StrictNumber],
     full_matrices: bool = True,
     compute_uv: bool = True
-) -> Any:
+) -> (
+    tuple[Matrix, Vector, Matrix] |
+    tuple[Tensor, Matrix | Tensor, Tensor] |
+    Matrix | Tensor | Vector
+):
     """
     Compute the singular value decomposition of a matrix.
 
@@ -4963,39 +5177,105 @@ def svd(
     elif dims > 2:
         last = s[-2:]  # type: tuple[int, int] # type: ignore[misc]
         first = s[:-2]  # type: Shape # type: ignore[misc]
-        rows = list(_extract_rows(a, s))
+        rows = cast('MatrixTLike[StrictNumber]', list(_extract_rows(a, s)))
         step = last[-2]
         m, n = last
-        sigma = []  # type: Any
+        sigma = []  # type: Array
         if compute_uv:
-            u = []  # type: Any
-            v = []  # type: Any
+            u = []  # type: Matrix | Tensor
+            v = []  # type: Matrix | Tensor
             builder = MultiArrayBuilder([u, sigma, v], [first, first, first])
         else:
             builder = MultiArrayBuilder([sigma], [first])
         with builder as arrays:
             for r in range(0, len(rows), step):
-                result = _svd(rows[r:r + step], m, n, full_matrices, compute_uv)
                 if compute_uv:
-                    next(arrays[0]).append(result[0])
-                    next(arrays[1]).append(result[1])
-                    next(arrays[2]).append(result[2])
+                    uv_result = _svd(rows[r:r + step], m, n, full_matrices, True)
+                    next(arrays[0]).append(uv_result[0])
+                    next(arrays[1]).append(uv_result[1])
+                    next(arrays[2]).append(uv_result[2])
                 else:
-                    next(arrays[0]).append(result)
+                    s_result = _svd(rows[r:r + step], m, n, full_matrices, False)
+                    next(arrays[0]).append(s_result)
         if compute_uv:
-            return u, sigma, v
+            return u, sigma, v  # type: ignore[return-value]
         return sigma
 
-    return _svd(cast('MatrixTLike[StrictNumber]', a), s[0], s[1], full_matrices, compute_uv)
+    if compute_uv:
+        return _svd(cast('MatrixTLike[StrictNumber]', a), s[0], s[1], full_matrices, True)
+    return _svd(cast('MatrixTLike[StrictNumber]', a), s[0], s[1], full_matrices, False)
 
 
-def svdvals(a: MatrixTLike[StrictNumber] | TensorTLike[StrictNumber]) -> Any:
+@overload
+def svdvals(a: TensorTLike[StrictNumber]) -> Matrix | Tensor:
+    ...
+
+
+@overload
+def svdvals(a: MatrixTLike[StrictNumber]) -> Vector:
+    ...
+
+
+def svdvals(a: MatrixTLike[StrictNumber] | TensorTLike[StrictNumber]) -> Array:
     """Get the s values from SVD."""
 
     return svd(a, False, False)
 
 
-def _qr(a: Matrix, m: int, n: int, mode: str = 'reduced') -> Any:
+@overload
+def _qr(
+    a: Matrix,
+    m: int,
+    n: int,
+    mode: Literal['reduced'] = "reduced"
+) -> tuple[Matrix, Matrix]:
+    ...
+
+@overload
+def _qr(
+    a: Matrix,
+    m: int,
+    n: int,
+    mode: Literal['complete']
+) -> tuple[Matrix, Matrix]:
+    ...
+
+
+@overload
+def _qr(
+    a: Matrix,
+    m: int,
+    n: int,
+    mode: Literal['r']
+) -> Matrix:
+    ...
+
+
+@overload
+def _qr(
+    a: Matrix,
+    m: int,
+    n: int,
+    mode: Literal['raw']
+) -> tuple[Matrix, Vector]:
+    ...
+
+
+@overload
+def _qr(
+    a: Matrix,
+    m: int,
+    n: int,
+    mode: str
+) -> tuple[Matrix, Matrix] | tuple[Matrix, Vector] | Matrix:
+    ...
+
+
+def _qr(a: Matrix, m: int, n: int, mode: str = 'reduced') -> (
+    tuple[Matrix, Matrix] |
+    tuple[Matrix, Vector] |
+    Matrix
+):
     """Perform QR decomposition on a matrix."""
 
     # Setup configuration flags
@@ -5079,10 +5359,95 @@ def _qr(a: Matrix, m: int, n: int, mode: str = 'reduced') -> Any:
     return r if mode_r else (q, r)
 
 
+@overload
+def qr(
+    a: MatrixTLike[StrictNumber],
+    mode: Literal['reduced'] = "reduced"
+) -> tuple[Matrix, Matrix]:
+    ...
+
+@overload
+def qr(
+    a: MatrixTLike[StrictNumber],
+    mode: Literal['complete']
+) -> tuple[Matrix, Matrix]:
+    ...
+
+
+@overload
+def qr(
+    a: MatrixTLike[StrictNumber],
+    mode: Literal['r']
+) -> Matrix:
+    ...
+
+
+@overload
+def qr(
+    a: MatrixTLike[StrictNumber],
+    mode: Literal['raw']
+) -> tuple[Matrix, Vector]:
+    ...
+
+
+@overload
+def qr(
+    a: MatrixTLike[StrictNumber],
+    mode: str
+) -> tuple[Matrix, Matrix] | tuple[Matrix, Vector] | Matrix:
+    ...
+
+
+@overload
+def qr(
+    a: TensorTLike[StrictNumber],
+    mode: Literal['reduced'] = "reduced"
+) -> tuple[Tensor, Tensor]:
+    ...
+
+@overload
+def qr(
+    a: TensorTLike[StrictNumber],
+    mode: Literal['complete']
+) -> tuple[Tensor, Tensor]:
+    ...
+
+
+@overload
+def qr(
+    a: TensorTLike[StrictNumber],
+    mode: Literal['r']
+) -> Tensor:
+    ...
+
+
+@overload
+def qr(
+    a: TensorTLike[StrictNumber],
+    mode: Literal['raw']
+) -> tuple[Tensor, Matrix | Tensor]:
+    ...
+
+
+@overload
+def qr(
+    a: TensorTLike[StrictNumber],
+    mode: str
+) -> tuple[Tensor, Tensor] | tuple[Tensor, Matrix | Tensor] | Tensor:
+    ...
+
+
 def qr(
     a: MatrixTLike[StrictNumber] | TensorTLike[StrictNumber],
     mode: str = 'reduced'
-) -> Any:
+) -> (
+    tuple[Matrix, Matrix] |
+    tuple[Matrix, Vector] |
+    Matrix |
+    tuple[Tensor, Tensor] |
+    tuple[Tensor, Matrix | Tensor] |
+    Tensor
+):
     """
     QR decomposition using householder reflections.
 
@@ -5102,7 +5467,6 @@ def qr(
         raise ValueError(f"Mode '{mode}' not recognized")
 
     s = shape(a)
-    arr = astype(a, float)
     dims = len(s)
     mode_r = mode == 'r' or mode == 'raw'
 
@@ -5114,7 +5478,7 @@ def qr(
     elif dims > 2:
         last = s[-2:]  # type: tuple[int, int] # type: ignore[misc]
         first = s[:-2]  # type: Shape # type: ignore[misc]
-        rows = list(_extract_rows(arr, s))
+        rows = list(_extract_rows(a, s))
         step = last[-2]
         m, n = last
         r = []  # type: Matrix
@@ -5125,7 +5489,7 @@ def qr(
             builder = MultiArrayBuilder([r], [first])
         with builder as arrays:
             for ri in range(0, len(rows), step):
-                result = _qr(rows[ri:ri + step], m, n, mode)
+                result = _qr([[float(co) for co in ro]for ro in rows[ri:ri + step]], m, n, mode)
                 if not mode_r:
                     next(arrays[0]).append(result[0])
                     next(arrays[1]).append(result[1])
@@ -5136,7 +5500,7 @@ def qr(
         return q, r
 
     # Apply QR decomposition on a single matrix
-    return _qr(arr, s[0], s[1], mode)  # type: ignore[arg-type]
+    return _qr([[float(c) for c in row] for row in a], s[0], s[1], mode)  # type: ignore[arg-type]
 
 
 def matrix_rank(a: MatrixTLike[StrictNumber] | TensorTLike[StrictNumber]) -> Any:
@@ -5153,7 +5517,7 @@ def matrix_rank(a: MatrixTLike[StrictNumber] | TensorTLike[StrictNumber]) -> Any
     # Single matrix
     if dims == 2:
         rank = 0
-        sigma = _svd(cast('MatrixTLike[StrictNumber]', a), s[0], s[1], False, False)
+        sigma = _svd(cast('MatrixTLike[StrictNumber]', a), s[0], s[1], full_matrices=False, compute_uv=False)
         tol = max(sigma) * rtol
         for x in sigma:
             if x > tol:
@@ -5168,7 +5532,7 @@ def matrix_rank(a: MatrixTLike[StrictNumber] | TensorTLike[StrictNumber]) -> Any
     ranks = []  # type: Array
     with ArrayBuilder(ranks, first) as build:
         for r in range(0, len(rows), step):
-            sigma = _svd(rows[r:r + step], m, n, False, False)
+            sigma = _svd(rows[r:r + step], m, n, full_matrices=False, compute_uv=False)
             rank = 0
             tol = max(sigma) * rtol
             for x in sigma:
@@ -5221,7 +5585,7 @@ def solve(a: MatrixTLike[StrictNumber] | TensorTLike[StrictNumber], b: ArrayTLik
     dim2 = not dim1 and not isinstance(b[0][0], Sequence)  # type: ignore[index]
     if dims == 2 and (dim1 or dim2):
         # Get the LU decomposition
-        p, l, u = lu(a, p_indices=True, shape=s)
+        p, l, u = lu(cast('MatrixTLike[StrictNumber]', a), p_indices=True, shape=s)
 
         # If determinant is zero, we can't solve. Really small determinant may give bad results.
         if math.prod(l[i][i] * u[i][i] for i in range(size)) == 0.0:
@@ -5229,12 +5593,13 @@ def solve(a: MatrixTLike[StrictNumber] | TensorTLike[StrictNumber], b: ArrayTLik
 
         # Solve for x using forward substitution on U and back substitution on L
         if dim2:
+            b = cast('MatrixTLike[StrictNumber]', b)
             # Two matrices
-            size2 = len(b[0])  # type: ignore[arg-type]
+            size2 = len(b[0])
             if size != len(b):
                 raise ValueError('Mismatched dimensions')
 
-            ordered = []
+            ordered = []  # type: Matrix
             for i in p:
                 r = b[i]
                 if len(r) != size2:
@@ -5244,6 +5609,7 @@ def solve(a: MatrixTLike[StrictNumber] | TensorTLike[StrictNumber], b: ArrayTLik
             return _back_sub_matrix(u, _forward_sub_matrix(l, ordered, s2), s2)
 
         # Matrix and one vector
+        b = cast('VectorTLike[StrictNumber]', b)
         if len(b) != s[-2]:
             raise ValueError('Mismatched dimensions')
         b = [b[i] for i in p]
@@ -5321,10 +5687,10 @@ def det(array: MatrixTLike[StrictNumber] | TensorTLike[StrictNumber]) -> float |
         raise ValueError('Last two dimensions must be square')
     if len(s) == 2:
         size = s[0]
-        p, l, u = lu(array, shape=s)
+        p, l, u = lu(cast('MatrixTLike[StrictNumber]', array), shape=s)
         swaps = size - trace(p)
         _sign = (-1) ** (swaps - 1) if swaps else 1
-        dt = _sign * math.prod(l[i][i] * u[i][i] for i in range(size))
+        dt = cast('float', _sign * math.prod(l[i][i] * u[i][i] for i in range(size)))
         return 0.0 if not dt else dt
     else:
         last = s[-2:]  # type: ignore[misc]
@@ -5365,7 +5731,7 @@ def inv(matrix: MatrixTLike[StrictNumber] | TensorTLike[StrictNumber]) -> Matrix
 
     # Calculate the LU decomposition.
     size = s[0]
-    p, l, u = lu(matrix, shape=s)
+    p, l, u = lu(cast('MatrixTLike[StrictNumber]', matrix), shape=s)
 
     # Floating point math will produce very small, non-zero determinants for singular matrices.
     # This occurs with Numpy as well.
@@ -5417,8 +5783,8 @@ def pinv(a: MatrixTLike[StrictNumber] | TensorTLike[StrictNumber]) -> Matrix | T
     n = s[1]
     u, sigma, v = _svd(cast('MatrixTLike[StrictNumber]', a), m, n, full_matrices=False)
     tol = max(sigma) * max(m, n) * EPS
-    sigma = [[1 / x if x > tol else x] for x in sigma]
-    return matmul(v, multiply(sigma, transpose(u), dims=D2), dims=D2)  # type: ignore[no-any-return]
+    sigma = [[1 / x if x > tol else x] for x in sigma]  # type: ignore[]
+    return matmul(v, multiply(sigma, transpose(u), dims=D2), dims=D2)
 
 
 @overload
@@ -5850,7 +6216,7 @@ def flip(
                 raise ValueError('Repeated axis')
             axes.add(ai)
 
-    m = acopy(a)  # type: ArrayT[Number]  # type: ignore[arg-type]
+    m = ascopy(a)  # type: ArrayT[Number]  # type: ignore[arg-type]
     indexes = [-1] * l
     end = l - 1
 
@@ -5990,7 +6356,7 @@ def roll(
         return reshape(flat, s)
 
     axes = [axis] if isinstance(axis, int) else axis
-    m = acopy(cast('ArrayT[Number]', a))
+    m = ascopy(cast('ArrayT[Number]', a))
     l = len(s)
     indexes = [-1] * l
     end = l - 1

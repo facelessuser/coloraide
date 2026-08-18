@@ -7,6 +7,28 @@ from coloraide import algebra as alg
 class TestAlgebra(unittest.TestCase):
     """Test Algebra."""
 
+    def test_ascopy(self):
+        """Test "as copy"."""
+
+        a = [1, 2, 3, 4]
+        b = alg.ascopy(a)
+
+        self.assertEqual(a, b)
+
+        a[-1] = 5
+
+        self.assertNotEqual(a, b)
+
+    def test_astype(self):
+        """Test "as type"."""
+
+        a = [1, 2, 3, 4]
+        b = alg.astype(a, float)
+
+        self.assertEqual(a, b)
+        self.assertTrue(isinstance(a[0], int))
+        self.assertTrue(isinstance(b[0], float))
+
     def test_cross(self):
         """Test cross product."""
 
