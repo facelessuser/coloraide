@@ -55,4 +55,4 @@ class DEHelmlab(DeltaE):
         compressed = raw / (1.0 + COMPRESS * raw)
 
         # `mypy` is broken and can't figure out we are returning a float
-        return cast(float, compressed ** Q)
+        return cast('float', compressed ** Q)
