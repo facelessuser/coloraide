@@ -181,26 +181,6 @@ def round_to(
     return rounding(f, p)
 
 
-def minmax(value: VectorLike | Iterable[float]) -> tuple[float, float]:
-    """Return the minimum and maximum value."""
-
-    mn = math.inf
-    mx = -math.inf
-    e = -1
-
-    for i in value:
-        e += 1
-        if i > mx:
-            mx = i
-        if i < mn:
-            mn = i
-
-    if e == -1:
-        raise ValueError("minmax() arg is an empty sequence")
-
-    return mn, mx
-
-
 def clamp(
     value: StrictNumber,
     mn: StrictNumber | None = None,

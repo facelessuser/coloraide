@@ -2832,14 +2832,6 @@ class TestAlgebra(unittest.TestCase):
         self.assertEqual(alg.order(2), 0)
         self.assertEqual(alg.order(0.002), -3)
 
-    def test_min_max(self):
-        """Test getting the minimum and maximum value."""
-
-        self.assertEqual(alg.minmax([-4, 2, 8, 1]), (-4, 8))
-
-        with self.assertRaises(ValueError):
-            alg.minmax([])
-
     def test_sign(self):
         """Test sign."""
 
