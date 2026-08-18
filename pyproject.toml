@@ -178,7 +178,7 @@ lint = 'ruff check .'
 [tool.hatch.envs.docs.scripts]
 spellcheck = [
     "python tools/buildwheel.py",
-    "python -m zensical.main build -f zensical.yml --clean --strict; pyspelling"
+    "python -m zensical.main build -f zensical.yml --clean --strict; pyspelling -j 8"
 ]
 clean = [
     "python tools/buildwheel.py",
