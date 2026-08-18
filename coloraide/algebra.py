@@ -33,7 +33,7 @@ from .types import (
     MatrixInt, VectorInt, ArrayIntLike, Number, StrictNumber, VectorT, MatrixT, TensorT, ArrayT,  # noqa: F401
     Shape, DimHints, VectorTLike, MatrixTLike, TensorTLike, ArrayTLike
 )
-from typing import Callable, Sequence, Iterator, Any, Iterable, overload, Generic, cast
+from typing import Callable, Sequence, Iterator, Any, overload, Generic, cast
 
 EPS = sys.float_info.epsilon
 RTOL = 4 * EPS
