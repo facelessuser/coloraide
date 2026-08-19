@@ -77,9 +77,6 @@ Shape = EmptyShape | ArrayShape
 ShapeLike = Sequence[int]
 DimHints = tuple[int, int]
 
-# For times when we must explicitly say we support `int` and `float`
-SupportsFloatOrInt = TypeVar('SupportsFloatOrInt', float, int)
-
 
 class Plugin:
     """
