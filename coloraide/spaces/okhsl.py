@@ -240,23 +240,23 @@ def find_gamut_intersection(
         mdt2 = 6 * (m_dt ** 2) * m_
         sdt2 = 6 * (s_dt ** 2) * s_
 
-        r = alg.matmul_x3(lms_to_rgb[0], [l, m, s], dims=alg.D1) - 1
-        r1 = alg.matmul_x3(lms_to_rgb[0], [ldt, mdt, sdt], dims=alg.D1)
-        r2 = alg.matmul_x3(lms_to_rgb[0], [ldt2, mdt2, sdt2], dims=alg.D1)
+        r = alg.vdot_x3(lms_to_rgb[0], [l, m, s]) - 1
+        r1 = alg.vdot_x3(lms_to_rgb[0], [ldt, mdt, sdt])
+        r2 = alg.vdot_x3(lms_to_rgb[0], [ldt2, mdt2, sdt2])
 
         u_r = r1 / (r1 * r1 - 0.5 * r * r2)
         t_r = -r * u_r
 
-        g = alg.matmul_x3(lms_to_rgb[1], [l, m, s], dims=alg.D1) - 1
-        g1 = alg.matmul_x3(lms_to_rgb[1], [ldt, mdt, sdt], dims=alg.D1)
-        g2 = alg.matmul_x3(lms_to_rgb[1], [ldt2, mdt2, sdt2], dims=alg.D1)
+        g = alg.vdot_x3(lms_to_rgb[1], [l, m, s]) - 1
+        g1 = alg.vdot_x3(lms_to_rgb[1], [ldt, mdt, sdt])
+        g2 = alg.vdot_x3(lms_to_rgb[1], [ldt2, mdt2, sdt2])
 
         u_g = g1 / (g1 * g1 - 0.5 * g * g2)
         t_g = -g * u_g
 
-        b = alg.matmul_x3(lms_to_rgb[2], [l, m, s], dims=alg.D1) - 1
-        b1 = alg.matmul_x3(lms_to_rgb[2], [ldt, mdt, sdt], dims=alg.D1)
-        b2 = alg.matmul_x3(lms_to_rgb[2], [ldt2, mdt2, sdt2], dims=alg.D1)
+        b = alg.vdot_x3(lms_to_rgb[2], [l, m, s]) - 1
+        b1 = alg.vdot_x3(lms_to_rgb[2], [ldt, mdt, sdt])
+        b2 = alg.vdot_x3(lms_to_rgb[2], [ldt2, mdt2, sdt2])
 
         u_b = b1 / (b1 * b1 - 0.5 * b * b2)
         t_b = -b * u_b

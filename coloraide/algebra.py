@@ -1168,7 +1168,7 @@ class SpragueInterpolator(Interpolator):
             # and we use the first 6 starting points as context. The last two
             # relate to the end points and use the last t points as context.
             s0[i], s1[i], e0[i], e1[i] = [
-                matmul(row, [j[i] for j in (p1 if e < 2 else p2)], dims=D1) / 209
+                vdot(row, [j[i] for j in (p1 if e < 2 else p2)]) / 209
                 for e, row in enumerate(cls.SPRAGUE_COEFFICIENTS)
             ]
         points.insert(0, s0)
@@ -1387,6 +1387,12 @@ def vdot(a: VectorTLike[StrictNumber], b: VectorTLike[StrictNumber]) -> StrictNu
         s += a[i] * b[i]  # type: ignore[assignment]
         i += 1
     return s
+
+
+def vdot_x3(a: VectorTLike[StrictNumber], b: VectorTLike[StrictNumber]) -> StrictNumber:
+    """Dot two length 3 vectors."""
+
+    return a[0] * b[0] + a[1] * b[1] + a[2] * b[2]
 
 
 def vcross(v1: VectorTLike[StrictNumber], v2: VectorTLike[StrictNumber]) -> Any:  # pragma: no cover
