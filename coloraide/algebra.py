@@ -28,10 +28,8 @@ import operator
 import functools
 import itertools as it
 from .types import (
-    EmptyShape, VectorShape, MatrixShape, TensorShape, ArrayShape, VectorLike,
-    Array, Matrix, Tensor, Vector, VectorBool, MatrixBool, TensorBool, ArrayBool,
-    MatrixInt, VectorInt, ArrayIntLike, Number, StrictNumber, VectorT, MatrixT, TensorT, ArrayT,  # noqa: F401
-    Shape, DimHints, VectorTLike, MatrixTLike, TensorTLike, ArrayTLike
+    Number, StrictNumber, Shape, DimHints, EmptyShape, VectorShape, MatrixShape, TensorShape, ArrayShape,
+    VectorT, MatrixT, TensorT, ArrayT, VectorTLike, MatrixTLike, TensorTLike, ArrayTLike
 )
 from typing import Callable, Sequence, Iterator, Any, overload, Generic, Literal, cast
 
@@ -289,7 +287,7 @@ def solve_bisect(
     return t, math.isclose(x, 0, rel_tol=rtol, abs_tol=atol)  # pragma: no cover
 
 
-def _solve_quadratic(poly: VectorLike) -> Vector:
+def _solve_quadratic(poly: VectorTLike[float]) -> VectorT[float]:
     """
     Solve a quadratic equation.
 
@@ -324,7 +322,7 @@ def _solve_quadratic(poly: VectorLike) -> Vector:
     return [m]
 
 
-def _solve_cubic(poly: VectorLike) -> Vector:
+def _solve_cubic(poly: VectorTLike[float]) -> VectorT[float]:
     """
     Solve a cubic equation using Cardano's Method.
 
@@ -401,12 +399,12 @@ def _solve_cubic(poly: VectorLike) -> Vector:
 
 
 def solve_nth_poly(
-    coef: VectorLike,
+    coef: VectorTLike[float],
     guess: float = 0.5,
     maxiter: int = 50,
     rtol: float = RTOL,
     atol: float = ATOL
-) -> Vector:
+) -> VectorT[float]:
     """
     Solve polynomial of nth degree.
 
@@ -420,7 +418,7 @@ def solve_nth_poly(
     assuming there are no more real roots, even if that is not true.
     """
 
-    roots = []  # type: Vector
+    roots = []  # type: VectorT[float]
     while len(coef) > 4:
         root, status = solve_newton(
             guess,
@@ -452,7 +450,7 @@ def solve_nth_poly(
     return roots
 
 
-def solve_poly(poly: VectorLike) -> Vector:
+def solve_poly(poly: VectorTLike[float]) -> VectorT[float]:
     """
     Solve the given polynomial.
 
@@ -631,7 +629,7 @@ def bilerp(p0: float, p1: float, p2: float, p3: float, tx: float, ty: float) -> 
     return lerp(lerp(p0, p1, tx), lerp(p2, p3, tx), ty)
 
 
-def lerp2d(vertices: Matrix, t: Vector) -> Vector:
+def lerp2d(vertices: MatrixT[float], t: VectorT[float]) -> VectorT[float]:
     """
     Interpolate in 2D.
 
@@ -642,13 +640,13 @@ def lerp2d(vertices: Matrix, t: Vector) -> Vector:
 
 
 def ilerp2d(
-    vertices: Matrix,
-    point: Vector,
+    vertices: MatrixT[float],
+    point: VectorT[float],
     *,
-    guess: Vector | None = None,
+    guess: VectorT[float] | None = None,
     max_iter: int = 20,
     tol: float = ATOL
-) -> Vector:
+) -> VectorT[float]:
     """
     Inverse interpolation of a 2D point.
 
@@ -721,9 +719,9 @@ def trilerp(
 
 
 def lerp3d(
-    vertices: Matrix,
-    t: Vector
-) -> Vector:
+    vertices: MatrixT[float],
+    t: VectorT[float]
+) -> VectorT[float]:
     """
     Interpolation in 3D.
 
@@ -734,13 +732,13 @@ def lerp3d(
 
 
 def ilerp3d(
-    vertices: Matrix,
-    point: Vector,
+    vertices: MatrixT[float],
+    point: VectorT[float],
     *,
-    guess: Vector | None = None,
+    guess: VectorT[float] | None = None,
     max_iter: int = 50,
     tol: float = ATOL
-) -> Vector:
+) -> VectorT[float]:
     """
     Inverse trilinear interpolation.
 
@@ -824,8 +822,8 @@ class Interpolator:
 
     def __init__(
         self,
-        points: list[Vector],
-        domain: VectorLike | None,
+        points: list[VectorT[float]],
+        domain: VectorTLike[float] | None,
         extrapolate: bool = True,
         **kwargs: Any
     ) -> None:
@@ -840,18 +838,18 @@ class Interpolator:
         self.increasing = not self.domain or len(self.domain) == 1 or self.domain[1] > self.domain[0]
 
     @classmethod
-    def preprocess(cls, points: list[Vector], **kwargs: Any) -> None:
+    def preprocess(cls, points: list[VectorT[float]], **kwargs: Any) -> None:
         """Apply any preprocessing points."""
 
         pass
 
-    def steps(self, count: int) -> list[Vector]:
+    def steps(self, count: int) -> list[VectorT[float]]:
         """Generate steps."""
 
         divisor = count - 1
         return [self(r / divisor) for r in range(0, count)]
 
-    def run(self, i: int, t: float) -> Vector:
+    def run(self, i: int, t: float) -> VectorT[float]:
         """Begin interpolation."""
 
         coord = []
@@ -887,7 +885,7 @@ class Interpolator:
             t = size * index + (adjusted * size)
         return t
 
-    def __call__(self, t: float) -> Vector:
+    def __call__(self, t: float) -> VectorT[float]:
         """Interpolate."""
 
         t = self.handle_domain(t)
@@ -907,8 +905,8 @@ class _CubicInterpolator(Interpolator):
 
     def __init__(
         self,
-        points: list[Vector],
-        domain: VectorLike | None,
+        points: list[VectorT[float]],
+        domain: VectorTLike[float] | None,
         **kwargs: Any
     ) -> None:
         """Initialize."""
@@ -917,7 +915,7 @@ class _CubicInterpolator(Interpolator):
         super().__init__(points, domain, **kwargs)
 
     @classmethod
-    def preprocess(cls, points: list[Vector], end_cond: str | None = None, **kwargs: Any) -> None:
+    def preprocess(cls, points: list[VectorT[float]], end_cond: str | None = None, **kwargs: Any) -> None:
         """Apply any preprocessing points."""
 
         if end_cond is None:
@@ -938,7 +936,7 @@ class _CubicInterpolator(Interpolator):
 
         raise NotImplementedError('This function is not implemented')
 
-    def run(self, i: int, t: float) -> Vector:
+    def run(self, i: int, t: float) -> VectorT[float]:
         """Begin interpolation."""
 
         coord = []
@@ -1077,10 +1075,10 @@ class BSplineInterpolator(_CubicInterpolator):
 
 
 @functools.lru_cache(maxsize=10)
-def _matrix_141(n: int) -> Matrix:
+def _matrix_141(n: int) -> MatrixT[float]:
     """Get matrix '1 4 1'."""
 
-    m = [[0] * n for _ in range(n)]  # type: Matrix
+    m = [[0] * n for _ in range(n)]  # type: MatrixT[float]
     m[0][0:2] = M141[1:]
     m[-1][-2:] = M141[:-1]
     for x in range(n - 2):
@@ -1094,7 +1092,7 @@ class NaturalBSplineInterpolator(BSplineInterpolator):
     DEF_END_COND = 'natural'
 
     @staticmethod
-    def naturalize(points: list[Vector]) -> None:
+    def naturalize(points: list[VectorT[float]]) -> None:
         """
         Given a set of B-spline control points in the Nth dimension, create naturalized interpolation control points.
 
@@ -1118,7 +1116,7 @@ class NaturalBSplineInterpolator(BSplineInterpolator):
             m = _matrix_141(n)
 
             # Create C matrix from the data points
-            c = []  # type: Matrix
+            c = []  # type: MatrixT[float]
             for r in range(1, n + 1):
                 if r == 1:
                     c.append([a * 6 - b for a, b in zip(points[r], points[r - 1])])
@@ -1133,7 +1131,7 @@ class NaturalBSplineInterpolator(BSplineInterpolator):
                 points[r] = v[r - 1]
 
     @classmethod
-    def preprocess(cls, points: list[Vector], end_cond: str | None = None, **kwargs: Any) -> None:
+    def preprocess(cls, points: list[VectorT[float]], end_cond: str | None = None, **kwargs: Any) -> None:
         """Apply any preprocessing points."""
 
         cls.naturalize(points)
@@ -1151,7 +1149,7 @@ class SpragueInterpolator(Interpolator):
     ]
 
     @classmethod
-    def preprocess(cls, points: list[Vector], **kwargs: Any) -> None:
+    def preprocess(cls, points: list[VectorT[float]], **kwargs: Any) -> None:
         """Apply any preprocessing points."""
 
         if len(points) < 6:
@@ -1195,7 +1193,7 @@ class SpragueInterpolator(Interpolator):
 
         return a0 + a1 * t + a2 * t2 + a3 * t3 + a4 * t4 + a5 * t5
 
-    def run(self, i: int, t: float) -> Vector:
+    def run(self, i: int, t: float) -> VectorT[float]:
         """Begin interpolation."""
 
         coord = []
@@ -1226,8 +1224,8 @@ SPLINES = {
 
 
 def interpolate(
-    points: list[Vector] | Vector,
-    domain: VectorLike | None = None,
+    points: list[VectorT[float]] | VectorT[float],
+    domain: VectorTLike[float] | None = None,
     method: str = 'linear',
     extrapolate: bool = True,
     **kwargs: Any
@@ -1242,7 +1240,7 @@ def interpolate(
             **kwargs
         )
     return SPLINES[method](
-        cast('list[Vector]', [[p] for p in points]),
+        cast('list[VectorT[float]]', [[p] for p in points]),
         domain=domain,
         extrapolate=extrapolate,
         **kwargs
@@ -1313,7 +1311,7 @@ def line_interesect(
     e2: VectorTLike[StrictNumber],
     rel_tol: float = RTOL,
     abs_tol: float = ATOL
-) -> Vector | None:
+) -> VectorT[float] | None:
     """
     Find intersection of two lines.
 
@@ -2145,7 +2143,7 @@ def dot_x3(
     )
 
 
-def _matrix_chain_order(shapes: Sequence[ArrayShape]) -> MatrixInt:
+def _matrix_chain_order(shapes: Sequence[ArrayShape]) -> MatrixT[int]:
     """
     Calculate chain order.
 
@@ -2164,7 +2162,7 @@ def _matrix_chain_order(shapes: Sequence[ArrayShape]) -> MatrixInt:
 
     n = len(shapes)
     m = full((n, n), 0)  # type: Any
-    s = full((n, n), 0)  # type: MatrixInt
+    s = full((n, n), 0)  # type: MatrixT[int]
     p = [a[0] for a in shapes] + [shapes[-1][1]]
 
     for d in range(1, n):
@@ -2179,7 +2177,7 @@ def _matrix_chain_order(shapes: Sequence[ArrayShape]) -> MatrixInt:
     return s
 
 
-def _multi_dot(arrays: Sequence[ArrayTLike[StrictNumber]], indexes: MatrixInt, i: int, j: int) -> Any:
+def _multi_dot(arrays: Sequence[ArrayTLike[StrictNumber]], indexes: MatrixT[int], i: int, j: int) -> Any:
     """Recursively dot the matrices in the array."""
 
     if i != j:
@@ -2678,7 +2676,7 @@ class vectorize:
             bcast = broadcast(*vinputs)
             new_shape = bcast.shape
             # Build up the matrix
-            m = []  # type: Array
+            m = []  # type: ArrayT[float]
             with ArrayBuilder(m, new_shape) as build:
                 for vargs in bcast:
                     # Update arguments with vectorized arguments
@@ -2740,7 +2738,7 @@ class _vectorize1:
             return [[func(c) for c in r] for r in a]  # type: ignore[union-attr]
 
         # Unknown size or larger than 2D (slow)
-        m = []  # type: Array
+        m = []  # type: ArrayT[float]
         s = shape(a)
         with ArrayBuilder(m, s) as build:
             for f in flatiter(a, shape=s):
@@ -2769,7 +2767,7 @@ class _vectorize2:
         self.__name__ = self.func.__name__
         self.__doc__ = self.func.__doc__ if doc is None else doc
 
-    def _vector_apply(self, a: VectorLike, b: VectorLike, func: Callable[..., Any]) -> Any:
+    def _vector_apply(self, a: VectorTLike[float], b: VectorTLike[float], func: Callable[..., Any]) -> Any:
         """Apply a function to two vectors."""
 
         # Broadcast the vector
@@ -2799,7 +2797,7 @@ class _vectorize2:
 
             # Handle matrices of N-D and M-D size
             if dims_a > 2 or dims_b > 2:
-                m = []  # type: Array
+                m = []  # type: ArrayT[float]
                 # Apply math to two N-D matrices
                 if dims_a == dims_b:
                     empty = (not shape_a or 0 in shape_a) and (not shape_b or 0 in shape_b)
@@ -3084,7 +3082,7 @@ def vectorize2(
 
 
 @overload
-def linspace(start: StrictNumber, stop: StrictNumber, num: int = ..., endpoint: bool = ...) -> Vector:
+def linspace(start: StrictNumber, stop: StrictNumber, num: int = ..., endpoint: bool = ...) -> VectorT[float]:
     ...
 
 
@@ -3094,7 +3092,7 @@ def linspace(
     stop: VectorTLike[StrictNumber] | StrictNumber,
     num: int = ...,
     endpoint: bool = ...
-) -> Matrix:
+) -> MatrixT[float]:
     ...
 
 
@@ -3104,7 +3102,7 @@ def linspace(
     stop: VectorTLike[StrictNumber],
     num: int = ...,
     endpoint: bool = ...
-) -> Matrix:
+) -> MatrixT[float]:
     ...
 
 
@@ -3114,7 +3112,7 @@ def linspace(
     stop: ArrayTLike[StrictNumber],
     num: int = ...,
     endpoint: bool = ...
-) -> Tensor:
+) -> TensorT[float]:
     ...
 
 
@@ -3124,7 +3122,7 @@ def linspace(
     stop: MatrixTLike[StrictNumber],
     num: int = ...,
     endpoint: bool = ...
-) -> Tensor:
+) -> TensorT[float]:
     ...
 
 
@@ -3133,7 +3131,7 @@ def linspace(
     stop: ArrayTLike[StrictNumber] | StrictNumber,
     num: int = 50,
     endpoint: bool = True
-) -> Array:
+) -> ArrayT[float]:
     """Create a series of points in a linear space."""
 
     if num < 0:
@@ -3225,7 +3223,7 @@ def isclose(
     *,
     dims: DimHints = ...,
     **kwargs: Any
-) -> VectorBool:
+) -> VectorT[bool]:
     ...
 
 
@@ -3236,7 +3234,7 @@ def isclose(
     *,
     dims: DimHints = ...,
     **kwargs: Any
-) -> MatrixBool:
+) -> MatrixT[bool]:
     ...
 
 
@@ -3247,7 +3245,7 @@ def isclose(
     *,
     dims: DimHints = ...,
     **kwargs: Any
-) -> TensorBool:
+) -> TensorT[bool]:
     ...
 
 
@@ -3258,7 +3256,7 @@ def isclose(
     *,
     dims: DimHints = ...,
     **kwargs: Any
-) -> ArrayBool:
+) -> ArrayT[bool]:
     ...
 
 
@@ -3271,22 +3269,22 @@ def isnan(a: StrictNumber, *, dims: DimHints = ..., **kwargs: Any) -> bool:
 
 
 @overload
-def isnan(a: VectorTLike[StrictNumber], *, dims: DimHints = ..., **kwargs: Any) -> VectorBool:
+def isnan(a: VectorTLike[StrictNumber], *, dims: DimHints = ..., **kwargs: Any) -> VectorT[bool]:
     ...
 
 
 @overload
-def isnan(a: MatrixTLike[StrictNumber], *, dims: DimHints = ..., **kwargs: Any) -> MatrixBool:
+def isnan(a: MatrixTLike[StrictNumber], *, dims: DimHints = ..., **kwargs: Any) -> MatrixT[bool]:
     ...
 
 
 @overload
-def isnan(a: TensorTLike[StrictNumber], *, dims: DimHints = ..., **kwargs: Any) -> TensorBool:
+def isnan(a: TensorTLike[StrictNumber], *, dims: DimHints = ..., **kwargs: Any) -> TensorT[bool]:
     ...
 
 
 @overload
-def isnan(a: ArrayTLike[StrictNumber], *, dims: DimHints = ..., **kwargs: Any) -> ArrayBool:
+def isnan(a: ArrayTLike[StrictNumber], *, dims: DimHints = ..., **kwargs: Any) -> ArrayT[bool]:
     ...
 
 
@@ -3321,7 +3319,7 @@ def sign(a: ArrayTLike[StrictNumber], *, dims: DimHints = ..., **kwargs: Any) ->
 sign = vectorize2(sgn, doc="Return the sign of a number.", params=1)
 
 
-def prod(a: ArrayIntLike | int) -> int:
+def prod(a: ArrayTLike[StrictNumber] | StrictNumber) -> StrictNumber:
     """Return the product."""
 
     s = shape(a)
@@ -3421,7 +3419,7 @@ def divide(
     b: VectorTLike[StrictNumber],
     *,
     dims: DimHints = ...
-) -> Vector:
+) -> VectorT[float]:
     ...
 
 
@@ -3431,7 +3429,7 @@ def divide(
     b: StrictNumber | VectorTLike[StrictNumber],
     *,
     dims: DimHints = ...
-) -> Vector:
+) -> VectorT[float]:
     ...
 
 
@@ -3441,7 +3439,7 @@ def divide(
     b: StrictNumber | VectorTLike[StrictNumber] | MatrixTLike[StrictNumber],
     *,
     dims: DimHints = ...
-) -> Matrix:
+) -> MatrixT[float]:
     ...
 
 
@@ -3451,7 +3449,7 @@ def divide(
     b: MatrixTLike[StrictNumber],
     *,
     dims: DimHints = ...
-) -> Matrix:
+) -> MatrixT[float]:
     ...
 
 
@@ -3461,7 +3459,7 @@ def divide(
     b: StrictNumber | ArrayTLike[StrictNumber],
     *,
     dims: DimHints = ...
-) -> Tensor:
+) -> TensorT[float]:
     ...
 
 
@@ -3471,7 +3469,7 @@ def divide(
     b: TensorTLike[StrictNumber],
     *,
     dims: DimHints = ...
-) -> Tensor:
+) -> TensorT[float]:
     ...
 
 
@@ -3692,7 +3690,7 @@ def divide_x3(
     b: VectorTLike[StrictNumber],
     *,
     dims: DimHints = ...
-) -> Vector:
+) -> VectorT[float]:
     ...
 
 
@@ -3702,7 +3700,7 @@ def divide_x3(
     b: StrictNumber | VectorTLike[StrictNumber],
     *,
     dims: DimHints = ...
-) -> Vector:
+) -> VectorT[float]:
     ...
 
 
@@ -3712,7 +3710,7 @@ def divide_x3(
     b: StrictNumber | VectorTLike[StrictNumber] | MatrixTLike[StrictNumber],
     *,
     dims: DimHints = ...
-) -> Matrix:
+) -> MatrixT[float]:
     ...
 
 
@@ -3722,7 +3720,7 @@ def divide_x3(
     b: MatrixTLike[StrictNumber],
     *,
     dims: DimHints = ...
-) -> Matrix:
+) -> MatrixT[float]:
     ...
 
 
@@ -3901,21 +3899,21 @@ def ones(array_shape: EmptyShape) -> float:
 
 
 @overload
-def ones(array_shape: int | VectorShape) -> Vector:
+def ones(array_shape: int | VectorShape) -> VectorT[float]:
     ...
 
 
 @overload
-def ones(array_shape: MatrixShape) -> Matrix:
+def ones(array_shape: MatrixShape) -> MatrixT[float]:
     ...
 
 
 @overload
-def ones(array_shape: TensorShape) -> Tensor:
+def ones(array_shape: TensorShape) -> TensorT[float]:
     ...
 
 
-def ones(array_shape: int | Shape) -> Array | float:
+def ones(array_shape: int | Shape) -> ArrayT[float] | float:
     """Create and fill a shape with ones."""
 
     return full(array_shape, 1.0)  # type: ignore[arg-type]
@@ -3926,21 +3924,21 @@ def zeros(array_shape: EmptyShape) -> float:
     ...
 
 @overload
-def zeros(array_shape: int | VectorShape) -> Vector:
+def zeros(array_shape: int | VectorShape) -> VectorT[float]:
     ...
 
 
 @overload
-def zeros(array_shape: MatrixShape) -> Matrix:
+def zeros(array_shape: MatrixShape) -> MatrixT[float]:
     ...
 
 
 @overload
-def zeros(array_shape: TensorShape) -> Tensor:
+def zeros(array_shape: TensorShape) -> TensorT[float]:
     ...
 
 
-def zeros(array_shape: int | Shape) -> Array | float:
+def zeros(array_shape: int | Shape) -> ArrayT[float] | float:
     """Create and fill a shape with zeros."""
 
     return full(array_shape, 0.0)  # type: ignore[arg-type]
@@ -4052,7 +4050,7 @@ def arange(
     start: StrictNumber,
     stop: StrictNumber | None = None,
     step: StrictNumber = 1
-) -> Vector:
+) -> VectorT[float]:
     """
     Like arrange, but handles floats as well.
 
@@ -4329,7 +4327,7 @@ def fill_diagonal(
         pos = pos + 1 if pos < dlen else 0
 
 
-def eye(n: int, m: int | None = None, k: int = 0) -> Matrix:
+def eye(n: int, m: int | None = None, k: int = 0) -> MatrixT[float]:
     """Create a diagonal of ones in a zero initialized matrix at the specified position."""
 
     if m is None:
@@ -4338,7 +4336,7 @@ def eye(n: int, m: int | None = None, k: int = 0) -> Matrix:
     # Length of diagonal
     dlen = m if n > m and k < 0 else (m - abs(k))
 
-    a = []  # type: Matrix
+    a = []  # type: MatrixT[float]
     for i in range(n):
         pos = i + k
         idx = i if k >= 0 else pos
@@ -4351,7 +4349,7 @@ def eye(n: int, m: int | None = None, k: int = 0) -> Matrix:
     return a
 
 
-def identity(size: int) -> Matrix:
+def identity(size: int) -> MatrixT[float]:
     """Create an identity matrix."""
 
     return [[1.0 if i == j else 0.0 for j in range(size)] for i in range(size)]
@@ -4415,7 +4413,7 @@ def lu(
     permute_l: Literal[True],
     p_indices: Literal[True] | Literal[False] | bool = False,
     shape: Shape | None
-) -> tuple[Matrix, Matrix]:
+) -> tuple[MatrixT[float], MatrixT[float]]:
     ...
 
 
@@ -4426,7 +4424,7 @@ def lu(
     permute_l: Literal[False] = False,
     p_indices: Literal[True],
     shape: Shape | None
-) -> tuple[VectorT[int], Matrix, Matrix]:
+) -> tuple[VectorT[int], MatrixT[float], MatrixT[float]]:
     ...
 
 
@@ -4437,7 +4435,7 @@ def lu(
     permute_l: Literal[False] = False,
     p_indices: Literal[False] = False,
     shape: Shape | None
-) -> tuple[Matrix, Matrix, Matrix]:
+) -> tuple[MatrixT[float], MatrixT[float], MatrixT[float]]:
     ...
 
 
@@ -4448,7 +4446,10 @@ def lu(
     permute_l: Literal[False] = False,
     p_indices: bool,
     shape: Shape | None
-) -> tuple[Matrix, Matrix, Matrix] | tuple[VectorT[int], Matrix, Matrix]:
+) -> (
+    tuple[MatrixT[float], MatrixT[float], MatrixT[float]] |
+    tuple[VectorT[int], MatrixT[float], MatrixT[float]]
+):
     ...
 
 
@@ -4459,7 +4460,11 @@ def lu(
     permute_l: bool,
     p_indices: bool,
     shape: Shape | None
-) -> tuple[Matrix, Matrix] | tuple[Matrix, Matrix, Matrix] | tuple[VectorT[int], Matrix, Matrix]:
+) -> (
+    tuple[MatrixT[float], MatrixT[float]] |
+    tuple[MatrixT[float], MatrixT[float], MatrixT[float]] |
+    tuple[VectorT[int], MatrixT[float], MatrixT[float]]
+):
     ...
 
 
@@ -4470,7 +4475,7 @@ def lu(
     permute_l: Literal[True],
     p_indices: Literal[True] | Literal[False] | bool = False,
     shape: Shape | None
-) -> tuple[Tensor, Tensor]:
+) -> tuple[TensorT[float], TensorT[float]]:
     ...
 
 
@@ -4481,7 +4486,7 @@ def lu(
     permute_l: Literal[False] = False,
     p_indices: Literal[True],
     shape: Shape | None
-) -> tuple[MatrixT[int], Tensor, Tensor]:
+) -> tuple[MatrixT[int], TensorT[float], TensorT[float]]:
     ...
 
 
@@ -4492,7 +4497,7 @@ def lu(
     permute_l: Literal[False] = False,
     p_indices: Literal[False] = False,
     shape: Shape | None
-) -> tuple[Tensor, Tensor, Tensor]:
+) -> tuple[TensorT[float], TensorT[float], TensorT[float]]:
     ...
 
 
@@ -4503,7 +4508,10 @@ def lu(
     permute_l: Literal[False] = False,
     p_indices: bool,
     shape: Shape | None
-) -> tuple[Tensor, Tensor, Tensor] | tuple[MatrixT[int], Tensor, Tensor]:
+) -> (
+    tuple[TensorT[float], TensorT[float], TensorT[float]] |
+    tuple[MatrixT[int], TensorT[float], TensorT[float]]
+):
     ...
 
 @overload
@@ -4513,7 +4521,11 @@ def lu(
     permute_l: bool,
     p_indices: bool,
     shape: Shape | None
-) -> tuple[Tensor, Tensor] | tuple[Tensor, Tensor, Tensor] | tuple[MatrixT[int], Tensor, Tensor]:
+) -> (
+    tuple[TensorT[float], TensorT[float]] |
+    tuple[TensorT[float], TensorT[float], TensorT[float]] |
+    tuple[MatrixT[int], TensorT[float], TensorT[float]]
+):
     ...
 
 
@@ -4524,12 +4536,12 @@ def lu(
     p_indices: bool = False,
     shape: Shape | None = None
 ) ->  (
-    tuple[Matrix, Matrix] |
-    tuple[Tensor, Tensor] |
-    tuple[Matrix, Matrix, Matrix] |
-    tuple[Tensor, Tensor, Tensor] |
-    tuple[VectorT[int], Matrix, Matrix] |
-    tuple[MatrixT[int], Tensor, Tensor]
+    tuple[MatrixT[float], MatrixT[float]] |
+    tuple[TensorT[float], TensorT[float]] |
+    tuple[MatrixT[float], MatrixT[float], MatrixT[float]] |
+    tuple[TensorT[float], TensorT[float], TensorT[float]] |
+    tuple[VectorT[int], MatrixT[float], MatrixT[float]] |
+    tuple[MatrixT[int], TensorT[float], TensorT[float]]
 ):
     """
     Calculate `LU` decomposition.
@@ -4559,8 +4571,8 @@ def lu(
         first = s[:-2]  # type: Shape
         rows = cast('MatrixTLike[StrictNumber]', list(_extract_rows(matrix, s)))
         step = last[-2]
-        lt = []  # type: Tensor
-        ut = []  # type: Tensor
+        lt = []  # type: TensorT[float]
+        ut = []  # type: TensorT[float]
         if not permute_l:
             pt = []  # type: Any
             builder = MultiArrayBuilder([pt, lt, ut], [first, first, first])
@@ -4673,7 +4685,7 @@ def lu(
     return p, l, u
 
 
-def _forward_sub_vector(a: Matrix, b: Vector, size: int) -> Vector:
+def _forward_sub_vector(a: MatrixT[float], b: VectorT[float], size: int) -> VectorT[float]:
     """Forward substitution for solution of `L x = b`."""
 
     for i in range(size):
@@ -4684,7 +4696,7 @@ def _forward_sub_vector(a: Matrix, b: Vector, size: int) -> Vector:
     return b
 
 
-def _forward_sub_matrix(a: Matrix, b: Matrix, s: ArrayShape) -> Matrix:
+def _forward_sub_matrix(a: MatrixT[float], b: MatrixT[float], s: ArrayShape) -> MatrixT[float]:
     """Forward substitution for solution of `L x = b` where `b` is a matrix."""
 
     size1, size2 = s
@@ -4698,7 +4710,7 @@ def _forward_sub_matrix(a: Matrix, b: Matrix, s: ArrayShape) -> Matrix:
     return b
 
 
-def _back_sub_vector(a: Matrix, b: Vector, size: int) -> Vector:
+def _back_sub_vector(a: MatrixT[float], b: VectorT[float], size: int) -> VectorT[float]:
     """Back substitution for solution of `U x = b`."""
 
     for i in range(size - 1, -1, -1):
@@ -4709,7 +4721,7 @@ def _back_sub_vector(a: Matrix, b: Vector, size: int) -> Vector:
     return b
 
 
-def _back_sub_matrix(a: Matrix, b: Matrix, s: ArrayShape) -> Matrix:
+def _back_sub_matrix(a: MatrixT[float], b: MatrixT[float], s: ArrayShape) -> MatrixT[float]:
     """Back substitution for solution of `U x = b`."""
 
     size1, size2 = s
@@ -4726,9 +4738,9 @@ def _back_sub_matrix(a: Matrix, b: Matrix, s: ArrayShape) -> Matrix:
 def _householder_reduction_bidiagonal(
     m: int,
     n: int,
-    e: Vector,
-    u: Matrix,
-    q: Vector,
+    e: VectorT[float],
+    u: MatrixT[float],
+    q: VectorT[float],
     tol: float
 ) -> tuple[float, int, float, float]:
     """Householder's reduction to bidiagonal form."""
@@ -4804,7 +4816,14 @@ def _householder_reduction_bidiagonal(
     return g, l, x, y
 
 
-def _accumulate_right_transfrom(n: int, g: float, l: int, e: Vector, u: Matrix, v: Matrix) -> float:
+def _accumulate_right_transfrom(
+    n: int,
+    g: float,
+    l: int,
+    e: VectorT[float],
+    u: MatrixT[float],
+    v: MatrixT[float]
+) -> float:
     """Accumulation of right hand transformations."""
 
     for i in range(n - 1, -1, -1):
@@ -4834,7 +4853,14 @@ def _accumulate_right_transfrom(n: int, g: float, l: int, e: Vector, u: Matrix, 
     return g
 
 
-def _accumulate_left_transform(m: int, n: int, g: float, l: int, u: Matrix, q: Vector) -> float:
+def _accumulate_left_transform(
+    m: int,
+    n: int,
+    g: float,
+    l: int,
+    u: MatrixT[float],
+    q: VectorT[float]
+) -> float:
     """Accumulation of left hand transformations."""
 
     for i in range(n - 1, -1, -1):
@@ -4884,10 +4910,10 @@ def _diagonalization_of_bidiagonal(
     g: float,
     x: float,
     y: float,
-    e: Vector,
-    u: Matrix,
-    q: Vector,
-    v: Matrix,
+    e: VectorT[float],
+    u: MatrixT[float],
+    q: VectorT[float],
+    v: MatrixT[float],
     eps: float
 ) -> None:
     """Diagonalization of the bidiagonal form."""
@@ -5001,7 +5027,7 @@ def _svd(
     n: int,
     full_matrices: bool,
     compute_uv: Literal[False]
-) ->  Vector:
+) ->  VectorT[float]:
     ...
 
 
@@ -5012,7 +5038,7 @@ def _svd(
     n: int,
     full_matrices: bool,
     compute_uv: Literal[True] = True
-) ->  tuple[Matrix, Vector, Matrix]:
+) ->  tuple[MatrixT[float], VectorT[float], MatrixT[float]]:
     ...
 
 
@@ -5023,7 +5049,7 @@ def _svd(
     n: int,
     full_matrices: bool,
     compute_uv: bool,
-) ->  tuple[Matrix, Vector, Matrix] | Vector:
+) ->  tuple[MatrixT[float], VectorT[float], MatrixT[float]] | VectorT[float]:
     ...
 
 
@@ -5033,7 +5059,7 @@ def _svd(
     n: int,
     full_matrices: bool = True,
     compute_uv: bool = True
-) -> tuple[Matrix, Vector, Matrix] | Vector:
+) -> tuple[MatrixT[float], VectorT[float], MatrixT[float]] | VectorT[float]:
     """
     Compute the singular value decomposition of a matrix.
 
@@ -5096,7 +5122,7 @@ def svd(
     a: MatrixTLike[StrictNumber],
     full_matrices: bool,
     compute_uv: Literal[False]
-) -> Vector:
+) -> VectorT[float]:
     ...
 
 
@@ -5105,7 +5131,7 @@ def svd(
     a: MatrixTLike[StrictNumber],
     full_matrices: bool,
     compute_uv: Literal[True] = True,
-) -> tuple[Matrix, Vector, Matrix]:
+) -> tuple[MatrixT[float], VectorT[float], MatrixT[float]]:
     ...
 
 
@@ -5114,7 +5140,7 @@ def svd(
     a: MatrixTLike[StrictNumber],
     full_matrices: bool,
     compute_uv: bool,
-) -> tuple[Matrix, Vector, Matrix] | Vector:
+) -> tuple[MatrixT[float], VectorT[float], MatrixT[float]] | VectorT[float]:
     ...
 
 
@@ -5123,7 +5149,7 @@ def svd(
     a: TensorTLike[StrictNumber],
     full_matrices: bool,
     compute_uv: Literal[False]
-) ->  Matrix | Tensor:
+) ->  MatrixT[float] | TensorT[float]:
     ...
 
 
@@ -5132,7 +5158,7 @@ def svd(
     a: TensorTLike[StrictNumber],
     full_matrices: bool,
     compute_uv: Literal[True] = True
-) ->  tuple[Tensor, Matrix | Tensor, Tensor]:
+) ->  tuple[TensorT[float], MatrixT[float] | TensorT[float], TensorT[float]]:
     ...
 
 
@@ -5141,7 +5167,7 @@ def svd(
     a: TensorTLike[StrictNumber],
     full_matrices: bool,
     compute_uv: bool
-) ->  tuple[Tensor, Matrix | Tensor, Tensor] | Matrix | Tensor:
+) ->  tuple[TensorT[float], MatrixT[float] | TensorT[float], TensorT[float]] | MatrixT[float] | TensorT[float]:
     ...
 
 
@@ -5150,9 +5176,9 @@ def svd(
     full_matrices: bool = True,
     compute_uv: bool = True
 ) -> (
-    tuple[Matrix, Vector, Matrix] |
-    tuple[Tensor, Matrix | Tensor, Tensor] |
-    Matrix | Tensor | Vector
+    tuple[MatrixT[float], VectorT[float], MatrixT[float]] |
+    tuple[TensorT[float], MatrixT[float] | TensorT[float], TensorT[float]] |
+    MatrixT[float] | TensorT[float] | VectorT[float]
 ):
     """
     Compute the singular value decomposition of a matrix.
@@ -5180,10 +5206,10 @@ def svd(
         rows = cast('MatrixTLike[StrictNumber]', list(_extract_rows(a, s)))
         step = last[-2]
         m, n = last
-        sigma = []  # type: Array
+        sigma = []  # type: ArrayT[float]
         if compute_uv:
-            u = []  # type: Matrix | Tensor
-            v = []  # type: Matrix | Tensor
+            u = []  # type: MatrixT[float] | TensorT[float]
+            v = []  # type: MatrixT[float] | TensorT[float]
             builder = MultiArrayBuilder([u, sigma, v], [first, first, first])
         else:
             builder = MultiArrayBuilder([sigma], [first])
@@ -5207,16 +5233,16 @@ def svd(
 
 
 @overload
-def svdvals(a: TensorTLike[StrictNumber]) -> Matrix | Tensor:
+def svdvals(a: TensorTLike[StrictNumber]) -> MatrixT[float] | TensorT[float]:
     ...
 
 
 @overload
-def svdvals(a: MatrixTLike[StrictNumber]) -> Vector:
+def svdvals(a: MatrixTLike[StrictNumber]) -> VectorT[float]:
     ...
 
 
-def svdvals(a: MatrixTLike[StrictNumber] | TensorTLike[StrictNumber]) -> Array:
+def svdvals(a: MatrixTLike[StrictNumber] | TensorTLike[StrictNumber]) -> ArrayT[float]:
     """Get the s values from SVD."""
 
     return svd(a, False, False)
@@ -5224,57 +5250,57 @@ def svdvals(a: MatrixTLike[StrictNumber] | TensorTLike[StrictNumber]) -> Array:
 
 @overload
 def _qr(
-    a: Matrix,
+    a: MatrixT[float],
     m: int,
     n: int,
     mode: Literal['reduced'] = "reduced"
-) -> tuple[Matrix, Matrix]:
+) -> tuple[MatrixT[float], MatrixT[float]]:
     ...
 
 @overload
 def _qr(
-    a: Matrix,
+    a: MatrixT[float],
     m: int,
     n: int,
     mode: Literal['complete']
-) -> tuple[Matrix, Matrix]:
+) -> tuple[MatrixT[float], MatrixT[float]]:
     ...
 
 
 @overload
 def _qr(
-    a: Matrix,
+    a: MatrixT[float],
     m: int,
     n: int,
     mode: Literal['r']
-) -> Matrix:
+) -> MatrixT[float]:
     ...
 
 
 @overload
 def _qr(
-    a: Matrix,
+    a: MatrixT[float],
     m: int,
     n: int,
     mode: Literal['raw']
-) -> tuple[Matrix, Vector]:
+) -> tuple[MatrixT[float], VectorT[float]]:
     ...
 
 
 @overload
 def _qr(
-    a: Matrix,
+    a: MatrixT[float],
     m: int,
     n: int,
     mode: str
-) -> tuple[Matrix, Matrix] | tuple[Matrix, Vector] | Matrix:
+) -> tuple[MatrixT[float], MatrixT[float]] | tuple[MatrixT[float], VectorT[float]] | MatrixT[float]:
     ...
 
 
-def _qr(a: Matrix, m: int, n: int, mode: str = 'reduced') -> (
-    tuple[Matrix, Matrix] |
-    tuple[Matrix, Vector] |
-    Matrix
+def _qr(a: MatrixT[float], m: int, n: int, mode: str = 'reduced') -> (
+    tuple[MatrixT[float], MatrixT[float]] |
+    tuple[MatrixT[float], VectorT[float]] |
+    MatrixT[float]
 ):
     """Perform QR decomposition on a matrix."""
 
@@ -5363,14 +5389,14 @@ def _qr(a: Matrix, m: int, n: int, mode: str = 'reduced') -> (
 def qr(
     a: MatrixTLike[StrictNumber],
     mode: Literal['reduced'] = "reduced"
-) -> tuple[Matrix, Matrix]:
+) -> tuple[MatrixT[float], MatrixT[float]]:
     ...
 
 @overload
 def qr(
     a: MatrixTLike[StrictNumber],
     mode: Literal['complete']
-) -> tuple[Matrix, Matrix]:
+) -> tuple[MatrixT[float], MatrixT[float]]:
     ...
 
 
@@ -5378,7 +5404,7 @@ def qr(
 def qr(
     a: MatrixTLike[StrictNumber],
     mode: Literal['r']
-) -> Matrix:
+) -> MatrixT[float]:
     ...
 
 
@@ -5386,7 +5412,7 @@ def qr(
 def qr(
     a: MatrixTLike[StrictNumber],
     mode: Literal['raw']
-) -> tuple[Matrix, Vector]:
+) -> tuple[MatrixT[float], VectorT[float]]:
     ...
 
 
@@ -5394,7 +5420,7 @@ def qr(
 def qr(
     a: MatrixTLike[StrictNumber],
     mode: str
-) -> tuple[Matrix, Matrix] | tuple[Matrix, Vector] | Matrix:
+) -> tuple[MatrixT[float], MatrixT[float]] | tuple[MatrixT[float], VectorT[float]] | MatrixT[float]:
     ...
 
 
@@ -5402,14 +5428,14 @@ def qr(
 def qr(
     a: TensorTLike[StrictNumber],
     mode: Literal['reduced'] = "reduced"
-) -> tuple[Tensor, Tensor]:
+) -> tuple[TensorT[float], TensorT[float]]:
     ...
 
 @overload
 def qr(
     a: TensorTLike[StrictNumber],
     mode: Literal['complete']
-) -> tuple[Tensor, Tensor]:
+) -> tuple[TensorT[float], TensorT[float]]:
     ...
 
 
@@ -5417,7 +5443,7 @@ def qr(
 def qr(
     a: TensorTLike[StrictNumber],
     mode: Literal['r']
-) -> Tensor:
+) -> TensorT[float]:
     ...
 
 
@@ -5425,7 +5451,7 @@ def qr(
 def qr(
     a: TensorTLike[StrictNumber],
     mode: Literal['raw']
-) -> tuple[Tensor, Matrix | Tensor]:
+) -> tuple[TensorT[float], MatrixT[float] | TensorT[float]]:
     ...
 
 
@@ -5433,7 +5459,11 @@ def qr(
 def qr(
     a: TensorTLike[StrictNumber],
     mode: str
-) -> tuple[Tensor, Tensor] | tuple[Tensor, Matrix | Tensor] | Tensor:
+) -> (
+    tuple[TensorT[float], TensorT[float]] |
+    tuple[TensorT[float], MatrixT[float] |
+    TensorT[float]] | TensorT[float]
+):
     ...
 
 
@@ -5441,12 +5471,12 @@ def qr(
     a: MatrixTLike[StrictNumber] | TensorTLike[StrictNumber],
     mode: str = 'reduced'
 ) -> (
-    tuple[Matrix, Matrix] |
-    tuple[Matrix, Vector] |
-    Matrix |
-    tuple[Tensor, Tensor] |
-    tuple[Tensor, Matrix | Tensor] |
-    Tensor
+    tuple[MatrixT[float], MatrixT[float]] |
+    tuple[MatrixT[float], VectorT[float]] |
+    MatrixT[float] |
+    tuple[TensorT[float], TensorT[float]] |
+    tuple[TensorT[float], MatrixT[float] | TensorT[float]] |
+    TensorT[float]
 ):
     """
     QR decomposition using householder reflections.
@@ -5481,9 +5511,9 @@ def qr(
         rows = list(_extract_rows(a, s))
         step = last[-2]
         m, n = last
-        r = []  # type: Matrix
+        r = []  # type: MatrixT[float]
         if not mode_r:
-            q = []  # type: Matrix
+            q = []  # type: MatrixT[float]
             builder = MultiArrayBuilder([q, r], [first, first])
         else:
             builder = MultiArrayBuilder([r], [first])
@@ -5529,7 +5559,7 @@ def matrix_rank(a: MatrixTLike[StrictNumber] | TensorTLike[StrictNumber]) -> Any
     rows = list(_extract_rows(a, s))
     step = last[-2]
     m, n = last
-    ranks = []  # type: Array
+    ranks = []  # type: ArrayT[float]
     with ArrayBuilder(ranks, first) as build:
         for r in range(0, len(rows), step):
             sigma = _svd(rows[r:r + step], m, n, full_matrices=False, compute_uv=False)
@@ -5543,31 +5573,31 @@ def matrix_rank(a: MatrixTLike[StrictNumber] | TensorTLike[StrictNumber]) -> Any
 
 
 @overload
-def solve(a: MatrixTLike[StrictNumber], b: VectorTLike[StrictNumber]) -> Vector:
+def solve(a: MatrixTLike[StrictNumber], b: VectorTLike[StrictNumber]) -> VectorT[float]:
     ...
 
 
 @overload
-def solve(a: MatrixTLike[StrictNumber], b: MatrixTLike[StrictNumber]) -> Matrix:
+def solve(a: MatrixTLike[StrictNumber], b: MatrixTLike[StrictNumber]) -> MatrixT[float]:
     ...
 
 
 @overload
-def solve(a: MatrixTLike[StrictNumber], b: TensorTLike[StrictNumber]) -> Tensor:
+def solve(a: MatrixTLike[StrictNumber], b: TensorTLike[StrictNumber]) -> TensorT[float]:
     ...
 
 
 @overload
-def solve(a: TensorTLike[StrictNumber], b: VectorTLike[StrictNumber]) -> Matrix | Tensor:
+def solve(a: TensorTLike[StrictNumber], b: VectorTLike[StrictNumber]) -> MatrixT[float] | TensorT[float]:
     ...
 
 
 @overload
-def solve(a: TensorTLike[StrictNumber], b: MatrixTLike[StrictNumber] | TensorTLike[StrictNumber]) -> Tensor:
+def solve(a: TensorTLike[StrictNumber], b: MatrixTLike[StrictNumber] | TensorTLike[StrictNumber]) -> TensorT[float]:
     ...
 
 
-def solve(a: MatrixTLike[StrictNumber] | TensorTLike[StrictNumber], b: ArrayTLike[StrictNumber]) -> Array:
+def solve(a: MatrixTLike[StrictNumber] | TensorTLike[StrictNumber], b: ArrayTLike[StrictNumber]) -> ArrayT[float]:
     """
     Solve the system of equations for `x` where `ax = b`.
 
@@ -5599,7 +5629,7 @@ def solve(a: MatrixTLike[StrictNumber] | TensorTLike[StrictNumber], b: ArrayTLik
             if size != len(b):
                 raise ValueError('Mismatched dimensions')
 
-            ordered = []  # type: Matrix
+            ordered = []  # type: MatrixT[float]
             for i in p:
                 r = b[i]
                 if len(r) != size2:
@@ -5617,7 +5647,7 @@ def solve(a: MatrixTLike[StrictNumber] | TensorTLike[StrictNumber], b: ArrayTLik
 
     # More complex, deeply nested cases that require more analyzing
     s2 = shape(b)
-    m = []  # type: Array
+    m = []  # type: ArrayT[float]
 
     # Matrices and vectors
     if dim1:
@@ -5675,11 +5705,11 @@ def det(array: MatrixTLike[StrictNumber]) -> float:
 
 
 @overload
-def det(array: TensorTLike[StrictNumber]) -> Vector:
+def det(array: TensorTLike[StrictNumber]) -> VectorT[float]:
     ...
 
 
-def det(array: MatrixTLike[StrictNumber] | TensorTLike[StrictNumber]) -> float | Vector:
+def det(array: MatrixTLike[StrictNumber] | TensorTLike[StrictNumber]) -> float | VectorT[float]:
     """Get the determinant."""
 
     s = shape(array)
@@ -5700,16 +5730,16 @@ def det(array: MatrixTLike[StrictNumber] | TensorTLike[StrictNumber]) -> float |
 
 
 @overload
-def inv(matrix: MatrixTLike[StrictNumber]) -> Matrix:
+def inv(matrix: MatrixTLike[StrictNumber]) -> MatrixT[float]:
     ...
 
 
 @overload
-def inv(matrix: TensorTLike[StrictNumber]) -> Tensor:
+def inv(matrix: TensorTLike[StrictNumber]) -> TensorT[float]:
     ...
 
 
-def inv(matrix: MatrixTLike[StrictNumber] | TensorTLike[StrictNumber]) -> Matrix | Tensor:
+def inv(matrix: MatrixTLike[StrictNumber] | TensorTLike[StrictNumber]) -> MatrixT[float] | TensorT[float]:
     """Invert the matrix using `LU` decomposition."""
 
     # Ensure we have a square matrix
@@ -5721,7 +5751,7 @@ def inv(matrix: MatrixTLike[StrictNumber] | TensorTLike[StrictNumber]) -> Matrix
 
     # Handle dimensions greater than 2 x 2
     elif dims > 2:
-        invert = []  # type: Tensor
+        invert = []  # type: TensorT[float]
         step = last[-2]
         rows = list(_extract_rows(matrix, s))
         with ArrayBuilder(invert, s[:-2]) as build:  # type: ignore[misc]
@@ -5746,16 +5776,16 @@ def inv(matrix: MatrixTLike[StrictNumber] | TensorTLike[StrictNumber]) -> Matrix
 
 
 @overload
-def pinv(a: MatrixTLike[StrictNumber]) -> Matrix:
+def pinv(a: MatrixTLike[StrictNumber]) -> MatrixT[float]:
     ...
 
 
 @overload
-def pinv(a: TensorTLike[StrictNumber]) -> Tensor:
+def pinv(a: TensorTLike[StrictNumber]) -> TensorT[float]:
     ...
 
 
-def pinv(a: MatrixTLike[StrictNumber] | TensorTLike[StrictNumber]) -> Matrix | Tensor:
+def pinv(a: MatrixTLike[StrictNumber] | TensorTLike[StrictNumber]) -> MatrixT[float] | TensorT[float]:
     """
     Compute the (Moore-Penrose) pseudo-inverse of a matrix using SVD.
 
@@ -5771,7 +5801,7 @@ def pinv(a: MatrixTLike[StrictNumber] | TensorTLike[StrictNumber]) -> Matrix | T
 
     elif dims > 2:
         last = s[-2:]  # type: tuple[int, int] # type: ignore[misc]
-        invert = []  # type: Tensor
+        invert = []  # type: TensorT[float]
         rows = list(_extract_rows(a, s))
         step = last[-2]
         with ArrayBuilder(invert, s[:-2]) as build:  # type: ignore[misc]
@@ -6082,7 +6112,7 @@ def fnnls(
     b: VectorTLike[StrictNumber],
     epsilon: float = ATOL,
     max_iters: int = 0
-) -> tuple[Vector, float]:
+) -> tuple[VectorT[float], float]:
     """
     Fast non-negative least squares.
 
@@ -6106,7 +6136,7 @@ def fnnls(
 
     x = [0.0] * n
     s = [0.0] * n
-    w = subtract(ATb, dot(ATA, x, dims=D2_D1), dims=D1)  # type: Vector
+    w = subtract(ATb, dot(ATA, x, dims=D2_D1), dims=D1)  # type: VectorT[float]
 
     # P tracks positive elements in x
     # Does double duty as P and R vector outlined in the paper
@@ -6362,8 +6392,8 @@ def roll(
     end = l - 1
 
     # Broadcast the shifts and axes
-    new_shift = []  # type: VectorInt
-    new_axes = []  # type: VectorInt
+    new_shift = []  # type: VectorT[int]
+    new_axes = []  # type: VectorT[int]
     for i, j in broadcast(shift, axes):
         i, j = i, j
         if j < 0:
