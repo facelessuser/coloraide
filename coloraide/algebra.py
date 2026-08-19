@@ -6408,9 +6408,11 @@ def unique(
     track = {}  # type: dict[Any, int]
     index = 0
     just_values = not return_index and not return_inverse and not return_counts
+    column = False
 
     # If no axis, flatten data
     s = shape(a)
+
     if axis is None:
         for e, v in enumerate(flatiter(a, shape=s)):
             if v not in track:
@@ -6431,8 +6433,17 @@ def unique(
         l = len(s)
 
         # Ensure axis in bound
-        if axis > l - 1:
+        if axis > l - 1 or axis < -l:
             raise ValueError(f'Axis {axis} out of bounds of dimension {l}')
+
+        if axis < 0:
+            axis = l + axis
+
+        column = axis == len(s) - 1
+        if column:
+            a = transpose(a)
+            axis -= 1
+            s = s[::-1]
 
         track = {}
         index = 0
@@ -6468,11 +6479,19 @@ def unique(
     sargs = sorted(range(len(values)), key=values.__getitem__)
 
     # Return sorted values
+    if axis is not None:
+        new_shape = s[:axis] + (len(sargs),) + s[axis+1:]  # type: Any
+        values = reshape([values[si] for si in sargs], new_shape)
+        if column:
+            values = transpose(values)
+    else:
+        values = [values[si] for si in sargs]
+
     if just_values:
-        return [values[si] for si in sargs]
+        return values
 
     # Return sorted values with requested, index, inverse index, and/or count
-    result = [[values[si] for si in sargs]]  # type: Any
+    result = [values]  # type: Any
     if return_index:
         result.append([indices[si] for si in sargs])
     if return_inverse:

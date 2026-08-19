@@ -3693,6 +3693,16 @@ class TestAlgebra(unittest.TestCase):
             [[1, 0, 0], [2, 3, 4]]
         )
 
+        self.assertEqual(
+            alg.unique([[1, 0, 0], [1, 0, 0], [2, 3, 4]], axis=1, return_index=True),
+            ([[0, 0, 1], [0, 0, 1], [3, 4, 2]], [1, 2, 0])
+        )
+
+        self.assertEqual(
+            alg.unique([[1, 0, 0], [1, 0, 0], [2, 3, 4]], axis=-1, return_index=True),
+            ([[0, 0, 1], [0, 0, 1], [3, 4, 2]], [1, 2, 0])
+        )
+
         m = [1, 2, 6, 4, 2, 3, 2]
         self.assertEqual(
             alg.unique(m, return_index=True),
