@@ -4414,7 +4414,7 @@ def lu(
     *,
     permute_l: Literal[True],
     p_indices: Literal[True] | Literal[False] | bool = False,
-    shape: Shape | None = ...
+    shape: Shape | None
 ) -> tuple[Matrix, Matrix]:
     ...
 
@@ -4423,9 +4423,9 @@ def lu(
 def lu(
     matrix: MatrixTLike[StrictNumber],
     *,
-    p_indices: Literal[True],
     permute_l: Literal[False] = False,
-    shape: Shape | None = ...
+    p_indices: Literal[True],
+    shape: Shape | None
 ) -> tuple[VectorT[int], Matrix, Matrix]:
     ...
 
@@ -4436,7 +4436,7 @@ def lu(
     *,
     permute_l: Literal[False] = False,
     p_indices: Literal[False] = False,
-    shape: Shape | None = ...
+    shape: Shape | None
 ) -> tuple[Matrix, Matrix, Matrix]:
     ...
 
@@ -4445,9 +4445,9 @@ def lu(
 def lu(
     matrix: MatrixTLike[StrictNumber],
     *,
-    p_indices: bool,
     permute_l: Literal[False] = False,
-    shape: Shape | None = ...
+    p_indices: bool,
+    shape: Shape | None
 ) -> tuple[Matrix, Matrix, Matrix] | tuple[VectorT[int], Matrix, Matrix]:
     ...
 
@@ -4456,9 +4456,9 @@ def lu(
 def lu(
     matrix: MatrixTLike[StrictNumber],
     *,
-    p_indices: bool,
     permute_l: bool,
-    shape: Shape | None = ...
+    p_indices: bool,
+    shape: Shape | None
 ) -> tuple[Matrix, Matrix] | tuple[Matrix, Matrix, Matrix] | tuple[VectorT[int], Matrix, Matrix]:
     ...
 
@@ -4469,7 +4469,7 @@ def lu(
     *,
     permute_l: Literal[True],
     p_indices: Literal[True] | Literal[False] | bool = False,
-    shape: Shape | None = ...
+    shape: Shape | None
 ) -> tuple[Tensor, Tensor]:
     ...
 
@@ -4478,9 +4478,9 @@ def lu(
 def lu(
     matrix: TensorTLike[StrictNumber],
     *,
-    p_indices: Literal[True],
     permute_l: Literal[False] = False,
-    shape: Shape | None = ...
+    p_indices: Literal[True],
+    shape: Shape | None
 ) -> tuple[MatrixT[int], Tensor, Tensor]:
     ...
 
@@ -4491,7 +4491,7 @@ def lu(
     *,
     permute_l: Literal[False] = False,
     p_indices: Literal[False] = False,
-    shape: Shape | None = ...
+    shape: Shape | None
 ) -> tuple[Tensor, Tensor, Tensor]:
     ...
 
@@ -4500,9 +4500,9 @@ def lu(
 def lu(
     matrix: TensorTLike[StrictNumber],
     *,
-    p_indices: bool,
     permute_l: Literal[False] = False,
-    shape: Shape | None = ...
+    p_indices: bool,
+    shape: Shape | None
 ) -> tuple[Tensor, Tensor, Tensor] | tuple[MatrixT[int], Tensor, Tensor]:
     ...
 
@@ -4510,9 +4510,9 @@ def lu(
 def lu(
     matrix: TensorTLike[StrictNumber],
     *,
-    p_indices: bool,
     permute_l: bool,
-    shape: Shape | None = ...
+    p_indices: bool,
+    shape: Shape | None
 ) -> tuple[Tensor, Tensor] | tuple[Tensor, Tensor, Tensor] | tuple[MatrixT[int], Tensor, Tensor]:
     ...
 
@@ -6391,13 +6391,188 @@ def roll(
     return m
 
 
+@overload
+def unique(  # type: ignore[overload-overlap]
+    a: ArrayTLike[Number] | Number,
+    axis: None = None,
+    return_index: Literal[False] = False,
+    return_inverse: Literal[False] = False,
+    return_counts: Literal[False] = False
+) -> VectorT[Number]:
+    ...
+
+
+@overload
+def unique(  # type: ignore[overload-overlap]
+    a: ArrayTLike[Number] | Number,
+    axis: None = None,
+    return_index: Literal[True] = ...,
+    return_inverse: bool = ...,
+    return_counts: bool = ...
+) -> tuple[VectorT[Number], dict[str, VectorT[int]]]:
+    ...
+
+
+@overload
+def unique(  # type: ignore[overload-overlap]
+    a: ArrayTLike[Number] | Number,
+    axis: None = None,
+    return_index: bool = ...,
+    return_inverse: Literal[True] = ...,
+    return_counts: bool = ...
+) -> tuple[VectorT[Number], dict[str, VectorT[int]]]:
+    ...
+
+
+@overload
+def unique(  # type: ignore[overload-overlap]
+    a: ArrayTLike[Number] | Number,
+    axis: None = None,
+    return_index: bool = ...,
+    return_inverse: bool = ...,
+    return_counts: Literal[True] = ...,
+) -> tuple[VectorT[Number], dict[str, VectorT[int]]]:
+    ...
+
+
+@overload
+def unique(  # type: ignore[overload-overlap]
+    a: VectorTLike[Number] | Number,
+    axis: int = ...,
+    return_index: Literal[False] = False,
+    return_inverse: Literal[False] = False,
+    return_counts: Literal[False] = False
+) -> VectorT[Number]:
+    ...
+
+
+@overload
+def unique(
+    a: VectorTLike[Number] | Number,
+    axis: int = ...,
+    return_index: Literal[True] = ...,
+    return_inverse: bool = ...,
+    return_counts: bool = ...
+) -> tuple[VectorT[Number], dict[str, VectorT[int]]]:
+    ...
+
+
+@overload
+def unique(
+    a: VectorTLike[Number] | Number,
+    axis: int = ...,
+    return_index: bool = ...,
+    return_inverse: Literal[True] = ...,
+    return_counts: bool = ...
+) -> tuple[VectorT[Number], dict[str, VectorT[int]]]:
+    ...
+
+
+@overload
+def unique(
+    a: VectorTLike[Number] | Number,
+    axis: int = ...,
+    return_index: bool = ...,
+    return_inverse: bool = ...,
+    return_counts: Literal[True] = ...
+) -> tuple[VectorT[Number], dict[str, VectorT[int]]]:
+    ...
+
+
+@overload
+def unique(  # type: ignore[overload-overlap]
+    a: MatrixTLike[Number],
+    axis: int = ...,
+    return_index: Literal[False] = False,
+    return_inverse: Literal[False] = False,
+    return_counts: Literal[False] = False
+) -> MatrixT[Number]:
+    ...
+
+
+@overload
+def unique(
+    a: MatrixTLike[Number],
+    axis: int = ...,
+    return_index: Literal[True] = ...,
+    return_inverse: bool = ...,
+    return_counts: bool = ...
+) -> tuple[MatrixT[Number], dict[str, VectorT[int]]]:
+    ...
+
+
+@overload
+def unique(
+    a: MatrixTLike[Number],
+    axis: int = ...,
+    return_index: bool = ...,
+    return_inverse: Literal[True] = ...,
+    return_counts: bool = ...
+) -> tuple[MatrixT[Number], dict[str, VectorT[int]]]:
+    ...
+
+
+@overload
+def unique(
+    a: MatrixTLike[Number],
+    axis: int = ...,
+    return_index: bool = ...,
+    return_inverse: bool = ...,
+    return_counts: Literal[True] = ...,
+) -> tuple[MatrixT[Number], dict[str, VectorT[int]]]:
+    ...
+
+@overload
+def unique(  # type: ignore[overload-overlap]
+    a: TensorTLike[Number],
+    axis: int = ...,
+    return_index: Literal[False] = False,
+    return_inverse: Literal[False] = False,
+    return_counts: Literal[False] = False
+) -> TensorT[Number]:
+    ...
+
+
+@overload
+def unique(  # type: ignore[overload-overlap]
+    a: TensorTLike[Number],
+    axis: int = ...,
+    return_index: Literal[True] = ...,
+    return_inverse: bool = ...,
+    return_counts: bool = ...
+) -> tuple[TensorT[Number], dict[str, VectorT[int]]]:
+    ...
+
+
+@overload
+def unique(  # type: ignore[overload-overlap]
+    a: TensorTLike[Number],
+    axis: int,
+    return_index: bool,
+    return_inverse: Literal[True],
+    return_counts: bool
+) -> tuple[TensorT[Number], dict[str, VectorT[int]]]:
+    ...
+
+
+@overload
+def unique(
+    a: TensorTLike[Number],
+    axis: int,
+    return_index: bool,
+    return_inverse: bool,
+    return_counts: Literal[True],
+) -> tuple[TensorT[Number], dict[str, VectorT[int]]]:
+    ...
+
+
 def unique(
     a: ArrayTLike[Number] | Number,
     axis: int | None = None,
     return_index: bool = False,
     return_inverse: bool = False,
     return_counts: bool = False
-) -> Any:
+) -> ArrayT[Number] | tuple[ArrayT[Number], dict[str, VectorT[int]]]:
     """Return unique elements."""
 
     values = []  # type: list[Any]
@@ -6491,11 +6666,11 @@ def unique(
         return values
 
     # Return sorted values with requested, index, inverse index, and/or count
-    result = [values]  # type: Any
+    data = {}  # type: dict[str, VectorT[int]]
     if return_index:
-        result.append([indices[si] for si in sargs])
+        data['return_index'] = [indices[si] for si in sargs]
     if return_inverse:
-        result.append([sargs[i] for i in inverse])
+        data['return_inverse'] = [sargs[i] for i in inverse]
     if return_counts:
-        result.append([count[si] for si in sargs])
-    return tuple(result)
+        data['return_counts'] = [count[si] for si in sargs]
+    return values, data
