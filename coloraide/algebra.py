@@ -100,7 +100,7 @@ def order(x: StrictNumber) -> int:
     return len(digits) + int(exponent) - 1
 
 
-def round_half_up(n: float, scale: int = 0) -> float:
+def round_half_up(n: StrictNumber, scale: int = 0) -> float:
     """Round half up."""
 
     if not isinstance(scale, int):
@@ -117,7 +117,7 @@ def round_half_up(n: float, scale: int = 0) -> float:
 
 
 def _round_location(
-    f: float,
+    f: StrictNumber,
     p: int = 0,
     mode: str = 'digits'
 ) -> tuple[int, int]:
@@ -162,10 +162,10 @@ def _round_location(
 
 
 def round_to(
-    f: float,
+    f: StrictNumber,
     p: int = 0,
     mode: str = 'digits',
-    rounding: Callable[[float, int], float]=round_half_up
+    rounding: Callable[[StrictNumber, int], float]=round_half_up
 ) -> float:
     """Round to the specified precision using "half up" rounding by default."""
 
