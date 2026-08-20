@@ -46,7 +46,7 @@ def xy_to_angle(xy: VectorLike, white: VectorLike, offset: float = 0.0, invert: 
         norm = alg.multiply(norm, -1, dims=alg.D1_SC)
     if offset:
         angle = (alg.rect_to_polar(*norm)[1] - offset) % 360.0
-        if angle < 1e-12:
+        if angle < alg.ATOL:
             angle = 360.0
     else:
         angle = alg.rect_to_polar(*norm)[1]
