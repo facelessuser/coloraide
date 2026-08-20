@@ -620,7 +620,7 @@ def ilerp(p0: float, p1: float, t: float) -> float:
     """Inverse interpolation."""
 
     d = (p1 - p0)
-    return (t - p0) / d if d else 0
+    return (t - p0) / d if abs(d) > ATOL else 0
 
 
 def bilerp(p0: float, p1: float, p2: float, p3: float, tx: float, ty: float) -> float:
