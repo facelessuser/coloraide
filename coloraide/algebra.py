@@ -654,9 +654,9 @@ def ilerp2d(
 
     ```
     vxy = v00 (1 - x) (1 - y) +
-        v10 x (1 - y) +
-        v01 (1 - x) y +
-        v11 x y
+          v10 x (1 - y) +
+          v01 (1 - x) y +
+          v11 x y
     ```
     """
 
@@ -679,6 +679,12 @@ def ilerp2d(
             wx = 1 - x
             wy = 1 - y
 
+            # Take the partial derivative of v000 - v111:
+            # ```
+            # [[f1 / dx, f1 / dy],
+            #  ...,
+            #  [f4 / dx, f4 / dy]]
+            # ```
             m = [
                 [-wy, -wx],
                 [wy,  -x],
@@ -758,19 +764,14 @@ def ilerp3d(
 
     ```
     Vxyz = V000 (1 - x) (1 - y) (1 - z) +
-        V100 x (1 - y) (1 - z) +
-        V010 (1 - x) y (1 - z) +
-        V110 x y (1 - z) +
-        V001 (1 - x) (1 - y) z +
-        V101 x (1 - y) z +
-        V011 (1 - x) y z +
-        V111 x y z
+           V100 x (1 - y) (1 - z) +
+           V010 (1 - x) y (1 - z) +
+           V110 x y (1 - z) +
+           V001 (1 - x) (1 - y) z +
+           V101 x (1 - y) z +
+           V011 (1 - x) y z +
+           V111 x y z
     ```
-
-    NOTE: It does seem that selected vertices can have an impact on how well the
-    reverse translation is. Certain combinations can cause us to fall short of
-    resolving the interpolation all the way to 1 when it should. In some cases, it
-    will just stop at `0.9xxxx`, etc. Some sets of vertices have no issues at all.
     """
 
     # Initial guess.
@@ -792,6 +793,12 @@ def ilerp3d(
             wy = 1 - y
             wz = 1 - z
 
+            # Take the partial derivative of v000 - v111:
+            # ```
+            # [[f1 / dx, f1 / dy, f1 / dz],
+            #  ...,
+            #  [f8 / dx, f8 / dy, f8 / dz]]
+            # ```
             m = [
                 [-wy * wz, -wx * wz, -wx * wy],
                 [wy * wz,  -x * wz,  -x * wy],
