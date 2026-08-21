@@ -103,7 +103,7 @@ def closest_wavelength(
     complementary = [math.nan, math.nan]
 
     # Achromatic, no wavelength
-    if all(abs(a - b) < 1e-12 for a, b in zip(xy, white)):
+    if all(abs(a - b) < alg.ATOL for a, b in zip(xy, white)):
         return w1, dominant, complementary
 
     # Look for first intersection of the line drawn through the white point
