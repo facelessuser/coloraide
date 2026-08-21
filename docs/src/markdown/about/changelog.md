@@ -3,6 +3,12 @@ icon: lucide/scroll-text
 ---
 # Changelog
 
+## 8.11.2
+
+-   **FIX**: Fix some minor issues with `algebra.solve_bisect()`.
+-   **FIX**: Fix a numerical stability issue with `algebra.ilerp()`.
+-   **FIX**: Fix some typing issues.
+
 ## 8.11.1
 
 -   **FIX**: Small regression in HCT conversion.

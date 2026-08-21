@@ -102,13 +102,6 @@ def closest_wavelength(
     dominant = [math.nan, math.nan]
     complementary = [math.nan, math.nan]
 
-    # The detection of precise segments is very sensitive in high wavelength areas.
-    # Cycle the white chromaticity coordinates so that we are comparing against a
-    # white with the usual error that is already present in all other colors.
-    # The xy coordinates we are comparing against in the CMFs are so squished that
-    # this actually makes a difference.
-    white = util.xyz_to_xyY(util.xy_to_xyz(white))[:-1]
-
     # Achromatic, no wavelength
     if all(abs(a - b) < 1e-12 for a, b in zip(xy, white)):
         return w1, dominant, complementary
@@ -135,19 +128,24 @@ def closest_wavelength(
 
             # If has already been found or we are not aligned with segment, skip
             target = invert if j else current
-            if found[j] or not (a_prev >= target >= a_next):
+            # Check if target is between the two angles.
+            # Floating point errors can make the next come before the previous.
+            # If this happens, and we are after the previous, check it.
+            if found[j] or not (a_prev >= target and (target >= a_next or (a_next > a_prev))):
                 continue
 
             # Linear interpolation of a non-linear curve will yield some offset from our current angle.
             # While the angle is likely to be "good enough", we can do better.
             # Go with the best approximation we can find.
-            f, _ = alg.solve_bisect(
+            f, converged = alg.solve_bisect(
                 0,
                 1,
                 f=compare_angle,
                 args=(cmfs_, locus_start + i0, locus_start + i, target, white, offset),
-                start=alg.ilerp(a_prev, a_next, target)
             )
+            if not converged:
+                continue
+
             w = alg.lerp(locus_start + i0, locus_start + i, f)
             intersect = cmfs_.xy(w)
 

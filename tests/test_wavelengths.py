@@ -74,32 +74,32 @@ class TestWavelenghts(util.ColorAssertsPyTest, unittest.TestCase):
 
         wl = Color('cyan').wavelength()
         self.assertEqual(wl[0], 491)
-        self.assertEqual(wl[1], [0.03849815915379659, 0.328162230855956])
-        self.assertEqual(wl[2], [0.03849815915379659, 0.328162230855956])
+        self.assertEqual(wl[1], [0.038498159153797895, 0.3281622308559494])
+        self.assertEqual(wl[2], [0.038498159153797895, 0.3281622308559494])
 
     def test_dominant_purple_line(self):
         """Test dominant on the purple line."""
 
         wl = Color('magenta').wavelength()
         self.assertEqual(wl[0], -549)
-        self.assertEqual(wl[1], [0.3246214629905204, 0.07461287634401273])
-        self.assertEqual(wl[2], [0.29540878221791633, 0.6979700802318611])
+        self.assertEqual(wl[1], [0.32462146299052036, 0.0746128763440127])
+        self.assertEqual(wl[2], [0.2954087822179229, 0.6979700802318552])
 
     def test_complementary(self):
         """Test complementary wavelength results."""
 
         wl = Color('cyan').wavelength(complementary=True)
         self.assertEqual(wl[0], 611)
-        self.assertEqual(wl[1], [0.6697060045245519, 0.33009076078375565])
-        self.assertEqual(wl[2], [0.6697060045245519, 0.33009076078375565])
+        self.assertEqual(wl[1], [0.6697060045245415, 0.330090760783766])
+        self.assertEqual(wl[2], [0.6697060045245415, 0.330090760783766])
 
     def test_complementary_purple_line(self):
         """Test complementary on the purple line."""
 
         wl = Color('magenta').wavelength(complementary=True)
         self.assertEqual(wl[0], 549)
-        self.assertEqual(wl[1], [0.29540878221791633, 0.6979700802318611])
-        self.assertEqual(wl[2], [0.29540878221791633, 0.6979700802318611])
+        self.assertEqual(wl[1], [0.2954087822179229, 0.6979700802318552])
+        self.assertEqual(wl[2], [0.2954087822179229, 0.6979700802318552])
 
     def test_achromatic_wavelength(self):
         """Test achromatic."""

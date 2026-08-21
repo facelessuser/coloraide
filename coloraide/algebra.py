@@ -258,7 +258,6 @@ def solve_bisect(
     high: float,
     f: Callable[..., float],
     args: tuple[Any, ...] | tuple[()] = (),
-    start: float | None = None,
     maxiter: int = 50,
     rtol: float = RTOL,
     atol: float = ATOL,
@@ -270,19 +269,20 @@ def solve_bisect(
     return a boolean indicating if we confidently converged.
     """
 
-    t = (high + low) * 0.5 if start is None else start
-
+    dt = high - low
     x = math.nan
+    t = math.nan
     for _ in range(maxiter):
+        dt *= 0.5
+        t = low + dt
         x = f(t, *args) if args else f(t)
-        if math.isclose(x, 0, rel_tol=rtol, abs_tol=atol):
-            return t, True
-        if x > 0:
-            high = t
-        else:
+
+        # Update bounds
+        if x < 0:
             low = t
 
-        t = (high + low) * 0.5
+        if math.isclose(x, 0, rel_tol=rtol, abs_tol=atol):
+            return t, True
 
     return t, math.isclose(x, 0, rel_tol=rtol, abs_tol=atol)  # pragma: no cover
 
@@ -555,16 +555,16 @@ def solve_newton(
         # Update brackets
         if bracketed:
             if fx > 0:
-                hi = min(x0, hi)
+                hi = clamp(x0, lo, hi)
             else:
-                lo = max(x0, lo)
+                lo = clamp(x0, lo, hi)
 
         # Cannot find a solution if derivative is zero
         d1 = dx(x0, *args) if args else dx(x0)
         if abs(d1) < ATOL:
             # Try to bisect to a different location
             if bracketed:
-                x0 = (hi + lo) * 0.5
+                x0 = lo + (hi - lo) * 0.5
                 if x0 != prev:
                     continue
             return x0, None
@@ -596,7 +596,7 @@ def solve_newton(
                 x0 -= fx / denom * (fy / d1)
 
         if bracketed and not (lo <= x0 <= hi):
-            x0 = (hi + lo) * 0.5
+            x0 = lo + (hi - lo) * 0.5
             if x0 == prev:  # pragma: no cover
                 return x0, None
             continue

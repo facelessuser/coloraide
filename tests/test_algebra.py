@@ -3513,7 +3513,7 @@ class TestAlgebra(unittest.TestCase):
         t = 0.9
         b = _bezier(a, b, c)(t)
         f0 = _bezier(a, b, c, y=t)
-        r, converged = alg.solve_bisect(0.0, 1.0, f0, start=0.5)
+        r, converged = alg.solve_bisect(0.0, 1.0, f0)
         self.assertTrue(converged)
         self.assertEqual(r, 0.4539687953174507)
 
