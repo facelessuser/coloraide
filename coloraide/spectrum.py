@@ -143,7 +143,7 @@ def closest_wavelength(
                 f=compare_angle,
                 args=(cmfs_, locus_start + i0, locus_start + i, target, white, offset),
             )
-            if not converged:
+            if not converged:  # pragma: no cover
                 continue
 
             w = alg.lerp(locus_start + i0, locus_start + i, f)
