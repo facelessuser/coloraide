@@ -127,7 +127,7 @@ def closest_wavelength(
         for j in range(0, 2):
             # Skip if:
             # 1. We already found a solution.
-            # 2. Target is not between the two wavelenghts
+            # 2. Target is not between the two wavelengths.
             # 3. An exception to (2) is if the range overlaps due to floating point noise.
             #    Then we test if the target is larger than the previous when this overlap occurs.
             target = invert if j else current
