@@ -271,6 +271,7 @@ def solve_bisect(
 
     dt = high - low
     t = math.nan
+    x = math.nan
 
     # If the answer is close to the bounds, return best value without iterating.
     x1 = f(low, *args) if args else f(low)
@@ -284,8 +285,6 @@ def solve_bisect(
     if x1 and x2 and sgn(x1) == sgn(x2):
         return t, False
 
-    x = math.nan
-    t = math.nan
     for _ in range(maxiter):
         dt *= 0.5
         t = low + dt
