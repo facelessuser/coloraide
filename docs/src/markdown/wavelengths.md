@@ -85,6 +85,13 @@ Color('magenta').wavelength()
 Color('magenta').wavelength(white=WHITES['2deg']['E'])
 ```
 
+Lastly, if the raw, interpolated wavelength value is desired, without snapping it to the closest whole wavelength, then
+you can set `closest` to `#!py False`.
+
+```py play
+Color('red').wavelength(closest=False)
+```
+
 /// html | div#breakdown
 > [!tip]
 > It should be noted that the general implementation as described above for approximating wavelengths can be become more

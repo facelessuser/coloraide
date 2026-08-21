@@ -50,6 +50,11 @@ class TestWavelenghts(util.ColorAssertsPyTest, unittest.TestCase):
         for w in range(360, 700, 1):
             self.assertEqual(Color.from_wavelength('xyz-d65', w, scale=False).wavelength(white=(1 / 3, 1 / 3))[0], w)
 
+    def test_wavelength_not_cloeset(self):
+        """Test wavelength without snapping to closest wavelength."""
+
+        self.assertEqual(Color('red').wavelength(closest=False)[0], 611.2745348508324)
+
     def test_scale_rgb(self):
         """Scale color in RGB."""
 

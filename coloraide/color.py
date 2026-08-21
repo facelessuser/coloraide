@@ -1421,14 +1421,16 @@ class Color(metaclass=ColorMeta):
         self,
         *,
         white: VectorLike | None = None,
-        complementary: bool = False
+        complementary: bool = False,
+        closest: bool = True
     ) -> tuple[float, Vector, Vector]:
         """Get the dominant wavelength."""
 
         return spectrum.closest_wavelength(
             self.xy(),
             white or self._space.WHITE,
-            reverse=complementary
+            reverse=complementary,
+            closest=closest
         )
 
     @classmethod
