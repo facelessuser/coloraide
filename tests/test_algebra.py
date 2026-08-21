@@ -2933,7 +2933,47 @@ class TestAlgebra(unittest.TestCase):
             lambda t, args=args: cubic_poly_dt2(t, *args[:-2]),
             bounds=(0, 1)
         )
-        self.assertEqual(results, (0.0878714700191443, True))
+        self.assertEqual(results, (0.08787147001914432, True))
+
+        # Solved (flip bounds)
+        results = alg.solve_newton(
+            0.5,
+            lambda t, args=args: cubic_poly(t, *args),
+            lambda t, args=args: cubic_poly_dt(t, *args[:-1]),
+            lambda t, args=args: cubic_poly_dt2(t, *args[:-2]),
+            bounds=(1, 0)
+        )
+        self.assertEqual(results, (0.08787147001914432, True))
+
+        # Solved (Solution on start boundary edge)
+        results = alg.solve_newton(
+            0.5,
+            lambda t, args=args: cubic_poly(t, *args),
+            lambda t, args=args: cubic_poly_dt(t, *args[:-1]),
+            lambda t, args=args: cubic_poly_dt2(t, *args[:-2]),
+            bounds=(0.08787147001914432, 1.0)
+        )
+        self.assertEqual(results, (0.08787147001914432, True))
+
+        # Solved (Solution on end boundary edge)
+        results = alg.solve_newton(
+            0.5,
+            lambda t, args=args: cubic_poly(t, *args),
+            lambda t, args=args: cubic_poly_dt(t, *args[:-1]),
+            lambda t, args=args: cubic_poly_dt2(t, *args[:-2]),
+            bounds=(0, 0.08787147001914432)
+        )
+        self.assertEqual(results, (0.08787147001914432, True))
+
+        # Cannot Solve
+        results = alg.solve_newton(
+            0.5,
+            lambda t, args=args: cubic_poly(t, *args),
+            lambda t, args=args: cubic_poly_dt(t, *args[:-1]),
+            lambda t, args=args: cubic_poly_dt2(t, *args[:-2]),
+            bounds=(5, 6)
+        )
+        self.assertEqual(results, (math.nan, False))
 
     def test_pinv(self):
         """Test Moore-Penrose pseudo inverse."""
@@ -3514,6 +3554,10 @@ class TestAlgebra(unittest.TestCase):
         b = _bezier(a, b, c)(t)
         f0 = _bezier(a, b, c, y=t)
         r, converged = alg.solve_bisect(0.0, 1.0, f0)
+        self.assertTrue(converged)
+        self.assertEqual(r, 0.4539687953174507)
+
+        r, converged = alg.solve_bisect(1.0, 0.0, f0)
         self.assertTrue(converged)
         self.assertEqual(r, 0.4539687953174507)
 

@@ -254,8 +254,8 @@ def reversed_bisect_left(a: VectorT[Number], x: float, lo: int = 0, hi: int | No
 
 
 def solve_bisect(
-    low: float,
-    high: float,
+    a: float,
+    b: float,
     f: Callable[..., float],
     args: tuple[Any, ...] | tuple[()] = (),
     maxiter: int = 50,
@@ -269,30 +269,34 @@ def solve_bisect(
     return a boolean indicating if we confidently converged.
     """
 
-    dt = high - low
     t = math.nan
     x = math.nan
 
     # If the answer is close to the bounds, return best value without iterating.
-    x1 = f(low, *args) if args else f(low)
+    x1 = f(a, *args) if args else f(a)
     if math.isclose(x1, 0, rel_tol=rtol, abs_tol=atol):
-        return low, True
-    x2 = f(high, *args) if args else f(high)
+        return a, True
+    x2 = f(b, *args) if args else f(b)
     if math.isclose(x2, 0, rel_tol=rtol, abs_tol=atol):
-        return high, True
+        return b, True
+
+    if x1 > 0:
+        a, b = b, a
+    dt = b - a
+
 
     # Exit if the bounds do not contain the solution
-    if x1 and x2 and sgn(x1) == sgn(x2):
+    if sgn(x1) == sgn(x2):
         return t, False
 
     for _ in range(maxiter):
         dt *= 0.5
-        t = low + dt
+        t = a + dt
         x = f(t, *args) if args else f(t)
 
         # Update bounds
-        if x < 0:
-            low = t
+        if sgn(x) != sgn(t):
+            a = t
 
         if math.isclose(x, 0, rel_tol=rtol, abs_tol=atol):
             return t, True
@@ -549,35 +553,62 @@ def solve_newton(
     if dx2 is not None and order < 3:
         order = 3
 
+    slow = False
     if bounds is not None:
-        lo, hi = bounds
+        a, b = bounds
+
+        # If the answer is close to the bounds, return best value without iterating.
+        fx1 = f0(a, *args) if args else f0(a)
+        if math.isclose(fx1, 0, rel_tol=rtol, abs_tol=atol):
+            return a, True
+
+        fx2 = f0(b, *args) if args else f0(b)
+        if math.isclose(fx2, 0, rel_tol=rtol, abs_tol=atol):
+            return b, True
+
+        # Exit if the bounds do not contain the solution
+        if fx1 and fx2 and sgn(fx1) == sgn(fx2):
+            return math.nan, False
+
+        if fx1 > 0:
+            a, b = b, a
+
+        dx_last = abs(b - a)
+
         bracketed = True
     else:
-        lo, hi = -math.inf, math.inf
+        a, b = -math.inf, math.inf
         bracketed = False
+        dx_last = 0
 
     for _ in range(maxiter):
         # Get result form equation when setting value to expected result
         fx = f0(x0, *args) if args else f0(x0)
         prev = x0
 
+        in_bounds = True if not bracketed else a <= x0 <= b
+
         # If the result is zero, we've converged
-        if fx == 0 and (not bracketed or lo <= x0 <= hi):
+        if fx == 0 and in_bounds:
             return x0, True
+
+        d1 = dx(x0, *args) if args else dx(x0)
 
         # Update brackets
         if bracketed:
-            if fx > 0:
-                hi = clamp(x0, lo, hi)
-            else:
-                lo = clamp(x0, lo, hi)
+            if in_bounds:
+                if fx < 0:
+                    a = x0
+                else:
+                    b = x0
+            slow = abs(2.0 * fx) > abs(dx_last * d1)
+            dx_last = d1
 
         # Cannot find a solution if derivative is zero
-        d1 = dx(x0, *args) if args else dx(x0)
-        if abs(d1) < ATOL:
+        if abs(d1) < ATOL or slow:
             # Try to bisect to a different location
             if bracketed:
-                x0 = lo + (hi - lo) * 0.5
+                x0 = a + (b - a) * 0.5
                 if x0 != prev:
                     continue
             return x0, None
@@ -598,7 +629,7 @@ def solve_newton(
                 fy = f0(x0 - newton, *args) if args else f0(x0 - newton)
                 newton -= fy / d1
 
-        # If change is under our epsilon, we can consider the result converged.
+        # Apply the Newton step (or adjusted Newton step)
         x0 -= newton
 
         # Ostrowski's method: 4th order convergence
@@ -608,12 +639,14 @@ def solve_newton(
             if abs(denom) >= ATOL:
                 x0 -= fx / denom * (fy / d1)
 
-        if bracketed and not (lo <= x0 <= hi):
-            x0 = lo + (hi - lo) * 0.5
-            if x0 == prev:  # pragma: no cover
-                return x0, None
-            continue
+        # Value not in bracketed range, try to bisect
+        if bracketed and not a <= x0 <= b:  # pragma: no cover
+            x0 = a + (b - a) * 0.5
+            if x0 != prev:
+                continue
+            return x0, None
 
+        # Result is close enough
         if math.isclose(x0, prev, rel_tol=rtol, abs_tol=atol):
             return x0, True
 
