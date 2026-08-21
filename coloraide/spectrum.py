@@ -125,13 +125,13 @@ def closest_wavelength(
 
         # Check if our angle is greater than the current locus point's angle
         for j in range(0, 2):
-
-            # If has already been found or we are not aligned with segment, skip
+            # Skip if:
+            # 1. We already found a solution.
+            # 2. Target is not between the two wavelenghts
+            # 3. An exception to (2) is if the range overlaps due to floating point noise.
+            #    Then we test if the target is larger than the previous when this overlap occurs.
             target = invert if j else current
-            # Check if target is between the two angles.
-            # Floating point errors can make the next come before the previous.
-            # If this happens, and we are after the previous, check it.
-            if found[j] or not (a_prev >= target >= a_next):
+            if found[j] or not (a_prev >= target and (target > a_next or (a_next > target and a_next > a_prev))):
                 continue
 
             # Linear interpolation of a non-linear curve will yield some offset from our current angle.
