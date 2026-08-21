@@ -1773,7 +1773,8 @@ def wavelength(
     self,
     *,
     white: VectorLike | None = None,
-    complementary: bool = False
+    complementary: bool = False,
+    closest: bool = True
 ) -> tuple[float, Vector, Vector]:
     ...
 ```
@@ -1796,6 +1797,7 @@ Parameters
     --------------- | ------------ | -----------
     `white`         | `#!py None`  | The white point to calculate the wavelengths relative to. If `#!py None` (the default) is passed, the current color space's white point will be used.
     `complementary` | `#!py False` | A boolean indicating whether the a complementary wavelength should be returned instead of the dominant.
+    `closest`       | `#!py True`  | A boolean indicating whether the returned wavelength will be rounded to the nearest whole wavelength. This does not affect the intersection points.
 
 Return
 
