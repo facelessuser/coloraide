@@ -46,10 +46,10 @@ def xy_to_angle(xy: VectorLike, white: VectorLike, offset: float = 0.0, invert: 
         norm = alg.multiply(norm, -1, dims=alg.D1_SC)
     if offset:
         angle = (alg.rect_to_polar(*norm)[1] - offset) % 360.0
-        if angle < alg.ATOL:
-            angle = 360.0
     else:
         angle = alg.rect_to_polar(*norm)[1]
+    if angle <= alg.ATOL:
+        angle = 360.0
     return angle
 
 
@@ -131,7 +131,7 @@ def closest_wavelength(
             # Check if target is between the two angles.
             # Floating point errors can make the next come before the previous.
             # If this happens, and we are after the previous, check it.
-            if found[j] or not (a_prev >= target and (target >= a_next or (a_next > a_prev))):
+            if found[j] or not (a_prev >= target >= a_next):
                 continue
 
             # Linear interpolation of a non-linear curve will yield some offset from our current angle.
