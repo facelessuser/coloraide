@@ -270,6 +270,20 @@ def solve_bisect(
     """
 
     dt = high - low
+    t = math.nan
+
+    # If the answer is close to the bounds, return best value without iterating.
+    x1 = f(low, *args) if args else f(low)
+    if math.isclose(x1, 0, rel_tol=rtol, abs_tol=atol):
+        return low, True
+    x2 = f(high, *args) if args else f(high)
+    if math.isclose(x2, 0, rel_tol=rtol, abs_tol=atol):
+        return high, True
+
+    # Exit if the bounds do not contain the solution
+    if x1 and x2 and sgn(x1) == sgn(x2):
+        return t, False
+
     x = math.nan
     t = math.nan
     for _ in range(maxiter):
