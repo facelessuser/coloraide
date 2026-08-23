@@ -284,7 +284,6 @@ def solve_bisect(
         a, b = b, a
     dt = b - a
 
-
     # Exit if the bounds do not contain the solution
     if sgn(x1) == sgn(x2):
         return t, False
@@ -666,7 +665,7 @@ def ilerp(p0: float, p1: float, t: float) -> float:
     """Inverse interpolation."""
 
     d = (p1 - p0)
-    return (t - p0) / d if abs(d) > ATOL else 0
+    return (t - p0) / d if d != 0 else 0.0
 
 
 def bilerp(p0: float, p1: float, p2: float, p3: float, tx: float, ty: float) -> float:
