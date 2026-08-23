@@ -3,6 +3,10 @@ icon: lucide/scroll-text
 ---
 # Changelog
 
+## 8.12.1
+
+-   **FIX**: Revert recent `algebra.ilerp()` change.
+
 ## 8.12
 
 -   **NEW**: Add new parameter `closest` in `wavelength()` to control whether the returned wavelength is rounded to the
