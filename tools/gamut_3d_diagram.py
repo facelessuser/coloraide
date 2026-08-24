@@ -19,6 +19,7 @@ from coloraide.spaces import HSLish, HSVish, HWBish, Labish, LChish, RGBish
 from coloraide import algebra as alg
 from coloraide.color import POSTFIX
 from coloraide.gamut import pointer, visible_spectrum, SPECIAL_GAMUTS
+from coloraide.spectrum import wavelength_to_color
 from coloraide.cmfs import CIE_1931_2DEG as cmfs
 from coloraide import util
 
@@ -385,11 +386,107 @@ def render_space_cyl(fig, space, gamut, resolution, opacity, edges, faces, ecolo
     return fig
 
 
+def render_spectrum_face(fig, s1, s2, dim, space, resolution, opacity, edges, faces, ecolor, fcolor, gmap, filters):
+    """Render the visible spectrum face."""
+
+    target = Color.CS_MAP[space]
+    flags = {
+        'is_cyl': target.is_polar(),
+        'is_labish': isinstance(target, Labish),
+        'is_lchish': isinstance(target, LChish),
+        'is_hslish': isinstance(target, HSLish),
+        'is_hwbish': isinstance(target, HWBish),
+        'is_hsvish': isinstance(target, HSVish)
+    }
+
+    x = []
+    y = []
+    z = []
+    X = []
+    Y = []
+    Z = []
+    cmap = []
+
+    w780 = util.xyz_to_xyY(wavelength_to_color(780))[:-1]
+
+    # Render a face by taking two interpolated sides and interpolating the points across the face
+    for c1, c2 in zip(s1, s2):
+        for t in alg.linspace(c1, c2, resolution):
+            x.append(t[0])
+            y.append(t[1])
+            z.append(t[2])
+
+            dx, dy = util.xyz_to_xyY(wavelength_to_color(t[0]))[:-1]
+            fx, fy = w780
+            xy = alg.lerp(fx, dx, t[2]), alg.lerp(fy, dy, t[2])
+
+            c = Color('xyy', [xy[0], xy[1], t[1]])
+
+            c.convert(space, norm=False, in_place=True)
+
+            store_coords(c, X, Y, Z, flags)
+
+            # Fit colors to output gamut
+            s = c.convert('srgb')
+            if not s.in_gamut():
+                s.fit(**gmap)
+            else:
+                s.clip()
+            cmap.append(s.to_string(hex=True))
+
+    # Calculate triangles
+    tri = Delaunay([*zip(locals().get(dim[0]), locals().get(dim[1]))], qhull_options=QHULL_OPTIONS)
+    create3d(fig, X, Y, Z, tri, cmap, edges, faces, ecolor, fcolor, opacity, filters)
+
+
+def render_visible_spectrum(fig, space, res, opacity, edges, faces, ecolor, fcolor, gmap, filters):
+    """
+    Render the visible spectrum.
+
+    Visible spectrum is rendered like a cube using a simpler approach as shown
+    here: Simple approach used https://prototypestudios.neocities.org/dlm.
+
+    Draw a line from each wavelength to 780nm and interpolate a point between.
+    """
+
+    # Six corners of the cube
+    c000 = [360, 0, 0]
+    c111 = [780, 1, 1]
+    c100 = [780, 0, 0]
+    c010 = [360, 1, 0]
+    c001 = [360, 0, 1]
+    c110 = [780, 1, 0]
+    c011 = [360, 1, 1]
+    c101 = [780, 0, 1]
+
+    # Interpolate two sides of a given face and interpolate the rest
+    s1 = alg.linspace(c110, c111, res)
+    s2 = alg.linspace(c010, c011, res)
+    s3 = alg.linspace(c100, c101, res)
+    s4 = alg.linspace(c000, c001, res)
+    render_spectrum_face(fig, s1, s2, ('x', 'z'), space, res, opacity, edges, faces, ecolor, fcolor, gmap, filters)
+    render_spectrum_face(fig, s1, s3, ('y', 'z'), space, res, opacity, edges, faces, ecolor, fcolor, gmap, filters)
+    render_spectrum_face(fig, s3, s4, ('x', 'z'), space, res, opacity, edges, faces, ecolor, fcolor, gmap, filters)
+    render_spectrum_face(fig, s4, s2, ('y', 'z'), space, res, opacity, edges, faces, ecolor, fcolor, gmap, filters)
+    s1 = alg.linspace(c001, c011, res)
+    s2 = alg.linspace(c101, c111, res)
+    render_spectrum_face(fig, s1, s2, ('x', 'y'), space, res, opacity, edges, faces, ecolor, fcolor, gmap, filters)
+    s1 = alg.linspace(c000, c010, res)
+    s2 = alg.linspace(c100, c110, res)
+    render_spectrum_face(fig, s1, s2, ('x', 'y'), space, res, opacity, edges, faces, ecolor, fcolor, gmap, filters)
+
+    return fig
+
+
 def render_special_gamut(gtype, fig, space, resolution, opacity, edges, faces, ecolor, fcolor, gmap, filters, limit):
     """Render the Pointer gamut in 3d."""
 
+    if gtype == 'visible-spectrum':
+        return render_visible_spectrum(
+            fig, space, resolution, opacity, edges, faces, ecolor, fcolor, gmap, filters
+        )
+
     target = Color.CS_MAP[space]
-    white = target.WHITE
     flags = {
         'is_cyl': target.is_polar(),
         'is_labish': isinstance(target, Labish),
@@ -413,23 +510,9 @@ def render_special_gamut(gtype, fig, space, resolution, opacity, edges, faces, e
     elif gtype == 'macadam-limits':
         lightness = visible_spectrum.LUMINANCE
         hues = visible_spectrum.HUE
-    else:
-        lightness = alg.linspace(1, alg.ATOL, max(3, (resolution // 2) * 2 + 1))
-        xy_pair = [cmfs.xy(r) for r in range(cmfs.start, cmfs.end + 1, cmfs.step)]
-        first, last = xy_pair[0], xy_pair[-1]
-        xy_pair.extend(
-            [[alg.lerp(last[0], first[0], r / 48), alg.lerp(last[1], first[1], r / 48)] for r in range(0, 49, 1)]
-        )
-        hues = [alg.rect_to_polar(*alg.subtract(r, white))[1] for r in xy_pair]
-        lowest = min(hues)
-        idx = hues.index(lowest)
-        hues = list(reversed(hues[:idx])) + list(reversed(hues[idx + 1:]))
-        hues.append(hues[0] + 360)
-        xy_pair = list(reversed(xy_pair[:idx])) + list(reversed(xy_pair[idx + 1:]))
-        xy_pair.append(xy_pair[0])
 
     for l in lightness:
-        for e, h in enumerate(hues):
+        for h in hues:
             if gtype == 'pointer-gamut':
                 # Close out the top or bottom if see lightness beyond the expected range
                 if l == 91:
@@ -457,10 +540,6 @@ def render_special_gamut(gtype, fig, space, resolution, opacity, edges, faces, e
                     u.append(l)
                     v.append(h)
                     color[:-1] = [*xy, l]
-            else:
-                color = Color.chromaticity('xyy', [*xy_pair[e], l], 'xy-1931', white=white, scale=False)
-                u.append(l)
-                v.append(h)
 
             if gtype != 'pointer-gamut' and limit['pointer-gamut']:
                 color.fit('pointer-gamut')
@@ -484,63 +563,7 @@ def render_special_gamut(gtype, fig, space, resolution, opacity, edges, faces, e
 
     # Calculate the triangles
     tri = Delaunay([*zip(u, v)], qhull_options=QHULL_OPTIONS)
-
     create3d(fig, x, y, z, tri, cmap, edges, faces, ecolor, fcolor, opacity, filters)
-
-    # Draw top and bottom of the visible spectrum
-    step = max(int(resolution / 8), 4)
-    if gtype == 'visible-spectrum':
-        for l in (1, alg.ATOL):
-            # 9, 60; 60, 90
-            ranges = list(range(0, 300, 4)) + [300]
-            for r in ranges:
-                start = r
-                end = min(r + (4 if r < 300 else 1000), len(hues) - 1)
-                u = []
-                v = []
-                x = []
-                y = []
-                z = []
-                cmap = []
-                for r in alg.linspace(0, 1, step):
-                    for e in range(start, end + 1, 1):
-                        h = hues[e]
-                        _c, _ = alg.rect_to_polar(*alg.subtract(xy_pair[e], white))
-                        _c = alg.lerp(_c, alg.ATOL, r)
-                        u.append(_c)
-                        v.append(h)
-                        color = Color.chromaticity(
-                            'xyy',
-                            [*alg.add(alg.polar_to_rect(_c, h), white), l],
-                            'xy-1931',
-                            white=white,
-                            scale=False
-                        )
-
-                        if gtype != 'pointer-gamut' and limit['pointer-gamut']:
-                            color.fit('pointer-gamut')
-                        if gtype not in ('pointer-gamut', 'macadam-limits') and limit['macadam-limits']:
-                            color.fit('macadam-limits')
-                        color.convert(space, norm=False, in_place=True)
-                        store_coords(color, x, y, z, flags)
-
-                        # Adjust gamut to fit the display space
-                        s = color.convert('srgb')
-                        if not s.in_gamut():
-                            s.fit(**gmap)
-                        else:
-                            s.clip()
-
-                        if filters:
-                            s.filter(filters[0], **filters[1], in_place=True, out_space=s.space()).clip()
-
-                        cmap.append(s.to_string(hex=True))
-
-                    # Calculate the triangles
-                    tri = Delaunay([*zip(u, v)], qhull_options=QHULL_OPTIONS)
-
-                    create3d(fig, x, y, z, tri, cmap, edges, faces, ecolor, fcolor, opacity, filters)
-
     return fig
 
 
