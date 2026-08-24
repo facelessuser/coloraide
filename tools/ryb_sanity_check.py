@@ -36,7 +36,7 @@ def run(space):
         ryb = Color(space, corner)
         srgb = ryb.convert('srgb')
         ryb2 = srgb.convert(space)
-        str1, str2 = ryb.to_string(), ryb2.to_string()
+        str1, str2 = ryb.serialize(), ryb2.serialize()
         print(str1, str2)
         if str1 != str2:
             print('Colors do not match!')
@@ -51,7 +51,7 @@ def run(space):
                 ryb = Color(space, [i / div, j / div, k / div])
                 srgb = ryb.convert('srgb')
                 ryb2 = srgb.convert(space)
-                str1, str2 = ryb.to_string(), ryb2.to_string()
+                str1, str2 = ryb.serialize(), ryb2.serialize()
                 print(str1, str2)
                 if str1 != str2:
                     print('Colors do not match!')
