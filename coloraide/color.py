@@ -63,13 +63,16 @@ from .distance.delta_e_itp import DEITP
 from .distance.delta_e_z import DEZ
 from .contrast import ColorContrast
 from .contrast.wcag21 import WCAG21Contrast
-from .gamut import Fit
+from .gamut import Fit, Gamut
 from .gamut.fit_minde_chroma import MINDEChroma
 from .gamut.fit_lch_chroma import LChChroma
 from .gamut.fit_oklch_chroma import OkLChChroma
 from .gamut.fit_raytrace import RayTrace
 from .gamut.fit_scale import Scale
 from .gamut.fit_scale_luminance import ScaleLuminance
+from .gamut.pointer import PointerGamut
+from .gamut.macadam_limits import MacAdamLimits
+from .gamut.visible_spectrum import VisibleSpectrum
 from .cat import CAT, Bradford
 from .filters import Filter
 from .filters.w3c_filter_effects import Sepia, Brightness, Contrast, Saturate, Opacity, HueRotate, Grayscale, Invert
@@ -138,6 +141,7 @@ class ColorMeta(abc.ABCMeta):
             cls.CONTRAST_MAP = cls.CONTRAST_MAP.copy()  # type: dict[str, ColorContrast]
             cls.INTERPOLATE_MAP = cls.INTERPOLATE_MAP.copy()  # type: dict[str, Interpolate]
             cls.CCT_MAP = cls.CCT_MAP.copy()  # type: dict[str, CCT]
+            cls.GAMUT_MAP = cls.GAMUT_MAP.copy()  # type: dict[str, Gamut]
 
         # Ensure each derived class tracks its own conversion paths for color spaces
         # relative to the installed color space plugins.
@@ -166,6 +170,7 @@ class Color(metaclass=ColorMeta):
     FILTER_MAP = {}  # type: dict[str, Filter]
     INTERPOLATE_MAP = {}  # type: dict[str, Interpolate]
     CCT_MAP = {}  # type: dict[str, CCT]
+    GAMUT_MAP = {}  # type: dict[str, Gamut]
     PRECISION = util.DEF_PREC
     ROUNDING = util.DEF_ROUND_MODE
     FIT = util.DEF_FIT
@@ -377,8 +382,13 @@ class Color(metaclass=ColorMeta):
                 mapping = cls.CS_MAP
                 reset_convert_cache = True
                 p = i
-                if p.NAME in gamut.SPECIAL_GAMUTS:
-                    raise ValueError(f"Color space name '{p.NAME}' conflicts with the an internal, special gamut")
+                if p.NAME in cls.GAMUT_MAP:
+                    raise ValueError(f"Color space '{p.NAME}' conflicts with gamut {p.NAME}")
+            elif isinstance(i, Gamut):
+                mapping = cls.GAMUT_MAP
+                p = i
+                if p.NAME in cls.CS_MAP:
+                    raise ValueError(f"Gamut {p.NAME} conflicts with color space {p.NAME}")
             elif isinstance(i, DeltaE):
                 mapping = cls.DE_MAP
                 p = i
@@ -441,12 +451,15 @@ class Color(metaclass=ColorMeta):
                 cls.INTERPOLATE_MAP.clear()
                 cls.CCT_MAP.clear()
                 cls.FIT_MAP.clear()
+                cls.GAMUT_MAP.clear()
                 return
 
             ptype, name = p.split(':', 1)
             if ptype == 'space':
                 mapping = cls.CS_MAP
                 reset_convert_cache = True
+            elif ptype == 'gamut':
+                mapping = cls.GAMUT_MAP
             elif ptype == "delta-e":
                 mapping = cls.DE_MAP
             elif ptype == 'cat':
@@ -1038,8 +1051,9 @@ class Color(metaclass=ColorMeta):
             return self.clip(space)
 
         # Handle special gamut requests
-        if space in gamut.SPECIAL_GAMUTS:
-            return cast('Self', gamut.SPECIAL_GAMUTS[space]['fit'](self, **kwargs))
+        if space in self.GAMUT_MAP:
+            cast('Self', self.GAMUT_MAP[space].fit(self, method=method, **kwargs))
+            return self
 
         # If within gamut, just normalize hue range by calling clip.
         if self.in_gamut(space, tolerance=0):
@@ -1072,8 +1086,8 @@ class Color(metaclass=ColorMeta):
             tolerance = util.DEF_FIT_TOLERANCE
 
         # Handle special gamut requests
-        if space in gamut.SPECIAL_GAMUTS:
-            return cast('bool', gamut.SPECIAL_GAMUTS[space]['check'](self, tolerance=tolerance, **kwargs))
+        if space in self.GAMUT_MAP:
+            return cast('bool', self.GAMUT_MAP[space].in_gamut(self, tolerance=tolerance, **kwargs))
 
         # Check if gamut is in the provided space
         c = self.convert(space, norm=False) if space is not None and space != self.space() else self
@@ -1093,13 +1107,14 @@ class Color(metaclass=ColorMeta):
     def in_pointer_gamut(self, *, tolerance: float = util.DEF_FIT_TOLERANCE) -> bool:  # pragma: no cover
         """Check if in pointer gamut."""
 
-        return gamut.pointer.in_pointer_gamut(self, tolerance)
+        return self.GAMUT_MAP['pointer-gamut'].in_gamut(self, tolerance)
 
     @deprecated("`color.fit_pointer_gamut()` has been deprecated in favor of using `color.fit('pointer-gamut')`")
     def fit_pointer_gamut(self) -> Self:  # pragma: no cover
         """Check if in pointer gamut."""
 
-        return gamut.pointer.fit_pointer_gamut(self)
+        self.GAMUT_MAP['pointer-gamut'].fit(self)
+        return self
 
     def mask(self, channel: str | Sequence[str], *, invert: bool = False, in_place: bool = False) -> Self:
         """Mask color channels."""
@@ -1688,6 +1703,11 @@ Color.register(
         A98RGBLinear(),
         ProPhotoRGB(),
         ProPhotoRGBLinear(),
+
+        # Gamuts
+        PointerGamut(),
+        VisibleSpectrum(),
+        MacAdamLimits(),
 
         # CAT
         Bradford(),

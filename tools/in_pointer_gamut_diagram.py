@@ -66,8 +66,8 @@ def plot_pointer_gamut(target, space_gamut, fit, title, height, width):
         original = Color(target)
         colors.append(original.convert('lch-pointer', norm=False))
         lightness = colors[0]['l']
-        if fit and not colors[0].in_pointer_gamut():
-            colors.append(colors[0].clone().fit_pointer_gamut())
+        if fit and not colors[0].in_gamut('pointer-gamut'):
+            colors.append(colors[0].clone().fit('pointer-gamut'))
     color = colors[0]
     l, c, h = color[:-1]
     li, lf = gamut.pointer.closest_lightness(l)
@@ -109,7 +109,7 @@ def plot_pointer_gamut(target, space_gamut, fit, title, height, width):
 
     for color in colors:
         c, h = color[1:-1]
-        if color.in_pointer_gamut():
+        if color.in_gamut('pointer-gamut'):
             inside.append([c, h])
         else:
             outside.append([c, h])

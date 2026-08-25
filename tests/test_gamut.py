@@ -681,18 +681,18 @@ class TestMacadamLimits(util.ColorAsserts, unittest.TestCase):
         """Test when pointer boundary is request is too light."""
 
         with self.assertRaises(ValueError):
-            gamut.visible_spectrum.macadam_limits(-0.01)
+            gamut.macadam_limits.macadam_limits(-0.01)
 
     def test_macadam_limits_too_dark(self):
         """Test when pointer boundary is request is too dark."""
 
         with self.assertRaises(ValueError):
-            gamut.visible_spectrum.macadam_limits(1.01)
+            gamut.macadam_limits.macadam_limits(1.01)
 
     def test_macadam_limits_mid(self):
         """Test when pointer boundary request."""
 
-        boundary = gamut.visible_spectrum.macadam_limits(0.5)
+        boundary = gamut.macadam_limits.macadam_limits(0.5)
         # Test a sample of the values
         test = [boundary[0], boundary[5], boundary[8]]
         expected = [[0.4806514042586269, 0.329, 0.5],
@@ -705,7 +705,7 @@ class TestMacadamLimits(util.ColorAsserts, unittest.TestCase):
     def test_macadam_limits_max(self):
         """Test pointer boundary max request."""
 
-        boundary = gamut.visible_spectrum.macadam_limits()
+        boundary = gamut.macadam_limits.macadam_limits()
         # Test a sample of the values
         test = [boundary[0], boundary[5], boundary[8]]
         expected = [[0.6707946074737312, 0.329, 1],

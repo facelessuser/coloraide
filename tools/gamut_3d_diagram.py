@@ -18,7 +18,7 @@ from coloraide.channels import ANGLE_DEG
 from coloraide.spaces import HSLish, HSVish, HWBish, Labish, LChish, RGBish
 from coloraide import algebra as alg
 from coloraide.color import POSTFIX
-from coloraide.gamut import pointer, visible_spectrum, SPECIAL_GAMUTS
+from coloraide.gamut import pointer, visible_spectrum
 from coloraide.spectrum import wavelength_to_color
 from coloraide.cmfs import CIE_1931_2DEG as cmfs
 from coloraide import util
@@ -527,7 +527,7 @@ def render_special_gamut(gtype, fig, space, resolution, opacity, edges, faces, e
                 u.append(_l)
                 v.append(h)
                 color = Color('xyz-d65', [0, 0, 0])
-                pointer.from_lch_sc(color, [_l, c, h])
+                color.GAMUT_MAP['pointer-gamut'].from_lch(color, [_l, c, h])
             elif gtype == 'macadam-limits':
                 color = Color('white').convert('xyy', in_place=True)
                 if l == -1:
@@ -705,7 +705,7 @@ def plot_gamut_in_space(
             fcolor = c.to_string(hex=True, alpha=False)
             faces = True
 
-        if gamut in SPECIAL_GAMUTS:
+        if gamut in Color.GAMUT_MAP:
             render_special_gamut(
                 gamut, fig, space, resolution, opacity, edges, faces, ecolor, fcolor, gmap, filters, limit
             )

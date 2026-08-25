@@ -169,14 +169,15 @@ nav:
 
   - Plugins:
       - plugins/index.md
-      - Delta E: plugins/delta_e.md
-      - Fit/Gamut Mapping: plugins/fit.md
-      - Chromatic Adaptation: plugins/cat.md
-      - Filters: plugins/filter.md
-      - Contrast: plugins/contrast.md
-      - Color Spaces: plugins/space.md
-      - Interpolation: plugins/interpolate.md
       - CCT: plugins/cct.md
+      - Chromatic Adaptation: plugins/cat.md
+      - Color Spaces: plugins/space.md
+      - Contrast: plugins/contrast.md
+      - Delta E: plugins/delta_e.md
+      - Filters: plugins/filter.md
+      - Fit/Gamut Mapping: plugins/fit.md
+      - Gamut: plugins/gamut.md
+      - Interpolation: plugins/interpolate.md
 
   - Demos:
     - demos/index.md

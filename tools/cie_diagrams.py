@@ -371,11 +371,11 @@ def cie_diagram(
             sy = []
             xy = []
             if bounds == 'max':
-                pts = gamut.visible_spectrum.macadam_limits()
+                pts = gamut.macadam_limits.macadam_limits()
                 label = 'visible spectrum'
             else:
                 l = min(1, max(0, float(bounds)))
-                pts = gamut.visible_spectrum.macadam_limits(l)
+                pts = gamut.macadam_limits.macadam_limits(l)
                 label = f'MacAdam Limit Y={round(l, 2)}'
             pts.append(pts[0])
             for pt in pts:

@@ -12,6 +12,7 @@ from .. import algebra as alg
 from .. import util
 from ..types import Vector, Matrix, AnyColor, VectorLike  # noqa: F401
 from typing import TYPE_CHECKING, Any
+from . import Gamut
 
 if TYPE_CHECKING:  #pragma: no cover
     from ..color import Color
@@ -64,125 +65,6 @@ LUT = [
 ]
 
 
-def lch_sc_to_xyY(lch: Vector) -> Vector:
-    """Convert from LCh to xy coordinates."""
-
-    return util.xyz_to_xyY(lab_to_xyz(lch_to_lab(lch), XYZ_W), XYZ_W)
-
-
-def to_lch_sc(color: Color) -> Vector:
-    """Convert a color to LCh with an SC illuminant."""
-
-    xyz = color.convert('xyz-d65').normalize(nans=False)
-    xyz_sc = color.chromatic_adaptation(xyz._space.WHITE, WHITE_POINT_SC, xyz[:-1])
-    return lab_to_lch(xyz_to_lab(xyz_sc, XYZ_W))
-
-
-def from_lch_sc(color: AnyColor, lch: Vector) -> AnyColor:
-    """Convert a color from LCh with an SC illuminant."""
-
-    xyz_sc = lab_to_xyz(lch_to_lab(lch), XYZ_W)
-    xyz_d65 = color.chromatic_adaptation(WHITE_POINT_SC, color.CS_MAP['xyz-d65'].WHITE, xyz_sc)
-    return color.update('xyz-d65', xyz_d65, color[-1])
-
-
-def closest_lightness(l: float) -> tuple[int, float]:
-    """Calculate the two closest lightness values and return the first index and interpolation factor."""
-
-    # Handle too low lightness inside tolerance
-    if l <= LIGHTNESS[0]:
-        li = 0
-        lf = 0.0
-
-    # Handle too high lightness inside tolerance
-    elif l >= LIGHTNESS[-1]:
-        li = len(LIGHTNESS) - 2
-        lf = 1.0
-
-    # Handle lightness within gamut
-    else:
-        li = bisect.bisect(LIGHTNESS, l) - 1
-        l1, l2 = LIGHTNESS[li:li + 2]
-        lf = 1 - (l2 - l) / (l2 - l1)
-
-    return li, lf
-
-
-def closest_hue(h: float) -> tuple[int, float]:
-    """Calculate the two closest hues and return the first index and interpolation factor."""
-
-    # Handle hue at the start
-    if h == HUE[0]:  # pragma: no cover
-        hi = 0
-        hf = 0.0
-
-    # Handle hue at the end
-    elif h == HUE[-1]:  # pragma: no cover
-        hi = len(HUE) - 2
-        hf = 1.0
-
-    # Handle all other hues
-    else:
-        hi = bisect.bisect(HUE, h) - 1
-        h1, h2 = HUE[hi:hi + 2]
-        hf = 1 - (h2 - h) / (h2 - h1)
-
-    return hi, hf
-
-
-def get_chroma_limit(l: float, h: float) -> float:
-    """Get the chroma limit."""
-
-    # Find the two closest lightness columns and calculate the needed interpolation factor.
-    li, lf = closest_lightness(l)
-
-    # Find the two closest hue rows and calculate the needed interpolation factor.
-    hi, hf = closest_hue(h)
-
-    # Interpolate the chroma limit by interpolating chroma values for the closest lightness values and hues.
-    row1, row2 = LUT[hi:hi + 2]
-    return alg.lerp(alg.lerp(row1[li], row1[li + 1], lf), alg.lerp(row2[li], row2[li + 1], lf), hf)
-
-
-def fit_pointer_gamut(color: AnyColor, **kwargs: Any) -> AnyColor:
-    """Fit a color to the Pointer gamut."""
-
-    # Convert to CIE LCh with the SC illuminant
-    l, c, h = to_lch_sc(color)
-
-    # Clamp lightness
-    new_l = max(LIGHTNESS[0], l)
-    new_l = min(LIGHTNESS[-1], new_l)
-
-    new_c = min(c, get_chroma_limit(l, h))
-
-    adjusted = l != new_l or c != new_c
-
-    # Adjust original color only if a modification was made
-    return from_lch_sc(color, [new_l, new_c, h]) if adjusted else color
-
-
-def in_pointer_gamut(color: Color, tolerance: float, **kwargs: Any) -> bool:
-    """
-    See if color is within the pointer gamut.
-
-    Convert to CIE LCh using the SC illuminant.
-    Find the closest hues and lightness (rows and columns) so we can interpolate
-    the an appropriate max chroma for a given hue and lightness. Test that the
-    color's chroma does not exceed the limit.
-    """
-
-    # Convert to CIE LCh with the SC illuminant
-    l, c, h = to_lch_sc(color)
-
-    # If lightness exceeds the acceptable range, then we are not in gamut
-    if (l < (LIGHTNESS[0] - tolerance)) or (l > (LIGHTNESS[-1] + tolerance)):
-        return False
-
-    # Test that the color does not exceed the max chroma
-    return c <= (get_chroma_limit(l, h) + tolerance)
-
-
 def pointer_gamut_boundary(lightness: float | None = None) -> Matrix:
     """
     Calculate the Pointer gamut boundary points for the given lightness.
@@ -199,7 +81,7 @@ def pointer_gamut_boundary(lightness: float | None = None) -> Matrix:
             max_dxy = 0.0
             max_xyy = [0.0, 0.0, 0.0]
             for j, l in enumerate(LIGHTNESS):
-                xyy = lch_sc_to_xyY([l, LUT[i][j], h])
+                xyy = util.xyz_to_xyY(lab_to_xyz(lch_to_lab([l, LUT[i][j], h]), XYZ_W), XYZ_W)
                 dxy = math.sqrt((WHITE_POINT_SC[0] - xyy[0]) ** 2 + (WHITE_POINT_SC[1] - xyy[1]) ** 2)
                 if dxy > max_dxy:
                     max_dxy = dxy
@@ -210,10 +92,135 @@ def pointer_gamut_boundary(lightness: float | None = None) -> Matrix:
     # Pointer gamut boundary at a given lightness
     # Return all the points for a given lightness
     elif LIGHTNESS[0] <= lightness <= LIGHTNESS[-1]:
-        li, lf = closest_lightness(lightness)
+        # Handle too low lightness inside tolerance
+        if lightness <= LIGHTNESS[0]:
+            li = 0
+            lf = 0.0
+
+        # Handle too high lightness inside tolerance
+        elif lightness >= LIGHTNESS[-1]:
+            li = len(LIGHTNESS) - 2
+            lf = 1.0
+
+        # Handle lightness within gamut
+        else:
+            li = bisect.bisect(LIGHTNESS, lightness) - 1
+            l1, l2 = LIGHTNESS[li:li + 2]
+            lf = 1 - (l2 - lightness) / (l2 - l1)
+
         chroma = [alg.lerp(row[li], row[li + 1], lf) for row in LUT[:-1]]
-        return [lch_sc_to_xyY([lightness, c, h]) for c, h in zip(chroma, HUE)]
+
+        return [util.xyz_to_xyY(lab_to_xyz(lch_to_lab([lightness, c, h]), XYZ_W), XYZ_W) for c, h in zip(chroma, HUE)]
 
     # Lightness exceeds threshold
     else:
         raise ValueError(f'Lightness must be between {LIGHTNESS[0]} and {LIGHTNESS[-1]}, but was {lightness}')
+
+
+class PointerGamut(Gamut):
+    """The Pointer gamut."""
+
+    NAME = 'pointer-gamut'
+    LIGHTNESS = LIGHTNESS
+    GAMUT_WHITE = WHITE_POINT_SC
+    HUE = HUE
+    LUT = LUT
+
+    def to_lch(self, color: Color) -> Vector:
+        """Convert a color to LCh with an SC illuminant."""
+
+        xyz = color.convert('xyz-d65').normalize(nans=False)
+        xyz_gamut = color.chromatic_adaptation(xyz._space.WHITE, self.GAMUT_WHITE, xyz[:-1])
+        return lab_to_lch(xyz_to_lab(xyz_gamut, util.xy_to_xyz(self.GAMUT_WHITE)))
+
+    def from_lch(self, color: AnyColor, lch: Vector) -> AnyColor:
+        """Convert a color from LCh with an SC illuminant."""
+
+        xyz_gamut = lab_to_xyz(lch_to_lab(lch), util.xy_to_xyz(self.GAMUT_WHITE))
+        xyz_d65 = color.chromatic_adaptation(self.GAMUT_WHITE, color.CS_MAP['xyz-d65'].WHITE, xyz_gamut)
+        return color.update('xyz-d65', xyz_d65, color[-1])
+
+    def closest_lightness(self, l: float) -> tuple[int, float]:
+        """Calculate the two closest lightness values and return the first index and interpolation factor."""
+
+        # Handle too low lightness inside tolerance
+        if l <= self.LIGHTNESS[0]:
+            li = 0
+            lf = 0.0
+
+        # Handle too high lightness inside tolerance
+        elif l >= self.LIGHTNESS[-1]:
+            li = len(self.LIGHTNESS) - 2
+            lf = 1.0
+
+        # Handle lightness within gamut
+        else:
+            li = bisect.bisect(self.LIGHTNESS, l) - 1
+            l1, l2 = self.LIGHTNESS[li:li + 2]
+            lf = 1 - (l2 - l) / (l2 - l1)
+
+        return li, lf
+
+    def closest_hue(self, h: float) -> tuple[int, float]:
+        """Calculate the two closest hues and return the first index and interpolation factor."""
+
+        # Handle hue at the start
+        if h == self.HUE[0]:  # pragma: no cover
+            hi = 0
+            hf = 0.0
+
+        # Handle hue at the end
+        elif h == self.HUE[-1]:  # pragma: no cover
+            hi = len(self.HUE) - 2
+            hf = 1.0
+
+        # Handle all other hues
+        else:
+            hi = bisect.bisect(self.HUE, h) - 1
+            h1, h2 = self.HUE[hi:hi + 2]
+            hf = 1 - (h2 - h) / (h2 - h1)
+
+        return hi, hf
+
+    def get_chroma_limit(self, l: float, h: float) -> float:
+        """Get the chroma limit."""
+
+        # Find the two closest lightness columns and calculate the needed interpolation factor.
+        li, lf = self.closest_lightness(l)
+
+        # Find the two closest hue rows and calculate the needed interpolation factor.
+        hi, hf = self.closest_hue(h)
+
+        # Interpolate the chroma limit by interpolating chroma values for the closest lightness values and hues.
+        row1, row2 = self.LUT[hi:hi + 2]
+        return alg.lerp(alg.lerp(row1[li], row1[li + 1], lf), alg.lerp(row2[li], row2[li + 1], lf), hf)
+
+    def in_gamut(self, color: Color, tolerance: float, **kwargs: Any) -> bool:
+        """Test if in gamut."""
+
+        # Convert to CIE LCh with the SC illuminant
+        l, c, h = self.to_lch(color)
+
+        # If lightness exceeds the acceptable range, then we are not in gamut
+        if (l < (self.LIGHTNESS[0] - tolerance)) or (l > (self.LIGHTNESS[-1] + tolerance)):
+            return False
+
+        # Test that the color does not exceed the max chroma
+        return c <= (self.get_chroma_limit(l, h) + tolerance)
+
+    def fit(self, color, **kwargs: Any) -> None:
+        """Fit to gamut."""
+
+        # Convert to CIE LCh with the SC illuminant
+        l, c, h = self.to_lch(color)
+
+        # Clamp lightness
+        new_l = max(self.LIGHTNESS[0], l)
+        new_l = min(self.LIGHTNESS[-1], new_l)
+
+        new_c = min(c, self.get_chroma_limit(l, h))
+
+        adjusted = l != new_l or c != new_c
+
+        # Adjust original color only if a modification was made
+        self.from_lch(color, [new_l, new_c, h]) if adjusted else color

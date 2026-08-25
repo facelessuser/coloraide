@@ -140,12 +140,14 @@ def build_lut(location):
                 the solid, and if not, bisection is used to reduce the distance until
                 we are close to the surface.
                 """
+                # ruff: disable[E501]
                 LUMINANCE = {alg.pretty(luminance)}
                 HUE = {alg.pretty(hues)}
                 '''
             ).strip()
         )
         f.write('\n\nLUT = ' + alg.pretty(table))
+        f.write('\n# ruff: enable[E501]\n')
 
 
 if __name__ == "__main__":

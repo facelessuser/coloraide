@@ -167,7 +167,7 @@ def plot_slice(
             if (
                 allow_oog or (
                     r.in_gamut(gamut, tolerance=0) and
-                    (not pointer or r.in_pointer_gamut(tolerance=0)) and
+                    (not pointer or r.in_gamut('pointer-gamut', tolerance=0)) and
                     (not is_lchish or not ignore_LCh_high_chroma_black(r))
                 )
             ):
