@@ -208,7 +208,7 @@ class PointerGamut(Gamut):
         # Test that the color does not exceed the max chroma
         return c <= (self.get_chroma_limit(l, h) + tolerance)
 
-    def fit(self, color, **kwargs: Any) -> None:
+    def fit(self, color: Color, **kwargs: Any) -> None:
         """Fit to gamut."""
 
         # Convert to CIE LCh with the SC illuminant

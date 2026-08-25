@@ -1087,7 +1087,7 @@ class Color(metaclass=ColorMeta):
 
         # Handle special gamut requests
         if space in self.GAMUT_MAP:
-            return cast('bool', self.GAMUT_MAP[space].in_gamut(self, tolerance=tolerance, **kwargs))
+            return self.GAMUT_MAP[space].in_gamut(self, tolerance=tolerance, **kwargs)
 
         # Check if gamut is in the provided space
         c = self.convert(space, norm=False) if space is not None and space != self.space() else self

@@ -133,7 +133,7 @@ class MacAdamLimits(Gamut):
         # Test that the color does not exceed the max chroma
         return c <= (self.get_chroma_limit(Y, h) + tolerance)
 
-    def fit(self, color, **kwargs: Any) -> None:
+    def fit(self, color: Color, **kwargs: Any) -> None:
         """Fit to gamut."""
 
         # Convert to xyY
