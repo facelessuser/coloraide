@@ -83,7 +83,7 @@ def build_lut(location):
     # We iterate in luminance and convert to Lab lightness for more linear steps.
     table = []
     hues = [round(x) for x in alg.linspace(0, 360, 361)]
-    # In the xyY space, the shape stays wide up util zero and then collapses.
+    # In the xyY space, the shape stays wide up until zero and then collapses.
     # 0 needs to be included, but it gives us nothing as far as the shape is concerned,
     # 1e-12 will give us something close to the largest base size.
     luminance = [0, 1e-12, *[round(i / 100, 2) for i in alg.linspace(5, 100, 20)]]
