@@ -674,30 +674,30 @@ class TestMacadamLimits(util.ColorAsserts, unittest.TestCase):
 
         self.assertColorEqual(
             Color('rec2020', [0, 1, 0]).fit('macadam-limits'),
-            Color('color(rec2020 0.4652 0.96774 0.4652)')
+            Color('color(rec2020 0.46617 0.96758 0.46617)')
         )
 
     def test_macadam_limits_too_light(self):
         """Test when pointer boundary is request is too light."""
 
         with self.assertRaises(ValueError):
-            gamut.visible_spectrum.macadam_limits(-0.01)
+            gamut.macadam_limits.macadam_limits(-0.01)
 
     def test_macadam_limits_too_dark(self):
         """Test when pointer boundary is request is too dark."""
 
         with self.assertRaises(ValueError):
-            gamut.visible_spectrum.macadam_limits(1.01)
+            gamut.macadam_limits.macadam_limits(1.01)
 
     def test_macadam_limits_mid(self):
         """Test when pointer boundary request."""
 
-        boundary = gamut.visible_spectrum.macadam_limits(0.5)
+        boundary = gamut.macadam_limits.macadam_limits(0.5)
         # Test a sample of the values
         test = [boundary[0], boundary[5], boundary[8]]
-        expected = [[0.4806514042586269, 0.329, 0.5],
-                    [0.4962107271703434, 0.34505510826280383, 0.5],
-                    [0.507062460802951, 0.3563158624760576, 0.5]]
+        expected = [[0.48014756568499994, 0.329, 0.5],
+                    [0.4956350272100697, 0.3450047410426876, 0.5],
+                    [0.5064113262377211, 0.3562243514807566, 0.5]]
 
         for coords1, coords2 in zip(test, expected):
             [self.assertCompare(a, b) for a, b in zip(coords1, coords2)]
@@ -705,12 +705,12 @@ class TestMacadamLimits(util.ColorAsserts, unittest.TestCase):
     def test_macadam_limits_max(self):
         """Test pointer boundary max request."""
 
-        boundary = gamut.visible_spectrum.macadam_limits()
+        boundary = gamut.macadam_limits.macadam_limits()
         # Test a sample of the values
         test = [boundary[0], boundary[5], boundary[8]]
-        expected = [[0.6707946074737312, 0.329, 1],
-                    [0.6418734410118543, 0.3577989444223567, 1],
-                    [0.6265045190690097, 0.37310234904334116, 1]]
+        expected = [[0.6707956551209999, 0.329, 1],
+                    [0.6418735466024112, 0.35779895366033343, 1],
+                    [0.626504624034622, 0.37310236379529593, 1]]
 
         for coords1, coords2 in zip(test, expected):
             [self.assertCompare(a, b) for a, b in zip(coords1, coords2)]

@@ -3,8 +3,6 @@ from __future__ import annotations
 import math
 from abc import ABCMeta, abstractmethod
 from functools import lru_cache
-from . import pointer
-from . import visible_spectrum
 from .. import util
 from .. import algebra as alg
 from ..channels import FLG_ANGLE
@@ -19,22 +17,7 @@ from typing import Any, TYPE_CHECKING, Callable  # noqa: F401
 if TYPE_CHECKING:  #pragma: no cover
     from ..color import Color
 
-__all__ = ('clip_channels', 'verify', 'Fit', 'pointer', 'visible_spectrum', 'scale_rgb', 'coerce_to_rgb')
-
-SPECIAL_GAMUTS = {
-    'pointer-gamut': {
-        'check': pointer.in_pointer_gamut,
-        'fit': pointer.fit_pointer_gamut
-    },
-    'macadam-limits': {
-        'check': visible_spectrum.in_macadam_limits,
-        'fit': visible_spectrum.fit_macadam_limits
-    },
-    'visible-spectrum': {
-        'check': visible_spectrum.in_visible_spectrum,
-        'fit': visible_spectrum.fit_visible_spectrum
-    }
-}   # type: dict[str, dict[str, Callable[..., Any]]]
+__all__ = ('clip_channels', 'verify', 'Fit', 'Gamut', 'scale_rgb', 'coerce_to_rgb')
 
 
 def hwb_to_srgb(coords: Vector) -> Vector:  # pragma: no cover
@@ -267,3 +250,16 @@ class Fit(Plugin, metaclass=ABCMeta):
     @abstractmethod
     def fit(self, color: Color, space: str, **kwargs: Any) -> None:
         """Get coordinates of the new gamut mapped color."""
+
+
+class Gamut(Plugin, metaclass=ABCMeta):
+    """Gamut plugin class."""
+
+    @abstractmethod
+    def in_gamut(self, color: Color, tolerance: float, **kwargs: Any) -> bool:
+        """Check if in gamut."""
+
+
+    @abstractmethod
+    def fit(self, color: Color, **kwargs: Any) -> None:
+        """Check if in gamut."""

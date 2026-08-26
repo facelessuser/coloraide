@@ -183,6 +183,28 @@ class TestCustom(util.ColorAsserts, unittest.TestCase):
         Custom.register(fit_lch_chroma.LChChroma())
         self.assertEqual(Custom('color(srgb 110% 140% 20%)').fit(method='lch-chroma').to_string(), expected)
 
+    def test_plugin_registration_gamut(self):
+        """Test plugin registration of `Gamut`."""
+
+        from coloraide.gamut import pointer
+
+        expected = Color('color(srgb 110% 140% 20%)').fit('pointer-gamut').to_string()
+
+        class Custom(Color):
+            pass
+
+        Custom.deregister('gamut:pointer-gamut')
+        # Deregistration should have taken place
+        with self.assertRaises(ValueError):
+            Custom('color(srgb 110% 140% 20%)').fit('pointer-gamut')
+
+        # But it should not affect the base class
+        self.assertEqual(Color('color(srgb 110% 140% 20%)').fit('pointer-gamut').to_string(), expected)
+
+        # Now it is registered again
+        Custom.register(pointer.PointerGamut())
+        self.assertEqual(Custom('color(srgb 110% 140% 20%)').fit('pointer-gamut').to_string(), expected)
+
     def test_plugin_registration_contrast(self):
         """Test plugin registration of `ColorContrast`."""
 
@@ -368,18 +390,40 @@ class TestCustom(util.ColorAsserts, unittest.TestCase):
         class CustomSpace(Space):
             NAME = 'pointer-gamut'
 
-            def to_base(self, coords):  # pragma: no cover
+            def to_base(self, coords):
                 """To base color."""
 
                 return coords
 
-            def from_base(self, coords):  # pragma: no cover
+            def from_base(self, coords):
                 """From base color."""
 
                 return coords
 
         with self.assertRaises(ValueError):
             Custom.register(CustomSpace(), overwrite=True)
+
+    def test_reserved_space_name_registration(self):
+        """Test override registration of reserved fit method."""
+
+        from coloraide.gamut import Gamut
+
+        class Custom(Color):
+            pass
+
+        class CustomGamut(Gamut):
+            NAME = 'xyz-d65'
+
+            def in_gamut(self, color, tolerance, **kwargs):
+                """Check if in gamut."""
+
+                return True
+
+            def fit(self, color, **kwargs):
+                """Check if in gamut."""
+
+        with self.assertRaises(ValueError):
+            Custom.register(CustomGamut(), overwrite=True)
 
     def test_bad_registration_type(self):
         """Test bad registration type."""

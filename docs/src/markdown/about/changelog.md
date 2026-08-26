@@ -3,6 +3,12 @@ icon: lucide/scroll-text
 ---
 # Changelog
 
+## 8.13
+
+-   **NEW**: Implement special gamuts (`visible-spectrum`, `pointer-gamut`, etc.) as `Gamut` plugins allowing the
+    expansion of _special_ gamuts in the future.
+-   **NEW**: Minor tweaks to `macadam-limits` calculations.
+
 ## 8.12.1
 
 -   **FIX**: Revert recent `algebra.ilerp()` change.

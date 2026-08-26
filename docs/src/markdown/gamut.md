@@ -1056,7 +1056,11 @@ Steps(
 > ```
 > ///
 
-## Pointer's Gamut
+## Special Gamuts
+
+### Pointer's Gamut
+
+> [!success] The `pointer-gamut` gamut is registered in `Color` by default
 
 The Pointer's gamut is (an approximation of) the gamut of real surface colors as can be seen by the human eye, based on
 the research by Michael R. Pointer (1980). What this means is that every color that can be reflected by the surface of
@@ -1101,7 +1105,9 @@ color.in_gamut('pointer-gamut')
 > When gamut mapping in the `pointer-gamut` gamut, the `method` parameter is ignored as its own handling will be
 > applied.
 
-## MacAdam Limits
+### MacAdam Limits
+
+> [!success] The `macadam-limits` gamut is registered in `Color` by default
 
 > [!new] New in 8.1
 
@@ -1143,7 +1149,9 @@ color.in_gamut('macadam-limits')
 > When gamut mapping in the `macadam-limits` gamut, the `method` parameter is ignored as its own handling will be
 > applied.
 
-## Visible Spectrum
+### Visible Spectrum
+
+> [!success] The `visible-spectrum` gamut is registered in `Color` by default
 
 > [!new] New in 8.6
 
