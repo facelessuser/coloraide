@@ -82,10 +82,11 @@ def build_lut(location):
     # Loop from 0 - 100 luminance and 0 -360 hue at some number of step.
     # We iterate in luminance and convert to Lab lightness for more linear steps.
     table = []
-    hues = alg.linspace(0, 360, 361)
+    hues = [round(x) for x in alg.linspace(0, 360, 361)]
+    # In the xyY space, the shape stays wide up util zero and then collapses.
     # 0 needs to be included, but it gives us nothing as far as the shape is concerned,
-    # 1e-10 will give us something close to the largest base size.
-    luminance = [0, 1e-10, *[i / 100 for i in alg.linspace(1, 100, 20)]]
+    # 1e-12 will give us something close to the largest base size.
+    luminance = [0, 1e-12, *[round(i / 100, 2) for i in alg.linspace(5, 100, 20)]]
     for Y in luminance:
         best = 0
         row = []
@@ -113,8 +114,9 @@ def build_lut(location):
                     best = high
                 count += 1
 
-            row.append(best)
-            print(f'==> Luminance: {Y} Hue: {h} Chroma: {best}')
+            result = round(best, 12) if best > 1e-12 else 0.0
+            row.append(result)
+            print(f'==> Luminance: {Y} Hue: {h} Chroma: {result}')
 
         table.append(row)
 
