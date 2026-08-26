@@ -5,14 +5,13 @@ Data used for the gamut: https://www.rit-mcsl.org/UsefulData/PointerData.xls.
 """
 from __future__ import annotations
 import math
-import bisect
+from .macadam_limits import MacAdamLimits, closest_lightness
 from ..spaces.lab import xyz_to_lab, lab_to_xyz
 from ..spaces.lch import lab_to_lch, lch_to_lab
 from .. import algebra as alg
 from .. import util
 from ..types import Vector, Matrix, AnyColor, VectorLike  # noqa: F401
 from typing import TYPE_CHECKING, Any
-from . import Gamut
 
 if TYPE_CHECKING:  #pragma: no cover
     from ..color import Color
@@ -93,23 +92,8 @@ def pointer_gamut_boundary(lightness: float | None = None) -> Matrix:
     # Return all the points for a given lightness
     elif LIGHTNESS[0] <= lightness <= LIGHTNESS[-1]:
         # Handle too low lightness inside tolerance
-        if lightness <= LIGHTNESS[0]:
-            li = 0
-            lf = 0.0
-
-        # Handle too high lightness inside tolerance
-        elif lightness >= LIGHTNESS[-1]:
-            li = len(LIGHTNESS) - 2
-            lf = 1.0
-
-        # Handle lightness within gamut
-        else:
-            li = bisect.bisect(LIGHTNESS, lightness) - 1
-            l1, l2 = LIGHTNESS[li:li + 2]
-            lf = 1 - (l2 - lightness) / (l2 - l1)
-
+        li, lf = closest_lightness(lightness, LIGHTNESS)
         chroma = [alg.lerp(row[li], row[li + 1], lf) for row in LUT[:-1]]
-
         return [util.xyz_to_xyY(lab_to_xyz(lch_to_lab([lightness, c, h]), XYZ_W), XYZ_W) for c, h in zip(chroma, HUE)]
 
     # Lightness exceeds threshold
@@ -117,7 +101,7 @@ def pointer_gamut_boundary(lightness: float | None = None) -> Matrix:
         raise ValueError(f'Lightness must be between {LIGHTNESS[0]} and {LIGHTNESS[-1]}, but was {lightness}')
 
 
-class PointerGamut(Gamut):
+class PointerGamut(MacAdamLimits):
     """The Pointer gamut."""
 
     NAME = 'pointer-gamut'
@@ -139,61 +123,6 @@ class PointerGamut(Gamut):
         xyz_gamut = lab_to_xyz(lch_to_lab(lch), util.xy_to_xyz(self.GAMUT_WHITE))
         xyz_d65 = color.chromatic_adaptation(self.GAMUT_WHITE, color.CS_MAP['xyz-d65'].WHITE, xyz_gamut)
         return color.update('xyz-d65', xyz_d65, color[-1])
-
-    def closest_lightness(self, l: float) -> tuple[int, float]:
-        """Calculate the two closest lightness values and return the first index and interpolation factor."""
-
-        # Handle too low lightness inside tolerance
-        if l <= self.LIGHTNESS[0]:
-            li = 0
-            lf = 0.0
-
-        # Handle too high lightness inside tolerance
-        elif l >= self.LIGHTNESS[-1]:
-            li = len(self.LIGHTNESS) - 2
-            lf = 1.0
-
-        # Handle lightness within gamut
-        else:
-            li = bisect.bisect(self.LIGHTNESS, l) - 1
-            l1, l2 = self.LIGHTNESS[li:li + 2]
-            lf = 1 - (l2 - l) / (l2 - l1)
-
-        return li, lf
-
-    def closest_hue(self, h: float) -> tuple[int, float]:
-        """Calculate the two closest hues and return the first index and interpolation factor."""
-
-        # Handle hue at the start
-        if h == self.HUE[0]:  # pragma: no cover
-            hi = 0
-            hf = 0.0
-
-        # Handle hue at the end
-        elif h == self.HUE[-1]:  # pragma: no cover
-            hi = len(self.HUE) - 2
-            hf = 1.0
-
-        # Handle all other hues
-        else:
-            hi = bisect.bisect(self.HUE, h) - 1
-            h1, h2 = self.HUE[hi:hi + 2]
-            hf = 1 - (h2 - h) / (h2 - h1)
-
-        return hi, hf
-
-    def get_chroma_limit(self, l: float, h: float) -> float:
-        """Get the chroma limit."""
-
-        # Find the two closest lightness columns and calculate the needed interpolation factor.
-        li, lf = self.closest_lightness(l)
-
-        # Find the two closest hue rows and calculate the needed interpolation factor.
-        hi, hf = self.closest_hue(h)
-
-        # Interpolate the chroma limit by interpolating chroma values for the closest lightness values and hues.
-        row1, row2 = self.LUT[hi:hi + 2]
-        return alg.lerp(alg.lerp(row1[li], row1[li + 1], lf), alg.lerp(row2[li], row2[li + 1], lf), hf)
 
     def in_gamut(self, color: Color, tolerance: float, **kwargs: Any) -> bool:
         """Test if in gamut."""

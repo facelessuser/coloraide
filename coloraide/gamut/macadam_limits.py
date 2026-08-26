@@ -5,7 +5,7 @@ from . import Gamut
 from .. import util
 from .. import algebra as alg
 from ..cat import WHITES
-from ..types import Matrix
+from ..types import Matrix, VectorT, MatrixInt, StrictNumber
 from .rosch_macadam_solid import LUT, LUMINANCE, HUE
 from typing import TYPE_CHECKING, Any
 
@@ -33,20 +33,7 @@ def macadam_limits(luminance: float | None = None) -> Matrix:
     # Return all the points for a given lightness
     elif LUMINANCE[0] <= luminance <= LUMINANCE[-1]:
         # Handle too low lightness inside tolerance
-        if luminance <= LUMINANCE[0]:
-            li = 0
-            lf = 0.0
-
-        # Handle too high lightness inside tolerance
-        elif luminance >= LUMINANCE[-1]:
-            li = len(LUMINANCE) - 2
-            lf = 1.0
-
-        # Handle lightness within gamut
-        else:
-            li = bisect.bisect(LUMINANCE, luminance) - 1
-            l1, l2 = LUMINANCE[li:li + 2]
-            lf = 1 - (l2 - luminance) / (l2 - l1)
+        li, lf = closest_lightness(luminance, LUMINANCE)
         chroma = [alg.lerp(row[li], row[li + 1], lf) for row in LUT[:-1]]
         return [[*alg.add(alg.polar_to_rect(c, h), XYw, dims=alg.D1), luminance] for c, h in zip(chroma, HUE[:-1])]
 
@@ -55,66 +42,69 @@ def macadam_limits(luminance: float | None = None) -> Matrix:
         raise ValueError(f'Luminance must be between {LUMINANCE[0]} and {LUMINANCE[-1]}, but was {luminance}')
 
 
+def closest_lightness(l: float, lightness: VectorT[StrictNumber]) -> tuple[int, float]:
+    """Calculate the two closest lightness values and return the first index and interpolation factor."""
+
+    # Handle too low lightness inside tolerance
+    if l <= lightness[0]:
+        li = 0
+        lf = 0.0
+
+    # Handle too high lightness inside tolerance
+    elif l >= lightness[-1]:
+        li = len(lightness) - 2
+        lf = 1.0
+
+    # Handle lightness within gamut
+    else:
+        li = bisect.bisect(lightness, l) - 1
+        l1, l2 = lightness[li:li + 2]
+        lf = 1 - (l2 - l) / (l2 - l1)
+
+    return li, lf
+
+
+def closest_hue(h: float, hues: VectorT[StrictNumber]) -> tuple[int, float]:
+    """Calculate the two closest hues and return the first index and interpolation factor."""
+
+    # Handle hue at the start
+    if h == hues[0]:  # pragma: no cover
+        hi = 0
+        hf = 0.0
+
+    # Handle hue at the end
+    elif h == hues[-1]:  # pragma: no cover
+        hi = len(hues) - 2
+        hf = 1.0
+
+    # Handle all other hues
+    else:
+        hi = bisect.bisect(hues, h) - 1
+        h1, h2 = hues[hi:hi + 2]
+        hf = 1 - (h2 - h) / (h2 - h1)
+
+    return hi, hf
+
+
 class MacAdamLimits(Gamut):
     """The Rösch-MacAdam color solid (MacAdam limits)."""
 
     NAME = 'macadam-limits'
     LIGHTNESS = LUMINANCE
     HUE = HUE
-
-    def closest_lightness(self, l: float) -> tuple[int, float]:
-        """Calculate the two closest lightness values and return the first index and interpolation factor."""
-
-        # Handle too low lightness inside tolerance
-        if l <= self.LIGHTNESS[0]:
-            li = 0
-            lf = 0.0
-
-        # Handle too high lightness inside tolerance
-        elif l >= self.LIGHTNESS[-1]:
-            li = len(self.LIGHTNESS) - 2
-            lf = 1.0
-
-        # Handle lightness within gamut
-        else:
-            li = bisect.bisect(self.LIGHTNESS, l) - 1
-            l1, l2 = self.LIGHTNESS[li:li + 2]
-            lf = 1 - (l2 - l) / (l2 - l1)
-
-        return li, lf
-
-    def closest_hue(self, h: float) -> tuple[int, float]:
-        """Calculate the two closest hues and return the first index and interpolation factor."""
-
-        # Handle hue at the start
-        if h == self.HUE[0]:  # pragma: no cover
-            hi = 0
-            hf = 0.0
-
-        # Handle hue at the end
-        elif h == self.HUE[-1]:  # pragma: no cover
-            hi = len(self.HUE) - 2
-            hf = 1.0
-
-        # Handle all other hues
-        else:
-            hi = bisect.bisect(self.HUE, h) - 1
-            h1, h2 = self.HUE[hi:hi + 2]
-            hf = 1 - (h2 - h) / (h2 - h1)
-
-        return hi, hf
+    LUT: Matrix | MatrixInt = LUT
 
     def get_chroma_limit(self, l: float, h: float) -> float:
         """Get the chroma limit."""
 
         # Find the two closest lightness columns and calculate the needed interpolation factor.
-        li, lf = self.closest_lightness(l)
+        li, lf = closest_lightness(l, self.LIGHTNESS)
 
         # Find the two closest hue rows and calculate the needed interpolation factor.
-        hi, hf = self.closest_hue(h)
+        hi, hf = closest_hue(h, self.HUE)
 
         # Interpolate the chroma limit by interpolating chroma values for the closest lightness values and hues.
-        row1, row2 = LUT[hi:hi + 2]
+        row1, row2 = self.LUT[hi:hi + 2]
         return alg.lerp(alg.lerp(row1[li], row1[li + 1], lf), alg.lerp(row2[li], row2[li + 1], lf), hf)
 
     def in_gamut(self, color: Color, tolerance: float, **kwargs: Any) -> bool:
