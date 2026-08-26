@@ -1308,10 +1308,11 @@ def pretty(value: Number | ArrayTLike[Number], *, _depth: int = 0, shape: Shape 
     if shape is None:
         shape = _shape(value)
 
-    nl = len(shape) - _depth - 1
-    if isinstance(value, Sequence):
-        seq = len(value) and isinstance(value[0], Sequence)
-        values = [pretty(v, _depth=_depth + 1, shape=shape) for v in value]
+    nl = len(shape) - 1
+    if shape:
+        seq = len(shape) > 1 and shape[0]
+        sub_seq = shape[1:]
+        values = [pretty(v, _depth=_depth + 1, shape=sub_seq) for v in cast('ArrayTLike[Number]', value)]
         spacing = _depth + 1
         return '[{}]'.format((',{}{}'.format('\n' * nl, ' ' * spacing) if seq else ', ').join(values))
 
