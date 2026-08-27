@@ -4471,7 +4471,7 @@ def lu(
     *,
     permute_l: Literal[True],
     p_indices: Literal[True] | Literal[False] | bool = False,
-    shape: Shape | None
+    shape: Shape | None = ...
 ) -> tuple[MatrixT[float], MatrixT[float]]:
     ...
 
@@ -4482,7 +4482,7 @@ def lu(
     *,
     permute_l: Literal[False] = False,
     p_indices: Literal[True],
-    shape: Shape | None
+    shape: Shape | None = ...
 ) -> tuple[VectorT[int], MatrixT[float], MatrixT[float]]:
     ...
 
@@ -4493,7 +4493,7 @@ def lu(
     *,
     permute_l: Literal[False] = False,
     p_indices: Literal[False] = False,
-    shape: Shape | None
+    shape: Shape | None = ...
 ) -> tuple[MatrixT[float], MatrixT[float], MatrixT[float]]:
     ...
 
@@ -4503,8 +4503,8 @@ def lu(
     matrix: MatrixTLike[StrictNumber],
     *,
     permute_l: Literal[False] = False,
-    p_indices: bool,
-    shape: Shape | None
+    p_indices: bool = ...,
+    shape: Shape | None = ...
 ) -> (
     tuple[MatrixT[float], MatrixT[float], MatrixT[float]] |
     tuple[VectorT[int], MatrixT[float], MatrixT[float]]
@@ -4516,9 +4516,9 @@ def lu(
 def lu(
     matrix: MatrixTLike[StrictNumber],
     *,
-    permute_l: bool,
-    p_indices: bool,
-    shape: Shape | None
+    permute_l: bool = ...,
+    p_indices: bool = ...,
+    shape: Shape | None = ...
 ) -> (
     tuple[MatrixT[float], MatrixT[float]] |
     tuple[MatrixT[float], MatrixT[float], MatrixT[float]] |
@@ -4533,7 +4533,7 @@ def lu(
     *,
     permute_l: Literal[True],
     p_indices: Literal[True] | Literal[False] | bool = False,
-    shape: Shape | None
+    shape: Shape | None = ...
 ) -> tuple[TensorT[float], TensorT[float]]:
     ...
 
@@ -4544,7 +4544,7 @@ def lu(
     *,
     permute_l: Literal[False] = False,
     p_indices: Literal[True],
-    shape: Shape | None
+    shape: Shape | None = ...
 ) -> tuple[MatrixT[int], TensorT[float], TensorT[float]]:
     ...
 
@@ -4555,7 +4555,7 @@ def lu(
     *,
     permute_l: Literal[False] = False,
     p_indices: Literal[False] = False,
-    shape: Shape | None
+    shape: Shape | None = ...
 ) -> tuple[TensorT[float], TensorT[float], TensorT[float]]:
     ...
 
@@ -4565,8 +4565,8 @@ def lu(
     matrix: TensorTLike[StrictNumber],
     *,
     permute_l: Literal[False] = False,
-    p_indices: bool,
-    shape: Shape | None
+    p_indices: bool = ...,
+    shape: Shape | None = ...
 ) -> (
     tuple[TensorT[float], TensorT[float], TensorT[float]] |
     tuple[MatrixT[int], TensorT[float], TensorT[float]]
@@ -4577,9 +4577,9 @@ def lu(
 def lu(
     matrix: TensorTLike[StrictNumber],
     *,
-    permute_l: bool,
-    p_indices: bool,
-    shape: Shape | None
+    permute_l: bool = ...,
+    p_indices: bool = ...,
+    shape: Shape | None = ...
 ) -> (
     tuple[TensorT[float], TensorT[float]] |
     tuple[TensorT[float], TensorT[float], TensorT[float]] |
@@ -5188,7 +5188,7 @@ def svd(
 @overload
 def svd(
     a: MatrixTLike[StrictNumber],
-    full_matrices: bool,
+    full_matrices: bool = ...,
     compute_uv: Literal[True] = True,
 ) -> tuple[MatrixT[float], VectorT[float], MatrixT[float]]:
     ...
@@ -5197,8 +5197,8 @@ def svd(
 @overload
 def svd(
     a: MatrixTLike[StrictNumber],
-    full_matrices: bool,
-    compute_uv: bool,
+    full_matrices: bool = ...,
+    compute_uv: bool = ...,
 ) -> tuple[MatrixT[float], VectorT[float], MatrixT[float]] | VectorT[float]:
     ...
 
@@ -5215,7 +5215,7 @@ def svd(
 @overload
 def svd(
     a: TensorTLike[StrictNumber],
-    full_matrices: bool,
+    full_matrices: bool = ...,
     compute_uv: Literal[True] = True
 ) ->  tuple[TensorT[float], MatrixT[float] | TensorT[float], TensorT[float]]:
     ...
@@ -5224,8 +5224,8 @@ def svd(
 @overload
 def svd(
     a: TensorTLike[StrictNumber],
-    full_matrices: bool,
-    compute_uv: bool
+    full_matrices: bool = ...,
+    compute_uv: bool = ...
 ) ->  tuple[TensorT[float], MatrixT[float] | TensorT[float], TensorT[float]] | MatrixT[float] | TensorT[float]:
     ...
 
