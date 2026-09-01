@@ -315,6 +315,7 @@ gradians
 grayscale
 hashable
 helixes
+homogenous
 hz
 illum
 illuminance

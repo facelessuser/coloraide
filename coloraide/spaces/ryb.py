@@ -17,28 +17,28 @@ from ..types import Vector, Matrix
 # RYB corners that correspond to the RGB cube map
 RYB_MAP = alg.transpose(
     [
-        [0.0, 0.0, 0.0],  # White
-        [1.0, 0.0, 0.0],  # Red
-        [0.0, 1.0, 0.0],  # Yellow
-        [1.0, 1.0, 0.0],  # Orange
-        [0.0, 0.0, 1.0],  # Blue
-        [1.0, 0.0, 1.0],  # Violet
-        [0.0, 1.0, 1.0],  # Green
-        [1.0, 1.0, 1.0]   # Black
+        [0., 0., 0.],  # White
+        [1., 0., 0.],  # Red
+        [0., 1., 0.],  # Yellow
+        [1., 1., 0.],  # Orange
+        [0., 0., 1.],  # Blue
+        [1., 0., 1.],  # Violet
+        [0., 1., 1.],  # Green
+        [1., 1., 1.]   # Black
     ]
 )
 
 # In terms of RGB
 GOSSET_CHEN_CUBE = alg.transpose(
     [
-        [1.0, 1.0, 1.0],      # White (c000)
-        [1.0, 0.0, 0.0],      # Red (c100)
-        [1.0, 1.0, 0.0],      # Yellow (C010)
-        [1.0, 0.5, 0.0],      # Orange (c110)
-        [0.163, 0.373, 0.6],  # Blue (c001)
-        [0.5, 0.0, 0.5],      # Violet (c101)
-        [0.0, 0.66, 0.2],     # Green (c011)
-        [0.2, 0.094, 0.0]     # Black (c111)
+        [1.   , 1.   , 1.   ],  # White (c000)
+        [1.   , 0.   , 0.   ],  # Red (c100)
+        [1.   , 1.   , 0.   ],  # Yellow (C010)
+        [1.   , 0.5  , 0.   ],  # Orange (c110)
+        [0.163, 0.373, 0.6  ],  # Blue (c001)
+        [0.5  , 0.   , 0.5  ],  # Violet (c101)
+        [0.   , 0.66 , 0.2  ],  # Green (c011)
+        [0.2  , 0.094, 0.   ]   # Black (c111)
     ]
 )
 

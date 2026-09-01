@@ -86,7 +86,7 @@ def build_lut(location):
     # In the xyY space, the shape stays wide up until zero and then collapses.
     # 0 needs to be included, but it gives us nothing as far as the shape is concerned,
     # 1e-12 will give us something close to the largest base size.
-    luminance = [0, 1e-12, *[round(i / 100, 2) for i in alg.linspace(5, 100, 20)]]
+    luminance = [0.0, 1e-12, *[round(i / 100, 2) for i in alg.linspace(5, 100, 20)]]
     for Y in luminance:
         best = 0
         row = []
@@ -114,7 +114,7 @@ def build_lut(location):
                     best = high
                 count += 1
 
-            result = round(best, 12) if best > 1e-12 else 0.0
+            result = best if best > 1e-12 else 0.0
             row.append(result)
             print(f'==> Luminance: {Y} Hue: {h} Chroma: {result}')
 
@@ -143,12 +143,13 @@ def build_lut(location):
                 we are close to the surface.
                 """
                 # ruff: disable[E501]
-                LUMINANCE = {alg.pretty(luminance)}
-                HUE = {alg.pretty(hues)}
+                LUMINANCE = {luminance}
+                HUE = {hues}
                 '''
             ).strip()
         )
-        f.write('\n\nLUT = ' + alg.pretty(table))
+        with alg.printoptions(precision=12):
+            f.write('\n\nLUT = ' + alg.pretty(table, indent_offset=6))
         f.write('\n# ruff: enable[E501]\n')
 
 

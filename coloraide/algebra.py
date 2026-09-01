@@ -27,6 +27,8 @@ import math
 import operator
 import functools
 import itertools as it
+import contextlib
+from contextvars import ContextVar, Token
 from .types import (
     Number, StrictNumber, Shape, DimHints, EmptyShape, VectorShape, MatrixShape, TensorShape, ArrayShape,
     VectorT, MatrixT, TensorT, ArrayT, VectorTLike, MatrixTLike, TensorTLike, ArrayTLike
@@ -1302,27 +1304,249 @@ def interpolate(
 ################################
 # Matrix/linear algebra math
 ################################
-def pretty(value: Number | ArrayTLike[Number], *, _depth: int = 0, shape: Shape | None = None) -> str:
-    """Format the print output."""
+default_pretty_options = {
+    "precision": -1,
+    "suppress": False,
+    "no_leading_zeros": False,
+    "padding": True
+}
+pretty_options = ContextVar("pretty_options", default=default_pretty_options)
 
-    if shape is None:
-        shape = _shape(value)
 
+def _validate_printoption(key: str, value: Any) -> bool:
+    """Validate pretty print options."""
+
+    if key not in default_pretty_options:
+        raise ValueError(f"'{key} is not a valid print option'")
+
+    t = type(default_pretty_options[key])
+    value_set = value is not None
+    if value_set and not isinstance(value, type(default_pretty_options[key])):
+        raise ValueError(f"'{key}' must be type {t}, not type {type(value)}")
+
+    return value_set
+
+
+def get_printoptions() -> dict[str, Any]:
+    """Get current print options."""
+
+    return pretty_options.get().copy()
+
+
+def set_printoptions(
+    *,
+    precision: int | None = None,
+    suppress: bool | None = None,
+    no_leading_zeros: bool | None = None,
+    padding: bool | None = None
+) -> None:
+    """Get current print options."""
+
+    _set_printoptions(
+        precision=precision,
+        suppress=suppress,
+        no_leading_zeros=no_leading_zeros,
+        padding=padding
+    )
+
+
+def _set_printoptions(**kwargs: Any) -> Token[dict[str, Any]]:
+    """Internal version of set print options."""
+
+    options = {k: v for k, v in kwargs.items() if _validate_printoption(k, v)}
+    old = pretty_options.get()
+    new = old | options
+    new.update(options)
+    return pretty_options.set(new)
+
+
+@contextlib.contextmanager
+def printoptions(**kwargs: Any) -> Iterator[dict[str, Any]]:
+    """Set print options in a context manager."""
+
+    token = _set_printoptions(**kwargs)
+    try:
+        yield get_printoptions()
+    finally:
+        pretty_options.reset(token)
+
+
+def _pretty_array(
+    strings: list[str],
+    shape: Shape,
+    depth: int,
+    idx: int,
+    whole: int,
+    dec: int,
+    s_note: bool,
+    indent_offset: int
+) -> str:
+    """Pretty format the array."""
+
+    # Construct array string recursively
     nl = len(shape) - 1
     if shape:
         seq = len(shape) > 1 and shape[0]
         sub_seq = shape[1:]
-        values = [pretty(v, _depth=_depth + 1, shape=sub_seq) for v in cast('ArrayTLike[Number]', value)]
-        spacing = _depth + 1
-        return '[{}]'.format((',{}{}'.format('\n' * nl, ' ' * spacing) if seq else ', ').join(values))
+        values = [
+            _pretty_array(
+                strings,
+                sub_seq,
+                depth + 1,
+                (idx := idx + 1) if not sub_seq else idx,
+                whole,
+                dec,
+                s_note,
+                indent_offset
+            )
+            for _ in range(shape[0])
+        ]
+        spacing = depth + 1
+        return '[{}]'.format((',{}{}'.format('\n' * nl, ' ' * (spacing + indent_offset)) if seq else ', ').join(values))
 
-    return str(value)
+    # Format padded value
+    value = strings.pop(0)
+    if whole or dec:
+        idx = value.find('.')
+        if idx == -1:
+            idx = len(value)
+        w = whole - idx
+        d = dec - len(value) + idx
+        # Pad scientific notation decimal to align 'e'
+        if s_note:
+            a, b = value.split('e')
+            value = f'{a}{"0" * d}e{b}'
+            d = 0
+        return ' ' * w + value + ' ' * d
+
+    # Non-padded value
+    return value
 
 
-def pprint(value: Number | ArrayTLike[Number]) -> None:
+def pretty(
+    value: Number | ArrayTLike[Number],
+    *,
+    shape: Shape | None = None,
+    indent_offset: int = 0,
+) -> str:
+    """Format the print output."""
+
+    options = get_printoptions()
+    precision = options['precision']  # type: int
+    suppress = options['suppress']  # type: bool
+    no_leading_zeros = options['no_leading_zeros']  # type: bool
+    padding = options['padding']  # type: bool
+
+    if shape is None:
+        shape = _shape(value)
+
+    # Turn values into strings and calculate
+    # - longest whole number string
+    # - longest fractional number string
+    rnd = lambda x, _: str(x)  # type: Callable[[Number, int], str]
+    whole = 0
+    dec = 0
+    maxlen = 0
+    is_float = False
+    s_note = False
+    exp = 0
+
+    def _to_str(v: Number) -> str:
+        """Convert value to string with the desired formatting."""
+
+        nonlocal maxlen, precision, whole, dec
+
+        # Format
+        s = rnd(v, precision)
+
+        # Handle leading and trailing zeros
+        if is_float:
+            if (v.is_integer() or abs(v) < 1e-4) and not s_note:  # type: ignore[attr-defined, unused-ignore]
+                s = f'{s.rstrip("0").rstrip(".")}.'
+            if no_leading_zeros:
+                if v >= 0 and s.startswith('0.') and len(s) > 2:
+                    s = f'.{s[2:]}'
+                elif v <= 0 and s.startswith('-0.') and len(s) > 3:
+                    s = f'-.{s[3:]}'
+
+        # Ensure scientific notation is in decimal form
+        if is_float and s_note:
+            l = len(s)
+            if not suppress:
+                if s[0] == '-' and l > 2 and s[2] == 'e':
+                    s = f'{s[:2]}.{s[2:]}'
+                elif l > 1 and s[1] == 'e':
+                    s = f'{s[:1]}.{s[1:]}'
+
+        # Normalize scientific notation length
+        if 'e' in s:
+            n, e = s.split('e')
+            diff = exp - (len(e) - 1)
+            if diff:
+                s = f'{n}e{e[0]}{"0" * diff}{e[1:]}'
+
+        # Calculate values required for padding
+        if padding:
+            parts = s.split('.')
+            w = len(parts[0])
+            if w > whole:
+                whole = w
+            if len(parts) > 1:
+                d = len(parts[1]) + 1
+                if d > dec:
+                    dec = d
+        return s
+
+    # Initial pass to determine if data is suspected to be floats
+    # and if we need to convert all to scientific notation.
+    values = []  # type: list['Number']
+    for i, v in enumerate(ravel(value, shape=shape)):
+        if not i:
+            is_float = isinstance(v, float)
+            if not is_float:
+                precision = -1
+        values.append(float(v) if is_float else v)  # type: ignore[arg-type]
+        if is_float and not suppress:
+            ve = f'{v:e}'
+            ex = len(ve.split('e')[-1][1:])
+            if ex > exp:
+                exp = ex
+            if not (1e-4 <= abs(v) <= 1e15) and v != 0:
+                s_note = True
+
+    # Setup the format function
+    if is_float and not suppress and s_note:
+        if precision >= 0:
+            rnd = lambda x, p: f'{x:.{p}e}'
+        else:
+            rnd = lambda x, p: (
+                f'{x:.{0 if x == 0 or x.is_integer() else len(str(abs(x)).replace(".", "").lstrip("0")) - 1}e}'  # type: ignore[attr-defined, unused-ignore]
+                if not x or 1e-4 <= abs(x) <= 1e15 else
+                str(x)
+            )
+    elif is_float and not suppress:
+        rnd = lambda x, p: f'{x:.{p}f}'.rstrip('0') if precision >= 0 else str(x)
+    elif is_float and suppress:
+        if precision >= 0:
+            rnd = lambda x, p: f'{x:.{p}f}'.rstrip('0')
+        else:
+            rnd = lambda x, p: str(x) if not x or 1e-4 <= abs(x) <= 1e15 else f'{x:.15f}'.rstrip('0')
+
+    # Convert numbers to strings
+    strings = [_to_str(v) for v in values]
+
+    # Scalar value
+    if not shape:
+        return strings[0]
+
+    # Recursively format values within the array
+    return _pretty_array(strings, shape, 0, -1, whole, dec, s_note, indent_offset)
+
+
+def pprint(value: Number | ArrayTLike[Number], **kwargs: Any) -> None:
     """Print the matrix or value."""
 
-    print(pretty(value))
+    print(pretty(value, **kwargs))
 
 
 def point_on_segment(
