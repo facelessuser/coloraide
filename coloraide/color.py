@@ -234,10 +234,10 @@ class Color(metaclass=ColorMeta):
         ...
 
     @overload
-    def __setitem__(self, i: slice, v: Vector) -> None:
+    def __setitem__(self, i: slice, v: VectorLike) -> None:
         ...
 
-    def __setitem__(self, i: str | int | slice, v: float | Vector) -> None:
+    def __setitem__(self, i: str | int | slice, v: float | VectorLike) -> None:
         """Set channels."""
 
         space = self._space
