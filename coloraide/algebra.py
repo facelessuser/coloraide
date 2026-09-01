@@ -1500,12 +1500,14 @@ def pretty(
     # Initial pass to determine if data is suspected to be floats
     # and if we need to convert all to scientific notation.
     values = []  # type: list['Number']
+    dtype: type[Number]
     for i, v in enumerate(ravel(value, shape=shape)):
-        if not i:
+        if i == 0:
+            dtype = type(v)
             is_float = isinstance(v, float)
             if not is_float:
                 precision = -1
-        values.append(float(v) if is_float else v)  # type: ignore[arg-type]
+        values.append(dtype(v))
         if is_float and not suppress:
             ve = f'{v:e}'
             ex = len(ve.split('e')[-1][1:])
