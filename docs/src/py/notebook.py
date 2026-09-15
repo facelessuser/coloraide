@@ -1014,7 +1014,8 @@ def render_notebook(*args, **kwargs):
         'pymdownx.blocks.tab',
         'pymdownx.fancylists',
         'pymdownx.blocks.caption',
-        'pymdownx.quotes'
+        'pymdownx.quotes',
+        'pymdownx.bracketspan'
     ]
     extension_configs = {
         'markdown.extensions.toc': {
