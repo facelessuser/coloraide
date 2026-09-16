@@ -89,7 +89,7 @@ ${content}
     })
   }
 
-  const pyexecute = async currentID => {
+  const pyexecute = async(currentID, ignoreSession = false) => {
     // Execute Python code inside a playground
 
     const currentInputs = document.getElementById(`__playground-code_${currentID}`)
@@ -113,9 +113,6 @@ ${content}
     } else {
       pyodide.globals.set('content', value)
     }
-    pyodide.globals.set("id_num", currentID)
-    pyodide.globals.set("action", "playground")
-    pyodide.globals.set("session_id", session)
     const main = document.querySelector('main.md-main')
     const live = main.getAttribute('livecode')
     if (!live) {
@@ -124,9 +121,21 @@ ${content}
     }
     if (session in sessions) {
       pyodide.globals.set('SESSIONS', sessions[session])
+    } else if (session && !ignoreSession) {
+      // If sessions is empty, run all blocks in the session to initalize them all.
+      pyodide.globals.set('SESSIONS', null)
+      const arr = document.querySelectorAll(`div.playground-code[session="${session}"]`)
+      for (const el of arr) {
+        const sessionID = el.getAttribute('id').replace(reIdNum, "$1")
+        await pyexecute(sessionID, true)
+      }
+      return
     } else {
       pyodide.globals.set('SESSIONS', null)
     }
+    pyodide.globals.set("id_num", currentID)
+    pyodide.globals.set("action", "playground")
+    pyodide.globals.set("session_id", session)
     await pyodide.runPythonAsync(pycode)
     if (session) {
       sessions[session] = pyodide.globals.get('SESSIONS').copy()
