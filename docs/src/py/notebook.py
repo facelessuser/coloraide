@@ -593,11 +593,14 @@ def color_command_validator(language, inputs, options, attrs, md):
 
     valid_inputs = {'exceptions', 'play'}
 
+    if not hasattr(md, 'pycon_sessions'):
+        md.pycon_sessions = {}
+
     for k, v in inputs.items():
         if k == 'session':
-            if k not in SESSIONS:
-                SESSIONS[k] = {}
-            options[k] = SESSIONS[k]
+            if k not in md.pycon_sessions:
+                md.pycon_sessions[k] = {}
+            options[k] = md.pycon_sessions[k]
             options['session_name'] = v
             continue
         if k in valid_inputs:
@@ -932,10 +935,23 @@ def live_color_command_formatter(init='', gamut=WEBSPACE, session=""):
 def live_color_command_validator(language, inputs, options, attrs, md):
     """Color validator."""
 
-    value = color_command_validator(language, inputs, options, attrs, md)
+    valid_inputs = {'exceptions', 'play'}
+
+    for k, v in inputs.items():
+        if k == 'session':
+            if k not in SESSIONS:
+                SESSIONS[k] = {}
+            options[k] = SESSIONS[k]
+            options['session_name'] = v
+            continue
+        if k in valid_inputs:
+            options[k] = True
+            continue
+        attrs[k] = v
+
     # Live edit, we always allow exceptions so not to crash the service.
     options['exceptions'] = True
-    return value
+    return True
 
 
 def render_console(*args, **kwargs):
