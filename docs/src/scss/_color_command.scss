@@ -9,7 +9,6 @@ div.color-command {
     border-bottom-left-radius: 0;
 
     &:not(:first-child) {
-      border-top: 1px solid var(--md-default-fg-color--lightest);
       border-top-left-radius: 0;
       border-top-right-radius: 0;
 

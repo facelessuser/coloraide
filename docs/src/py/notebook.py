@@ -598,16 +598,23 @@ def color_command_validator(language, inputs, options, attrs, md):
 
     for k, v in inputs.items():
         if k == 'session':
-            if k not in md.pycon_sessions:
-                md.pycon_sessions[k] = {}
-            options[k] = md.pycon_sessions[k]
+            if v not in md.pycon_sessions:
+                md.pycon_sessions[v] = {}
             options['session_name'] = v
+            options['session'] = md.pycon_sessions[v]
             continue
         if k in valid_inputs:
             options[k] = True
             continue
         attrs[k] = v
     return True
+
+
+def color_command_reset(md):
+    """Color command reset."""
+
+    if hasattr(md, 'pycon_sessions'):
+        md.pycon_sessions.clear()
 
 
 def _color_command_console(colors, gamut=WEBSPACE):

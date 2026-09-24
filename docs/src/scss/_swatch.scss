@@ -67,7 +67,8 @@ div.swatch-bar {
   box-sizing: border-box;
   background: var(--transparency);
   background-size: 1em 1em;
-  border: 2px solid var(--swatch-bar-border-color);
+  border: 1px solid var(--swatch-bar-border-color);
+  border-bottom-width: 0;
 
   .swatch {
     background-position: 0 0, 0 0.50em, 0.50em -0.50em, -0.50em 0px;

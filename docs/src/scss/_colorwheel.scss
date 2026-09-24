@@ -12,7 +12,8 @@
   overflow-y: hidden;
   background: var(--transparency);
   background-size: 1em 1em;
-  border: 2px solid var(--swatch-border-color);
+  border: 1px solid var(--swatch-border-color);
+  border-bottom-width: 0;
 
   // Firefox scrollbar and thumb
   scrollbar-color: var(--md-default-fg-color--lighter) transparent;

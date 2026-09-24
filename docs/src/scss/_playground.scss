@@ -181,6 +181,7 @@ div.playground {
   width: 100%;
   height: 100%;
   overflow: hidden;
+  border: convert.px2rem(1px) solid var(--md-code-border-color);
   border-top-left-radius: convert.px2rem(9.6px);
   border-top-right-radius: convert.px2rem(9.6px);
 }
@@ -209,7 +210,7 @@ div.playground {
 }
 
 .playground-results .swatch-bar {
-  min-height: calc(3em + 4px);
+  min-height: calc(3em + 1px);
 }
 
 .playground-results .swatch-bar:empty {
@@ -224,11 +225,7 @@ div.playground {
   margin-bottom: 0;
 }
 
-.playground-code:not(.hidden) div.highlight ,
-.hidden .highlight,
-.hidden .swatch-bar,
-.hidden .color-wheel,
-.hidden .playground-inputs {
+.hidden {
   display: none;
 }
 
@@ -247,6 +244,8 @@ div.playground {
   color: var(--md-code-hl-comment-color);
   font-size: convert.px2em(13.6px);
   background: var(--md-code-bg-color);
+  border: convert.px2rem(1px) solid var(--md-code-border-color);
+  border-top-width: 0;
   border-bottom-right-radius: convert.px2rem(9.6px);
   border-bottom-left-radius: convert.px2rem(9.6px);
 
