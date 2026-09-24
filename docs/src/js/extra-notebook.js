@@ -206,7 +206,7 @@ ${content}
     if (!initialized) {
       initialized = true
       pyodide = await loadPyodide({ // eslint-disable-line no-undef
-        indexURL: "https://cdn.jsdelivr.net/pyodide/v314.0.0/full/",
+        indexURL: "https://cdn.jsdelivr.net/pyodide/v314.0.7/full/",
         fullStdLib: false
       })
     }

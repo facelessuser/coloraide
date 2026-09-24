@@ -361,10 +361,10 @@ extra_css:
 extra_javascript:
   - assets/pymdownx-extras/extra-loader-BSCOcbUK.js
   - https://cdn.jsdelivr.net/npm/ace-builds@1.44.0/src-min-noconflict/ace.js
-  - https://cdn.jsdelivr.net/npm/mermaid@11.15.0/dist/mermaid.min.js
-  - playground-config-2f0b9acb.js
-  - https://cdn.jsdelivr.net/npm/pyodide@314.0.0/pyodide.min.js
-  - assets/coloraide-extras/extra-notebook-BnQaSihr.js
+  - https://cdn.jsdelivr.net/npm/mermaid@12.0.0/dist/mermaid.min.js
+  - playground-config-27387e48.js
+  - https://cdn.jsdelivr.net/npm/pyodide@314.0.7/pyodide.min.js
+  - assets/coloraide-extras/extra-notebook-D1x-H9Aa.js
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
 
 extra:
