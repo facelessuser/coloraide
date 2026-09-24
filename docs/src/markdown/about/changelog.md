@@ -5,6 +5,7 @@ icon: lucide/scroll-text
 
 ## 8.13
 
+-   **NEW**: Add official support for Python 3.15.
 -   **NEW**: Implement special gamuts (`visible-spectrum`, `pointer-gamut`, etc.) as `Gamut` plugins allowing the
     expansion of _special_ gamuts in the future.
 -   **NEW**: Minor tweaks to `macadam-limits` calculations.
