@@ -1055,7 +1055,8 @@ def render_notebook(*args, **kwargs):
         'pymdownx.highlight': {
             "line_spans": "__codeline",
             "line_anchors": "__codelineno",
-            "anchor_linenums": True
+            "anchor_linenums": True,
+            "linenums_style": "pymdownx-inline"
         },
         'pymdownx.superfences': {
             'preserve_tabs': True,

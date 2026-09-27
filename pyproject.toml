@@ -160,6 +160,7 @@ dependencies = [
     "zensical",
     "markdown",
     "pymdown-extensions",
+    "zensical-pymdownx @ git+https://github.com/facelessuser/pymdownx-zensical-theme.git",
     "pymdown_lexers @ git+https://github.com/facelessuser/pymdown-lexers.git",
     "pyspelling",
     "build",

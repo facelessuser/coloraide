@@ -8,37 +8,8 @@ copyright: |
 
 docs_dir: docs/src/markdown
 theme:
+  name: zensical_pymdownx
   custom_dir: docs/theme
-  name: material
-  icon:
-    logo: material/book-open-page-variant
-  palette:
-    # Palette toggle for system
-    - media: "(prefers-color-scheme)"
-      toggle:
-        icon: material/brightness-auto
-        name: Switch to light mode
-
-    # Palette toggle for light mode
-    - media: "(prefers-color-scheme: light)"
-      scheme: default
-      primary: deep purple
-      accent: deep purple
-      toggle:
-        icon: lucide/sun
-        name: Switch to dark mode
-
-    # Palette toggle for dark mode
-    - media: "(prefers-color-scheme: dark)"
-      scheme: slate
-      primary: deep purple
-      accent: deep purple
-      toggle:
-        icon: lucide/moon
-        name: Switch to light mode
-  font:
-    text: Roboto
-    code: Roboto Mono
   features:
     - announce.dismiss
     - navigation.tabs
@@ -355,11 +326,9 @@ markdown_extensions:
   - pymdownx.bracketspan:
 
 extra_css:
-  - assets/pymdownx-extras/extra-2c40363d78.css
   - assets/coloraide-extras/extra.css
   - https://cdn.jsdelivr.net/npm/ace-builds@1.44.0/css/ace.css
 extra_javascript:
-  - assets/pymdownx-extras/extra-loader-BSCOcbUK.js
   - https://cdn.jsdelivr.net/npm/ace-builds@1.44.0/src-min-noconflict/ace.js
   - https://cdn.jsdelivr.net/npm/mermaid@12.0.0/dist/mermaid.min.js
   - playground-config-27387e48.js
@@ -371,3 +340,5 @@ extra:
   social:
     - icon: fontawesome/brands/github
       link: https://github.com/facelessuser
+  zensical_pymdownx:
+    sponsor: https://github.com/sponsors/facelessuser
