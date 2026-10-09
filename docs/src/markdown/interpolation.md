@@ -733,7 +733,7 @@ discard chroma/saturation information, producing an achromatic color.
 Color.average(['red', 'green', 'blue'], space='hsl')
 ```
 
-When averaging with transparency, results will be similar to `weighted_mix` if using premultiplication (the default).
+When averaging with transparency, results will be similar to `weighted_mix` when using premultiplication (the default).
 If premultiplication is disabled, averaging will specifically ignore colors with full transparency as such colors
 provide no meaningful information to an average. This differs from how `weighted_mix` behaves.
 
