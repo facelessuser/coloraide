@@ -704,7 +704,8 @@ extrapolation.
 ## Averaging
 
 Color averaging is a specialized form of [`weighted_mix`](#weighted-mixing) that takes a list of colors and returns the
-average of a rectangular color space, the default being linear sRGB.
+average of the color space, the default being linear sRGB. Averaging can be applied in both rectangular and polar color
+spaces.
 
 ![Average RGB](images/avg-rgb.png)
 
@@ -722,9 +723,9 @@ always return the same results regardless of ordering.
 Color.average(['red', 'green', 'yellow', 'blue'], space='hsl')
 ```
 
-It should be noted that when averaging colors with hues which are evenly distributed around the color space, the result
-will produce an achromatic hue. When achromatic hues are produced during circular mean, the color will discard
-chroma/saturation information, producing an achromatic color.
+It should be noted that when averaging colors in a polar space, with hues which are evenly distributed around the color
+space, the result will produce an achromatic hue. When achromatic hues are produced during circular mean, the color will
+discard chroma/saturation information, producing an achromatic color.
 
 ![Evenly Distributed Angles](images/avg-evenly-distributed.png)
 
@@ -757,7 +758,7 @@ Steps(
 )
 ```
 
-Lastly, [`powerless`](#powerless-hues) logic is always applied when averaging. This also differs from `weighted_miz` and
+Lastly, [`powerless`](#powerless-hues) logic is always applied when averaging. This also differs from `weighted_mix` and
 means that implied achromatic colors are treated as such. This is to prevent powerless hues from distorting the color
 average.
 
