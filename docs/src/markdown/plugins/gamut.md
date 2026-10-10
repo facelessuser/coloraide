@@ -10,7 +10,7 @@ calculated limit. These are often awkward to easily convert to or work directly 
 is treated as one of these _special_ gamuts in ColorAide.
 
 The Gamut plugin mainly provides two functions: to check if a color is within a _special_ gamut and to force a color
-into that _special_ gamut. The logic to check and gamut map the color is often specific to the the _special_ gamut.
+into that _special_ gamut. The logic to check and gamut map the color is often specific to the _special_ gamut.
 
 ## Plugin Class
 
@@ -37,7 +37,7 @@ color.in_gamut(NAME, tolerance=0, **kwargs)
 ```
 
 Additionally the plugin is used via the `fit()` method and allows passing `NAME` as if it were a color space. Any other
-specified options, are passed to the the plugin.
+specified options, are passed to the plugin.
 
 ```py
 color.fit(NAME, **kwargs)
