@@ -131,6 +131,7 @@ def raytrace_box(
     tfar = math.inf
     tnear = -math.inf
     direction = []
+    ray_too_small = True
     for i in range(3):
         a = start[i]
         b = end[i]
@@ -138,20 +139,25 @@ def raytrace_box(
         direction.append(d)
         bn = bmin[i]
         bx = bmax[i]
-
-        # Non parallel case
         # 64-bit uses a threshold of 1e-12
         # 32-bit should use 1e-6
-        if abs(d) > alg.ATOL:
-            inv_d = 1.0 / d
-            t1 = (bn - a) * inv_d
-            t2 = (bx - a) * inv_d
+        if ray_too_small and abs(d) > alg.ATOL:
+            ray_too_small = False
+
+        # Non parallel case
+        if d:
+            t1 = (bn - a) / d
+            t2 = (bx - a) / d
             tnear = max(min(t1, t2), tnear)
             tfar = min(max(t1, t2), tfar)
 
         # Parallel case outside
         elif a < bn or a > bx:
             return []
+
+    # Every component is below the threshold: start and end are effectively the same point.
+    if ray_too_small:
+        return []
 
     # No hit
     if tnear > tfar or tfar < 0:

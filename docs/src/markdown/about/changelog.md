@@ -3,6 +3,10 @@ icon: lucide/scroll-text
 ---
 # Changelog
 
+## 8.13.1
+
+-   **FIX**: Fix a case in Ray Trace gamut mapping where very small rays could cause unexpected colors (@lloydk).
+
 ## 8.13
 
 -   **NEW**: Add official support for Python 3.15.
