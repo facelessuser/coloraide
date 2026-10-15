@@ -528,6 +528,19 @@ class TestRayTrace(util.ColorAsserts, unittest.TestCase):
             Color('oklch(1 0 0)')
         )
 
+        self.assertColorEqual(
+            Color('oklch', [0.0001220703125, 0.4, 19.75]).fit('srgb', method='raytrace'),
+            Color('oklch(0.00012 0.00005 19.75)')
+        )
+        self.assertColorEqual(
+            Color('oklch', [0.95, 0.09041434578382133, 152.5]).fit('display-p3', method='raytrace'),
+            Color('oklch(0.95 0.09041 152.5)')
+        )
+        self.assertColorEqual(
+            Color('oklch', [0.95, 0.10357579481449558, 156.5]).fit('rec2020', method='raytrace'),
+            Color('oklch(0.95 0.10358 156.5)')
+        )
+
 
 class TestHCTGamut(util.ColorAsserts, unittest.TestCase):
     """
