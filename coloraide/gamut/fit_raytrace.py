@@ -156,12 +156,8 @@ def raytrace_box(
         elif a < bn or a > bx:
             return []
 
-    # Every component is below the threshold: start and end are effectively the same point.
-    if ray_too_small:
-        return []
-
     # No hit
-    if tnear > tfar or tfar < 0:
+    if ray_too_small or tnear > tfar or tfar < 0:
         return []
 
     # Favor the intersection first in the direction start -> end
