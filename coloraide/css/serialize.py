@@ -102,7 +102,7 @@ def color_function(
         if channel.flags & FLG_ANGLE:
             hscale = ANGLE_MAX[angle] / channel.high
             value *= hscale
-            post = POSTFIX[angle]
+            post = '' if math.isnan(value) else POSTFIX[angle]
             span = offset = 0.0
         else:
             post = ''

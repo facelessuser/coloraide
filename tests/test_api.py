@@ -73,6 +73,29 @@ class TestMisc(util.ColorAsserts, unittest.TestCase):
             'hsl(5.236rad 100 25.098)'
         )
 
+    def test_to_string_angle_none(self):
+        """Test that an undefined hue is output as `none` with no angle unit."""
+
+        self.assertEqual(
+            Color('hsl(none 50% 50%)').to_string(none=True, angle='rad'),
+            'hsl(none 50 50)'
+        )
+
+        self.assertEqual(
+            Color('hsl(none 50% 50%)').to_string(none=True, angle='grad'),
+            'hsl(none 50 50)'
+        )
+
+        self.assertEqual(
+            Color('oklch(0.5 0.1 none)').to_string(none=True, angle='turn'),
+            'oklch(0.5 0.1 none)'
+        )
+
+        self.assertEqual(
+            Color('oklch(0.5 0.1 none)').to_string(none=True, angle='turn', color=True),
+            'color(--oklch 0.5 0.1 none)'
+        )
+
     def test_to_string_bad_value(self):
         """Test that serializing infinity fails."""
 
