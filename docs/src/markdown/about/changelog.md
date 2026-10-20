@@ -3,6 +3,11 @@ icon: lucide/scroll-text
 ---
 # Changelog
 
+## 8.13.2
+
+-   **FIX**: Fix issue where an undefined hue displayed as `none` could be followed by an angle unit (`noneturn`) when
+    the angle unit is not degrees.
+
 ## 8.13.1
 
 -   **FIX**: Fix a case in Ray Trace gamut mapping where very small rays could cause unexpected colors (@lloydk).
