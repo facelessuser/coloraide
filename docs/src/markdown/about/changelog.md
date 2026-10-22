@@ -5,6 +5,8 @@ icon: lucide/scroll-text
 
 ## 8.13.2
 
+-   **FIX**: Fix the CSS color names `mediumpurple` and `palevioletred`, which used 216 instead of 219 for one channel
+    (`#9370d8` and `#d87093` instead of `#9370db` and `#db7093`).
 -   **FIX**: Fix issue where an undefined hue displayed as `none` could be followed by an angle unit (`noneturn`) when
     the angle unit is not degrees.
 
