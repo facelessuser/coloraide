@@ -60,6 +60,39 @@ class TestCompositing(util.ColorAsserts, unittest.TestCase):
             Color('rgb(6.6464 39.39 9.48)')
         )
 
+    def test_compose_blend_translucent_backdrop(self):
+        """Test multiply blending with a translucent backdrop."""
+
+        self.assertColorEqual(
+            Color.layer([Color('srgb', [1, 1, 1]), Color('srgb', [0.5, 0.5, 0.5], 0.25)], blend='multiply'),
+            Color('srgb', [0.875, 0.875, 0.875])
+        )
+
+    @pytest.mark.filterwarnings("ignore::DeprecationWarning")
+    def test_compose_non_separable_translucent_backdrop(self):
+        """Test color blending with a translucent backdrop and no compositing."""
+
+        self.assertColorEqual(
+            Color.layer(
+                [Color('srgb', [1, 1, 1]), Color('srgb', [0.5, 0.5, 0.5], 0.25)], blend='color', operator=False
+            ),
+            Color('srgb', [0.875, 0.875, 0.875])
+        )
+
+    def test_compose_blend_identity_cases(self):
+        """Test normal blending and opaque backdrops preserve color channels."""
+
+        self.assertEqual(
+            Color.layer([Color('srgb', [0.3, 0.3, 0.3]), Color('srgb', [0.5, 0.5, 0.5], 0.1)])[:],
+            [0.3, 0.3, 0.3, 1.0]
+        )
+        self.assertEqual(
+            Color.layer(
+                [Color('srgb', [float('inf'), 0.3, 0.3]), Color('srgb', [0.2, 0.2, 0.2])], blend='darken'
+            )[:],
+            [0.2, 0.2, 0.2, 1.0]
+        )
+
     def test_compose_alpha_multi(self):
         """Test layer alpha compositing with multiple colors."""
 
