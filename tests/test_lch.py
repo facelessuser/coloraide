@@ -28,6 +28,7 @@ class TestLCh(util.ColorAssertsPyTest):
         ('lch(1 30 50%)', None),
         ('lch(1, 30, 50)', None),
         ('lch(1 30)', None),
+        ('lch(50 20 / 0.5)', None),
         ('lch(1deg 30 270)', None),
         ('lch(1 30 270 50%)', None),
         # Test degrees

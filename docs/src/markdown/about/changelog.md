@@ -9,6 +9,7 @@ icon: lucide/scroll-text
     (`#9370d8` and `#d87093` instead of `#9370db` and `#db7093`).
 -   **FIX**: Fix issue where an undefined hue displayed as `none` could be followed by an angle unit (`noneturn`) when
     the angle unit is not degrees.
+-   **FIX**: Fix CSS color functions reading alpha as the last channel when only two channels precede the slash.
 
 ## 8.13.1
 
