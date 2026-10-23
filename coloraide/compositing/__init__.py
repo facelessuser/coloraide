@@ -25,7 +25,12 @@ def apply_compositing(
     cba = color2[-1]
     coords2 = color2[:-1]
     # Blend color channels if given a blender and both colors are not fully transparent
-    coords1 = blender.blend(coords2, color1[:-1]) if blender and csa and cba else color1[:-1]
+    coords1 = color1[:-1]
+    if blender and csa and cba:
+        coords1 = [
+            b if cba == 1 or b == cs else (1 - cba) * cs + cba * b
+            for cs, b in zip(coords1, blender.blend(coords2, coords1))
+        ]
 
     # Setup alpha compositing with the current opacity values.
     # Calculate the new opacity.
