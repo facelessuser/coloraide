@@ -134,7 +134,7 @@ class InterpolatorContinuous(Interpolator[AnyColor]):
             h = first[hue_index]
             self.coordinates[0], offset = self.normalize_hue(first, None, offset, self.hue, fallback)
             if not math.isnan(h):
-                fallback = h
+                fallback = first[hue_index]
 
         i = 0
         while i <= end:
@@ -143,7 +143,7 @@ class InterpolatorContinuous(Interpolator[AnyColor]):
                 h = c2[hue_index]
                 self.coordinates[i + 1], offset = self.normalize_hue(c1, c2, offset, self.hue, fallback)
                 if not math.isnan(h):
-                    fallback = h
+                    fallback = c2[hue_index]
             i += 1
 
         # Process each set of coordinates

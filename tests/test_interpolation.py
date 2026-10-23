@@ -1308,6 +1308,45 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
             Color("hsl(300 25 57.5)")
         )
 
+    def test_continuous_shorter_hue_after_wrap(self):
+        """Test the shorter hue arc across an undefined hue after wrapping."""
+
+        for end_hue, midpoint_hue in ((105, 390), (300, 348.75)):
+            with self.subTest(end_hue=end_hue):
+                colors = [
+                    Color('hsl', [355, 0.8, 0.5]),
+                    Color('hsl', [5, 0.8, 0.5]),
+                    Color('hsl', [NaN, 0, 0.5]),
+                    Color('hsl', [end_hue, 0.8, 0.5])
+                ]
+                i = Color.interpolate(colors, space='hsl', method='continuous', hue='shorter')
+                self.assertColorEqual(i(0.5), Color('hsl', [midpoint_hue, 0.4, 0.5]))
+
+    def test_continuous_shorter_hue_after_first_normalization(self):
+        """Test the shorter hue arc after normalizing the first hue."""
+
+        colors = [
+            Color('hsl', [400, 0.8, 0.5]),
+            Color('hsl', [NaN, 0, 0.5]),
+            Color('hsl', [140, 0.8, 0.5])
+        ]
+        i = Color.interpolate(colors, space='hsl', method='continuous', hue='shorter')
+        self.assertColorEqual(i(0.5), Color('hsl', [90, 0, 0.5]))
+
+    def test_spline_shorter_hue_after_wrap(self):
+        """Test spline hue normalization across an undefined hue after wrapping."""
+
+        colors = [
+            Color('hsl', [355, 0.8, 0.5]),
+            Color('hsl', [5, 0.8, 0.5]),
+            Color('hsl', [NaN, 0, 0.5]),
+            Color('hsl', [105, 0.8, 0.5])
+        ]
+        for method, saturation in [('bspline', 0.8 / 3), ('natural', 0), ('catrom', 0), ('monotone', 0)]:
+            with self.subTest(method=method):
+                i = Color.interpolate(colors, space='hsl', method=method, hue='shorter')
+                self.assertColorEqual(i(2 / 3), Color('hsl', [415, saturation, 0.5]))
+
     def test_continuous_undefined_middle(self):
         """Test continuous with undefined middle."""
 
