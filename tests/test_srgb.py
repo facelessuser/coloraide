@@ -55,6 +55,7 @@ class TestsRGB(util.ColorAssertsPyTest):
         ('rgb(50% 128 0)', 'color(srgb 0.5 0.50196 0)'),
         ('rgba(50% 128 0)', 'color(srgb 0.5 0.50196 0)'),
         ('rgb(128 0)', None),
+        ('rgb(1 2 / 0.5)', None),
         ('rgb(128 0 128 / 3deg)', None),
         ('rgb(128deg 0 128)', None),
         ('rgb(128 128 128 0.5)', None),

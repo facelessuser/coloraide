@@ -225,7 +225,7 @@ def validate_srgb(tokens: dict[str, Any]) -> bool:
     else:
         if any(v['type'] == 'degree' for v in tokens['func']['values']):
             return False
-        if length == 4 and not tokens['func']['slash']:
+        if (length == 4) != tokens['func']['slash']:
             return False
     return True
 
@@ -256,7 +256,7 @@ def validate_cylindrical_srgb(tokens: dict[str, Any]) -> bool:
         if any(v['type'] == 'degree' for v in tokens['func']['values'][1:]):
             return False
 
-        if length == 4 and not tokens['func']['slash']:
+        if (length == 4) != tokens['func']['slash']:
             return False
     return True
 
@@ -276,7 +276,7 @@ def validate_lab(tokens: dict[str, Any]) -> bool:
     if any(v['type'] == 'degree' for v in tokens['func']['values'][:]):
         return False
 
-    if length == 4 and not tokens['func']['slash']:
+    if (length == 4) != tokens['func']['slash']:
         return False
 
     return True
@@ -300,7 +300,7 @@ def validate_lch(tokens: dict[str, Any]) -> bool:
     if any(v['type'] == 'degree' for v in tokens['func']['values'][0:2]):
         return False
 
-    if length == 4 and (not tokens['func']['slash'] or tokens['func']['values'][3]['type'] == 'degree'):
+    if (length == 4) != tokens['func']['slash'] or (length == 4 and tokens['func']['values'][3]['type'] == 'degree'):
         return False
 
     return True

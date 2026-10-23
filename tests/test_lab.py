@@ -27,6 +27,7 @@ class TestLab(util.ColorAssertsPyTest):
         ('lab(none none none / none)', 'color(--lab none none none / none)'),
         ('lab(1, 10, -10)', None),
         ('lab(1 10)', None),
+        ('lab(50 20 / 0.5)', None),
         ('lab(1 10deg -10)', None),
         ('lab(1 10 -10 50%)', None),
         # Test color
