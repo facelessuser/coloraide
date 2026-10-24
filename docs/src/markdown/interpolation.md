@@ -43,7 +43,7 @@ the two colors, `0` returning `#!color rebeccapurple` and `1` returning `#!color
 
 ```py play
 i = Color.interpolate(["rebeccapurple", "lch(85% 60 85)"], space='lch')
-[i(x / 10).to_string() for x in range(10 + 1)]
+Steps([i(x / 10).to_string() for x in range(10 + 1)])
 ```
 
 If we create enough steps, we can create a gradient.
@@ -53,6 +53,7 @@ i = Color.interpolate(
     ["rebeccapurple", "lch(85% 60 85)"],
     space='lch'
 )
+Steps([i(x / 100).to_string() for x in range(100 + 1)])
 ```
 
 ## Piecewise Interpolation
