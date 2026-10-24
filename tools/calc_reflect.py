@@ -15,6 +15,7 @@ from coloraide import algebra as alg
 from coloraide.everything import ColorAll as Color
 from coloraide.cmfs import CIE_1931_2DEG as CMF
 from coloraide.illuminants import D65
+from coloraide.spaces.srgb_linear import XYZ_TO_RGB
 
 targets = ['#ff0000', '#00ff00', '#0000ff', '#00ffff', '#ff00ff', '#ffff00', '#ffffff']
 space = 'srgb'
@@ -28,22 +29,14 @@ END = 750 + STEP
 MAX_ITERS = 50
 METHOD = 3
 EPSILON = 1e-15 if METHOD == 3 else 1e-14
-
-if space == 'srgb':
-    from coloraide.spaces.srgb_linear import XYZ_TO_RGB
-elif space == 'display-p3':
-    from coloraide.spaces.display_p3_linear import XYZ_TO_RGB
-elif space == 'a98-rgb':
-    from coloraide.spaces.a98_rgb_linear import XYZ_TO_RGB
-elif space == 'rec2020':
-    XYZ_TO_RGB = [
-        [1.7249510969855462, -0.36225403975096726, -0.2545649705534804],
-        [-0.6692669194491035, 1.6225096012804534, 0.012487041279557484],
-        [0.018196517838035248, -0.04443708810957042, 0.9431475044937067]
-    ]
-else:
-    raise ValueError('Cannot perfrom operation on this space')
-
+# Solve red, green, and blue together such that their curves sum to exactly 1 at every wavelength.
+# Cyan, magenta, yellow, and white are then derived by summing the primaries (white is flat 1).
+# Requires the white point normalization below, otherwise a flat reflectance of 1 would not
+# map to exactly white and the derived colors would be slightly off.
+JOINT = True
+# The joint system is larger and less well conditioned, so its residual bottoms out around 1e-15,
+# which is above the epsilon used for the individual methods.
+JOINT_EPSILON = 1e-12
 
 A = [[], [], []]
 for r in range(START, END, STEP):
@@ -61,9 +54,6 @@ T = alg.divide(value, w)
 
 # Make in relation to the RGB color space
 TRGB = alg.matmul(XYZ_TO_RGB, T)
-
-print('TRGB')
-alg.pprint(TRGB)
 
 # Array of finite differencing constants
 size = len(W)
@@ -318,19 +308,156 @@ def method_3(d, cmfs_w, XYZ_w, max_iterations=MAX_ITERS, tolerance=EPSILON):
     return alg.zeros(n)
 
 
-# Estimate curves for the specified colors red, green, blue, cyan, and magenta.
+def joint_method(d, cmfs_w, rgb_r, rgb_g, max_iterations=MAX_ITERS, tolerance=JOINT_EPSILON):
+    """
+    Estimate the red, green, and blue reflectance curves together.
+
+    This is an extension of `method_3` to three primaries that must sum to 1 at every wavelength.
+    Instead of the logistic function (`(tanh(z) + 1) / 2`, which is a softmax of two components),
+    the curves are the softmax of three logits, with blue's logit held at zero as the reference:
+
+        rho_i = exp(z_i) / (exp(z_r) + exp(z_g) + 1)
+
+    This guarantees the curves sum to 1 and stay strictly between 0 and 1. As with the other
+    methods, the smoothness of the logits is minimized subject to the curves reproducing their
+    target colors. Only red and green need constraints. A flat reflectance of 1 is white, so blue
+    is implied by the other two.
+
+    Parameters
+    ----------
+    `d`: nxn array of finite differencing constants.
+    `cmfs_w`: nx3 array of illuminant-w-referenced CMFs, normalized such that a flat
+           reflectance of 1 produces `[1, 1, 1]`.
+    `rgb_r`: the linear RGB of the red primary.
+    `rgb_g`: the linear RGB of the green primary.
+
+    Returns
+    -------
+    Three nx1 vectors of spectral reflectance values for red, green, and blue (or zeros if failure).
+
+    """
+
+    n = len(cmfs_w)
+    cmfs = alg.transpose(cmfs_w)
+    target = rgb_r + rgb_g
+    zr = alg.zeros(n)
+    zg = alg.zeros(n)
+    lam = alg.zeros(6)
+
+    for _ in range(max_iterations):
+        # Softmax of the logits at each wavelength
+        pr = []
+        pg = []
+        pb = []
+        for a, b in zip(zr, zg):
+            m = max(a, b, 0)
+            ea, eb, ec = _exp(a - m), _exp(b - m), _exp(-m)
+            s = ea + eb + ec
+            pr.append(ea / s)
+            pg.append(eb / s)
+            pb.append(ec / s)
+
+        # Constraints: the color of each of the red and green curves
+        c = alg.subtract(alg.dot(cmfs, pr) + alg.dot(cmfs, pg), target)
+
+        # Jacobian of the constraints with respect to the logits (6 x 2n)
+        jc = []
+        for a in range(3):
+            jc.append(  # noqa: PERF401
+                [cmfs[a][k] * pr[k] * (1 - pr[k]) for k in range(n)] +
+                [-cmfs[a][k] * pr[k] * pg[k] for k in range(n)]
+            )
+        for a in range(3):
+            jc.append(  # noqa: PERF401
+                [-cmfs[a][k] * pg[k] * pr[k] for k in range(n)] +
+                [cmfs[a][k] * pg[k] * (1 - pg[k]) for k in range(n)]
+            )
+
+        # Gradient of the Lagrangian with respect to the logits
+        grad = alg.add(alg.dot(alg.transpose(jc), lam), alg.dot(d, zr) + alg.dot(d, zg))
+        f = grad + c
+
+        if alg.all([abs(_f) < tolerance for _f in f]):
+            return pr, pg, pb
+
+        # Second derivatives of the constraints, weighted by the multipliers.
+        # Each is diagonal as a wavelength only depends on its own logits.
+        wr = [sum(lam[a] * cmfs[a][k] for a in range(3)) for k in range(n)]
+        wg = [sum(lam[3 + a] * cmfs[a][k] for a in range(3)) for k in range(n)]
+        hrr = [wr[k] * pr[k] * ((1 - pr[k]) ** 2 - pr[k] * (1 - pr[k])) +
+               wg[k] * pg[k] * (pr[k] ** 2 - pr[k] * (1 - pr[k])) for k in range(n)]
+        hgg = [wg[k] * pg[k] * ((1 - pg[k]) ** 2 - pg[k] * (1 - pg[k])) +
+               wr[k] * pr[k] * (pg[k] ** 2 - pg[k] * (1 - pg[k])) for k in range(n)]
+        hrg = [wr[k] * pr[k] * (-(1 - pr[k]) * pg[k] + pg[k] * pr[k]) +
+               wg[k] * pg[k] * (-(1 - pg[k]) * pr[k] + pr[k] * pg[k]) for k in range(n)]
+
+        # Assemble the KKT system
+        size = 2 * n + 6
+        j = alg.zeros((size, size))
+        for r in range(n):
+            for col in range(n):
+                j[r][col] = d[r][col]
+                j[n + r][n + col] = d[r][col]
+            j[r][r] += hrr[r]
+            j[n + r][n + r] += hgg[r]
+            j[r][n + r] += hrg[r]
+            j[n + r][r] += hrg[r]
+        for r in range(6):
+            for col in range(2 * n):
+                j[2 * n + r][col] = jc[r][col]
+                j[col][2 * n + r] = jc[r][col]
+
+        try:
+            try:
+                delta = alg.solve(j, alg.multiply(-1, f))
+            except Exception:
+                delta = alg.dot(alg.pinv(j), alg.multiply(f, -1))
+        except Exception:
+            print('Ill-conditioned or singular linear system detected.')
+            return [alg.zeros(n) for _ in range(3)]
+        zr = alg.add(zr, delta[:n])
+        zg = alg.add(zg, delta[n:2 * n])
+        lam = alg.add(lam, delta[2 * n:])
+
+    print('Maximum number of iterations reached.')
+    print('Check to make sure the primaries are within the object color solid.')
+    return [alg.zeros(n) for _ in range(3)]
+
+
+# Estimate curves for the specified colors red, green, blue, cyan, magenta, yellow, and white.
 rho = []
-for color in targets:
-    c = Color(color).convert('srgb-linear').coords()
-    METHOD = 2 if c == [1, 1, 1] else 3
-    EPSILON = 1e-15 if METHOD == 3 else 1e-14
-    if METHOD == 3:
-        r = method_3(D, alg.transpose(TRGB), c)
-    elif METHOD == 2:
-        r = method_2(D, alg.transpose(TRGB), c)
-    else:
-        raise ValueError('Unrecognized method')
-    rho.append(r)
+if JOINT:
+    # The spectral white of the illuminant and CMFs doesn't land exactly on the color space's white.
+    # Scale each row so that a flat reflectance of 1 maps to exactly `[1, 1, 1]`.
+    TRGB = [alg.divide(row, math.fsum(row)) for row in TRGB]
+    # The curves reproduce the normalized primaries, so integrate them with CMFs that match, otherwise the
+    # curves, when converted back to XYZ, are off by the amount of the normalization. These are the CMFs to use
+    # alongside the curves, as a flat reflectance of 1 then integrates to exactly the color space's white.
+    T = alg.matmul(alg.inv(XYZ_TO_RGB), TRGB)
+    # Only red and green are constrained, blue is implied. All other colors are sums of the primaries.
+    pr, pg, pb = joint_method(D, alg.transpose(TRGB), [1, 0, 0], [0, 1, 0])
+    curves = {
+        '#ff0000': pr,
+        '#00ff00': pg,
+        '#0000ff': pb,
+        '#00ffff': alg.add(pg, pb),
+        '#ff00ff': alg.add(pr, pb),
+        '#ffff00': alg.add(pr, pg),
+        '#ffffff': alg.add(alg.add(pr, pg), pb)
+    }
+    rho = [curves[t] for t in targets]
+else:
+    for color in targets:
+        c = Color(color).convert('srgb-linear').coords()
+        METHOD = 2 if c == [1, 1, 1] else 3
+        EPSILON = 1e-15 if METHOD == 3 else 1e-14
+        if METHOD == 3:
+            r = method_3(D, alg.transpose(TRGB), c)
+        elif METHOD == 2:
+            r = method_2(D, alg.transpose(TRGB), c)
+        else:
+            raise ValueError('Unrecognized method')
+        rho.append(r)
 
 print('=== CMFs D65 ===')
 print('==== X ====')
