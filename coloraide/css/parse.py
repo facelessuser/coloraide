@@ -361,7 +361,8 @@ def tokenize_css(css: str, start: int = 0) -> dict[str, Any]:
             # Get channel value
             m2 = RE_CHANNEL.match(css, m.end())
             if not m2:
-                if slash:
+                # A slash or comma must be followed by a channel
+                if slash or delimiter == 'comma':
                     return {}
                 break
             m = m2

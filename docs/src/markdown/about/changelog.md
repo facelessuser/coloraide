@@ -13,6 +13,7 @@ icon: lucide/scroll-text
 -   **FIX**: Fix blend modes ignoring the backdrop's alpha when layering colors.
 -   **FIX**: Fix continuous and spline interpolation taking the wrong hue arc across undefined hues after a hue wraps
     or is normalized.
+-   **FIX**: Fix comma-separated CSS color functions accepting a trailing comma, such as `rgb(255, 0, 0,)`.
 -   **FIX**: Fix the CSS `color()` function failing on predefined color space names, `none`, and angle units written
     in upper case.
 
