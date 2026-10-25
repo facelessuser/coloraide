@@ -139,6 +139,19 @@ class TestCustom(util.ColorAsserts, unittest.TestCase):
         with self.assertRaises(ValueError):
             Color(Custom('red'))
 
+    def test_color_function_space_name_case(self):
+        """Test `color()` matches a registered space name with upper case letters in any case."""
+
+        class MySpace(type(Color.CS_MAP['srgb'])):
+            NAME = 'MySpace'
+            SERIALIZE = ('MySpace',)
+
+        class Custom(Color):
+            pass
+
+        Custom.register(MySpace())
+        self.assertEqual(Custom('color(myspace 1 0 0)').space(), 'MySpace')
+
     def test_plugin_registration_delta_e(self):
         """Test plugin registration of `DeltaE`."""
 
