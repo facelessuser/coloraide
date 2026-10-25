@@ -57,7 +57,7 @@ class TestHSL(util.ColorAssertsPyTest):
         ('color(--hsl 180 50% 50% / 50%)', 'color(--hsl 180 0.5 0.5 / 0.5)'),
         ('color(--hsl none none none / none)', 'color(--hsl none none none / none)'),
         ('color(--hsl 30DEG 50% 50%)', 'color(--hsl 30 0.5 0.5)'),
-        ('color(--HSL 30 50% 50%)', None),
+        ('color(--HSL 30 50% 50%)', 'color(--hsl 30 0.5 0.5)'),
         # Test range
         ('color(--hsl 0 0% 0%)', 'color(--hsl 0 0 0)'),
         ('color(--hsl 360 100% 100%)', 'color(--hsl 360 1 1)'),

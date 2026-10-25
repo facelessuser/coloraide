@@ -463,9 +463,8 @@ def parse_css(
     if not tokens:
         return None
 
-    # Does the space match the target space? Only a `--` name is case sensitive.
-    ident = tokens['id']
-    if ident not in target and (ident.startswith('--') or ident.lower() not in target):
+    # Does the space match the target space? Space names are not case sensitive.
+    if tokens['id'].lower() not in [t.lower() for t in target]:
         return None
 
     # Did we get a full match if requested?
