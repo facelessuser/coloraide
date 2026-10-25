@@ -187,7 +187,7 @@ def parse_color(tokens: dict[str, Any], space: Space) -> tuple[Vector, float] | 
     if values != num_channels:
         return None
 
-    alpha = norm_alpha_channel(tokens['func']['values'][-1]['value']) if tokens['func']['slash'] else 1.0
+    alpha = norm_alpha_channel(tokens['func']['values'][-1]['value'].lower()) if tokens['func']['slash'] else 1.0
 
     channels = []
     properties = space.CHANNELS
@@ -195,7 +195,7 @@ def parse_color(tokens: dict[str, Any], space: Space) -> tuple[Vector, float] | 
         c = tokens['func']['values'][i]['value']
         channel = properties[i]
         if channel.flags & FLG_ANGLE:
-            v = norm_angle_channel(c)
+            v = norm_angle_channel(c.lower())
             channels.append(v * (channel.high / 360) if channel.angle != ANGLE_DEG else v)
         else:
             channels.append(norm_color_channel(c.lower(), channel.span, channel.offset))
@@ -462,8 +462,9 @@ def parse_css(
     if not tokens:
         return None
 
-    # Does the space match the target space?
-    if tokens['id'] not in target:
+    # Does the space match the target space? Only a `--` name is case sensitive.
+    ident = tokens['id']
+    if ident not in target and (ident.startswith('--') or ident.lower() not in target):
         return None
 
     # Did we get a full match if requested?

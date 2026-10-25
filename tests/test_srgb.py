@@ -64,6 +64,8 @@ class TestsRGB(util.ColorAssertsPyTest):
         ('color(srgb 0 0.50196 0 / 0.5)', 'color(srgb 0 0.50196 0 / 0.5)'),
         ('color(srgb 50% 50% 50% / 50%)', 'color(srgb 0.5 0.5 0.5 / 0.5)'),
         ('color(srgb none none none / none)', 'color(srgb none none none / none)'),
+        ('color(sRGB 1 0 0)', 'color(srgb 1 0 0)'),
+        ('color(srgb 1 0 0 / NONE)', 'color(srgb 1 0 0 / none)'),
         # Test range
         ('color(srgb 0% 0% 0%)', 'color(srgb 0 0 0)'),
         ('color(srgb 100% 100% 100%)', 'color(srgb 1 1 1)'),
