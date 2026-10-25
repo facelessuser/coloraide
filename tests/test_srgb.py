@@ -39,6 +39,8 @@ class TestsRGB(util.ColorAssertsPyTest):
         ('rgba(none, 128, 0)', None),
         ('rgba(50%, 128, 0)', None),
         ('rgb(128, 0)', None),
+        ('rgb(128, 0, 128,)', None),
+        ('rgb(128, 0, 128, 0.5,)', None),
         ('rgb(128, 0, 128, 3deg)', None),
         ('rgb(128deg, 0, 128)', None),
         # Test CSS
