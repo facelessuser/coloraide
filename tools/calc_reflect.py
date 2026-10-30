@@ -16,7 +16,7 @@ Model:
 
 The curves are `(1 + tanh(z)) / 2`, so they always stay strictly between 0 and 1. Red and green are
 constrained to their colors, the color of blue is implied by the flat white. The result is a stationary point of
-a nonconvex problem, there is no proof that it is the global optimum.
+a non-convex problem, there is no proof that it is the global optimum.
 """
 import sys
 import os
@@ -121,8 +121,8 @@ def joint_method(l, cmfs, color_r, color_g, max_iterations=MAX_ITERS, tolerance=
 
     Parameters
     ----------
-    `l`: nxn matrix of the squared first differences.
-    `cmfs`: 3xn illuminant referenced CMFs.
+    `l`: `nxn` matrix of the squared first differences.
+    `cmfs`: `3xn` illuminant referenced CMFs.
     `color_r`: the XYZ of the red curve, as the CMFs see it.
     `color_g`: the XYZ of the green curve, as the CMFs see it.
 
