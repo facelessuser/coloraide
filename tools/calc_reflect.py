@@ -1,8 +1,22 @@
 """
-Calculate reflection curves.
+Calculate reflection curves for red, green, and blue jointly, with a chromatic adaptation in the CMFs.
 
-Approaches comes from Scott Burns.
-http://scottburns.us/matlab-octave-and-python-source-code-for-refl-recon-chrom-adapt/
+This is a pure Python version of `calc_spectral.py`, solved with the same Newton/KKT approach used in
+`calc_reflect.py` instead of SciPy.
+
+Model:
+  * `T`: illuminant referenced CMFs, as the illuminant and CMFs yield them (3 x N).
+  * `M`: linear sRGB to XYZ D65.
+  * `A`: Bradford chromatic adaptation from the white of `M` (`M @ 1`) to the white the CMFs yield (`T @ 1`).
+  * Find `B` (N x 3) with `T @ B = A @ M` and `B @ 1 = 1` (the curves sum to a flat reflectance of 1),
+    minimizing the sum of squared first differences of `atanh(2 * B - 1)` for all three curves.
+  * The adaptation is folded into the CMFs, `T_ADAPTED = A^-1 @ T`, so XYZ produced from the curves is in the
+    white point of `M`. The RGB conversion matrix is left alone: XYZ to RGB is just `inv(M)`, concentrations
+    are exactly the linear sRGB values, and a flat reflectance of 1 integrates to exactly the white of `M`.
+
+The curves are `(1 + tanh(z)) / 2`, so they always stay strictly between 0 and 1. Red and green are
+constrained to their colors, the color of blue is implied by the flat white. The result is a stationary point of
+a nonconvex problem, there is no proof that it is the global optimum.
 """
 import sys
 import os
@@ -12,75 +26,67 @@ import plotly.graph_objects as go
 sys.path.insert(0, os.getcwd())
 
 from coloraide import algebra as alg
-from coloraide.everything import ColorAll as Color
 from coloraide.cmfs import CIE_1931_2DEG as CMF
 from coloraide.illuminants import D65
-from coloraide.spaces.srgb_linear import XYZ_TO_RGB
+from coloraide.spaces.srgb_linear import RGB_TO_XYZ
+from coloraide.cat import Bradford
 
-targets = ['#ff0000', '#00ff00', '#0000ff', '#00ffff', '#ff00ff', '#ffff00', '#ffffff']
-space = 'srgb'
-# With the current settings, method2 requires an epsilon of 1e-14, while method 3 can use 1e-15
-# More iterations may be required for higher step resolutions.
-# For our purposes, method 3 delivers colors with estimated reflectance below 1.
-# Sum of RGB is close to 1.
 START = 380
 STEP = 10
 END = 750 + STEP
-MAX_ITERS = 50
-METHOD = 3
-EPSILON = 1e-15 if METHOD == 3 else 1e-14
-# Solve red, green, and blue together such that their curves sum to exactly 1 at every wavelength.
-# Cyan, magenta, yellow, and white are then derived by summing the primaries (white is flat 1).
-# Requires the white point normalization below, otherwise a flat reflectance of 1 would not
-# map to exactly white and the derived colors would be slightly off.
-JOINT = True
-# The joint system is larger and less well conditioned, so its residual bottoms out around 1e-15,
-# which is above the epsilon used for the individual methods.
-JOINT_EPSILON = 1e-12
+MAX_ITERS = 100
+# The joint system is large and has a residual that bottoms out near 1e-15
+EPSILON = 1e-12
 
-A = [[], [], []]
-for r in range(START, END, STEP):
-    A[0].append(CMF[r][0])
-    A[1].append(CMF[r][1])
-    A[2].append(CMF[r][2])
+# Bradford cone response matrix
+BRADFORD = Bradford.MATRIX
 
-W = [D65[r] for r in range(START, END, STEP)]
+wavelengths = list(range(START, END, STEP))
+size = len(wavelengths)
 
-value = alg.matmul(A, alg.diag(W))
-w = alg.vdot(A[1], W)
+A = [[CMF[r][i] for r in wavelengths] for i in range(3)]
+W = [D65[r] for r in wavelengths]
 
 # Illuminant referenced CMFs
-T = alg.divide(value, w)
+T = alg.divide(alg.matmul(A, alg.diag(W)), alg.vdot(A[1], W))
 
-# Make in relation to the RGB color space
-TRGB = alg.matmul(XYZ_TO_RGB, T)
 
-# Array of finite differencing constants
-size = len(W)
-fill = {-1: -2, 0: 4, 1: -2}
-D = [[fill.get(i - j, 0) for j in range(size)] for i in range(size)]
-D[0][0] = 2
-D[size - 1][size - 1] = 2
+def chromatic_adaptation(source_white, destination_white):
+    """Get the Bradford chromatic adaptation matrix that maps the source white exactly to the destination white."""
 
-# Vectorize some functions we will use.
-# If any of the functions overflow, return zero.
-# `exp` is most likely to do this, the others may not unless pushed too hard.
+    source = alg.dot(BRADFORD, source_white)
+    destination = alg.dot(BRADFORD, destination_white)
+    return alg.matmul(alg.matmul(alg.inv(BRADFORD), alg.diag(alg.divide(destination, source))), BRADFORD)
+
+
+# The white the CMFs yield and the white of the color space
+white_raw = [math.fsum(row) for row in T]
+white_srgb = [math.fsum(row) for row in RGB_TO_XYZ]
+
+# Adaptation from the color space's white to the CMF's white, the primaries as the CMFs see them,
+# and the CMFs with the adaptation folded in.
+CAT = chromatic_adaptation(white_srgb, white_raw)
+PRIMARIES = alg.matmul(CAT, RGB_TO_XYZ)
+T_ADAPTED = alg.matmul(alg.inv(CAT), T)
+XYZ_TO_RGB = alg.inv(RGB_TO_XYZ)
+
+# Smoothness of a curve is the sum of the squared first differences, as a matrix: `z.L.z`
+L = [[0.0] * size for _ in range(size)]
+for i in range(size):
+    L[i][i] = 1.0 if i in (0, size - 1) else 2.0
+    if i:
+        L[i][i - 1] = -1.0
+    if i < size - 1:
+        L[i][i + 1] = -1.0
+
+
 def _tanh(x):
-    """Clamp the results to zero if there is overflow."""
+    """Clamp the results if there is overflow."""
 
     try:
         return math.tanh(x)
     except OverflowError:
-        return 0
-
-
-def _exp(x):
-    """Clamp the results to zero if there is overflow."""
-
-    try:
-        return math.exp(x)
-    except OverflowError:
-        return 0
+        return 1.0 if x > 0 else -1.0
 
 
 def _sech2(x):
@@ -89,165 +95,21 @@ def _sech2(x):
     try:
         return 1 / (math.cosh(x) ** 2)
     except OverflowError:
-        return 0
+        return 0.0
 
 
-tanh = alg.vectorize2(_tanh, params=1)
-sech2 = alg.vectorize2(_sech2, params=1)
-exp = alg.vectorize2(_exp, params=1)
-
-
-def method_2(d, cmfs_w, XYZ_w, max_iterations=MAX_ITERS, tolerance=EPSILON):
+def joint_method(l, cmfs, color_r, color_g, max_iterations=MAX_ITERS, tolerance=EPSILON):
     """
-    Estimate reflectance curve.
+    Estimate the red, green, and blue reflectance curves together.
 
-    Computes a reconstructed spectral reflectance curve from
-    an illuminant-referenced triplet of tristimulus values
-    representing a real color (within the spectral locus).
+    Approaches comes from Scott Burns.
+    http://scottburns.us/matlab-octave-and-python-source-code-for-refl-recon-chrom-adapt/
 
-    Parameters
-    ----------
-    `d`: nxn array of finite differencing constants, obtained
-           from function `method_2_prep.py`. (n is the number
-           of wavelength bins (rows) used in the CMFs.)
-    `cmfs_w`: nx3 array of illuminant-w-referenced CMFs,
-           obtained from function `method_2_prep.py`.
-    `XYZ_w`: a three element vector of illum-w-referenced
-           tristimulus values in the 0 <= Y <= 1 convention range.
-    max_iterations: upper limit on iterations (defaults to 20).
-    tolerance: determines when the linear equations for a
-           stationary point are satisfied (default is 1e-8).
+    This extends `method_3` from Scott Burns to three curves that must sum to 1 at every wavelength.
+    Each curve is `(1 + tanh(z)) / 2` and the roughness of the `z` values is minimized subject to:
 
-    Returns
-    -------
-    nx1 vector of spectral reflectance values (or zeros if failure).
-
-    Notes
-    -----
-    The input parameters d and `cmfs_w` can be generated by function
-    `method_2_prep.py`. For a given illuminant, `method_2_prep`
-    needs to be called only once. Multiple calls to `method_2`
-    may then follow for various tristimulus values. This is a
-    typical use case, and avoids repeated computation of d and
-    `cmfs_w`.
-
-    The XYZ_w supplied to `method_2` must fall strictly within the
-    spectral locus (i.e., be a real color), or the method will fail
-    and return a vector of zeros.
-
-    The reflectance curve generated will always have positive
-    values, but may have some values >1 (which can be interpreted
-    as an emissive source divided by the illuminant). To obtain
-    reflectance curves strictly in the range 0 to 1, representing
-    valid object reflectances, use `method_3.py` instead.
-
-    `method_2` is based on "method 2" of Reference [1]. It also
-    corresponds to method "LLSS" (Least Log Slope Squared) of
-    Reference [2].
-
-    References
-    ----------
-    [1] Burns SA. Numerical methods for smoothest reflectance
-        reconstruction. Color Research & Application, Vol 45,
-        No 1, 2020, pp 8-21.
-    [2] Generating Reflectance Curves from sRGB Triplets, 2015
-        http://scottburns.us/reflectance-curves-from-srgb/#LLSS
-
-    Acknowledgements
-    ----------------
-    Thanks to Adam J. Burns and Mark (`kram1032`) for assistance
-    with translating from MATLAB to Python.
-
-    """
-
-    n = len(cmfs_w)
-    z = alg.zeros(n)
-    lamb = alg.zeros(3)
-    for _ in range(max_iterations):
-        r = exp(z)
-        dr = alg.diag(r)
-        dra = alg.matmul(dr, cmfs_w)
-        v = alg.matmul(dra, lamb)
-        p1 = alg.add(alg.matmul(d, z), v)
-        p2 = alg.subtract(alg.matmul(alg.transpose(cmfs_w), r), XYZ_w)
-        F = p1 + p2
-        p1 = alg.add(d, alg.diag(v))
-        p2 = dra
-        p3 = alg.transpose(dra)
-        p4 = alg.zeros((3, 3))
-        for x1, y1 in zip(p1, p2):
-            x1.extend(y1)
-        for x1, y1 in zip(p3, p4):
-            x1.extend(y1)
-        p1.extend(p3)
-        J = p1
-        try:
-            try:
-                delta = alg.solve(J, alg.multiply(F, -1))
-            except Exception:
-                pi = alg.pinv(J)
-                delta = alg.dot(pi, alg.multiply(F, -1))
-        except Exception:
-            print('Ill-conditioned or singular linear system detected.')
-            print(f'Check to make sure XYZ_w {XYZ_w} is within the spectral locus.')
-            return alg.zeros(n)
-        z = alg.add(z, delta[:n])
-        lamb = alg.add(lamb, delta[n:])
-        if alg.all([abs(f) < tolerance for f in F]):
-            return exp(z)
-    print('Maximum number of iterations reached.')
-    print('Check to make sure XYZ_w is within the spectral locus.')
-    return alg.zeros(n)
-
-
-def method_3(d, cmfs_w, XYZ_w, max_iterations=MAX_ITERS, tolerance=EPSILON):
-    """
-    Estimate reflectance curve.
-
-    Computes a reconstructed spectral reflectance curve from
-    an illuminant-referenced triplet of tristimulus values
-    representing an object color (within the object color solid).
-
-    Parameters
-    ----------
-    `d`: nxn array of finite differencing constants, obtained
-           from function `method_3_prep.py`. (n is the number
-           of wavelength bins (rows) used in the CMFs.)
-    `cmfs_w`: nx3 array of illuminant-w-referenced CMFs,
-           obtained from function `method_3_prep.py`.
-    `XYZ_w`: a three element vector of illum-w-referenced
-           tristimulus values in the 0 <= Y <= 1 convention range.
-    max_iterations: upper limit on iterations (defaults to 20).
-    tolerance: determines when the linear equations for a
-           stationary point are satisfied (default is 1e-8).
-
-    Returns
-    -------
-    nx1 vector of spectral reflectance values (or zeros if failure).
-
-    Notes
-    -----
-    The input parameters d and `cmfs_w` can be generated by function
-    `method_3_prep.py`. For a given illuminant, `method_3_prep`
-    needs to be called only once. Multiple calls to `method_3`
-    may then follow for various tristimulus values. This is a
-    typical use case, and avoids repeated computation of d and
-    `cmfs_w`.
-
-    The XYZ_w supplied to `method_3` must fall strictly within the
-    object color solid (i.e., be a valid object color that can be
-    represented by a reflectance curve strictly between 0 and 1),
-    or the method will fail and return a vector of zeros.
-
-    The reflectance curve generated will always have values in
-    the range 0 to 1, corresponding to valid object colors. If
-    it is desired to expand the applicability of the method to
-    any real color within the spectral locus (including emissive
-    colors), use `method_2.py` instead.
-
-    `method_3` is based on "method 3" of Reference [1]. It also
-    corresponds to method "LHTSS" (Least Hyperbolic Tangent Slope
-    Squared) of Reference [2].
+    - The three curves sum to 1 at every wavelength.
+    - The red and green curves reproduce their colors (blue is implied by the above).
 
     References
     ----------
@@ -257,79 +119,12 @@ def method_3(d, cmfs_w, XYZ_w, max_iterations=MAX_ITERS, tolerance=EPSILON):
     [2] Generating Reflectance Curves from sRGB Triplets, 2015
         http://scottburns.us/reflectance-curves-from-srgb/#LHTSS
 
-    Acknowledgements
-    ----------------
-    Thanks to Adam J. Burns and Mark (`kram1032`) for assistance
-    with translating from MATLAB to Python.
-
-    """
-
-    n = len(cmfs_w)  # number of rows
-    z = alg.zeros(n)
-    lam = alg.zeros(3)
-    for _ in range(max_iterations):
-        r = alg.divide(alg.add(tanh(z), 1), 2)
-        s2 = sech2(z)
-        d1 = alg.diag(alg.divide(s2, 2))
-        d1a = alg.dot(d1, cmfs_w)
-        d2 = alg.diag(alg.multiply(s2, tanh(z)))
-
-        p1 = alg.add(alg.dot(d, z), alg.dot(d1a, lam))
-        p2 = alg.subtract(alg.dot(alg.transpose(cmfs_w), r), XYZ_w)
-        f = p1 + p2
-
-        p1 = alg.subtract(d, alg.diag(alg.dot(alg.dot(d2, cmfs_w), lam)))
-        p2 = d1a
-        p3 = alg.transpose(d1a)
-        p4 = alg.zeros((3, 3))
-        for x1, y1 in zip(p1, p2):
-            x1.extend(y1)
-        for x1, y1 in zip(p3, p4):
-            x1.extend(y1)
-        p1.extend(p3)
-        j = p1
-
-        try:
-            try:
-                delta = alg.solve(j, alg.multiply(-1, f))
-            except Exception:
-                pi = alg.pinv(j)
-                delta = alg.dot(pi, alg.multiply(f, -1))
-        except Exception:
-            print('Ill-conditioned or singular linear system detected.')
-            print(f'Check to make sure XYZ_w {XYZ_w} is within the spectral locus.')
-            return alg.zeros(n)
-        z = alg.add(z, delta[0:n])
-        lam = alg.add(lam, delta[n:n+3])
-        if alg.all([abs(_f) < tolerance for _f in f]):
-            return alg.divide(alg.add(tanh(z), 1), 2)
-    print('Maximum number of iterations reached.')
-    print('Check to make sure XYZ_w is within the object color solid.')
-    return alg.zeros(n)
-
-
-def joint_method(d, cmfs_w, rgb_r, rgb_g, max_iterations=MAX_ITERS, tolerance=JOINT_EPSILON):
-    """
-    Estimate the red, green, and blue reflectance curves together.
-
-    This is an extension of `method_3` to three primaries that must sum to 1 at every wavelength.
-    Instead of the logistic function (`(tanh(z) + 1) / 2`, which is a softmax of two components),
-    the curves are the softmax of three logits, with blue's logit held at zero as the reference:
-
-        rho_i = exp(z_i) / (exp(z_r) + exp(z_g) + 1)
-
-    This guarantees the curves sum to 1 and stay strictly between 0 and 1. As with the other
-    methods, the smoothness of the logits is minimized subject to the curves reproducing their
-    target colors. Only red and green need constraints. A flat reflectance of 1 is white, so blue
-    is implied by the other two.
-
     Parameters
     ----------
-    `d`: nxn array of finite differencing constants.
-    `cmfs_w`: nx3 array of illuminant-w-referenced CMFs, normalized such that a flat
-           reflectance of 1 produces `[1, 1, 1]`.
-    `rgb_r`: the linear RGB of the red primary.
-    `rgb_g`: the linear RGB of the green primary.
+    `l`: nxn matrix of the squared first differences.
+    `cmfs`: 3xn illuminant referenced CMFs.
+    `color_r`: the XYZ of the red curve, as the CMFs see it.
+    `color_g`: the XYZ of the green curve, as the CMFs see it.
 
     Returns
     -------
@@ -337,75 +132,59 @@ def joint_method(d, cmfs_w, rgb_r, rgb_g, max_iterations=MAX_ITERS, tolerance=JO
 
     """
 
-    n = len(cmfs_w)
-    cmfs = alg.transpose(cmfs_w)
-    target = rgb_r + rgb_g
-    zr = alg.zeros(n)
-    zg = alg.zeros(n)
-    lam = alg.zeros(6)
+    n = len(l)
+    m = 3 * n + n + 6
+    target = color_r + color_g
+    z = [alg.zeros(n), alg.zeros(n), alg.zeros(n)]
+    lam = alg.zeros(n + 6)
+
+    def evaluate(z, lam):
+        """Evaluate the curves, the KKT residual, and what is needed for the Jacobian."""
+
+        th = [[_tanh(x) for x in zi] for zi in z]
+        b = [[(1 + t) / 2 for t in ti] for ti in th]
+        s = [[_sech2(x) for x in zi] for zi in z]
+        # The multiplier weight each curve's wavelength sees: the sum constraint plus the color constraints
+        wt = []
+        for i in range(3):
+            if i < 2:
+                wt.append([lam[j] + math.fsum(lam[n + 3 * i + a] * cmfs[a][j] for a in range(3)) for j in range(n)])
+            else:
+                wt.append(lam[:n])
+        # Gradient of the Lagrangian with respect to z, then the constraints
+        grad = []
+        for i in range(3):
+            grad.extend(alg.add(alg.dot(l, z[i]), [wt[i][j] * s[i][j] / 2 for j in range(n)]))
+        g = [b[0][j] + b[1][j] + b[2][j] - 1 for j in range(n)]
+        g.extend(alg.subtract(alg.dot(cmfs, b[0]), target[:3]))
+        g.extend(alg.subtract(alg.dot(cmfs, b[1]), target[3:]))
+        return b, th, s, wt, grad + g
 
     for _ in range(max_iterations):
-        # Softmax of the logits at each wavelength
-        pr = []
-        pg = []
-        pb = []
-        for a, b in zip(zr, zg):
-            m = max(a, b, 0)
-            ea, eb, ec = _exp(a - m), _exp(b - m), _exp(-m)
-            s = ea + eb + ec
-            pr.append(ea / s)
-            pg.append(eb / s)
-            pb.append(ec / s)
+        b, th, s, wt, f = evaluate(z, lam)
+        magnitude = max(abs(x) for x in f)
+        if magnitude < tolerance:
+            return b
 
-        # Constraints: the color of each of the red and green curves
-        c = alg.subtract(alg.dot(cmfs, pr) + alg.dot(cmfs, pg), target)
-
-        # Jacobian of the constraints with respect to the logits (6 x 2n)
-        jc = []
-        for a in range(3):
-            jc.append(  # noqa: PERF401
-                [cmfs[a][k] * pr[k] * (1 - pr[k]) for k in range(n)] +
-                [-cmfs[a][k] * pr[k] * pg[k] for k in range(n)]
-            )
-        for a in range(3):
-            jc.append(  # noqa: PERF401
-                [-cmfs[a][k] * pg[k] * pr[k] for k in range(n)] +
-                [cmfs[a][k] * pg[k] * (1 - pg[k]) for k in range(n)]
-            )
-
-        # Gradient of the Lagrangian with respect to the logits
-        grad = alg.add(alg.dot(alg.transpose(jc), lam), alg.dot(d, zr) + alg.dot(d, zg))
-        f = grad + c
-
-        if alg.all([abs(_f) < tolerance for _f in f]):
-            return pr, pg, pb
-
-        # Second derivatives of the constraints, weighted by the multipliers.
-        # Each is diagonal as a wavelength only depends on its own logits.
-        wr = [sum(lam[a] * cmfs[a][k] for a in range(3)) for k in range(n)]
-        wg = [sum(lam[3 + a] * cmfs[a][k] for a in range(3)) for k in range(n)]
-        hrr = [wr[k] * pr[k] * ((1 - pr[k]) ** 2 - pr[k] * (1 - pr[k])) +
-               wg[k] * pg[k] * (pr[k] ** 2 - pr[k] * (1 - pr[k])) for k in range(n)]
-        hgg = [wg[k] * pg[k] * ((1 - pg[k]) ** 2 - pg[k] * (1 - pg[k])) +
-               wr[k] * pr[k] * (pg[k] ** 2 - pg[k] * (1 - pg[k])) for k in range(n)]
-        hrg = [wr[k] * pr[k] * (-(1 - pr[k]) * pg[k] + pg[k] * pr[k]) +
-               wg[k] * pg[k] * (-(1 - pg[k]) * pr[k] + pr[k] * pg[k]) for k in range(n)]
-
-        # Assemble the KKT system
-        size = 2 * n + 6
-        j = alg.zeros((size, size))
-        for r in range(n):
-            for col in range(n):
-                j[r][col] = d[r][col]
-                j[n + r][n + col] = d[r][col]
-            j[r][r] += hrr[r]
-            j[n + r][n + r] += hgg[r]
-            j[r][n + r] += hrg[r]
-            j[n + r][r] += hrg[r]
-        for r in range(6):
-            for col in range(2 * n):
-                j[2 * n + r][col] = jc[r][col]
-                j[col][2 * n + r] = jc[r][col]
+        # Assemble the Newton/KKT system.
+        # The Hessian of the Lagrangian is the smoothness plus a diagonal from the curvature of `b`.
+        j = alg.zeros((m, m))
+        for i in range(3):
+            o = i * n
+            for r in range(n):
+                for c in range(n):
+                    j[o + r][o + c] = l[r][c]
+                j[o + r][o + r] += -s[i][r] * th[i][r] * wt[i][r]
+        # Jacobian of the constraints (and its transpose)
+        for i in range(3):
+            o = i * n
+            for k in range(n):
+                db = s[i][k] / 2
+                j[o + k][3 * n + k] = j[3 * n + k][o + k] = db
+                if i < 2:
+                    for a in range(3):
+                        col = 4 * n + 3 * i + a
+                        j[o + k][col] = j[col][o + k] = cmfs[a][k] * db
 
         try:
             try:
@@ -415,57 +194,41 @@ def joint_method(d, cmfs_w, rgb_r, rgb_g, max_iterations=MAX_ITERS, tolerance=JO
         except Exception:
             print('Ill-conditioned or singular linear system detected.')
             return [alg.zeros(n) for _ in range(3)]
-        zr = alg.add(zr, delta[:n])
-        zg = alg.add(zg, delta[n:2 * n])
-        lam = alg.add(lam, delta[2 * n:])
+
+        # Backtrack so the residual always improves
+        step = 1.0
+        for _ in range(40):
+            z_try = [alg.add(z[i], alg.multiply(step, delta[i * n:(i + 1) * n])) for i in range(3)]
+            lam_try = alg.add(lam, alg.multiply(step, delta[3 * n:]))
+            trial = evaluate(z_try, lam_try)[-1]
+            if max(abs(x) for x in trial) < magnitude * (1 - 1e-4 * step):
+                z, lam = z_try, lam_try
+                break
+            step /= 2
+        else:
+            print('Line search failed.')
+            return [alg.zeros(n) for _ in range(3)]
 
     print('Maximum number of iterations reached.')
-    print('Check to make sure the primaries are within the object color solid.')
     return [alg.zeros(n) for _ in range(3)]
 
 
-# Estimate curves for the specified colors red, green, blue, cyan, magenta, yellow, and white.
-rho = []
-if JOINT:
-    # The spectral white of the illuminant and CMFs doesn't land exactly on the color space's white.
-    # Scale each row so that a flat reflectance of 1 maps to exactly `[1, 1, 1]`.
-    TRGB = [alg.divide(row, math.fsum(row)) for row in TRGB]
-    # The curves reproduce the normalized primaries, so integrate them with CMFs that match, otherwise the
-    # curves, when converted back to XYZ, are off by the amount of the normalization. These are the CMFs to use
-    # alongside the curves, as a flat reflectance of 1 then integrates to exactly the color space's white.
-    T = alg.matmul(alg.inv(XYZ_TO_RGB), TRGB)
-    # Only red and green are constrained, blue is implied. All other colors are sums of the primaries.
-    pr, pg, pb = joint_method(D, alg.transpose(TRGB), [1, 0, 0], [0, 1, 0])
-    curves = {
-        '#ff0000': pr,
-        '#00ff00': pg,
-        '#0000ff': pb,
-        '#00ffff': alg.add(pg, pb),
-        '#ff00ff': alg.add(pr, pb),
-        '#ffff00': alg.add(pr, pg),
-        '#ffffff': alg.add(alg.add(pr, pg), pb)
-    }
-    rho = [curves[t] for t in targets]
-else:
-    for color in targets:
-        c = Color(color).convert('srgb-linear').coords()
-        METHOD = 2 if c == [1, 1, 1] else 3
-        EPSILON = 1e-15 if METHOD == 3 else 1e-14
-        if METHOD == 3:
-            r = method_3(D, alg.transpose(TRGB), c)
-        elif METHOD == 2:
-            r = method_2(D, alg.transpose(TRGB), c)
-        else:
-            raise ValueError('Unrecognized method')
-        rho.append(r)
+# Red and green are constrained, blue is implied. All other colors are sums of the primaries.
+red, green, blue = joint_method(L, T, [row[0] for row in PRIMARIES], [row[1] for row in PRIMARIES])
+curves = {
+    '#ff0000': red,
+    '#00ff00': green,
+    '#0000ff': blue,
+    '#00ffff': alg.add(green, blue),
+    '#ff00ff': alg.add(red, blue),
+    '#ffff00': alg.add(red, green),
+    '#ffffff': alg.add(alg.add(red, green), blue)
+}
 
-print('=== CMFs D65 ===')
-print('==== X ====')
-alg.pprint(T[0])
-print('==== Y ====')
-alg.pprint(T[1])
-print('==== Z ====')
-alg.pprint(T[2])
+print('=== CMFs D65 (adapted) ===')
+for name, row in zip(('X', 'Y', 'Z'), T_ADAPTED):
+    print(f'==== {name} ====')
+    alg.pprint(row)
 
 # Setup plot for results
 fig = go.Figure(
@@ -479,12 +242,12 @@ fig = go.Figure(
 )
 
 print('=== Reflectance Curves ===')
-for target, r in zip(targets, rho):
+for target, r in curves.items():
     print(f'==== Curve for {target} ====')
     alg.pprint(r)
 
     fig.add_traces(data=go.Scatter(
-        x=list(range(START, END, STEP)),
+        x=wavelengths,
         y=r,
         mode="lines",
         line={'color': target, 'width': 4, 'shape': 'spline'},
