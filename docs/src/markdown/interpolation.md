@@ -323,8 +323,8 @@ B-spline is a piecewise spline similar to Bezier curves. It utilizes "control po
 path through a series of colors. Like Bezier Curves, the path is not guaranteed to pass through the control points.
 
 > [!tip]
-> By default, this approach uses `not-a-knot` end conditions which doesn't introduce end point bias, but if you'd like to
-> ensure the interpolation passes through the end points, you can set `end_cond` to `natural`.
+> By default, this approach uses `not-a-knot` end conditions which doesn't introduce end point bias, but if you'd like
+> to ensure the interpolation passes through the end points, you can set `end_cond` to `natural`.
 >
 > If you need an interpolation to pass through all points, see the [Natural spline](#natural).
 

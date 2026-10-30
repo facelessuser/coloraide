@@ -29,7 +29,8 @@ Modified by Isaac Muse
 - Recalculated D65 illuminated CMFs and R, G, and B curves with higher precision
   and generated them with our exact RGB matrix, white point, and CMF calculations.
 - Use only 3 curves: R, G, and B.
-- Provided adaptation for CSS white to the perfect reflector white in our CMFs.
+- Provided adaptation for the perfect reflector white to  CSS white in our CMFs used to
+  ensure the reflectance curves are properly converted back to CSS D65 white.
 - Added sane handling for colors beyond the sRGB gamut. Limit the curves to be below
   1 and calculate residual XYZ difference between what the concentration can produce
   and actual value. Add the interpolated residual back in after blending the reflectance
