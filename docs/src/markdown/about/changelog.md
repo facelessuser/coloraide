@@ -3,7 +3,7 @@ icon: lucide/scroll-text
 ---
 # Changelog
 
-## 8.13.2
+## 8.14
 
 -   **NEW**: Spectral mixing now calculates primary curves relative to each other such that they sum to white, which
     is now represented as a perfect reflector. This allows us to reduce reflectance curves required to just 3.
