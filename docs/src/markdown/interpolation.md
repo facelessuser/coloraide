@@ -209,18 +209,20 @@ reflectance curves from these three primaries and approximate reflectance curves
 ColorAide deviates from Spectral.js and attempts to do just this.
 
 The D65 illuminant referenced CMFs won't give a perfect sRGB value of `(1, 1, 1)` due to a slightly different white
-point compared to the CSS D65. ColorAide, when calculating the reflectance curve, adapts the white point to match the
-white in the CMFs so that it acts as a perfect reflector. Additionally, we solve for `#!color rgb(255 0 0)`,
-`#!color rgb(0 255 0 )`, and `#!color rgb(0 0 255)` at the same time and ensure they sum up to the perfect reflector.
-This allows us to represent any color within the sRGB gamut using just the RGB primary curves without having a gap near
-pure white. We can also just use 3 curves instead of the 7 that Spectral.js requires, all while getting the same paint
-like mixing.
+point compared to the CSS D65. ColorAide, when calculating the reflectance curve, adapts the white points to match so
+that white properly acts as a perfect reflector. We then solve for `#!color rgb(255 0 0)`,
+`#!color rgb(0 255 0 )`, and `#!color rgb(0 0 255)` with joint solver based on Scott Burns approach so that each curve
+is solved relative to each other with the added constraint that they must sum up to the perfect reflector.
 
 Primary\ Reflectance\ Curves |
 ---------------------------- |
 `#!color rgb(255 0 0)`       |
 `#!color rgb(0 255 0)`       |
 `#!color rgb(0 0 255)`       |
+
+This allows us to represent any color within the sRGB gamut using just the RGB primary curves without having a gap near
+pure white. We can also just use 3 curves instead of the 7 that Spectral.js requires because we can now properly
+generate the the other four curves without issues.
 
 ![Primary Reflectance Curves](images/reflectance-curves.png)
 /// figure-caption
