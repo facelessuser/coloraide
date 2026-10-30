@@ -195,27 +195,39 @@ reflectance curves from sRGB triplets. The project [Spectral.js][spectral-js] ra
 Kubelka-Munk theory to transform these reflectance curves into scattering/absorption coefficients so that the curves
 could be mixed linearly, producing paint like mixing. ColorAide adopts this same approach with minor modifications.
 
+Spectral.js approximates the curves for  `#!color rgb(255 0 0)`, `#!color rgb(0 255 0 )`, `#!color rgb(0 0 255)`,
+`#!color rgb(0 255 255)`, `#!color rgb(255 255 0 )`, `#!color rgb(255 0 255)`, and `#!color rgb(255 255 255)`. Each
+curve is solved for independently. This works generally well, but the white reflectance curves do not sum up perfectly
+to the white reflectance curve, and both the sum and actual white reflectance curve exceed the Kubelka-Munk limitation
+that requires values to be no larger than one. This means we cannot construct all colors from just the red, green, and
+blue curve, but we must provide cyan, yellow, magenta and white to cover the entire sRGB gamut, and even then, colors
+close to white cannot be properly represented to high accuracy.
+
 In principle, if we were to approximate the reflectance curves of `#!color rgb(255 0 0)`, `#!color rgb(0 255 0 )`, and
-`#!color rgb(0 0 255)`, using the approach by Scott Burns, such that they also summed up to 1, we could likely calculate
-reflectance curves from these three colors and approximate reflectance curves for almost any other color in the sRGB
-gamut. Unfortunately, this creates a non-linearity problem that is difficult to solve with high precision, so instead,
-we calculate primary reflectance curves from 7 colors individually so that, when combined, we can generate smooth
-approximations for almost any color within the sRGB gamut.
+`#!color rgb(0 0 255)`, using the approach by Scott Burns, such that they also summed up to 1, we could calculate
+reflectance curves from these three primaries and approximate reflectance curves for almost any color in the sRGB gamut.
+ColorAide deviates from Spectral.js and attempts to do just this.
+
+The D65 illuminant referenced CMFs won't give a perfect sRGB value of `(1, 1, 1)` due to a slightly different white
+point compared to the CSS D65. ColorAide, when calculating the reflectance curve, adapts the white points to match so
+that white properly acts as a perfect reflector. We then solve for `#!color rgb(255 0 0)`,
+`#!color rgb(0 255 0 )`, and `#!color rgb(0 0 255)` with joint solver based on Scott Burns approach so that each curve
+is solved relative to each other with the added constraint that they must sum up to the perfect reflector.
 
 Primary\ Reflectance\ Curves |
 ---------------------------- |
 `#!color rgb(255 0 0)`       |
 `#!color rgb(0 255 0)`       |
 `#!color rgb(0 0 255)`       |
-`#!color rgb(0 255 255)`     |
-`#!color rgb(255 0 255)`     |
-`#!color rgb(255 255 0)`     |
-`#!color rgb(255 255 255)`   |
+
+This allows us to represent any color within the sRGB gamut using just the RGB primary curves without having a gap near
+pure white. We can also just use 3 curves instead of the 7 that Spectral.js requires because we can now properly
+generate the the other four curves without issues.
 
 ![Primary Reflectance Curves](images/reflectance-curves.png)
 /// figure-caption
-Reflectance curves of white, cyan, magenta, yellow, red, green, and blue as approximated using the methods proposed by
-Scott Burns.
+Reflectance curves of red, green, and blue as approximated using the methods proposed by Scott Burns. Cyan, magenta, and
+white are constructed directly from the red, green, and blue primary curves.
 ///
 
 With our primary colors selected, and the reflectance curves created for each one, we can use these curves to
@@ -228,10 +240,10 @@ Orange decomposed into white, cyan, magenta, yellow, red, green, and blue reflec
 its own curve.
 ///
 
-With the ability to represent almost any color within our gamut as a reflectance curve, we then can mix colors by
-generating their curve and then applying Kubelka-Munk theory by converting those curves into absorption and scattering
-coefficients and mixing them linearly. Once mixed, we can transform them back to a reflectance curve and then back to
-our target color space.
+With the ability to represent any color within our gamut as a reflectance curve, we then can mix colors by generating
+their curve and then applying Kubelka-Munk theory by converting those curves into absorption and scattering coefficient
+and mixing them linearly. Once mixed, we can transform them back to a reflectance curve and then back to our target
+color space.
 
 ![Reflectance Mix](images/reflect-mix.png)
 /// figure-caption
@@ -242,11 +254,10 @@ It should be noted that when using this approach, the mixing of the colors can t
 Spectral.js noticed this and found that weighting the mix such that more luminous colors had more weight produced more
 natural lighting when mixing.
 
-One way that ColorAide deviates from the Spectral.js is that we ensure sane behavior for colors that extend beyond the
-sRGB gamut. Using the approach as described works for most colors within the sRGB gamut, but doesn't precisely cover
-every color perfectly, and will be less usable for colors outside the sRGB gamut. This is because Kubelka-Munk does not
-handle reflectance values above 1 well. Certain combinations of reflectance curves will produce reflectance values that
-exceed 1.
+The final way that ColorAide deviates from the Spectral.js is that we ensure sane behavior for colors that extend beyond
+the sRGB gamut. Using the approach as described works for colors within the sRGB gamut, but doesn't cover colors outside
+the sRGB gamut. This is because Kubelka-Munk does not handle reflectance values above 1 well. When passing in colors
+outside the sRGB gamut, it is possible to create reflectance curves that extend outside the required range.
 
 Borrowing an idea from the [paper][mixbox-paper] released by the creators of [Mixbox][mixbox], ColorAide goes further
 and first ensures a given approximated color curve does not exceed a reflectance of 1 at any point within the curve.
@@ -312,8 +323,8 @@ B-spline is a piecewise spline similar to Bezier curves. It utilizes "control po
 path through a series of colors. Like Bezier Curves, the path is not guaranteed to pass through the control points.
 
 > [!tip]
-> By default, this approach uses `not-a-knot` end conditions which doesn't introduce end point bias, but if you'd like to
-> ensure the interpolation passes through the end points, you can set `end_cond` to `natural`.
+> By default, this approach uses `not-a-knot` end conditions which doesn't introduce end point bias, but if you'd like
+> to ensure the interpolation passes through the end points, you can set `end_cond` to `natural`.
 >
 > If you need an interpolation to pass through all points, see the [Natural spline](#natural).
 

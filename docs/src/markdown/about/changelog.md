@@ -3,8 +3,10 @@ icon: lucide/scroll-text
 ---
 # Changelog
 
-## 8.13.2
+## 8.14
 
+-   **NEW**: Spectral mixing now calculates primary curves relative to each other such that they sum to white, which
+    is now represented as a perfect reflector. This allows us to reduce reflectance curves required to just 3.
 -   **FIX**: Fix the CSS color names `mediumpurple` and `palevioletred`, which used 216 instead of 219 for one channel
     (`#9370d8` and `#d87093` instead of `#9370db` and `#db7093`).
 -   **FIX**: Fix issue where an undefined hue displayed as `none` could be followed by an angle unit (`noneturn`) when

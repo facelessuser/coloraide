@@ -130,6 +130,7 @@ Jz
 JzCzhz
 JzMzhz
 Jzazbz
+KKT
 Kohlrausch
 Kries
 Kubelka
@@ -225,6 +226,7 @@ Scalable
 SciPy
 Sharma
 Sijmen
+Softmax
 Sprague
 Stolitzka
 Sz
@@ -333,6 +335,8 @@ jonsneyers
 js
 jz
 linearized
+logit
+logits
 luma
 luminance
 macOS
@@ -376,6 +380,7 @@ reflectance
 reflectances
 reparameterization
 repurpose
+rescales
 rgb
 sCAM
 sRGB
@@ -384,6 +389,7 @@ seperable
 severities
 smoothstep
 softSurfer
+softmax
 subclassed
 subclasses
 subclassing

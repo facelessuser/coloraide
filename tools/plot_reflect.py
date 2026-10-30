@@ -49,14 +49,10 @@ def main():
         plot = [color.convert('srgb').to_string(hex=True)]
 
         if args.decomp:
-            target.append([ri * c[0] for ri in spectral.REF_W])
-            target.append([ri * c[1] for ri in spectral.REF_C])
-            target.append([ri * c[2] for ri in spectral.REF_M])
-            target.append([ri * c[3] for ri in spectral.REF_Y])
-            target.append([ri * c[4] for ri in spectral.REF_R])
-            target.append([ri * c[5] for ri in spectral.REF_G])
-            target.append([ri * c[6] for ri in spectral.REF_B])
-            plot.extend(['#ffffff', '#00ffff', '#ff00ff', '#ffff00', '#ff0000', '#00ff00', '#0000ff'])
+            target.append([ri * c[0] for ri in spectral.REF_R])
+            target.append([ri * c[1] for ri in spectral.REF_G])
+            target.append([ri * c[2] for ri in spectral.REF_B])
+            plot.extend(['#ff0000', '#00ff00', '#0000ff'])
             style.extend(['dash'] * 7)
     else:
         color = Color(args.color[0])
