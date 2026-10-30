@@ -56,7 +56,7 @@ def chromatic_adaptation(source_white, destination_white):
 
     source = alg.dot(BRADFORD, source_white)
     destination = alg.dot(BRADFORD, destination_white)
-    return alg.matmul(alg.matmul(alg.inv(BRADFORD), alg.diag(alg.divide(destination, source))), BRADFORD)
+    return alg.matmul(alg.solve(BRADFORD, alg.diag(alg.divide(destination, source))), BRADFORD)
 
 
 # The white the CMFs yield and the white of the color space
