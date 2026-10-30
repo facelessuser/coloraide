@@ -209,7 +209,7 @@ reflectance curves from these three primaries and approximate reflectance curves
 ColorAide deviates from Spectral.js and attempts to do just this.
 
 The D65 illuminant referenced CMFs won't give a perfect sRGB value of `(1, 1, 1)` due to a slightly different white
-point compred to the CSS D65. ColorAide, when calculating the reflectance curve, adapts the white point to match the
+point compared to the CSS D65. ColorAide, when calculating the reflectance curve, adapts the white point to match the
 white in the CMFs so that it acts as a perfect reflector. Additionally, we solve for `#!color rgb(255 0 0)`,
 `#!color rgb(0 255 0 )`, and `#!color rgb(0 0 255)` at the same time and ensure they sum up to the perfect reflector.
 This allows us to represent any color within the sRGB gamut using just the RGB primary curves without having a gap near
