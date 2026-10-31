@@ -244,8 +244,9 @@ def css_fast_path(
 
         # Select an offset from the gamut surface according to unit type (64-bit for Python).
         # 32-bit may require 1e-6
+        # The offset on the maximum is relative to the cube size so large (HDR) cubes retain an effective offset.
         low = mn + alg.ATOL
-        high = mx + alg.ATOL
+        high = mx + alg.ATOL * max(abs(mx), 1.0)
 
         # Use an iterative process of casting rays to find the intersect with the RGB gamut
         # and correcting the intersection onto the LCh chroma reduction path.
@@ -365,8 +366,9 @@ def generic_path(
 
         # Select an offset from the gamut surface according to unit type (64-bit for Python).
         # 32-bit may require 1e-6
+        # The offset on the maximum is relative to the cube size so large (HDR) cubes retain an effective offset.
         low = mn + alg.ATOL
-        high = mx + alg.ATOL
+        high = mx + alg.ATOL * max(abs(mx), 1.0)
 
         # Use an iterative process of casting rays to find the intersect with the RGB gamut
         # and correcting the intersection onto the LCh chroma reduction path.

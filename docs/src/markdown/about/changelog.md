@@ -18,6 +18,7 @@ icon: lucide/scroll-text
 -   **FIX**: Fix comma-separated CSS color functions accepting a trailing comma, such as `rgb(255, 0, 0,)`.
 -   **FIX**: Fix the CSS `color()` function failing on color space names, `none`, and angle units written in upper case.
 -   **FIX**: Slightly better handling of degenerate rays in Ray Trace gamut mapping.
+-   **FIX**: Improve Ray Trace anchor handling in very large gamuts (e.g. ACES).
 
 ## 8.13.1
 

@@ -561,6 +561,26 @@ class TestRayTrace(util.ColorAsserts, unittest.TestCase):
             self.assertCompare(c['chroma'] / lightness, expected_ratio, 3)
             self.assertCompare(c['hue'], expected_hue, 2)
 
+    def test_ray_trace_large_gamut_close_to_surface(self):
+        """
+        Test that the ray threshold scales with the magnitude of the coordinates for large (HDR) gamuts.
+
+        ACEScg has a maximum of 65504, so floating point noise from conversions is much larger than an absolute
+        threshold. Colors just outside the gamut should be mapped to the surface at the same lightness, hue, and
+        maximum chroma instead of being thrown off by noise in a degenerate ray.
+        """
+
+        for lightness, chroma, hue, expected_chroma in (
+            (39.60122570393925, 0.724552496102874, 10.933097235863002, 0.72455),
+            (39.70448196515093, 0.4033122470304843, 302.55678982054434, 0.40331),
+            (35.99018212562615, 6.565474388119603, 336.81235979206247, 6.56547),
+            (39.1274450263796, 1.4455118736267205, 348.07538635801905, 1.44551)
+        ):
+            c = Color('oklch', [lightness, chroma, hue]).fit('acescg', method='raytrace').convert('oklch')
+            self.assertCompare(c['lightness'], lightness, 4)
+            self.assertCompare(c['chroma'], expected_chroma, 4)
+            self.assertCompare(c['hue'], hue, 3)
+
 
 class TestHCTGamut(util.ColorAsserts, unittest.TestCase):
     """
