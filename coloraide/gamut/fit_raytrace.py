@@ -321,12 +321,12 @@ def generic_path(
     polar = mapcolor._space.is_polar()
     achroma = mapcolor.clone()
     if polar:
-        l, c, h = achroma._space.indexes()
-        achroma[c] = 0.0
+        l, c1, c2 = achroma._space.indexes()
+        achroma[c1] = 0.0
     else:
-        l, a, b = achroma._space.indexes()
-        achroma[a] = 0.0
-        achroma[b] = 0.0
+        l, c1, c2 = achroma._space.indexes()
+        achroma[c1] = 0.0
+        achroma[c2] = 0.0
 
     # If value is provided for adaptive lightness, calculate a lightness
     # anchor point relative to the hue independent mid point. Scale lightness and
@@ -335,7 +335,7 @@ def generic_path(
         max_light = color.new('xyz-d65', WHITE).convert(pspace, in_place=True)[l]
         achroma[l] = adaptive_hue_independent(
             mapcolor[l] / max_light,
-            max(mapcolor[c] if polar else alg.rect_to_polar(mapcolor[a], mapcolor[b])[0], 0) / max_light,
+            max(mapcolor[c1] if polar else alg.rect_to_polar(mapcolor[c1], mapcolor[c2])[0], 0) / max_light,
             adaptive
         ) * max_light
 
@@ -360,9 +360,9 @@ def generic_path(
             start = mapcolor[:-1]
             end = achroma[:-1]
         else:
-            start = to_polar(mapcolor[:-1], a, b)
-            end = to_polar(achroma[:-1], a, b)
-            end[b] = start[b]
+            start = to_polar(mapcolor[:-1], c1, c2)
+            end = to_polar(achroma[:-1], c1, c2)
+            end[c2] = start[c2]
 
         # Select an offset from the gamut surface according to unit type (64-bit for Python).
         # 32-bit may require 1e-6
@@ -383,17 +383,17 @@ def generic_path(
                         if polar:
                             mapcolor[:-1] = project_onto(coords, start, end)
                         else:
-                            mapcolor[:-1] = to_rect(project_onto(to_polar(coords, a, b), start, end), a, b)
+                            mapcolor[:-1] = to_rect(project_onto(to_polar(coords, c1, c2), start, end), c1, c2)
 
                     # For constant luminance, just correct lightness and hue in LCh
                     else:
                         coords[l] = start[l]
                         if polar:
-                            coords[h] = start[h]
+                            coords[c2] = start[c2]
                         else:
-                            to_polar(coords, a, b)
-                            coords[b] = start[b]
-                            to_rect(coords, a, b)
+                            to_polar(coords, c1, c2)
+                            coords[c2] = start[c2]
+                            to_rect(coords, c1, c2)
                         mapcolor[:-1] = coords
 
                     mapcolor.convert(rspace, in_place=True)
