@@ -145,9 +145,8 @@ def raytrace_box(
 
         # Non parallel case
         if d:
-            inv_d = 1 / d
-            t1 = (bn - a) * inv_d
-            t2 = (bx - a) * inv_d
+            t1 = (bn - a) / d
+            t2 = (bx - a) / d
             tnear = max(min(t1, t2), tnear)
             tfar = min(max(t1, t2), tfar)
 
