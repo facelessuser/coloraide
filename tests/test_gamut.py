@@ -541,6 +541,26 @@ class TestRayTrace(util.ColorAsserts, unittest.TestCase):
             Color('oklch(0.95 0.10358 156.5)')
         )
 
+    def test_ray_trace_very_dark_out_of_gamut(self):
+        """
+        Test that the ray threshold scales with the magnitude of the coordinates.
+
+        Linear RGB values are roughly `L ** 3`, so for very dark colors, rays that are legitimately long relative
+        to the color can still be smaller than an absolute threshold. Such rays must not be discarded, or chroma
+        and hue will not be reduced along the proper path. Comparisons are done relative to lightness as the
+        absolute values are too small to be compared directly.
+        """
+
+        for lightness, chroma, hue, expected_ratio, expected_hue in (
+            (3.2e-6, 0.33, 142.6, 0.339, 142.61),
+            (1e-5, 0.4, 250.0, 0.296, 251.62),
+            (5e-5, 0.3, 30.0, 0.391, 30.91)
+        ):
+            c = Color('oklch', [lightness, chroma, hue]).fit('srgb', method='raytrace').convert('oklch')
+            self.assertCompare(c['lightness'] / lightness, 1.0, 3)
+            self.assertCompare(c['chroma'] / lightness, expected_ratio, 3)
+            self.assertCompare(c['hue'], expected_hue, 2)
+
 
 class TestHCTGamut(util.ColorAsserts, unittest.TestCase):
     """

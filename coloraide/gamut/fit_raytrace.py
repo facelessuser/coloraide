@@ -131,7 +131,8 @@ def raytrace_box(
     tfar = math.inf
     tnear = -math.inf
     direction = []
-    ray_too_small = True
+    length = 0
+    magnitude = 0
     for i in range(3):
         a = start[i]
         b = end[i]
@@ -139,10 +140,8 @@ def raytrace_box(
         direction.append(d)
         bn = bmin[i]
         bx = bmax[i]
-        # 64-bit uses a threshold of 1e-12
-        # 32-bit should use 1e-6
-        if ray_too_small and abs(d) > alg.ATOL:
-            ray_too_small = False
+        length = max(length, abs(d))
+        magnitude = max(magnitude, abs(a), abs(b))
 
         # Non parallel case
         if d:
@@ -157,7 +156,8 @@ def raytrace_box(
             return []
 
     # No hit
-    if ray_too_small or tnear > tfar or tfar < 0:
+    # 64-bit uses a threshold of 1e-12, 32-bit should use 1e-6
+    if (length <= magnitude * alg.ATOL) or tnear > tfar or tfar < 0:
         return []
 
     # Favor the intersection first in the direction start -> end
