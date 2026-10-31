@@ -131,8 +131,8 @@ def raytrace_box(
     tfar = math.inf
     tnear = -math.inf
     direction = []
-    length = 0
-    magnitude = 0
+    length = 0.0
+    magnitude = 0.0
     for i in range(3):
         a = start[i]
         b = end[i]
