@@ -3,6 +3,10 @@ icon: lucide/scroll-text
 ---
 # Changelog
 
+## 8.14.1
+
+-   **FIX**: Callables should not be counted as steps in discrete interpolation.
+
 ## 8.14
 
 -   **NEW**: Spectral mixing now calculates primary curves relative to each other such that they sum to white, which
