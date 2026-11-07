@@ -859,10 +859,8 @@ class Color(metaclass=ColorMeta):
         if cspace == 'xyz':
             raise ValueError('XYZ is not a luminant-chromaticity color space.')
 
-        # Convert to the requested uv color space if required.
-        return (
-            self.convert_chromaticity('xyz', cspace, coords, white=white) if cspace != 'xy_1931' else coords
-        )
+        # Convert to the requested chromaticity space.
+        return self.convert_chromaticity('xyz', cspace, coords, white=white)
 
     @classmethod
     def chromaticity(
