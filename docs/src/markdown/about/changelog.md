@@ -7,6 +7,7 @@ icon: lucide/scroll-text
 
 -   **FIX**: Callables should not be counted as steps in discrete interpolation.
 -   **FIX**: Fix registration error message.
+-   **FIX**: Fix typo of class property name when coercing polar space to RGB space.
 
 ## 8.14
 

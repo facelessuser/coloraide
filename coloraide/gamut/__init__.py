@@ -66,7 +66,7 @@ def coerce_to_rgb(cs: Space) -> Space:
         GAMUT_CHECK = None
         CLIP_SPACE = None
         WHITE = cs.WHITE
-        DYAMIC_RANGE = cs.DYNAMIC_RANGE
+        DYNAMIC_RANGE = cs.DYNAMIC_RANGE
         INDEXES = cs.indexes()
         # Scale saturation and lightness (or HWB whiteness and blackness)
         SCALE_SAT = cs.channels[INDEXES[1]].high
