@@ -9,6 +9,7 @@ icon: lucide/scroll-text
 -   **FIX**: Fix registration error message.
 -   **FIX**: Fix typo of class property name when coercing polar space to RGB space.
 -   **FIX**: Fix deprecation message related to compositing.
+-   **FIX**: Fix issue where hue constraints sometimes left very small values constrained to 360 instead of 0.
 
 ## 8.14
 

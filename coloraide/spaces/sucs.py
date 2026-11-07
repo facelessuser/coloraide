@@ -6,6 +6,7 @@ https://opg.optica.org/oe/fulltext.cfm?uri=oe-32-3-3100&id=545619
 from __future__ import annotations
 import math
 from .. import algebra as alg
+from .. import util
 from .lch import LCh
 from ..channels import Channel, FLG_ANGLE
 from .ipt import XYZ_TO_LMS, LMS_TO_XYZ
@@ -75,7 +76,7 @@ class sUCS(LCh):
 
         if coords[1] < 0.0:
             return self.from_base(self.to_base(coords))
-        coords[2] %= 360.0
+        coords[2] = util.constrain_hue(coords[2])
         return coords
 
     def to_base(self, coords: Vector) -> Vector:

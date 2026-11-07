@@ -97,7 +97,7 @@ class HSL(HSLish, Space):
         if coords[1] < 0:
             coords[1] *= -1.0
             coords[0] += 180.0
-        coords[0] %= 360.0
+        coords[0] = util.constrain_hue(coords[0])
         return coords
 
     def is_achromatic(self, coords: Vector) -> bool | None:

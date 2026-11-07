@@ -343,7 +343,7 @@ class HellwigJMh(LCh):
 
         if coords[1] < 0.0:
             return self.from_base(self.to_base(coords))
-        coords[2] %= 360.0
+        coords[2] = util.constrain_hue(coords[2])
         return coords
 
     def to_base(self, coords: Vector) -> Vector:

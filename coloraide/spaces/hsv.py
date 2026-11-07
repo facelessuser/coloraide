@@ -96,7 +96,7 @@ class HSV(HSVish, Space):
 
         if coords[1] < 0:
             return self.from_base(self.to_base(coords))
-        coords[0] %= 360.0
+        coords[0] = util.constrain_hue(coords[0])
         return coords
 
     def is_achromatic(self, coords: Vector) -> bool:

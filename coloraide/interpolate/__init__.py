@@ -249,6 +249,9 @@ def multi_mix(
                 else:
                     avg_theta = math.atan2(sin, cos) * to_hue
                     avgs[i] = (avg_theta + hue_max) if avg_theta < 0 else avg_theta
+                    # A tiny negative angle will round up to exactly `hue_max`, so wrap it back to zero.
+                    if avgs[i] >= hue_max:
+                        avgs[i] = 0.0
         elif factor:
             avgs[i] /= factor
 

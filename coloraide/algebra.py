@@ -231,7 +231,9 @@ def spow(base: StrictNumber, exp: StrictNumber) -> float:
 def rect_to_polar(a: StrictNumber, b: StrictNumber) -> tuple[float, float]:
     """Take rectangular coordinates and make them polar."""
 
-    return math.sqrt(a * a + b * b), math.degrees(math.atan2(b, a)) % 360
+    # A tiny negative angle will round up to exactly 360 after the modulo, so wrap it back to zero.
+    h = math.degrees(math.atan2(b, a)) % 360
+    return math.sqrt(a * a + b * b), 0.0 if h >= 360 else h
 
 
 def polar_to_rect(c: StrictNumber, h: StrictNumber) -> tuple[float, float]:

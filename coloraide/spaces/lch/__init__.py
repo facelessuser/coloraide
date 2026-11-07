@@ -60,7 +60,7 @@ class LCh(LChish, Space):
         if coords[1] < 0:
             coords[1] *= -1.0
             coords[2] += 180.0
-        coords[2] %= 360.0
+        coords[2] = util.constrain_hue(coords[2])
         return coords
 
     def is_achromatic(self, coords: Vector) -> bool | None:

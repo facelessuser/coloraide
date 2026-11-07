@@ -153,7 +153,12 @@ def absxyz_to_xyz(absxyzd65: VectorLike, yw: float = 100.0) -> Vector:
 def constrain_hue(hue: float) -> float:
     """Constrain hue to [0, 360)."""
 
-    return hue % 360 if not math.isnan(hue) else hue
+    if math.isnan(hue):
+        return hue
+
+    # A tiny negative hue will round up to exactly 360 after the modulo, so wrap it back to zero.
+    hue %= 360
+    return 0.0 if hue >= 360 else hue
 
 
 def get_index(obj: Sequence[Any], idx: int, default: Any = None) -> Any:
