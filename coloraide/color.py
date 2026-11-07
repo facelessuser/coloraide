@@ -414,7 +414,9 @@ class Color(metaclass=ColorMeta):
                     if reset_convert_cache:  # pragma: no cover
                         cls._get_convert_chain.cache_clear()
                     if not silent:
-                        raise ValueError("'{}' is a reserved name for gamut mapping/reduction and cannot be overridden")
+                        raise ValueError(
+                            f"'{p.NAME}' is a reserved name for gamut mapping/reduction and cannot be overridden"
+                        )
                     continue  # pragma: no cover
             else:
                 if reset_convert_cache:  # pragma: no cover
