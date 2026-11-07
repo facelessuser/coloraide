@@ -1371,7 +1371,9 @@ class Color(metaclass=ColorMeta):
 
         if isinstance(operator, bool):
             o = 'source-over' if operator else None
-            warn_deprecated("The use of boolean values for 'blend' has been deprecated, please use a specific mode")
+            warn_deprecated(
+                "The use of boolean values for 'operator' has been deprecated, please use a specific operator"
+            )
         else:
             o = operator
 
