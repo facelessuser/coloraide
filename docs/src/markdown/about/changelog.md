@@ -18,6 +18,8 @@ icon: lucide/scroll-text
     causing results to change depending on the scale of the weights instead of only their relative values.
 -   **FIX**: `svd()` and `svdvals()` now return the singular values sorted in descending order, like Numpy, with the
     columns of `U` and `V` reordered to match. Previously, the order was arbitrary.
+-   **FIX**: `line_interesect()` raised a divide by zero error for parallel lines pointing in opposite directions, and
+    `point_on_segment()` failed with 2D points (which `line_interesect()` uses when one of the lines is a point).
 -   **FIX**: `solve_bisect()` could not find roots at negative positions.
 -   **FIX**: `solve_newton()` with bounds failed to solve functions that are decreasing across the bounds or when the
     bounds were given in descending order, used the derivative instead of the step size to detect slow convergence,

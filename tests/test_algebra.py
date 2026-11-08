@@ -3857,6 +3857,57 @@ class TestAlgebra(unittest.TestCase):
         self.assertEqual(alg.prod([3, 2, 4]), 24.0)
         self.assertEqual(alg.prod([[1, 2, 3], [4, 5, 6], [7, 8, 9]]), 362880.0)
 
+    def test_line_intersect_parallel(self):
+        """Test that parallel lines have no intersection, regardless of direction."""
+
+        # Same direction
+        self.assertIsNone(alg.line_interesect([0, 0, 0], [1, 0, 0], [0, 1, 0], [1, 1, 0]))
+        self.assertIsNone(alg.line_interesect([0, 0], [1, 0], [0, 1], [1, 1]))
+
+        # Opposite direction (used to raise a divide by zero)
+        self.assertIsNone(alg.line_interesect([0, 0, 0], [1, 0, 0], [0, 1, 0], [-1, 1, 0]))
+        self.assertIsNone(alg.line_interesect([0, 0], [1, 0], [0, 1], [-1, 1]))
+
+        # Collinear
+        self.assertIsNone(alg.line_interesect([0, 0, 0], [1, 0, 0], [3, 0, 0], [2, 0, 0]))
+        self.assertIsNone(alg.line_interesect([0, 0, 0], [1, 0, 0], [2, 0, 0], [3, 0, 0]))
+
+    def test_line_intersect_direction(self):
+        """Test that the direction of either line does not change the intersection."""
+
+        for s1, e1 in (([0, 1, 0], [2, 1, 0]), ([2, 1, 0], [0, 1, 0])):
+            for s2, e2 in (([1, 0, 0], [1, 2, 0]), ([1, 2, 0], [1, 0, 0])):
+                self.assertEqual(alg.line_interesect(s1, e1, s2, e2), [1.0, 1.0, 0.0])
+
+    def test_line_intersect_2d(self):
+        """Test 2D line intersections, including when one of the lines is a point."""
+
+        self.assertEqual(alg.line_interesect([0, 1], [2, 1], [1, 0], [1, 2]), [1.0, 1.0])
+        self.assertEqual(alg.line_interesect([0.5, 0], [0.5, 0], [0, 0], [1, 0]), [0.5, 0])
+        self.assertEqual(alg.line_interesect([0, 0], [1, 0], [0.5, 0], [0.5, 0]), [0.5, 0])
+        self.assertIsNone(alg.line_interesect([0.5, 1], [0.5, 1], [0, 0], [1, 0]))
+
+    def test_point_on_segment(self):
+        """Test point on segment in 2D and 3D."""
+
+        self.assertTrue(alg.point_on_segment([0, 0], [2, 2], [1, 1]))
+        self.assertTrue(alg.point_on_segment([0, 0], [2, 2], [2, 2]))
+        self.assertFalse(alg.point_on_segment([0, 0], [2, 2], [3, 3]))
+        self.assertFalse(alg.point_on_segment([0, 0], [2, 2], [-1, -1]))
+        self.assertFalse(alg.point_on_segment([0, 0], [2, 2], [1, 1.5]))
+
+        self.assertTrue(alg.point_on_segment([0, 0, 0], [2, 2, 2], [1, 1, 1]))
+        self.assertTrue(alg.point_on_segment([0, 0, 0], [0, 2, 2], [0, 1, 1]))
+        self.assertFalse(alg.point_on_segment([0, 0, 0], [2, 2, 2], [3, 3, 3]))
+        self.assertFalse(alg.point_on_segment([0, 0, 0], [2, 2, 2], [-1, -1, -1]))
+        self.assertFalse(alg.point_on_segment([0, 0, 0], [2, 2, 2], [1, 1, 1.5]))
+
+        # The segment is a point
+        self.assertTrue(alg.point_on_segment([1, 1], [1, 1], [1, 1]))
+        self.assertFalse(alg.point_on_segment([1, 1], [1, 1], [2, 2]))
+        self.assertTrue(alg.point_on_segment([1, 1, 1], [1, 1, 1], [1, 1, 1]))
+        self.assertFalse(alg.point_on_segment([1, 1, 1], [1, 1, 1], [2, 2, 2]))
+
     def test_line_intersect(self):
         """Test line intersect."""
 

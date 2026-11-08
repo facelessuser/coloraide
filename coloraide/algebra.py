@@ -1575,9 +1575,10 @@ def point_on_segment(
     ab = [b[i] - a[i] for i in range(l)]
     ap = [p[i] - a[i] for i in range(l)]
 
-    # Check if `ap` is parallel to `ab` (cross product is zero)
-    cp = cross(ab, ap)
-    if _any(abs(c) > abs_tol for c in cp):
+    # Check if `ap` is parallel to `ab` (cross product is zero).
+    # The cross product of 2-D vectors is a single value and the cross product of 3-D vectors is a vector.
+    cp = vcross(ab, ap)
+    if abs(cp) > abs_tol if l == 2 else _any(abs(c) > abs_tol for c in cp):
         return False
 
     # Check if the point is between a and b
@@ -1635,15 +1636,19 @@ def line_interesect(
     u2 = [a / m2 for a in l2]
     # Direction projection
     u = vdot(u1, u2)
-    if u == 1:  # pragma: no cover
+
+    # The lines are parallel, whether they point in the same or opposite directions (`u` is 1 or -1).
+    # There is no single point of intersection.
+    denom = 1 - u * u
+    if not denom:
         return None
     # Separation projection
     sp = [a - b for a, b in zip(s2, s1)]
     sp1 = vdot(sp, u1)
     sp2 = vdot(sp, u2)
     # Distance along lines
-    d1 = (sp1 - u * sp2) / (1 - u * u)
-    d2 = (sp2 - u * sp1) / (u * u - 1)
+    d1 = (sp1 - u * sp2) / denom
+    d2 = (u * sp1 - sp2) / denom
     # Calculate points of closest line
     p1 = [a + b for a, b in zip(s1, [x * d1 for x in u1])]
     p2 = [a + b for a, b in zip(s2, [x * d2 for x in u2])]
