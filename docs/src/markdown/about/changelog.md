@@ -10,6 +10,7 @@ icon: lucide/scroll-text
 -   **FIX**: Fix typo of class property name when coercing polar space to RGB space.
 -   **FIX**: Fix deprecation message related to compositing.
 -   **FIX**: Fix issue where hue constraints sometimes left very small values constrained to 360 instead of 0.
+-   **FIX**: Fix `alpha()` ignoring a `precision` of `0`; alpha is now rounded to an integer like the other channels.
 
 ## 8.14
 

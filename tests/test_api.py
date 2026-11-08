@@ -28,6 +28,15 @@ class TestMisc(util.ColorAsserts, unittest.TestCase):
 
         self.assertEqual(Color('purple').set('alpha', 0.751).alpha(precision=1), 0.8)
 
+    def test_alpha_precision_zero(self):
+        """Test that a precision of zero rounds alpha to an integer, just like the other coordinates."""
+
+        c = Color('purple').set('alpha', 0.75)
+        self.assertEqual(c.coords(precision=0), [1.0, 0.0, 1.0])
+        self.assertEqual(c.alpha(precision=0), 1.0)
+        self.assertEqual(c.to_dict(precision=0)['alpha'], 1.0)
+        self.assertEqual(c.to_dict(precision=[0, 0, 0, 2])['alpha'], 0.75)
+
     def test_get_precision(self):
         """Test get precision."""
 

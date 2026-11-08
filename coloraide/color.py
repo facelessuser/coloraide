@@ -1672,7 +1672,7 @@ class Color(metaclass=ColorMeta):
         value = self[-1] if nans else self._space.resolve_channel(-1, self._coords)
         if precision is None:
             return value
-        return alg.round_to(value, precision, self.ROUNDING if rounding is None else rounding) if precision else value
+        return alg.round_to(value, precision, self.ROUNDING if rounding is None else rounding)
 
 
 Color.register(
