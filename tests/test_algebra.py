@@ -2584,6 +2584,161 @@ class TestAlgebra(unittest.TestCase):
         v = alg.ilerp2d(alg.transpose(m), [1, 1])
         [self.assertAlmostEqual(a, b) for a, b in zip(v, [1.0, 1.0])]
 
+    def test_ilerp2d_round_trip(self):
+        """Test inverse 2D interpolation round trips on a distorted quad."""
+
+        # Distorted quad in column form: each row holds one component of all four vertices
+        quad = [
+            [0.0, 1.1, 0.1, 1.0],
+            [0.0, 0.1, 1.0, 1.2]
+        ]
+
+        for t in (
+            [0.0, 0.0], [1.0, 0.0], [0.0, 1.0], [1.0, 1.0],
+            [0.5, 0.5], [0.2, 0.7], [0.9, 0.1],
+            [-0.1, 0.5], [0.5, 1.1], [1.1, -0.1]
+        ):
+            v = alg.ilerp2d(quad, alg.lerp2d(quad, t), tol=1e-15)
+            for a, b in zip(v, t):
+                self.assertAlmostEqual(a, b, places=12)
+
+    def test_ilerp2d_options(self):
+        """Test inverse 2D interpolation options."""
+
+        quad = [
+            [0.0, 1.1, 0.1, 1.0],
+            [0.0, 0.1, 1.0, 1.2]
+        ]
+        t = [0.2, 0.7]
+        point = alg.lerp2d(quad, t)
+
+        # A guess that is already the answer is returned without iterating
+        guess = [0.2, 0.7]
+        self.assertEqual(alg.ilerp2d(quad, point, guess=guess, max_iter=0), guess)
+
+        # The guess is not modified
+        guess = [0.9, 0.1]
+        alg.ilerp2d(quad, point, guess=guess)
+        self.assertEqual(guess, [0.9, 0.1])
+
+        # Any reasonable guess converges
+        for guess in ([0.0, 0.0], [1.0, 1.0], [0.9, 0.1]):
+            v = alg.ilerp2d(quad, point, guess=guess, tol=1e-15)
+            for a, b in zip(v, t):
+                self.assertAlmostEqual(a, b, places=12)
+
+        # Fewer iterations or a looser tolerance gets a less precise answer, but is still close
+        v1 = alg.ilerp2d(quad, point, guess=[0.5, 0.5], max_iter=1)
+        v2 = alg.ilerp2d(quad, point, guess=[0.5, 0.5], max_iter=2)
+        v3 = alg.ilerp2d(quad, point, guess=[0.5, 0.5], tol=1e-15)
+        err = [math.dist(v, t) for v in (v1, v2, v3)]
+        self.assertTrue(err[0] > err[1] > err[2])
+        self.assertTrue(math.dist(alg.ilerp2d(quad, point, tol=1e-3), t) < 1e-3)
+
+    def test_ilerp2d_singular(self):
+        """Test that a degenerate quad, which has no inverse, quietly returns the last guess."""
+
+        # All vertices are the same point, so the Jacobian is all zeros
+        flat = [[0.5] * 4, [0.25] * 4]
+        self.assertEqual(alg.ilerp2d(flat, [0.1, 0.2]), [0.5, 0.5])
+        self.assertEqual(alg.ilerp2d(flat, [0.1, 0.2], guess=[0.2, 0.3]), [0.2, 0.3])
+
+        # Collapsed onto a line, so it is not invertible in 2D either
+        line = [[0.0, 1.0, 0.0, 1.0], [0.0] * 4]
+        v = alg.ilerp2d(line, [0.3, 0.0])
+        self.assertTrue(all(math.isfinite(x) for x in v))
+
+    def test_ilerp3d(self):
+        """Test inverse 3D interpolation."""
+
+        # Distorted cube in column form: each row holds one component of all eight vertices
+        cube = [
+            [0.0, 1.1, 0.1, 1.0, 0.0, 1.2, 0.0, 1.0],
+            [0.0, 0.1, 1.0, 1.1, 0.1, 0.0, 1.2, 1.0],
+            [0.0, 0.0, 0.1, 0.1, 1.0, 1.1, 1.0, 1.3]
+        ]
+
+        # Corners and center map back to their parameters
+        for t in (
+            [0.0, 0.0, 0.0], [1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [1.0, 1.0, 0.0],
+            [0.0, 0.0, 1.0], [1.0, 0.0, 1.0], [0.0, 1.0, 1.0], [1.0, 1.0, 1.0],
+            [0.5, 0.5, 0.5], [0.2, 0.7, 0.4], [0.9, 0.1, 0.6]
+        ):
+            v = alg.ilerp3d(cube, alg.lerp3d(cube, t), tol=1e-15)
+            for a, b in zip(v, t):
+                self.assertAlmostEqual(a, b, places=12)
+
+        # Slightly outside of the cube still resolves
+        for t in ([-0.1, 0.5, 0.5], [0.5, 1.1, 0.5], [0.5, 0.5, -0.1], [1.1, -0.1, 1.1]):
+            v = alg.ilerp3d(cube, alg.lerp3d(cube, t), tol=1e-15)
+            for a, b in zip(v, t):
+                self.assertAlmostEqual(a, b, places=10)
+
+        # A unit cube is the identity
+        unit = [
+            [0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0],
+            [0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0],
+            [0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0]
+        ]
+        v = alg.ilerp3d(unit, [0.3, 0.6, 0.9])
+        for a, b in zip(v, [0.3, 0.6, 0.9]):
+            self.assertAlmostEqual(a, b, places=12)
+
+    def test_ilerp3d_options(self):
+        """Test inverse 3D interpolation options."""
+
+        cube = [
+            [0.0, 1.1, 0.1, 1.0, 0.0, 1.2, 0.0, 1.0],
+            [0.0, 0.1, 1.0, 1.1, 0.1, 0.0, 1.2, 1.0],
+            [0.0, 0.0, 0.1, 0.1, 1.0, 1.1, 1.0, 1.3]
+        ]
+        t = [0.2, 0.7, 0.4]
+        point = alg.lerp3d(cube, t)
+
+        # A guess that is already the answer is returned without iterating
+        guess = [0.2, 0.7, 0.4]
+        self.assertEqual(alg.ilerp3d(cube, point, guess=guess, max_iter=0), guess)
+        v = alg.ilerp3d(cube, point, guess=guess)
+        for a, b in zip(v, t):
+            self.assertAlmostEqual(a, b, places=12)
+
+        # The guess is not modified
+        guess = [0.9, 0.1, 0.5]
+        alg.ilerp3d(cube, point, guess=guess)
+        self.assertEqual(guess, [0.9, 0.1, 0.5])
+
+        # Any reasonable guess converges
+        for guess in ([0.0, 0.0, 0.0], [1.0, 1.0, 1.0], [0.9, 0.1, 0.5]):
+            v = alg.ilerp3d(cube, point, guess=guess, tol=1e-15)
+            for a, b in zip(v, t):
+                self.assertAlmostEqual(a, b, places=12)
+
+        # Fewer iterations or a looser tolerance gets a less precise answer, but is still close
+        v1 = alg.ilerp3d(cube, point, guess=[0.5, 0.5, 0.5], max_iter=1)
+        v2 = alg.ilerp3d(cube, point, guess=[0.5, 0.5, 0.5], max_iter=2)
+        v3 = alg.ilerp3d(cube, point, guess=[0.5, 0.5, 0.5], tol=1e-15)
+        err = [math.dist(v, t) for v in (v1, v2, v3)]
+        self.assertTrue(err[0] > err[1] > err[2])
+        self.assertTrue(alg.ilerp3d(cube, point, tol=1e-3) != v3)
+        self.assertTrue(math.dist(alg.ilerp3d(cube, point, tol=1e-3), t) < 1e-3)
+
+    def test_ilerp3d_singular(self):
+        """Test that a degenerate cube, which has no inverse, quietly returns the last guess."""
+
+        # All vertices are the same point, so the Jacobian is all zeros
+        flat = [[0.5] * 8, [0.25] * 8, [0.75] * 8]
+        self.assertEqual(alg.ilerp3d(flat, [0.1, 0.2, 0.3]), [0.5, 0.5, 0.5])
+        self.assertEqual(alg.ilerp3d(flat, [0.1, 0.2, 0.3], guess=[0.2, 0.3, 0.4]), [0.2, 0.3, 0.4])
+
+        # Collapsed in one axis, so it is not invertible in 3D either
+        plane = [
+            [0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0],
+            [0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0],
+            [0.0] * 8
+        ]
+        v = alg.ilerp3d(plane, [0.3, 0.6, 0.0])
+        self.assertTrue(all(math.isfinite(x) for x in v))
+
     def test_solve(self):
         """Test solving of linear equations."""
 

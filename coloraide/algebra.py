@@ -777,49 +777,57 @@ def ilerp2d(
     """
 
     # Initial guess
-    xy = guess if guess is not None else [0.5, 0.5]
+    x, y = guess if guess is not None else (0.5, 0.5)
+    px, py = point
 
-    try:
-        for _ in range(max_iter):
+    # The vertices are in column form, so each row holds the values of one component for all four vertices.
+    (a0, a1, a2, a3), (b0, b1, b2, b3) = vertices
 
-            # Calculate the residual by using our guess to calculate the what should be the input and compare
-            residual = subtract(lerp2d(vertices, xy), point, dims=D1)
+    # Like `ilerp3d`, this is unrolled and done inline as it is much faster than using the generic array functions.
+    for _ in range(max_iter):
+        wx = 1 - x
+        wy = 1 - y
 
-            # If we are close enough to our input, we can quit
-            if math.sqrt(residual[0] ** 2 + residual[1] ** 2) < tol:
-                break
+        # Calculate the residual by using our guess to calculate the what should be the input and compare.
+        # The weights are those of the forward transform shown above.
+        w0 = wx * wy
+        w1 = x * wy
+        w2 = wx * y
+        w3 = x * y
+        r0 = a0 * w0 + a1 * w1 + a2 * w2 + a3 * w3 - px
+        r1 = b0 * w0 + b1 * w1 + b2 * w2 + b3 * w3 - py
 
-            # Build up the Jacobian matrix so we can solve for the next, closer guess.
-            x, y = xy
+        # If we are close enough to our input, we can quit
+        if math.sqrt(r0 ** 2 + r1 ** 2) < tol:
+            break
 
-            wx = 1 - x
-            wy = 1 - y
+        # Build up the Jacobian matrix so we can solve for the next, closer guess.
+        # Take the partial derivative of the weights of v00 - v11 in respect to x and y:
+        # ```
+        # [[w0 / dx, w0 / dy],
+        #  ...,
+        #  [w3 / dx, w3 / dy]]
+        # ```
+        # Then multiplying the vertices by these partials gives us the 2x2 Jacobian.
+        dx0, dx1, dx2, dx3 = -wy, wy, -y, y
+        dy0, dy1, dy2, dy3 = -wx, -x, wx, x
+        j00 = a0 * dx0 + a1 * dx1 + a2 * dx2 + a3 * dx3
+        j01 = a0 * dy0 + a1 * dy1 + a2 * dy2 + a3 * dy3
+        j10 = b0 * dx0 + b1 * dx1 + b2 * dx2 + b3 * dx3
+        j11 = b0 * dy0 + b1 * dy1 + b2 * dy2 + b3 * dy3
 
-            # Take the partial derivative of v000 - v111:
-            # ```
-            # [[f1 / dx, f1 / dy],
-            #  ...,
-            #  [f4 / dx, f4 / dy]]
-            # ```
-            m = [
-                [-wy, -wx],
-                [wy,  -x],
-                [-y,  wx],
-                [y,   x]
-            ]
+        # Solve `J d = r` for the step using Cramer's rule.
+        # The Jacobian matrix shouldn't be singular if we are in range. Out of range may give us values we cannot
+        # invert. There are potential ways to handle this to try and get moving again, but currently, we just
+        # give up. We do not guarantee out of gamut conversions.
+        det = j00 * j11 - j01 * j10
+        if not det:
+            break
 
-            j = matmul(vertices, m, dims=D2)
+        x -= (j11 * r0 - j01 * r1) / det
+        y -= (j00 * r1 - j10 * r0) / det
 
-            # Solve for new guess
-            xy = subtract(xy, solve(j, residual), dims=D1)
-    except ValueError:  # pragma: no cover
-        # The Jacobian matrix shouldn't fail inversion if we are in range.
-        # Out of range may give us values we cannot invert. There are potential
-        # ways to handle this to try and get moving again, but currently, we
-        # just give up. We do not guarantee out of gamut conversions.
-        pass
-
-    return xy
+    return [x, y]
 
 
 def trilerp(
@@ -891,53 +899,80 @@ def ilerp3d(
     """
 
     # Initial guess.
-    xyz = guess if guess is not None else [0.5, 0.5, 0.5]
+    x, y, z = guess if guess is not None else (0.5, 0.5, 0.5)
+    px, py, pz = point
 
-    try:
-        for _ in range(max_iter):
+    # The vertices are in column form, so each row holds the values of one component for all eight vertices.
+    (a0, a1, a2, a3, a4, a5, a6, a7), (b0, b1, b2, b3, b4, b5, b6, b7), (c0, c1, c2, c3, c4, c5, c6, c7) = vertices
 
-            # Calculate the residual by using our guess to calculate the what should be the input and compare
-            residual = subtract_x3(lerp3d(vertices, xyz), point, dims=D1)
+    # This is performed on every iteration of every inverse, so everything is unrolled and done inline instead of
+    # using the generic array functions. This is quite a bit faster as it avoids the overhead of the generic
+    # functions, which is much more costly than the actual math when working with a 3x3 system.
+    for _ in range(max_iter):
+        wx = 1 - x
+        wy = 1 - y
+        wz = 1 - z
 
-            # If we are close enough to our input, we can quit
-            if math.sqrt(residual[0] ** 2 + residual[1] ** 2 + residual[2] ** 2) < tol:
-                break
+        # Calculate the residual by using our guess to calculate the what should be the input and compare.
+        # The weights are those of the forward transform shown above.
+        w0 = wx * wy * wz
+        w1 = x * wy * wz
+        w2 = wx * y * wz
+        w3 = x * y * wz
+        w4 = wx * wy * z
+        w5 = x * wy * z
+        w6 = wx * y * z
+        w7 = x * y * z
+        r0 = a0 * w0 + a1 * w1 + a2 * w2 + a3 * w3 + a4 * w4 + a5 * w5 + a6 * w6 + a7 * w7 - px
+        r1 = b0 * w0 + b1 * w1 + b2 * w2 + b3 * w3 + b4 * w4 + b5 * w5 + b6 * w6 + b7 * w7 - py
+        r2 = c0 * w0 + c1 * w1 + c2 * w2 + c3 * w3 + c4 * w4 + c5 * w5 + c6 * w6 + c7 * w7 - pz
 
-            # Build up the Jacobian matrix so we can solve for the next, closer guess
-            x, y, z = xyz
-            wx = 1 - x
-            wy = 1 - y
-            wz = 1 - z
+        # If we are close enough to our input, we can quit
+        if math.sqrt(r0 ** 2 + r1 ** 2 + r2 ** 2) < tol:
+            break
 
-            # Take the partial derivative of v000 - v111:
-            # ```
-            # [[f1 / dx, f1 / dy, f1 / dz],
-            #  ...,
-            #  [f8 / dx, f8 / dy, f8 / dz]]
-            # ```
-            m = [
-                [-wy * wz, -wx * wz, -wx * wy],
-                [wy * wz,  -x * wz,  -x * wy],
-                [-y * wz,  wx * wz,  -wx * y],
-                [y * wz,   x * wz,   -x * y],
-                [-wy * z,  -wx * z,  wx * wy],
-                [wy * z,   -x * z,   x * wy],
-                [-y * z,   wx * z,   wx * y],
-                [y * z,    x * z,    x * y]
-            ]
+        # Build up the Jacobian matrix so we can solve for the next, closer guess.
+        # Take the partial derivative of the weights of v000 - v111 in respect to x, y, and z:
+        # ```
+        # [[w0 / dx, w0 / dy, w0 / dz],
+        #  ...,
+        #  [w7 / dx, w7 / dy, w7 / dz]]
+        # ```
+        # Then multiplying the vertices by these partials gives us the 3x3 Jacobian.
+        dx0, dx1, dx2, dx3 = -wy * wz, wy * wz, -y * wz, y * wz
+        dx4, dx5, dx6, dx7 = -wy * z, wy * z, -y * z, y * z
+        dy0, dy1, dy2, dy3 = -wx * wz, -x * wz, wx * wz, x * wz
+        dy4, dy5, dy6, dy7 = -wx * z, -x * z, wx * z, x * z
+        dz0, dz1, dz2, dz3 = -wx * wy, -x * wy, -wx * y, -x * y
+        dz4, dz5, dz6, dz7 = wx * wy, x * wy, wx * y, x * y
 
-            j = matmul(vertices, m, dims=D2)
+        j00 = a0 * dx0 + a1 * dx1 + a2 * dx2 + a3 * dx3 + a4 * dx4 + a5 * dx5 + a6 * dx6 + a7 * dx7
+        j01 = a0 * dy0 + a1 * dy1 + a2 * dy2 + a3 * dy3 + a4 * dy4 + a5 * dy5 + a6 * dy6 + a7 * dy7
+        j02 = a0 * dz0 + a1 * dz1 + a2 * dz2 + a3 * dz3 + a4 * dz4 + a5 * dz5 + a6 * dz6 + a7 * dz7
+        j10 = b0 * dx0 + b1 * dx1 + b2 * dx2 + b3 * dx3 + b4 * dx4 + b5 * dx5 + b6 * dx6 + b7 * dx7
+        j11 = b0 * dy0 + b1 * dy1 + b2 * dy2 + b3 * dy3 + b4 * dy4 + b5 * dy5 + b6 * dy6 + b7 * dy7
+        j12 = b0 * dz0 + b1 * dz1 + b2 * dz2 + b3 * dz3 + b4 * dz4 + b5 * dz5 + b6 * dz6 + b7 * dz7
+        j20 = c0 * dx0 + c1 * dx1 + c2 * dx2 + c3 * dx3 + c4 * dx4 + c5 * dx5 + c6 * dx6 + c7 * dx7
+        j21 = c0 * dy0 + c1 * dy1 + c2 * dy2 + c3 * dy3 + c4 * dy4 + c5 * dy5 + c6 * dy6 + c7 * dy7
+        j22 = c0 * dz0 + c1 * dz1 + c2 * dz2 + c3 * dz3 + c4 * dz4 + c5 * dz5 + c6 * dz6 + c7 * dz7
 
-            # Solve for new guess
-            xyz = subtract_x3(xyz, solve(j, residual), dims=D1)
-    except ValueError:  # pragma: no cover
-        # The Jacobian matrix shouldn't fail inversion if we are in range.
-        # Out of range may give us values we cannot invert. There are potential
-        # ways to handle this to try and get moving again, but currently, we
-        # just give up. We do not guarantee out of gamut conversions.
-        pass
+        # Solve `J d = r` for the step using Cramer's rule. The cofactors are shared by the determinant and the step.
+        m00 = j11 * j22 - j12 * j21
+        m01 = j12 * j20 - j10 * j22
+        m02 = j10 * j21 - j11 * j20
+        det = j00 * m00 + j01 * m01 + j02 * m02
 
-    return xyz
+        # The Jacobian matrix shouldn't be singular if we are in range. Out of range may give us values we cannot
+        # invert. There are potential ways to handle this to try and get moving again, but currently, we just
+        # give up. We do not guarantee out of gamut conversions.
+        if not det:
+            break
+
+        x -= (r0 * m00 + r1 * (j02 * j21 - j01 * j22) + r2 * (j01 * j12 - j02 * j11)) / det
+        y -= (r0 * m01 + r1 * (j00 * j22 - j02 * j20) + r2 * (j02 * j10 - j00 * j12)) / det
+        z -= (r0 * m02 + r1 * (j01 * j20 - j00 * j21) + r2 * (j00 * j11 - j01 * j10)) / det
+
+    return [x, y, z]
 
 
 class Interpolator:

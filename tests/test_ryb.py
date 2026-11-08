@@ -1,4 +1,5 @@
 """Test RYB."""
+import itertools
 import unittest
 from . import util
 from coloraide.everything import ColorAll as Color, NaN
@@ -69,7 +70,7 @@ class TestRYBSerialize(util.ColorAssertsPyTest):
         ('color(--ryb none 0.3 0.75)', {}, 'color(--ryb 0 0.3 0.75)'),
         ('color(--ryb none 0.3 0.75)', {'none': True}, 'color(--ryb none 0.3 0.75)'),
         # Test Fit
-        ('color(--ryb 1.2 0.2 0)', {}, 'color(--ryb 1 0.45653 0.10681)'),
+        ('color(--ryb 1.2 0.2 0)', {}, 'color(--ryb 1 0.45367 0.10497)'),
         ('color(--ryb 1.2 0.2 0)', {'fit': False}, 'color(--ryb 1.2 0.2 0)')
     ]
 
@@ -78,6 +79,56 @@ class TestRYBSerialize(util.ColorAssertsPyTest):
         """Test colors."""
 
         self.assertEqual(Color(color1).to_string(**options), color2)
+
+
+class TestRYBRoundTrip:
+    """
+    Test round tripping within the RYB gamut.
+
+    Converting to RYB requires inverting a trilinear interpolation, so these tests ensure we can accurately get back
+    the colors we started with.
+    """
+
+    # Include some values very close to the vertices as they are the most poorly conditioned
+    VALUES = [i / 10 for i in range(11)] + [0.001, 0.999]
+    GRID = list(itertools.product(VALUES, repeat=3))
+
+    @pytest.mark.parametrize('space', ['ryb', 'ryb-biased'])
+    def test_srgb_precision(self, space):
+        """Test that the inverse is precise by converting back to sRGB, which is well conditioned for both spaces."""
+
+        for coords in self.GRID:
+            srgb = Color(space, list(coords)).convert('srgb')
+            result = srgb.convert(space).convert('srgb')
+            for a, b in zip(result[:-1], srgb[:-1]):
+                assert abs(a - b) < 1e-12, f'{space} {coords}: {result} != {srgb}'
+
+    def test_ryb_round_trip(self):
+        """Test RYB to sRGB and back."""
+
+        for coords in self.GRID:
+            result = Color('ryb', list(coords)).convert('srgb').convert('ryb')
+            for a, b in zip(result[:-1], coords):
+                assert abs(a - b) < 1e-10, f'{coords}: {result}'
+
+    def test_ryb_biased_round_trip(self):
+        """
+        Test RYB biased to sRGB and back.
+
+        The bias is a smoothstep, which is flat at 0 and 1, so removing it near the vertices is poorly conditioned,
+        and the error of a root finder near a flat region scales with the square root of the machine epsilon.
+        """
+
+        for coords in self.GRID:
+            result = Color('ryb-biased', list(coords)).convert('srgb').convert('ryb-biased')
+            for a, b in zip(result[:-1], coords):
+                assert abs(a - b) < 1e-4, f'{coords}: {result}'
+
+        # Away from the vertices, we can expect much better
+        for coords in itertools.product([0.2, 0.35, 0.5, 0.65, 0.8], repeat=3):
+            result = Color('ryb-biased', list(coords)).convert('srgb').convert('ryb-biased')
+            for a, b in zip(result[:-1], coords):
+                assert abs(a - b) < 1e-12, f'{coords}: {result}'
 
 
 class TestRYBPoperties(util.ColorAsserts, unittest.TestCase):
