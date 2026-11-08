@@ -2972,7 +2972,8 @@ class TestAlgebra(unittest.TestCase):
             lambda t, args=args: cubic_poly_dt2(t, *args[:-2]),
             bounds=(0, 1)
         )
-        self.assertEqual(results, (0.08787147001914432, True))
+        # Within one ULP of the other results; both are equally close to the root (residual of about 3e-17)
+        self.assertEqual(results, (0.0878714700191443, True))
 
         # Solved (flip bounds)
         results = alg.solve_newton(
@@ -2982,7 +2983,8 @@ class TestAlgebra(unittest.TestCase):
             lambda t, args=args: cubic_poly_dt2(t, *args[:-2]),
             bounds=(1, 0)
         )
-        self.assertEqual(results, (0.08787147001914432, True))
+        # The same path is followed regardless of the order of the bounds
+        self.assertEqual(results, (0.0878714700191443, True))
 
         # Solved (Solution on start boundary edge)
         results = alg.solve_newton(
@@ -3603,6 +3605,72 @@ class TestAlgebra(unittest.TestCase):
         r, converged = alg.solve_bisect(1.0, 0.0, f0)
         self.assertTrue(converged)
         self.assertEqual(r, 0.4539687953174507)
+
+    def test_bisect_negative_and_reversed(self):
+        """Test bisect when the root is negative, the bounds are reversed, or the function is decreasing."""
+
+        for f, a, b, root in (
+            (lambda x: x + 0.3, -1.0, 0.0, -0.3),
+            (lambda x: x + 0.3, 0.0, -1.0, -0.3),
+            (lambda x: x ** 3 + 2, -5.0, 5.0, -2 ** (1 / 3)),
+            (lambda x: -2 - x ** 3, 5.0, -5.0, -2 ** (1 / 3)),
+            (lambda x: x ** 3 - 2, -5.0, 5.0, 2 ** (1 / 3)),
+            (lambda x: 0.3 - x, 0.0, 1.0, 0.3),
+            (lambda x: x + 2.5, -3.0, -2.0, -2.5)
+        ):
+            r, converged = alg.solve_bisect(a, b, f)
+            self.assertTrue(converged)
+            self.assertAlmostEqual(r, root, places=9)
+
+        # The bounds do not contain a solution
+        r, converged = alg.solve_bisect(-1.0, 1.0, lambda x: x * x + 1)
+        self.assertFalse(converged)
+        self.assertTrue(math.isnan(r))
+
+    def test_solve_newton_bracketed_decreasing(self):
+        """Test bracketed Newton variants with bounds in either order and increasing or decreasing functions."""
+
+        def cosx(x):
+            return math.cos(x) - x
+
+        def cosx_dx(x):
+            return -math.sin(x) - 1
+
+        def cosx_dx2(x):
+            return -math.cos(x)
+
+        problems = (
+            # (f, f', f'', start, bounds, root)
+            (cosx, cosx_dx, cosx_dx2, 0.0, (0.0, 1.0), 0.73908513),
+            (cosx, cosx_dx, cosx_dx2, 0.9, (1.0, 0.0), 0.73908513),
+            (lambda x: x * x - 2, lambda x: 2 * x, lambda x: 2.0, 1.9, (2.0, 0.0), math.sqrt(2)),
+            (lambda x: 2 - x * x, lambda x: -2 * x, lambda x: -2.0, 0.1, (0.0, 2.0), math.sqrt(2)),
+            (lambda x: x ** 3 + 2, lambda x: 3 * x * x, lambda x: 6 * x, 0.5, (-5.0, 5.0), -2 ** (1 / 3)),
+            (lambda x: -(x ** 3 + 2), lambda x: -3 * x * x, lambda x: -6 * x, 0.5, (-5.0, 5.0), -2 ** (1 / 3))
+        )
+        for f, d1, d2, x0, bounds, root in problems:
+            for kwargs in ({}, {'dx2': d2}, {'order': 3}, {'order': 4}):
+                r, converged = alg.solve_newton(x0, f, d1, bounds=bounds, **kwargs)
+                self.assertTrue(converged, f"{bounds} {kwargs}")
+                self.assertAlmostEqual(r, root, places=7)
+
+    def test_solve_newton_traub_efficiency(self):
+        """Traub's method is third order, so it should need fewer iterations than Newton's method."""
+
+        def count(order):
+            calls = [0]
+
+            def f(x):
+                calls[0] += 1
+                return math.exp(x) - 5
+
+            r, converged = alg.solve_newton(1.0, f, math.exp, order=order)
+            self.assertTrue(converged)
+            self.assertAlmostEqual(r, math.log(5), places=12)
+            return calls[0]
+
+        # Traub evaluates the function twice per iteration (16 evaluations before the sign was corrected)
+        self.assertLessEqual(count(3), 12)
 
     def test_solve_poly(self):
         """Test cubic solving."""

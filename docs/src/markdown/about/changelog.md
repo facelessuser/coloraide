@@ -18,6 +18,10 @@ icon: lucide/scroll-text
     causing results to change depending on the scale of the weights instead of only their relative values.
 -   **FIX**: `svd()` and `svdvals()` now return the singular values sorted in descending order, like Numpy, with the
     columns of `U` and `V` reordered to match. Previously, the order was arbitrary.
+-   **FIX**: `solve_bisect()` could not find roots at negative positions.
+-   **FIX**: `solve_newton()` with bounds failed to solve functions that are decreasing across the bounds or when the
+    bounds were given in descending order, used the derivative instead of the step size to detect slow convergence,
+    and Traub's method (`order=3` without a second derivative) applied its correction with the wrong sign.
 -   **FIX**: `det()` could return the wrong sign for matrices of 4 x 4 or larger when row swaps were required.
 -   **FIX**: Fix `alpha()` ignoring a `precision` of `0`; alpha is now rounded to an integer like the other channels.
 -   **FIX**: `average()` and `weighted_mix()` now respect the `CARRYFORWARD` (and, for `weighted_mix()`, `POWERLESS`)

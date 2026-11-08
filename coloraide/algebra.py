@@ -297,8 +297,8 @@ def solve_bisect(
         t = a + dt
         x = f(t, *args) if args else f(t)
 
-        # Update bounds
-        if sgn(x) != sgn(t):
+        # Update bounds. The bounds were oriented so that `f(a)` is always negative.
+        if x < 0:
             a = t
 
         if math.isclose(x, 0, rel_tol=rtol, abs_tol=atol):
@@ -573,16 +573,22 @@ def solve_newton(
         if fx1 and fx2 and sgn(fx1) == sgn(fx2):
             return math.nan, False
 
-        if fx1 > 0:
+        # Order the bounds so `a` is the lower bound and `b` is the upper bound,
+        # and track which side of the bracket the function is negative on.
+        if a > b:
             a, b = b, a
+            fx1 = fx2
+        negative_low = fx1 < 0
 
-        dx_last = abs(b - a)
+        # The size of the last two steps taken, used to detect when we are converging too slowly.
+        dx_old = dx_step = abs(b - a)
 
         bracketed = True
     else:
         a, b = -math.inf, math.inf
         bracketed = False
-        dx_last = 0
+        negative_low = True
+        dx_old = dx_step = 0.0
 
     for _ in range(maxiter):
         # Get result form equation when setting value to expected result
@@ -600,12 +606,11 @@ def solve_newton(
         # Update brackets
         if bracketed:
             if in_bounds:
-                if fx < 0:
+                if (fx < 0) == negative_low:
                     a = x0
                 else:
                     b = x0
-            slow = abs(2.0 * fx) > abs(dx_last * d1)
-            dx_last = d1
+            slow = abs(2.0 * fx) > abs(dx_old * d1)
 
         # Cannot find a solution if derivative is zero
         if abs(d1) < ATOL or slow:
@@ -613,6 +618,7 @@ def solve_newton(
             if bracketed:
                 x0 = a + (b - a) * 0.5
                 if x0 != prev:
+                    dx_old, dx_step = dx_step, abs(x0 - prev)
                     continue
             return x0, None
 
@@ -630,7 +636,7 @@ def solve_newton(
             # Traub's method: 3rd order convergence
             else:
                 fy = f0(x0 - newton, *args) if args else f0(x0 - newton)
-                newton -= fy / d1
+                newton += fy / d1
 
         # Apply the Newton step (or adjusted Newton step)
         x0 -= newton
@@ -646,8 +652,11 @@ def solve_newton(
         if bracketed and not a <= x0 <= b:  # pragma: no cover
             x0 = a + (b - a) * 0.5
             if x0 != prev:
+                dx_old, dx_step = dx_step, abs(x0 - prev)
                 continue
             return x0, None
+
+        dx_old, dx_step = dx_step, abs(x0 - prev)
 
         # Result is close enough
         if math.isclose(x0, prev, rel_tol=rtol, abs_tol=atol):
