@@ -190,8 +190,7 @@ class TestMisc(util.ColorAsserts, unittest.TestCase):
         """Test that normalizing a very small negative hue never leaves the hue at 360."""
 
         for name, cs in ColorAll.CS_MAP.items():
-            # HWB does not currently override `normalize()`, so it does not constrain the hue at all
-            if not cs.is_polar() or name == 'hwb':
+            if not cs.is_polar():
                 continue
             hue = cs.hue_index()
             mx = cs.channels[hue].high

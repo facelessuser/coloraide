@@ -48,6 +48,12 @@ class HWB(HWBish, Space):
     GAMUT_CHECK = "srgb"
     WHITE = WHITES['2deg']['D65']
 
+    def normalize(self, coords: Vector) -> Vector:
+        """Normalize coordinates."""
+
+        coords[0] = util.constrain_hue(coords[0])
+        return coords
+
     def is_achromatic(self, coords: Vector) -> bool:
         """Check if color is achromatic."""
 

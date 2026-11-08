@@ -108,6 +108,15 @@ class TestHWBProperties(util.ColorAsserts, unittest.TestCase):
         c['hue'] = 110
         self.assertEqual(c['hue'], 110)
 
+    def test_normalize_hue(self):
+        """Test that normalizing constrains the hue to the range [0, 360)."""
+
+        for hue, expected in ((-30, 330), (390, 30), (360, 0), (720, 0), (-1e-17, 0)):
+            c = Color('hwb', [hue, 0.2, 0.2]).normalize()
+            self.assertEqual(c['hue'], expected, f"hue {hue}")
+            self.assertEqual(c['whiteness'], 0.2)
+            self.assertEqual(c['blackness'], 0.2)
+
     def test_whiteness(self):
         """Test `whiteness`."""
 

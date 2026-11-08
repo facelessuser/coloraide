@@ -9,7 +9,9 @@ icon: lucide/scroll-text
 -   **FIX**: Fix registration error message.
 -   **FIX**: Fix typo of class property name when coercing polar space to RGB space.
 -   **FIX**: Fix deprecation message related to compositing.
--   **FIX**: Fix issue where hue constraints sometimes left very small values constrained to 360 instead of 0.
+-   **FIX**: Fix issue where hue constraints sometimes left very small values constrained to 360 instead of 0. This also
+    applies to the Msh and sUCS color spaces.
+-   **FIX**: HWB did not constrain the hue when normalizing.
 -   **FIX**: Fix `alpha()` ignoring a `precision` of `0`; alpha is now rounded to an integer like the other channels.
 -   **FIX**: `average()` and `weighted_mix()` now respect the `CARRYFORWARD` (and, for `weighted_mix()`, `POWERLESS`)
     class defaults when `carryforward`/`powerless` are not specified, matching `interpolate()`.
