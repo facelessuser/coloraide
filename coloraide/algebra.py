@@ -5753,24 +5753,34 @@ def _qr(a: MatrixT[float], m: int, n: int, mode: str = 'reduced') -> (
         w = [[(r[i][k] / u0) if u0 else 1] for i in range(k, m)]
         w[0][0] = 1
         t = (-sig * u0 / norm) if norm else 0
-        wtw = matmul(w, [[x[0] * t for x in w]], dims=D2)
 
         # Capture householder reflections and tau
         if mode_raw:
             h.append(w)
             tau[k] = t
 
-        # Update R
-        sub_r = [r[i][:] for i in range(k, m)]
-        for count, row in enumerate(matmul(wtw, sub_r, dims=D2), k):
-            # Fill the lower triangle with zeros and update the upper triangle
-            r[count][:] = [r[count][col] - row[col] for col in range(n)]
+        # Apply the reflection `H = I - t * w * w^T` as a rank-1 update instead of building and multiplying
+        # the full `t * w * w^T` matrix. This avoids an order of magnitude of work: O(n^3) vs O(n^4) overall.
+        # `tw` is `t * w` as a flat vector, with `w` being flattened as well.
+        wf = [x[0] for x in w]
+        tw = [x * t for x in wf]
+
+        # Update R: `R - w * (t * w^T * R)`.
+        # Columns before `k` are only lower triangle values that are zeroed or replaced when we are done.
+        v = [0.0] * (n - k)
+        for twi, row in zip(tw, r[k:m]):
+            for col in range(k, n):
+                v[col - k] += twi * row[col]
+        for wi, row in zip(wf, r[k:m]):
+            for col in range(k, n):
+                row[col] -= wi * v[col - k]
 
         if not mode_r:
-            # Update Q
-            sub_q = [row[k:] for row in q]
-            for count, row in enumerate(matmul(sub_q, wtw, dims=D2)):
-                q[count][k:] = [sub_q[count][i] - row[i] for i in range(m - k)]
+            # Update Q: `Q - (Q * w) * (t * w^T)`
+            for row in q:
+                sub = row[k:]
+                d = sum([x * y for x, y in zip(sub, wf)])
+                row[k:] = [x - d * y for x, y in zip(sub, tw)]
 
     # Zero out the lower triangle or fill with the householder reflectors if in raw mode
     for k in range(0, m - 1 if not tall else n):
