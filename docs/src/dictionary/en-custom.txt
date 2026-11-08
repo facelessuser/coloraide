@@ -52,6 +52,7 @@ ColorBrewer
 ColorHelper
 Colorimetry
 Colorio
+Cramer
 Ctrl
 Cubehelix
 Culori
@@ -291,6 +292,7 @@ changelog
 chroma
 chromaticities
 chromaticity
+cofactors
 colorimetrically
 colorimetry
 config
