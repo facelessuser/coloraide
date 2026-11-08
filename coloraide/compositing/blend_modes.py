@@ -12,7 +12,7 @@ from ..types import Vector
 def lum(rgb: Vector) -> float:
     """Get luminosity."""
 
-    return 0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2]
+    return 0.3 * rgb[0] + 0.59 * rgb[1] + 0.11 * rgb[2]
 
 
 def clip_color(rgb: Vector) -> Vector:

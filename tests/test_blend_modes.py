@@ -332,10 +332,10 @@ class TestBlendModes(util.ColorAsserts, unittest.TestCase):
         self.assertColorEqual(r1, Color('rgb(7 199 237)'))
         self.assertColorEqual(r2, Color('rgb(252 61 153)'))
         self.assertColorEqual(r3, Color('rgb(245 211 17)'))
-        self.assertColorEqual(r4, Color('rgb(13.23 172.67 204.23)'))
-        self.assertColorEqual(r5, Color('rgb(255 168.4 210.11)'))
-        self.assertColorEqual(r6, Color('rgb(113.71 231.66 255)'))
-        self.assertColorEqual(r7, Color('rgb(146.74 219.03 233.34)'))
+        self.assertColorEqual(r4, Color('rgb(13.338 172.78 204.34)'))
+        self.assertColorEqual(r5, Color('rgb(255 169.78 210.83)'))
+        self.assertColorEqual(r6, Color('rgb(116.28 232.08 255)'))
+        self.assertColorEqual(r7, Color('rgb(148.51 219.65 233.73)'))
 
     def test_saturation(self):
         """Test hue."""
@@ -355,10 +355,10 @@ class TestBlendModes(util.ColorAsserts, unittest.TestCase):
         self.assertColorEqual(r1, Color('rgb(7 199 237)'))
         self.assertColorEqual(r2, Color('rgb(252 61 153)'))
         self.assertColorEqual(r3, Color('rgb(245 211 17)'))
-        self.assertColorEqual(r4, Color('rgb(255 59.357 153.59)'))
-        self.assertColorEqual(r5, Color('rgb(237.54 209.06 46.543)'))
-        self.assertColorEqual(r6, Color('rgb(245.4 211.1 15.403)'))
-        self.assertColorEqual(r7, Color('rgb(245.4 211.1 15.403)'))
+        self.assertColorEqual(r4, Color('rgb(255 59.363 153.6)'))
+        self.assertColorEqual(r5, Color('rgb(237.67 209.19 46.675)'))
+        self.assertColorEqual(r6, Color('rgb(245.4 211.1 15.396)'))
+        self.assertColorEqual(r7, Color('rgb(245.4 211.1 15.396)'))
 
         self.assertColorEqual(Color.layer(['#fc3d99', 'black'], blend='saturation'), Color('black'))
         self.assertColorEqual(Color.layer(['#fc3d99', 'white'], blend='saturation'), Color('white'))
@@ -381,10 +381,10 @@ class TestBlendModes(util.ColorAsserts, unittest.TestCase):
         self.assertColorEqual(r1, Color('rgb(7 199 237)'))
         self.assertColorEqual(r2, Color('rgb(252 61 153)'))
         self.assertColorEqual(r3, Color('rgb(245 211 17)'))
-        self.assertColorEqual(r4, Color('rgb(255 86.175 167.49)'))
-        self.assertColorEqual(r5, Color('rgb(161.06 137.04 0)'))
-        self.assertColorEqual(r6, Color('rgb(182.76 155.5 0)'))
-        self.assertColorEqual(r7, Color('rgb(178.38 154.37 17.327)'))
+        self.assertColorEqual(r4, Color('rgb(255 85.885 167.34)'))
+        self.assertColorEqual(r5, Color('rgb(160.12 136.24 0)'))
+        self.assertColorEqual(r6, Color('rgb(181.52 154.45 0)'))
+        self.assertColorEqual(r7, Color('rgb(177.28 153.4 17.16)'))
 
     def test_color(self):
         """Test color."""
@@ -404,10 +404,10 @@ class TestBlendModes(util.ColorAsserts, unittest.TestCase):
         self.assertColorEqual(r1, Color('rgb(7 199 237)'))
         self.assertColorEqual(r2, Color('rgb(252 61 153)'))
         self.assertColorEqual(r3, Color('rgb(245 211 17)'))
-        self.assertColorEqual(r4, Color('rgb(0 177.73 212.9)'))
-        self.assertColorEqual(r5, Color('rgb(255 168.4 210.11)'))
-        self.assertColorEqual(r6, Color('rgb(113.71 231.66 255)'))
-        self.assertColorEqual(r7, Color('rgb(113.71 231.66 255)'))
+        self.assertColorEqual(r4, Color('rgb(0 177.92 213.14)'))
+        self.assertColorEqual(r5, Color('rgb(255 169.78 210.83)'))
+        self.assertColorEqual(r6, Color('rgb(116.28 232.08 255)'))
+        self.assertColorEqual(r7, Color('rgb(116.28 232.08 255)'))
 
 
 class TestBlend(util.ColorAsserts, unittest.TestCase):

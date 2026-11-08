@@ -12,6 +12,8 @@ icon: lucide/scroll-text
 -   **FIX**: Fix issue where hue constraints sometimes left very small values constrained to 360 instead of 0. This also
     applies to the Msh and sUCS color spaces.
 -   **FIX**: HWB did not constrain the hue when normalizing.
+-   **FIX**: The non-separable blend modes (`hue`, `saturation`, `color`, and `luminosity`) now use the luminosity
+    coefficients (0.3, 0.59, and 0.11) defined in the Compositing and Blending specification.
 -   **FIX**: Spectral `weighted_mix()` did not normalize the residual of out of gamut colors by the average weight,
     causing results to change depending on the scale of the weights instead of only their relative values.
 -   **FIX**: `det()` could return the wrong sign for matrices of 4 x 4 or larger when row swaps were required.
