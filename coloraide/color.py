@@ -88,7 +88,8 @@ from .temperature import CCT
 from .temperature.ohno_2013 import Ohno2013
 from .temperature.robertson_1968 import Robertson1968
 from .types import Plugin
-from typing import Iterator, overload, Sequence, Iterable, Any, Callable, Mapping, cast
+from collections.abc import Sequence, Mapping
+from typing import Iterator, overload, Iterable, Any, Callable, cast
 if (3, 11) <= sys.version_info:
     from typing import Self
 else:
