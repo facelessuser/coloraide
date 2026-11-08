@@ -18,8 +18,8 @@ icon: lucide/scroll-text
     causing results to change depending on the scale of the weights instead of only their relative values.
 -   **FIX**: `svd()` and `svdvals()` now return the singular values sorted in descending order, like Numpy, with the
     columns of `U` and `V` reordered to match. Previously, the order was arbitrary.
--   **FIX**: Fix issues in the algebra pretty printing helpers: arrays containing floats between 1e15 and 1e16 could raise
-    an error, rounding to whole numbers (`precision=0`) stripped zeros from the whole part of floats, suppressed
+-   **FIX**: Fix issues in the algebra pretty printing helpers: arrays containing floats between 1e15 and 1e16 could
+    raise an error, rounding to whole numbers (`precision=0`) stripped zeros from the whole part of floats, suppressed
     scientific notation added a stray decimal point to small values, and whole number floats lost digits when they were
     printed next to values in scientific notation.
 -   **FIX**: `line_interesect()` raised a divide by zero error for parallel lines pointing in opposite directions, and
