@@ -4,7 +4,8 @@ import math
 from .. import algebra as alg
 from abc import ABCMeta, abstractmethod
 from ..types import ColorInput, Plugin, AnyColor
-from typing import Any, Sequence
+from collections.abc import Sequence
+from typing import Any
 
 
 def closest(color: AnyColor, colors: Sequence[ColorInput], method: str | None = None, **kwargs: Any) -> AnyColor:

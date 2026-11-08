@@ -5,7 +5,8 @@ from ..channels import Channel
 from ..css import serialize
 from ..types import VectorLike, Vector, Plugin
 from .. import deprecate
-from typing import Any, TYPE_CHECKING, Callable, Sequence
+from collections.abc import Callable, Sequence
+from typing import Any, TYPE_CHECKING
 import math
 
 if TYPE_CHECKING:  # pragma: no cover

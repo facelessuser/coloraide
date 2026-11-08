@@ -3,8 +3,10 @@ icon: lucide/scroll-text
 ---
 # Changelog
 
-## 8.14.2
+## 8.15
 
+-   **NEW**: Drop support for Python 3.10.
+-   **NEW**: Migrate to using certain types `collections.abc` instead of from `typing`.
 -   **FIX**: Improve performance of wavelength calculations.
 -   **FIX**: Performance improvements within algebraic functions.
 -   **FIX**: Small performance improvements in type instance checks.

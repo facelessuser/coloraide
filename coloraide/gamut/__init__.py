@@ -12,7 +12,8 @@ from ..spaces.hsl import hsl_to_srgb, srgb_to_hsl
 from ..spaces.hsv import hsv_to_srgb, srgb_to_hsv
 from ..spaces.hwb import hwb_to_hsv, hsv_to_hwb
 from ..spaces.srgb_linear import RGB
-from typing import Any, TYPE_CHECKING, Callable  # noqa: F401
+from collections.abc import Callable  # noqa: F401
+from typing import Any, TYPE_CHECKING  # noqa: F401
 
 if TYPE_CHECKING:  #pragma: no cover
     from ..color import Color

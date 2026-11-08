@@ -7,7 +7,8 @@ from .. import algebra as alg
 from .color_names import to_name
 from ..channels import FLG_ANGLE, ANGLE_DEG, ANGLE_RAD, ANGLE_GRAD, ANGLE_TURN, ANGLE_RANGE
 from ..types import Vector
-from typing import Sequence, Any, TYPE_CHECKING
+from collections.abc import Sequence
+from typing import Any, TYPE_CHECKING
 
 if TYPE_CHECKING:  #pragma: no cover
     from ..color import Color

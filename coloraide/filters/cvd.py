@@ -3,7 +3,8 @@ from __future__ import annotations
 from .. import algebra as alg
 from . import Filter
 from ..types import Vector, Matrix
-from typing import Any, Callable, TYPE_CHECKING
+from collections.abc import Callable
+from typing import Any, TYPE_CHECKING
 
 if TYPE_CHECKING:  #pragma: no cover
     from ..color import Color

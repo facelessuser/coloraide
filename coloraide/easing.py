@@ -41,7 +41,7 @@ This greatly simplifies things and makes it faster.
 from __future__ import annotations
 import functools
 from . import algebra as alg
-from typing import Callable
+from collections.abc import Callable
 
 
 def _bezier(a: float, b: float, c: float, y: float = 0.0) -> Callable[[float], float]:

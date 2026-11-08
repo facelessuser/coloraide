@@ -1,12 +1,8 @@
 # noqa: A005
 """Typing."""
 from __future__ import annotations
-import sys
-from typing import Any, Mapping, Sequence, TypeVar, Union, TYPE_CHECKING
-if (3, 11) <= sys.version_info:
-    from typing import Unpack
-else:
-    from typing_extensions import Unpack
+from collections.abc import Mapping, Sequence
+from typing import Any, TypeVar, Union, TYPE_CHECKING, Unpack
 if TYPE_CHECKING:  # pragma: no cover
     from .color import Color
 

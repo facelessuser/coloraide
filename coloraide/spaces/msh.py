@@ -13,7 +13,8 @@ from ..cat import WHITES
 from ..channels import Channel, FLG_ANGLE, ANGLE_RAD
 from ..css import serialize
 from ..types import Vector
-from typing import TYPE_CHECKING, Sequence, Any
+from collections.abc import Sequence
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:  #pragma: no cover
     from ..color import Color

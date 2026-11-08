@@ -4,7 +4,8 @@ import math
 from functools import wraps
 from . import algebra as alg
 from .types import Vector, VectorLike
-from typing import Any, Callable, Sequence
+from collections.abc import Callable, Sequence
+from typing import Any
 
 DEF_PREC = 5
 DEF_ROUND_MODE = 'digits'

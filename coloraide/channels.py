@@ -1,7 +1,7 @@
 """Channels."""
 from __future__ import annotations
 import math
-from typing import Callable
+from collections.abc import Callable
 from . import algebra as alg
 
 FLG_ANGLE = 1

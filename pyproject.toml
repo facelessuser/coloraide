@@ -9,10 +9,7 @@ name = "coloraide"
 description = "A color library for Python."
 readme = "README.md"
 license = "MIT"
-requires-python = ">=3.10"
-dependencies = [
-    "typing-extensions;python_version<'3.11'"
-]
+requires-python = ">=3.11"
 authors = [
     { name = "Isaac Muse", email = "Isaac.Muse@gmail.com" },
 ]
@@ -168,7 +165,7 @@ dependencies = [
 ]
 
 [[tool.hatch.envs.dev.matrix]]
-python = ["3.10", "3.11", "3.12", "3.13", "3.14", "3.15"]
+python = ["3.11", "3.12", "3.13", "3.14", "3.15"]
 
 [tool.hatch.envs.dev.scripts]
 types = "mypy"

@@ -32,9 +32,6 @@ try:
 except ImportError:
     from coloraide.everything import ColorAll
 
-PY310 = (3, 10) <= sys.version_info
-PY311 = (3, 11) <= sys.version_info
-
 WEBSPACE = "srgb"
 
 AST_BLOCKS = (
@@ -47,16 +44,10 @@ AST_BLOCKS = (
     ast.ClassDef,
     ast.AsyncFor,
     ast.AsyncWith,
-    ast.AsyncFunctionDef
+    ast.AsyncFunctionDef,
+    ast.Match,
+    ast.TryStar
 )
-
-if PY310:
-    AST_BLOCKS = AST_BLOCKS + (ast.Match,)
-
-
-if PY311:
-    AST_BLOCKS = AST_BLOCKS + (ast.TryStar,)
-
 
 RE_INIT = re.compile(r'^\s*#\s*pragma:\s*init\n(.*?)#\s*pragma:\s*init\n', re.DOTALL | re.I)
 
@@ -431,7 +422,7 @@ def evaluate(node, g, loop=False):
         finally:
             for n in node.finalbody:
                 yield from evaluate(n, g, loop)
-    elif PY311 and isinstance(node, ast.TryStar):
+    elif isinstance(node, ast.TryStar):
         try:
             for n in node.body:
                 yield from evaluate(n, g, loop)
@@ -455,7 +446,7 @@ def evaluate(node, g, loop=False):
         finally:
             for n in node.finalbody:
                 yield from evaluate(n, g, loop)
-    elif PY310 and isinstance(node, ast.Match):
+    elif isinstance(node, ast.Match):
         s = eval(compile(ast.Expression(node.subject), '<string>', 'eval'), g)
         for c in node.cases:
             if compare_match(s, g, c.pattern):

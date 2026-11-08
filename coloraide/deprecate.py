@@ -2,7 +2,8 @@
 from __future__ import annotations
 import warnings
 from functools import wraps
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
 
 def deprecated(message: str, stacklevel: int = 2) -> Callable[..., Any]:

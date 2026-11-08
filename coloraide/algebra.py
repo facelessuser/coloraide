@@ -33,8 +33,8 @@ from .types import (
     Number, StrictNumber, Shape, DimHints, EmptyShape, VectorShape, MatrixShape, TensorShape, ArrayShape,
     VectorT, MatrixT, TensorT, ArrayT, VectorTLike, MatrixTLike, TensorTLike, ArrayTLike
 )
-from collections.abc import Sequence
-from typing import Callable, Iterator, Any, overload, Generic, Literal, cast
+from collections.abc import Sequence, Callable, Iterator
+from typing import Any, overload, Generic, Literal, cast
 
 EPS = sys.float_info.epsilon
 RTOL = 4 * EPS

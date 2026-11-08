@@ -9,7 +9,7 @@ from . import porter_duff
 from . import blend_modes
 from .. import algebra as alg
 from ..types import Vector, ColorInput, AnyColor
-from typing import Sequence
+from collections.abc import Sequence
 
 
 def apply_compositing(

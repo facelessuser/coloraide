@@ -23,8 +23,8 @@ from .. import util
 from .. import algebra as alg
 from .. spaces import HSVish, HSLish, RGBish, LChish, Labish, HWBish
 from ..types import Matrix, Vector, ColorInput, Plugin, AnyColor
-from collections.abc import Sequence, Mapping
-from typing import Callable, Any, Generic, Iterable, TYPE_CHECKING
+from collections.abc import Sequence, Mapping, Callable, Iterable
+from typing import Any, Generic, TYPE_CHECKING
 
 if TYPE_CHECKING:  #pragma: no cover
     from ..color import Color

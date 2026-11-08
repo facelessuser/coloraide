@@ -4,7 +4,8 @@ from .. import lab as base
 from ...css import parse
 from ...css import serialize
 from ...types import Vector
-from typing import Any, Sequence, TYPE_CHECKING
+from collections.abc import Sequence
+from typing import Any, TYPE_CHECKING
 
 if TYPE_CHECKING:  #pragma: no cover
     from ...color import Color
