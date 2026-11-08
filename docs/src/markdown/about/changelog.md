@@ -3,6 +3,10 @@ icon: lucide/scroll-text
 ---
 # Changelog
 
+## 8.14.2
+
+-   **FIX**: Improve performance of wavelength calculations.
+
 ## 8.14.1
 
 -   **FIX**: Callables should not be counted as steps in discrete interpolation.

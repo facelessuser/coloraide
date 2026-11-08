@@ -315,6 +315,7 @@ dyad
 easings
 electro
 emissive
+falsi
 fixup
 formatter
 gradians
@@ -382,6 +383,7 @@ quantizer
 rc
 reflectance
 reflectances
+regula
 reparameterization
 repurpose
 rescales
@@ -401,6 +403,7 @@ sublicense
 submodule
 subsamplings
 subtractive
+superlinearly
 tetradic
 th
 transmissive

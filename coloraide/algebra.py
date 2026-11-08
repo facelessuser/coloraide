@@ -665,6 +665,63 @@ def solve_newton(
     return x0, False  # pragma: no cover
 
 
+def solve_illinois(
+    a: float,
+    b: float,
+    f: Callable[..., float],
+    args: tuple[Any, ...] | tuple[()] = (),
+    maxiter: int = 50,
+    rtol: float = RTOL,
+    atol: float = ATOL
+) -> tuple[float, bool]:
+    """
+    Find a root in a bracket using the Illinois variant of regula falsi.
+
+    This converges superlinearly on smooth functions, where plain bisection needs
+    far more evaluations to reach the same precision. The bracket is always
+    maintained, so it cannot diverge. If we fail to converge, bisection is used.
+
+    The function must have opposite signs (or a zero) at the bounds. If the bounds do not
+    contain a root, `nan` and `False` are returned.
+
+    Return the best answer based on the specified limits and also
+    return a boolean indicating if we confidently converged.
+    """
+
+    fa = f(a, *args) if args else f(a)
+    if math.isclose(fa, 0, rel_tol=rtol, abs_tol=atol):
+        return a, True
+    fb = f(b, *args) if args else f(b)
+    if math.isclose(fb, 0, rel_tol=rtol, abs_tol=atol):
+        return b, True
+
+    # Exit if the bounds do not contain the solution
+    if (fa < 0) == (fb < 0):
+        return math.nan, False
+
+    a0, b0 = a, b
+    side = 0
+    for _ in range(maxiter):
+        x = (fa * b - fb * a) / (fa - fb)
+        fx = f(x, *args) if args else f(x)
+        if math.isclose(fx, 0, rel_tol=rtol, abs_tol=atol):
+            return x, True
+
+        if (fx < 0) == (fb < 0):
+            b, fb = x, fx
+            if side == -1:
+                fa *= 0.5
+            side = -1
+        else:
+            a, fa = x, fx
+            if side == 1:
+                fb *= 0.5
+            side = 1
+
+    # Could not converge fast enough, fall back to the slower but guaranteed approach
+    return solve_bisect(a0, b0, f, args=args, maxiter=maxiter, rtol=rtol, atol=atol)
+
+
 ################################
 # Interpolation and splines
 ################################

@@ -567,6 +567,18 @@ class TestAlgebra(unittest.TestCase):
         with self.assertRaises(ValueError):
             alg.diag(3)
 
+    def test_trace(self):
+        """Test trace."""
+
+        self.assertEqual(alg.trace([[1, 2], [3, 4]]), 5)
+        self.assertEqual(alg.trace([[1.5]]), 1.5)
+        self.assertEqual(alg.trace(alg.reshape(alg.arange(16), (4, 4))), 30)
+        self.assertEqual(alg.trace(alg.eye(5)), 5.0)
+
+        # Only the main diagonal of non-square matrices is summed
+        self.assertEqual(alg.trace([[1, 2, 3], [4, 5, 6]]), 6)
+        self.assertEqual(alg.trace([[1, 2], [3, 4], [5, 6]]), 5)
+
     def test_broadcast_reset(self):
         """Test broadcast reset."""
 
@@ -3626,6 +3638,142 @@ class TestAlgebra(unittest.TestCase):
         r, converged = alg.solve_bisect(-1.0, 1.0, lambda x: x * x + 1)
         self.assertFalse(converged)
         self.assertTrue(math.isnan(r))
+
+    def test_bisect_root_on_bound(self):
+        """Test bisect returns immediately when a bound is already a root."""
+
+        calls = []
+
+        def f(x):
+            calls.append(x)
+            return x
+
+        # Lower bound is the root, the upper bound is never evaluated
+        self.assertEqual(alg.solve_bisect(0.0, 1.0, f), (0.0, True))
+        self.assertEqual(calls, [0.0])
+
+        # Upper bound is the root
+        calls.clear()
+        self.assertEqual(alg.solve_bisect(-1.0, 0.0, f), (0.0, True))
+        self.assertEqual(calls, [-1.0, 0.0])
+
+        # A root within tolerance of the bound counts as the bound
+        self.assertEqual(alg.solve_bisect(1e-15, 1.0, f), (1e-15, True))
+        self.assertEqual(alg.solve_bisect(-1.0, 1e-15, f), (1e-15, True))
+
+    def test_illinois(self):
+        """Test Illinois solver."""
+
+        from coloraide.easing import _bezier
+
+        a, b, c = .5, -3, 2
+        t = 0.9
+        b = _bezier(a, b, c)(t)
+        f0 = _bezier(a, b, c, y=t)
+        r, converged = alg.solve_illinois(0.0, 1.0, f0)
+        self.assertTrue(converged)
+        self.assertAlmostEqual(r, 0.4539687953174507, places=11)
+
+        r, converged = alg.solve_illinois(1.0, 0.0, f0)
+        self.assertTrue(converged)
+        self.assertAlmostEqual(r, 0.4539687953174507, places=11)
+
+    def test_illinois_negative_and_reversed(self):
+        """Test Illinois when the root is negative, the bounds are reversed, or the function is decreasing."""
+
+        for f, a, b, root in (
+            (lambda x: x + 0.3, -1.0, 0.0, -0.3),
+            (lambda x: x + 0.3, 0.0, -1.0, -0.3),
+            (lambda x: x ** 3 + 2, -5.0, 5.0, -2 ** (1 / 3)),
+            (lambda x: -2 - x ** 3, 5.0, -5.0, -2 ** (1 / 3)),
+            (lambda x: x ** 3 - 2, -5.0, 5.0, 2 ** (1 / 3)),
+            (lambda x: 0.3 - x, 0.0, 1.0, 0.3),
+            (lambda x: x + 2.5, -3.0, -2.0, -2.5),
+            (lambda x: math.cos(x), 0.0, 3.0, math.pi / 2),
+            (lambda x: math.exp(x) - 3, -10.0, 10.0, math.log(3)),
+            (lambda x: x ** 9 - 0.5, 0.0, 1.0, 0.5 ** (1 / 9)),
+            (lambda x: x ** 9 - 0.5, 1.0, 0.0, 0.5 ** (1 / 9))
+        ):
+            r, converged = alg.solve_illinois(a, b, f)
+            self.assertTrue(converged)
+            self.assertAlmostEqual(r, root, places=9)
+
+    def test_illinois_args(self):
+        """Test Illinois passes additional arguments to the function."""
+
+        r, converged = alg.solve_illinois(0.0, 5.0, lambda x, k, c: k * x - c, args=(2.0, 3.0))
+        self.assertTrue(converged)
+        self.assertAlmostEqual(r, 1.5, places=11)
+
+    def test_illinois_root_on_bound(self):
+        """Test Illinois returns immediately when a bound is already a root."""
+
+        calls = []
+
+        def f(x):
+            calls.append(x)
+            return x
+
+        self.assertEqual(alg.solve_illinois(0.0, 1.0, f), (0.0, True))
+        self.assertEqual(calls, [0.0])
+
+        calls.clear()
+        self.assertEqual(alg.solve_illinois(-1.0, 0.0, f), (0.0, True))
+        self.assertEqual(calls, [-1.0, 0.0])
+
+    def test_illinois_no_bracket(self):
+        """Test Illinois when the bounds do not contain a solution."""
+
+        r, converged = alg.solve_illinois(-1.0, 1.0, lambda x: x * x + 1)
+        self.assertFalse(converged)
+        self.assertTrue(math.isnan(r))
+
+        r, converged = alg.solve_illinois(2.0, 3.0, lambda x: x - 1)
+        self.assertFalse(converged)
+        self.assertTrue(math.isnan(r))
+
+    def test_illinois_tolerance(self):
+        """Test Illinois respects the specified tolerances."""
+
+        r, converged = alg.solve_illinois(0.0, 2.0, lambda x: x ** 3 - 2, atol=1e-3, rtol=0.0)
+        self.assertTrue(converged)
+        self.assertTrue(abs(r ** 3 - 2) <= 1e-3)
+
+        r2, converged = alg.solve_illinois(0.0, 2.0, lambda x: x ** 3 - 2, atol=1e-15, rtol=0.0)
+        self.assertTrue(converged)
+        self.assertTrue(abs(r2 ** 3 - 2) <= 1e-15)
+        self.assertAlmostEqual(r2, 2 ** (1 / 3), places=14)
+
+    def test_illinois_fewer_evaluations(self):
+        """Test Illinois needs far fewer evaluations than bisect on smooth functions."""
+
+        for f, a, b in (
+            (lambda x: x ** 3 - 2, 0.0, 5.0),
+            (lambda x: math.cos(x), 0.0, 3.0),
+            (lambda x: math.exp(x) - 3, -10.0, 10.0),
+            (lambda x: x ** 9 - 0.5, 0.0, 1.0)
+        ):
+            counts = []
+            for solver in (alg.solve_bisect, alg.solve_illinois):
+                count = [0]
+
+                def g(x, f=f, count=count):
+                    count[0] += 1
+                    return f(x)
+
+                _, converged = solver(a, b, g)
+                self.assertTrue(converged)
+                counts.append(count[0])
+            self.assertTrue(counts[1] < counts[0])
+
+    def test_illinois_fallback_to_bisect(self):
+        """Test Illinois falls back to bisect if it cannot converge in the allotted iterations."""
+
+        # Strongly curved function where regula falsi cannot converge in a single step
+        f = lambda x: x ** 9 - 0.5
+        r, converged = alg.solve_illinois(0.0, 1.0, f, maxiter=1)
+        self.assertFalse(converged)
+        self.assertEqual((r, converged), alg.solve_bisect(0.0, 1.0, f, maxiter=1))
 
     def test_solve_newton_bracketed_decreasing(self):
         """Test bracketed Newton variants with bounds in either order and increasing or decreasing functions."""

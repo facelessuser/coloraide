@@ -14,6 +14,9 @@ from . import cmfs
 
 WHITE = cat.WHITES['2deg']['E']
 
+# Locus segments whose angles differ by less than this are considered flat (floating point noise)
+FLAT_ANGLE = 1e-4
+
 
 @lru_cache(maxsize=1)
 def get_locus_angles(cmfs: cmfs.CMFs, white: VectorLike) -> tuple[Vector, float]:
@@ -130,14 +133,21 @@ def closest_wavelength(
             # 2. Target is not between the two wavelengths.
             # 3. An exception to (2) is if the range overlaps due to floating point noise.
             #    Then we test if the target is larger than the previous when this overlap occurs.
+            # 4. The locus is flat (no real angle change) across the segment, such as the red end, where
+            #    the angles only differ by floating point noise, and the target is not within that noise.
+            #    There is no solution to be found and it would just waste time trying to solve.
             target = invert if j else current
-            if found[j] or not (a_prev >= target and (target > a_next or (a_next > target and a_next > a_prev))):
+            if (
+                found[j] or
+                (abs(a_prev - a_next) < FLAT_ANGLE and abs(target - a_prev) > FLAT_ANGLE) or
+                not (a_prev >= target and (target > a_next or (a_next > target and a_next > a_prev)))
+            ):
                 continue
 
             # Linear interpolation of a non-linear curve will yield some offset from our current angle.
             # While the angle is likely to be "good enough", we can do better.
             # Go with the best approximation we can find.
-            f, converged = alg.solve_bisect(
+            f, converged = alg.solve_illinois(
                 0,
                 1,
                 f=compare_angle,
