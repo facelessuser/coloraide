@@ -3970,6 +3970,45 @@ class TestAlgebra(unittest.TestCase):
             [0.9504559270516716, 1.0, 1.0890577507598784]
         )
 
+    def test_pretty_floats_just_above_scientific_range(self):
+        """Test floats between 1e15 and 1e16, which Python does not format in scientific notation."""
+
+        self.assertEqual(alg.pretty([1.2e15]), '[1.2e+15]')
+        self.assertEqual(alg.pretty([1e-5, 2.5e15]), '[1.0e-05, 2.5e+15]')
+        self.assertEqual(alg.pretty(1.2e15), '1.2e+15')
+
+    def test_pretty_precision_zero(self):
+        """Test that rounding to whole numbers does not strip the zeros of the whole part."""
+
+        with alg.printoptions(precision=0):
+            self.assertEqual(alg.pretty([90.4, 10.0, 0.0, 100.0, 7.2]), '[ 90.,  10.,   0., 100.,   7.]')
+            self.assertEqual(alg.pretty(100.0), '100.')
+            self.assertEqual(alg.pretty(0.0), '0.')
+            self.assertEqual(alg.pretty([10, 20]), '[10, 20]')
+
+    def test_pretty_suppress_small_values(self):
+        """Test that suppressed scientific notation does not leave stray decimal points on small values."""
+
+        with alg.printoptions(suppress=True):
+            self.assertEqual(alg.pretty(0.00005), '0.00005')
+            self.assertEqual(alg.pretty([8.59e-8, 0.5]), '[0.0000000859, 0.5         ]')
+        with alg.printoptions(suppress=True, precision=8):
+            self.assertEqual(alg.pretty([0.00005, 0.00002]), '[0.00005, 0.00002]')
+
+    def test_pretty_scientific_whole_numbers(self):
+        """Test that whole number floats keep all of their digits next to values in scientific notation."""
+
+        self.assertEqual(alg.pretty([123456789012.0, 1e-9]), '[1.23456789012e+11, 1.00000000000e-09]')
+        self.assertEqual(alg.pretty([758669574536980.0, 1e-9]), '[7.5866957453698e+14, 1.0000000000000e-09]')
+        self.assertEqual(alg.pretty([1e-9, 3.0]), '[1.e-09, 3.e+00]')
+        self.assertEqual(alg.pretty([0.0, 1e-9]), '[0.e+00, 1.e-09]')
+
+    def test_pretty_invalid_option(self):
+        """Test the error message for an invalid print option."""
+
+        with self.assertRaisesRegex(ValueError, "^'foo' is not a valid print option$"):
+            alg.printoptions(foo=1).__enter__()
+
     def test_pretty(self):
         """Self test pretty string formatting of arrays."""
 

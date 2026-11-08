@@ -1328,7 +1328,7 @@ def _validate_printoption(key: str, value: Any) -> bool:
     """Validate pretty print options."""
 
     if key not in default_pretty_options:
-        raise ValueError(f"'{key} is not a valid print option'")
+        raise ValueError(f"'{key}' is not a valid print option")
 
     t = type(default_pretty_options[key])
     value_set = value is not None
@@ -1351,7 +1351,7 @@ def set_printoptions(
     no_leading_zeros: bool | None = None,
     padding: bool | None = None
 ) -> None:
-    """Get current print options."""
+    """Set the current print options."""
 
     _set_printoptions(
         precision=precision,
@@ -1434,6 +1434,34 @@ def _pretty_array(
     return value
 
 
+def _trim_zeros(s: str) -> str:
+    """Remove trailing zeros from the fractional part of a number string, leaving whole numbers untouched."""
+
+    return s.rstrip('0') if '.' in s else s
+
+
+def _fixed_str(x: float, p: int) -> str:
+    """Format a float with `p` decimal places, trimming trailing zeros but always keeping the decimal point."""
+
+    s = f'{x:.{p}f}'
+    return s.rstrip('0') if '.' in s else f'{s}.'
+
+
+def _sci_exact(x: float) -> str:
+    """Format a float in scientific notation using only the significant digits needed to represent it exactly."""
+
+    if not x:
+        return f'{x:.0e}'
+
+    s = repr(x)
+    if 'e' in s:
+        return s
+
+    # Count the significant digits of the plain number, ignoring leading and trailing zeros
+    digits = s.replace('-', '').replace('.', '').strip('0')
+    return f'{x:.{len(digits) - 1}e}'
+
+
 def pretty(
     value: Number | ArrayTLike[Number],
     *,
@@ -1472,8 +1500,8 @@ def pretty(
 
         # Handle leading and trailing zeros
         if is_float:
-            if (v.is_integer() or abs(v) < 1e-4) and not s_note:  # type: ignore[attr-defined, unused-ignore]
-                s = f'{s.rstrip("0").rstrip(".")}.'
+            if v.is_integer() and not s_note:  # type: ignore[attr-defined, unused-ignore]
+                s = f'{_trim_zeros(s).rstrip(".")}.'
             if no_leading_zeros:
                 if v >= 0 and s.startswith('0.') and len(s) > 2:
                     s = f'.{s[2:]}'
@@ -1532,16 +1560,12 @@ def pretty(
         if precision >= 0:
             rnd = lambda x, p: f'{x:.{p}e}'
         else:
-            rnd = lambda x, p: (
-                f'{x:.{0 if x == 0 or x.is_integer() else len(str(abs(x)).replace(".", "").lstrip("0")) - 1}e}'  # type: ignore[attr-defined, unused-ignore]
-                if not x or 1e-4 <= abs(x) <= 1e15 else
-                str(x)
-            )
+            rnd = lambda x, p: _sci_exact(x)
     elif is_float and not suppress:
-        rnd = lambda x, p: f'{x:.{p}f}'.rstrip('0') if precision >= 0 else str(x)
+        rnd = lambda x, p: _fixed_str(x, p) if precision >= 0 else str(x)
     elif is_float and suppress:
         if precision >= 0:
-            rnd = lambda x, p: f'{x:.{p}f}'.rstrip('0')
+            rnd = lambda x, p: _fixed_str(x, p)
         else:
             rnd = lambda x, p: str(x) if not x or 1e-4 <= abs(x) <= 1e15 else f'{x:.15f}'.rstrip('0')
 
