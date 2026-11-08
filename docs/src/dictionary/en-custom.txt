@@ -45,6 +45,7 @@ Chroma
 Chromaticities
 Chromaticity
 Colaboratory
+Collinear
 ColorAide
 ColorBench
 ColorBrewer
@@ -136,6 +137,7 @@ Kohlrausch
 Kries
 Kubelka
 Kz
+LAPACK
 LCh
 LChish
 LChuv
@@ -245,6 +247,7 @@ Twemoji
 UCS
 UHDTV
 UIs
+ULP
 Uncalibrated
 Vectorize
 Vectorized
