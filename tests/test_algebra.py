@@ -2831,6 +2831,31 @@ class TestAlgebra(unittest.TestCase):
         with self.assertRaises(ValueError):
             alg.det([[1, 2, 3], [4, 5, 6]])
 
+    def test_det_permutation_sign(self):
+        """Test that the sign is determined by the parity of the permutation and not by how many rows moved."""
+
+        # Two separate swaps moves four rows, but it is an even permutation
+        self.assertEqual(alg.det([[0, 1, 0, 0], [1, 0, 0, 0], [0, 0, 0, 1], [0, 0, 1, 0]]), 1.0)
+        # A single swap is odd
+        self.assertEqual(alg.det([[0, 1, 0, 0], [1, 0, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]), -1.0)
+        # A three cycle is even
+        self.assertEqual(alg.det([[0, 1, 0, 0], [0, 0, 1, 0], [1, 0, 0, 0], [0, 0, 0, 1]]), 1.0)
+        # A four cycle is odd
+        self.assertEqual(alg.det([[0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1], [1, 0, 0, 0]]), -1.0)
+        # A swap and a three cycle is odd
+        self.assertEqual(
+            alg.det([[0, 1, 0, 0, 0], [1, 0, 0, 0, 0], [0, 0, 0, 1, 0], [0, 0, 0, 0, 1], [0, 0, 1, 0, 0]]),
+            -1.0
+        )
+
+    def test_det_large(self):
+        """Test determinants of larger matrices that require row swaps."""
+
+        self.assertAlmostEqual(
+            alg.det([[0, 2, 1, 3], [4, 0, 1, 2], [1, 5, 0, 7], [2, 1, 6, 0]]),
+            -95.0
+        )
+
     def test_any(self):
         """Test any."""
 

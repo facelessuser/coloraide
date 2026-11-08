@@ -5986,6 +5986,27 @@ def trace(matrix: MatrixTLike[StrictNumber]) -> StrictNumber:
     return sum(diag(matrix))
 
 
+def _permutation_sign(perm: Sequence[int]) -> float:
+    """
+    Get the sign of a permutation: `1.0` if it is even and `-1.0` if it is odd.
+
+    A permutation's parity is determined by the number of cycles it contains, not by the number of elements
+    that moved: a permutation of `n` elements with `c` cycles is composed of `n - c` swaps.
+    """
+
+    size = len(perm)
+    seen = [False] * size
+    cycles = 0
+    for i in range(size):
+        if not seen[i]:
+            cycles += 1
+            j = i
+            while not seen[j]:
+                seen[j] = True
+                j = perm[j]
+    return -1.0 if (size - cycles) % 2 else 1.0
+
+
 @overload
 def det(array: MatrixTLike[StrictNumber]) -> float:
     ...
@@ -6004,10 +6025,8 @@ def det(array: MatrixTLike[StrictNumber] | TensorTLike[StrictNumber]) -> float |
         raise ValueError('Last two dimensions must be square')
     if len(s) == 2:
         size = s[0]
-        p, l, u = lu(cast('MatrixTLike[StrictNumber]', array), shape=s)
-        swaps = size - trace(p)
-        _sign = (-1) ** (swaps - 1) if swaps else 1
-        dt = cast('float', _sign * math.prod(l[i][i] * u[i][i] for i in range(size)))
+        p, l, u = lu(cast('MatrixTLike[StrictNumber]', array), shape=s, p_indices=True)
+        dt = _permutation_sign(p) * math.prod(l[i][i] * u[i][i] for i in range(size))
         return 0.0 if not dt else dt
     else:
         last = s[-2:]  # type: ignore[misc]
