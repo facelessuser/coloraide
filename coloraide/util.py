@@ -150,15 +150,15 @@ def absxyz_to_xyz(absxyzd65: VectorLike, yw: float = 100.0) -> Vector:
     return [c / yw for c in absxyzd65]
 
 
-def constrain_hue(hue: float) -> float:
-    """Constrain hue to [0, 360)."""
+def constrain_hue(hue: float, max_hue: float = 360.0) -> float:
+    """Constrain hue to [0, `max_hue`), where `max_hue` is a full turn (360 degrees, `tau` radians, etc.)."""
 
     if math.isnan(hue):
         return hue
 
-    # A tiny negative hue will round up to exactly 360 after the modulo, so wrap it back to zero.
-    hue %= 360
-    return 0.0 if hue >= 360 else hue
+    # A tiny negative hue will round up to exactly `max_hue` after the modulo, so wrap it back to zero.
+    hue %= max_hue
+    return 0.0 if hue >= max_hue else hue
 
 
 def get_index(obj: Sequence[Any], idx: int, default: Any = None) -> Any:

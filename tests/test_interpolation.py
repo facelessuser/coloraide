@@ -1598,6 +1598,29 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
         self.assertColorEqual(i(87), Color('red'))
         self.assertColorEqual(i(100), Color('red'))
 
+    def test_discrete_easing_not_counted(self):
+        """Easing functions between colors are not colors and should not create additional steps."""
+
+        points = [i / 10 for i in range(11)]
+        expected = [Color.discrete(['red', 'blue'], space='srgb')(p) for p in points]
+        actual = [Color.discrete(['red', ease_in, 'blue'], space='srgb')(p) for p in points]
+        for e, a in zip(expected, actual):
+            self.assertColorEqual(a, e)
+
+        expected = [Color.discrete(['red', 'blue', 'green'], space='srgb')(p) for p in points]
+        actual = [Color.discrete(['red', ease_in, 'blue', ease_in, 'green'], space='srgb')(p) for p in points]
+        for e, a in zip(expected, actual):
+            self.assertColorEqual(a, e)
+
+    def test_discrete_stops_counted(self):
+        """Colors wrapped in stops are still colors and should create a step."""
+
+        points = [i / 10 for i in range(11)]
+        actual = [Color.discrete(['red', stop('blue', 0.5), 'green'], space='srgb')(p) for p in points]
+
+        # Three colors, one of which is wrapped in a stop, means three ranges
+        self.assertEqual(len({c.to_string() for c in actual}), 3)
+
     def test_discrete_zero(self):
         """Cannot create discrete steps of zero."""
 
@@ -1985,6 +2008,22 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
         self.assertEqual(
             Color.average(['hsl(30 0 100)', 'color(srgb 0 0 1)'], space='hsl').to_string(),
             'hsl(240 50 75)'
+        )
+
+    def test_average_hue_wraps_to_zero(self):
+        """Test that a circular mean of zero is 0 and not rounded up to the maximum hue."""
+
+        for colors in (
+            ['hsl(350 100% 50%)', 'hsl(10 100% 50%)'],
+            ['hsl(10 100% 50%)', 'hsl(350 100% 50%)'],
+            ['hsl(0 100% 50%)', 'hsl(360 100% 50%)'],
+            ['hsl(355 100% 50%)', 'hsl(5 100% 50%)']
+        ):
+            self.assertEqual(Color.average(colors, space='hsl')['hue'], 0.0)
+
+        self.assertEqual(
+            Color.average(['oklch(0.5 0.1 350)', 'oklch(0.5 0.1 10)'], space='oklch')['hue'],
+            0.0
         )
 
     def test_average_no_colors(self):

@@ -11,6 +11,18 @@ from . import util
 class TestGamut(util.ColorAsserts, unittest.TestCase):
     """Test gamut mapping/fitting."""
 
+    def test_coerce_to_rgb_dynamic_range(self):
+        """Test that coercing a cylindrical space to RGB retains the dynamic range of the original space."""
+
+        from coloraide.spaces.hsl import HSL
+
+        class HDRHSL(HSL):
+            NAME = 'hdr-hsl-test'
+            DYNAMIC_RANGE = 'hdr'
+
+        self.assertEqual(gamut.coerce_to_rgb(HSL()).DYNAMIC_RANGE, 'sdr')
+        self.assertEqual(gamut.coerce_to_rgb(HDRHSL()).DYNAMIC_RANGE, 'hdr')
+
     def test_hue_clipping(self):
         """Test hue clipping."""
 

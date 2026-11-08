@@ -7,6 +7,19 @@ from coloraide import algebra as alg
 class TestAlgebra(unittest.TestCase):
     """Test Algebra."""
 
+    def test_rect_to_polar(self):
+        """Test rectangular to polar conversion."""
+
+        self.assertEqual(alg.rect_to_polar(1, 0), (1.0, 0.0))
+        self.assertEqual(alg.rect_to_polar(1, -1), (math.sqrt(2), 315.0))
+        self.assertEqual(alg.rect_to_polar(-1, 0), (1.0, 180.0))
+
+    def test_rect_to_polar_tiny_negative_angle(self):
+        """Test that a very small negative angle is wrapped to 0 and not rounded up to 360."""
+
+        self.assertEqual(alg.rect_to_polar(1, -1e-17), (1.0, 0.0))
+        self.assertEqual(alg.rect_to_polar(1, -1e-300), (1.0, 0.0))
+
     def test_ascopy(self):
         """Test "as copy"."""
 

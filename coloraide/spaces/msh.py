@@ -7,6 +7,7 @@ Accounts for negative lightness and uses degrees for hue instead of radians.
 """
 from __future__ import annotations
 import math
+from .. import util
 from .lch import LCh
 from ..cat import WHITES
 from ..channels import Channel, FLG_ANGLE, ANGLE_RAD
@@ -24,8 +25,7 @@ def lab_to_msh(lab: Vector) -> Vector:
     l, a, b = lab
     m = math.copysign(math.sqrt(l ** 2 + a ** 2 + b ** 2), l)
     s = math.acos(l / m) if m else 0
-    h = math.atan2(b, a)
-    return [m, s, h % math.tau]
+    return [m, s, util.constrain_hue(math.atan2(b, a), math.tau)]
 
 
 def msh_to_lab(msh: Vector) -> Vector:
@@ -63,7 +63,7 @@ class Msh(LCh):
         if coords[1] < 0:
             coords[1] *= -1.0
             coords[2] += math.pi
-        coords[2] %= math.tau
+        coords[2] = util.constrain_hue(coords[2], math.tau)
         return coords
 
     def lightness_name(self) -> str:

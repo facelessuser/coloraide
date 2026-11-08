@@ -44,8 +44,7 @@ def xyz_to_sucs(xyz: Vector) -> Vector:
     lms_p = [alg.spow(i, 0.43) for i in alg.matmul_x3(XYZ_TO_LMS, xyz, dims=alg.D2_D1)]
     i, a, b = alg.matmul_x3(TO_IAB, lms_p, dims=alg.D2_D1)
     c = (1 / 0.0252) * math.log(1 + 0.0447 * math.sqrt(a ** 2 + b ** 2))
-    h = math.atan2(b, a) % math.tau
-    return [i, c, math.degrees(h)]
+    return [i, c, util.constrain_hue(math.degrees(math.atan2(b, a)))]
 
 
 class sUCS(LCh):

@@ -186,6 +186,27 @@ class TestMisc(util.ColorAsserts, unittest.TestCase):
         self.assertColorEqual(Color('white').normalize(), Color('white'))
         self.assertColorNotEqual(Color('hsl(270 0% 50%)').normalize(), Color('hsl(270 0% 50%)'))
 
+    def test_normalize_tiny_negative_hue(self):
+        """Test that normalizing a very small negative hue never leaves the hue at 360."""
+
+        for name, cs in ColorAll.CS_MAP.items():
+            # HWB does not currently override `normalize()`, so it does not constrain the hue at all
+            if not cs.is_polar() or name == 'hwb':
+                continue
+            hue = cs.hue_index()
+            mx = cs.channels[hue].high
+            coords = [0.5] * 3
+            coords[hue] = -1e-17
+            c = ColorAll(name, coords).normalize(nans=False)
+            self.assertTrue(0.0 <= c[hue] < mx, f"{name} hue is {c[hue]}")
+
+    def test_msh_tiny_negative_hue(self):
+        """Test that Msh, which uses radians, never produces a hue of a full turn."""
+
+        from coloraide.spaces.msh import lab_to_msh
+
+        self.assertEqual(lab_to_msh([50.0, 1.0, -1e-17])[2], 0.0)
+
     def test_color_dict(self):
         """Color dictionaries."""
 

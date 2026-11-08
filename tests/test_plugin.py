@@ -392,6 +392,23 @@ class TestCustom(util.ColorAsserts, unittest.TestCase):
         with self.assertRaises(ValueError):
             Custom.register(CustomFit(), overwrite=True)
 
+    def test_reserved_registration_fit_message(self):
+        """Test that the reserved fit method error message includes the name."""
+
+        from coloraide.gamut import Fit
+
+        class Custom(Color):
+            pass
+
+        class CustomFit(Fit):
+            NAME = 'clip'
+
+            def fit(self, color, space, **kwargs):
+                return [0, 0, 0]
+
+        with self.assertRaisesRegex(ValueError, "^'clip' is a reserved name"):
+            Custom.register(CustomFit(), overwrite=True)
+
     def test_reserved_gamut_name_registration(self):
         """Test override registration of reserved fit method."""
 
