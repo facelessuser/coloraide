@@ -2,7 +2,7 @@
 """Typing."""
 from __future__ import annotations
 from collections.abc import Mapping, Sequence
-from typing import Any, TypeVar, Union, TYPE_CHECKING, Unpack
+from typing import Any, TypeVar, Union, TYPE_CHECKING
 if TYPE_CHECKING:  # pragma: no cover
     from .color import Color
 
@@ -66,7 +66,7 @@ ArrayIntLike = ArrayTLike[int]
 EmptyShape = tuple[()]
 VectorShape = tuple[int]
 MatrixShape = tuple[int, int]
-TensorShape = tuple[int, int, int, Unpack[tuple[int, ...]]]
+TensorShape = tuple[int, int, int, *tuple[int, ...]]
 
 ArrayShape = tuple[int, ...]
 Shape = EmptyShape | ArrayShape

@@ -97,7 +97,7 @@ lint.select = [
     "F",    # pyflakes
     "PGH",  # pygrep-hooks
     "RUF",  # ruff
-    # "UP",   # pyupgrade
+    "UP",   # pyupgrade
     "W",    # pycodestyle
     "YTT",  # flake8-2020,
     "PERF"  # Perflint
@@ -125,7 +125,8 @@ lint.ignore = [
     "RUF012",
     "RUF022",
     "RUF023",
-    "RUF100"
+    "RUF100",
+    "UP032"
 ]
 
 [tool.coverage.report]

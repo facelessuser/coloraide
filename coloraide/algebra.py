@@ -1293,7 +1293,7 @@ class NaturalBSplineInterpolator(BSplineInterpolator):
         """Apply any preprocessing points."""
 
         cls.naturalize(points)
-        super(NaturalBSplineInterpolator, cls).preprocess(points, end_cond, **kwargs)
+        super().preprocess(points, end_cond, **kwargs)
 
 
 class SpragueInterpolator(Interpolator):
