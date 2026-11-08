@@ -4405,11 +4405,17 @@ class MultiArrayBuilder(ArrayBuilder[Number]):
 def flatiter(array: Number | ArrayTLike[Number], *, shape: Shape | None = None) -> Iterator[Number]:
     """Traverse an array returning values."""
 
-    for indices in ndindex(_shape(array) if shape is None else shape):
-        m = array  # type: Any
-        for i in indices:
-            m = m[i]
-        yield m
+    s = _shape(array) if shape is None else shape
+
+    # Scalars are the only thing without dimensions
+    if not s:
+        return iter((array,))  # type: ignore[arg-type]
+
+    # Flatten one dimension at a time with `chain`, which is much faster than indexing from the root for every value
+    items = array  # type: Any
+    for _ in range(len(s) - 1):
+        items = it.chain.from_iterable(items)
+    return iter(items)
 
 
 def ravel(array: Number | ArrayTLike[Number], *, shape: Shape | None = None) -> VectorT[Number]:
@@ -4546,6 +4552,16 @@ def transpose(array: ArrayTLike[Number] | Number) -> Number | ArrayT[Number]:
     return m
 
 
+def _unflatten(data: VectorT[Number], s: Shape) -> ArrayT[Number]:
+    """Slice a flat list of data into an array of the specified shape."""
+
+    if len(s) == 1:
+        return data
+    s = s[1:]
+    step = math.prod(s)
+    return [_unflatten(data[i:i + step], s) for i in range(0, len(data), step)]  # type: ignore[return-value]
+
+
 @overload
 def reshape(array: ArrayTLike[Number] | Number, new_shape: EmptyShape) -> Number:
     ...
@@ -4598,12 +4614,14 @@ def reshape(array: ArrayTLike[Number] | Number, new_shape: int | Shape) -> Numbe
     if not empty and total != math.prod(current_shape):
         raise ValueError(f'Shape {new_shape} does not match the data total of {shape(array)}')
 
-    # Create the array
+    # Non-empty arrays can be sliced into the requested shape
+    if not empty:
+        return _unflatten(list(flatiter(array, shape=current_shape)), new_shape)
+
+    # Empty arrays have no data, so the builder only needs to generate the empty dimensions when it drains
     m = []  # type: ArrayT[Number]
-    with ArrayBuilder(m, new_shape) as build:
-        # Create an iterator to traverse the data
-        for data in flatiter(array, shape=current_shape) if len(current_shape) > 1 else iter(array):
-            next(build).append(data)
+    with ArrayBuilder(m, new_shape):
+        pass
 
     return m
 
@@ -5055,11 +5073,16 @@ def lu(
 
         # We have a pivot point, let's zero out everything above and below
         # the 'l' and 'u' diagonal respectively
+        ui = u[i]
+        pivot = ui[i]
         for j in range(i + 1, size):
-            scalar = u[j][i] / u[i][i]
+            uj = u[j]
+            scalar = uj[i] / pivot
             for k in range(i, size):
-                u[j][k] += -u[i][k] * scalar
-                l[j][k] += l[i][k] * scalar
+                uj[k] -= ui[k] * scalar
+
+            # `L` is unit lower triangular, so the row being eliminated from only has its diagonal in this range
+            l[j][i] += scalar
 
     # Clean up the wide and tall matrices
     if tall:
@@ -5097,13 +5120,18 @@ def _forward_sub_matrix(a: MatrixT[float], b: MatrixT[float], s: ArrayShape) -> 
     """Forward substitution for solution of `L x = b` where `b` is a matrix."""
 
     size1, size2 = s
+    cols = range(size2)
     for i in range(size1):
+        ai = a[i]
         v = b[i]
         for j in range(i):
-            for k in range(size2):
-                v[k] -= a[i][j] * b[j][k]
-        for j in range(size2):
-            v[j] /= a[i][i]
+            aij = ai[j]
+            bj = b[j]
+            for k in cols:
+                v[k] -= aij * bj[k]
+        d = ai[i]
+        for k in cols:
+            v[k] /= d
     return b
 
 
@@ -5122,13 +5150,18 @@ def _back_sub_matrix(a: MatrixT[float], b: MatrixT[float], s: ArrayShape) -> Mat
     """Back substitution for solution of `U x = b`."""
 
     size1, size2 = s
+    cols = range(size2)
     for i in range(size1 - 1, -1, -1):
+        ai = a[i]
         v = b[i]
         for j in range(i + 1, size1):
-            for k in range(size2):
-                v[k] -= a[i][j] * b[j][k]
-        for j in range(size2):
-            b[i][j] /= a[i][i]
+            aij = ai[j]
+            bj = b[j]
+            for k in cols:
+                v[k] -= aij * bj[k]
+        d = ai[i]
+        for k in cols:
+            v[k] /= d
     return b
 
 
@@ -5311,9 +5344,15 @@ def _diagonalization_of_bidiagonal(
     u: MatrixT[float],
     q: VectorT[float],
     v: MatrixT[float],
-    eps: float
+    eps: float,
+    compute_uv: bool = True
 ) -> None:
-    """Diagonalization of the bidiagonal form."""
+    """
+    Diagonalization of the bidiagonal form.
+
+    The rotations applied to `U` and `V` have no influence on the singular values,
+    so they are skipped when only the singular values are needed.
+    """
 
     l = 0
     eps = eps * x
@@ -5347,11 +5386,12 @@ def _diagonalization_of_bidiagonal(
                     g = q[i]
                     c, s, h = _compute_orthogonal_rotation(g, -f)
                     q[i] = h
-                    for j in range(m):
-                        y = u[j][l1]
-                        z = u[j][i]
-                        u[j][l1] = y * c + z * s
-                        u[j][i] = -y * s + z * c
+                    if compute_uv:
+                        for row in u:
+                            y = row[l1]
+                            z = row[i]
+                            row[l1] = y * c + z * s
+                            row[i] = -y * s + z * c
 
             # Test f convergence
             z = q[k]
@@ -5360,8 +5400,9 @@ def _diagonalization_of_bidiagonal(
                 if z < 0.0:
                     # q[k] is made non-negative
                     q[k] = -z
-                    for j in range(n):
-                        v[j][k] = -v[j][k]
+                    if compute_uv:
+                        for row in v:
+                            row[k] = -row[k]
                 break
 
             # Shift from bottom 2x2 minor
@@ -5391,22 +5432,24 @@ def _diagonalization_of_bidiagonal(
                 h = y * s
                 y = y * c
 
-                for j in range(n):
-                    x = v[j][i - 1]
-                    z = v[j][i]
-                    v[j][i - 1] = x * c + z * s
-                    v[j][i] = -x * s + z * c
+                if compute_uv:
+                    for row in v:
+                        x = row[i - 1]
+                        z = row[i]
+                        row[i - 1] = x * c + z * s
+                        row[i] = -x * s + z * c
 
                 c, s, z = _compute_orthogonal_rotation(f, h)
                 q[i-1] = z
                 f = c * g + s * y
                 x = -s * g + c * y
 
-                for j in range(m):
-                    y = u[j][i - 1]
-                    z = u[j][i]
-                    u[j][i-1] = y * c + z * s
-                    u[j][i] = -y * s + z * c
+                if compute_uv:
+                    for row in u:
+                        y = row[i - 1]
+                        z = row[i]
+                        row[i - 1] = y * c + z * s
+                        row[i] = -y * s + z * c
 
             e[l] = 0.0
             e[k] = f
@@ -5496,7 +5539,7 @@ def _svd(
     if compute_uv:
         g = _accumulate_right_transfrom(n, g, l, e, u, v)
         g = _accumulate_left_transform(m, n, g, l, u, q)
-    _diagonalization_of_bidiagonal(m, n, g, x, y, e, u, q, v, eps)
+    _diagonalization_of_bidiagonal(m, n, g, x, y, e, u, q, v, eps, compute_uv)
 
     if full_matrices and not square:
         if compute_uv:

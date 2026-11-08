@@ -1054,6 +1054,61 @@ class TestAlgebra(unittest.TestCase):
         with self.assertRaises(ValueError):
             list(alg.flatiter([[[1, 2], [1, 2, 3]], [1, 2]]))
 
+    def test_flatiter_shapes(self):
+        """Test `flatiter` with scalars, vectors, tuples, empty dimensions, and a provided shape."""
+
+        # Scalars are returned as is
+        self.assertEqual(list(alg.flatiter(3)), [3])
+        self.assertEqual(list(alg.flatiter(3, shape=())), [3])
+
+        # Vectors and tuples
+        self.assertEqual(list(alg.flatiter([1, 2, 3])), [1, 2, 3])
+        self.assertEqual(list(alg.flatiter(((1, 2), (3, 4)))), [1, 2, 3, 4])
+
+        # Deeper arrays are flattened in row-major order
+        a = alg.reshape(alg.arange(24), (2, 3, 4))
+        self.assertEqual(list(alg.flatiter(a)), list(range(24)))
+        self.assertEqual(alg.ravel(a), list(range(24)))
+
+        # Empty dimensions yield nothing
+        self.assertEqual(list(alg.flatiter([])), [])
+        self.assertEqual(list(alg.flatiter([[], []])), [])
+        self.assertEqual(list(alg.flatiter([[[], []], [[], []]])), [])
+
+        # A shape can be provided to avoid calculating it, and may be shallower than the array
+        self.assertEqual(list(alg.flatiter([[1, 2], [3, 4]], shape=(2, 2))), [1, 2, 3, 4])
+        self.assertEqual(list(alg.flatiter([[1, 2], [3, 4]], shape=(2,))), [[1, 2], [3, 4]])
+
+        # Iteration is lazy
+        it = alg.flatiter([[1, 2], [3, 4]])
+        self.assertEqual(next(it), 1)
+        self.assertEqual(list(it), [2, 3, 4])
+
+    def test_reshape_data_order(self):
+        """Test that reshaping preserves data order, returns new lists, and handles shape changes in rank."""
+
+        a = alg.reshape(alg.arange(24), (2, 3, 4))
+        self.assertEqual(alg.reshape(a, (24,)), list(range(24)))
+        self.assertEqual(alg.reshape(a, (4, 6)), [list(range(i, i + 6)) for i in range(0, 24, 6)])
+        self.assertEqual(alg.reshape(a, (6, 2, 2)), [[[i, i + 1], [i + 2, i + 3]] for i in range(0, 24, 4)])
+        self.assertEqual(alg.reshape(a, (3, 8, 1))[1][0], [8])
+        self.assertEqual(alg.reshape(alg.reshape(a, (4, 6)), (2, 3, 4)), a)
+
+        # Results never share rows with the input
+        m = [[1, 2], [3, 4]]
+        r = alg.reshape(m, (2, 2))
+        r[0][0] = 99
+        self.assertEqual(m[0][0], 1)
+        r = alg.reshape(m, (1, 4))
+        r[0][0] = 99
+        self.assertEqual(m, [[1, 2], [3, 4]])
+        v = [1, 2, 3, 4]
+        r = alg.reshape(v, (4, 1))
+        self.assertEqual(r, [[1], [2], [3], [4]])
+        r = alg.reshape(v, 4)
+        r[0] = 99
+        self.assertEqual(v[0], 1)
+
     def test_full(self):
         """Test full."""
 
@@ -3581,6 +3636,27 @@ class TestAlgebra(unittest.TestCase):
             q2, r2 = alg.qr(a[i])
             self.assertEqual(q[i], q2)
             self.assertEqual(r[i], r2)
+
+    def test_svd_cancellation(self):
+        """Test SVD on rank deficient matrices that require cancellation of the bidiagonal form."""
+
+        for a in (
+            [[-2, -1, 0, -2], [0, 2, 1, 2], [-2, -1, 0, -2]],
+            [[2, 1, -1, -1], [2, -1, -2, -1], [2, 2, -1, 1], [2, 1, -1, -1]],
+            [[2, 2, -2], [1, 2, -1], [2, 2, -2]],
+            [[0, 0, 0], [2, 2, 0], [1, 2, -2]],
+            [[0, -2], [0, -2]]
+        ):
+            u, s, v = alg.svd(a)
+            rows, cols = alg.shape(a)
+            sigma = [[s[i] if i == j else 0.0 for j in range(cols)] for i in range(rows)]
+
+            # The decomposition must reproduce the original matrix, `U` and `V` must be orthonormal,
+            # and computing only the singular values yields the same singular values.
+            self.assertTrue(alg.allclose(alg.matmul(alg.matmul(u, sigma), alg.transpose(v)), a, abs_tol=1e-12))
+            self.assertTrue(alg.allclose(alg.matmul(alg.transpose(u), u), alg.eye(rows), abs_tol=1e-12))
+            self.assertTrue(alg.allclose(alg.matmul(alg.transpose(v), v), alg.eye(cols), abs_tol=1e-12))
+            self.assertEqual(alg.svdvals(a), s)
 
     def test_svdvals(self):
         """Get just the SVD values."""
