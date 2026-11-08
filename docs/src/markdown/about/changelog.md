@@ -16,6 +16,8 @@ icon: lucide/scroll-text
     coefficients (0.3, 0.59, and 0.11) defined in the Compositing and Blending specification.
 -   **FIX**: Spectral `weighted_mix()` did not normalize the residual of out of gamut colors by the average weight,
     causing results to change depending on the scale of the weights instead of only their relative values.
+-   **FIX**: `svd()` and `svdvals()` now return the singular values sorted in descending order, like Numpy, with the
+    columns of `U` and `V` reordered to match. Previously, the order was arbitrary.
 -   **FIX**: `det()` could return the wrong sign for matrices of 4 x 4 or larger when row swaps were required.
 -   **FIX**: Fix `alpha()` ignoring a `precision` of `0`; alpha is now rounded to an integer like the other channels.
 -   **FIX**: `average()` and `weighted_mix()` now respect the `CARRYFORWARD` (and, for `weighted_mix()`, `POWERLESS`)

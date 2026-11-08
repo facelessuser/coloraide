@@ -5395,6 +5395,17 @@ def _svd(
                 del r[-diff:]
         del q[-diff:]
 
+    # The algorithm does not produce the singular values in any particular order, so sort them in descending order
+    # like Numpy and LAPACK. When computing `U` and `V`, their columns must follow the singular values they belong to.
+    # Any extra columns of `U` (when computing full matrices) are not associated with a singular value and stay put.
+    k = len(q)
+    order = sorted(range(k), key=q.__getitem__, reverse=True)
+    if order != list(range(k)):
+        q = [q[i] for i in order]
+        if compute_uv:
+            u = [[r[i] for i in order] + r[k:] for r in u]
+            v = [[r[i] for i in order] for r in v]
+
     if compute_uv:
         if wide:
             v, u = u, v
