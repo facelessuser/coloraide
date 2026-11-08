@@ -1258,8 +1258,8 @@ class Color(metaclass=ColorMeta):
         out_space: str | None = None,
         method: str | None = None,
         premultiplied: bool = True,
-        carryforward: bool = False,
-        powerless: bool = False,
+        carryforward: bool | None = None,
+        powerless: bool | None = None,
         hue: str = 'shorter',
         **kwargs: Any
     ) -> Self:
@@ -1272,8 +1272,8 @@ class Color(metaclass=ColorMeta):
             weights,
             space,
             premultiplied,
-            carryforward,
-            powerless,
+            carryforward if carryforward is not None else cls.CARRYFORWARD,
+            powerless if powerless is not None else cls.POWERLESS,
             hue,
             **kwargs
         )
@@ -1292,7 +1292,7 @@ class Color(metaclass=ColorMeta):
         space: str | None = None,
         out_space: str | None = None,
         premultiplied: bool = True,
-        carryforward: bool | None = False,
+        carryforward: bool | None = None,
         **kwargs: Any
     ) -> Self:
         """Average the colors."""

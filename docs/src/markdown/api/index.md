@@ -868,8 +868,8 @@ def interpolate(
     domain: list[float] | None = None,
     method: str = "linear",
     padding: float | tuple[float, float] | None = None,
-    carryforward: bool | None = False,
-    powerless: bool | None = False,
+    carryforward: bool | None = None,
+    powerless: bool | None = None,
     **kwargs: Any
 ) -> Interpolator:
     ...
@@ -924,8 +924,8 @@ Parameters
     `domain`        | `#!py None`       | A list of numbers defining the domain range of the interpolation.
     `method`        | `#!py "linear"`   | The interpolation method to use.
     `padding`       | `#!py None`       | Adjust the padding of the interpolation range.
-    `carryforward`  | `#!py False`      | Carry forward undefined channels when converting to the interpolation space. If `#!py None`, will use the class default which is `#!py False` by default.
-    `powerless`     | `#!py None`       | Treat explicitly defined hues as powerless when the color is considered achromatic. If `#!py None`, will use the class default which is `#!py False` by default.
+    `carryforward`  | `#!py None`       | Carry forward undefined channels when converting to the interpolation space. If `#!py None`, will use the class default, [`CARRYFORWARD`](../color.md#override-default-settings), which is `#!py False` by default.
+    `powerless`     | `#!py None`       | Treat explicitly defined hues as powerless when the color is considered achromatic. If `#!py None`, will use the class default, [`POWERLESS`](../color.md#override-default-settings), which is `#!py False` by default.
 
 Return
 
@@ -1085,8 +1085,8 @@ def weighted_mix(
     out_space: str | None = None,
     method: str | None = None,
     premultiplied: bool = True,
-    carryforward: bool = False,
-    powerless: bool = False,
+    carryforward: bool | None = None,
+    powerless: bool | None = None,
     hue: str = 'shorter',
     **kwargs: Any
 ) -> Self:
@@ -1108,19 +1108,15 @@ Parameters
     `out_space`     | `#!py None`      | Color space that the new color should be in. If `#!py None`, the return color will be in the same color space as specified via `space`.
     `method`        | `#!py "linear"`  | The interpolation method to use.
     `premultiplied` | `#!py True`      | Specify whether colors should be premultiplied during the averaging process.
-    `carryforward`  | `#!py False`     | Carry forward undefined channels when converting to the interpolation space. If `#!py None`, will use the class default which is `#!py False` by default.
-    `powerless`     | `#!py None`      | Treat explicitly defined hues as powerless when the color is considered achromatic. If `#!py None`, will use the class default which is `#!py False` by default.
+    `carryforward`  | `#!py None`      | Carry forward undefined channels when converting to the interpolation space. If `#!py None`, will use the class default, [`CARRYFORWARD`](../color.md#override-default-settings), which is `#!py False` by default.
+    `powerless`     | `#!py None`      | Treat explicitly defined hues as powerless when the color is considered achromatic. If `#!py None`, will use the class default, [`POWERLESS`](../color.md#override-default-settings), which is `#!py False` by default.
     `hue`           | `#!py "shorter"` | Define how color spaces which have hue angles are interpolated. Default evaluates between the shortest angle.
 
 Return
 
--   Returns a reference to the new [`Color`](#color) object representing the average of the input colors.
+-   Returns a reference to the new [`Color`](#color) object representing the weighted mix of the input colors.
 
 ///
-
-> [!warning] Deprecated 4.1
-> `powerless` parameter has been deprecated in 4.1 and as it is now always enabled. The parameter no longer does anything
-> and will be removed in the future.
 
 ## `#!py3 Color.average` {#average}
 
@@ -1134,7 +1130,7 @@ def average(
     space: str | None = None,
     out_space: str | None = None,
     premultiplied: bool = True,
-    carryforward: bool = False,
+    carryforward: bool | None = None,
     **kwargs: Any
 ) -> Self:
     ...
@@ -1155,16 +1151,13 @@ Parameters
     `space`          | `#!py None` | An optional string to specify what color space the colors should be averaged in. If none is provided, Oklab is assumed.
     `out_space`      | `#!py None` | Color space that the new color should be in. If `#!py None`, the return color will be in the same color space as specified via `space`.
     `premultiplied`  | `#!py True` | Specify whether colors should be premultiplied during the averaging process.
+    `carryforward`   | `#!py None` | Carry forward undefined channels when converting to the averaging space. If `#!py None`, will use the class default, [`CARRYFORWARD`](../color.md#override-default-settings), which is `#!py False` by default.
 
 Return
 
 -   Returns a reference to the new [`Color`](#color) object representing the average of the input colors.
 
 ///
-
-> [!warning] Deprecated 4.1
-> `powerless` parameter has been deprecated in 4.1 and as it is now always enabled. The parameter no longer does anything
-> and will be removed in the future.
 
 ## `#!py Color.filter` {#cvd}
 

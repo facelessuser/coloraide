@@ -2207,6 +2207,45 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
         self.assertColorEqual(c[9], Color('color(srgb-linear 0 0.06783 0.35484 / 0.93939)'))
         self.assertColorEqual(c[11], Color('color(srgb-linear 0 0.06372 0.33333)'))
 
+    def test_class_defaults_carryforward_powerless(self):
+        """Test that `interpolate()`, `average()` and `weighted_mix()` all respect the class defaults."""
+
+        class Custom(Color):
+            CARRYFORWARD = True
+            POWERLESS = True
+
+        colors = ['color(srgb 0.5 none 0.8)', 'white']
+        hsl = ['hsl(120 0% 50%)', 'hsl(240 100% 50%)']
+
+        # Base class does not carry forward or treat hues as powerless
+        green = Color.average(colors, space='display-p3').get('green')
+        self.assertNotEqual(green, 1.0)
+        self.assertEqual(Color.weighted_mix(colors, [1, 1], space='display-p3').get('green'), green)
+        self.assertEqual(Color.weighted_mix(hsl, [1, 1], space='hsl')['hue'], 180)
+
+        # The custom class uses its own defaults everywhere
+        self.assertColorEqual(
+            Custom.average(colors, space='display-p3'),
+            Color.average(colors, space='display-p3', carryforward=True)
+        )
+        self.assertColorEqual(
+            Custom.weighted_mix(colors, [1, 1], space='display-p3'),
+            Color.weighted_mix(colors, [1, 1], space='display-p3', carryforward=True)
+        )
+        self.assertColorEqual(
+            Custom.interpolate(colors, space='display-p3')(0.5),
+            Color.interpolate(colors, space='display-p3', carryforward=True)(0.5)
+        )
+        self.assertEqual(Custom.weighted_mix(hsl, [1, 1], space='hsl')['hue'], 240)
+
+        # Explicit arguments still override the class defaults
+        self.assertEqual(Custom.average(colors, space='display-p3', carryforward=False).get('green'), green)
+        self.assertEqual(
+            Custom.weighted_mix(colors, [1, 1], space='display-p3', carryforward=False).get('green'),
+            green
+        )
+        self.assertEqual(Custom.weighted_mix(hsl, [1, 1], space='hsl', powerless=False)['hue'], 180)
+
     def test_spectral_blue_yellow(self):
         """Test yellow and blue mixing."""
 
