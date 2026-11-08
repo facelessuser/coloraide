@@ -795,6 +795,35 @@ class TestAlgebra(unittest.TestCase):
             (1, 0)
         )
 
+    def test_shape_scalar_types(self):
+        """Test shape handles tuples, mixed numeric types, and scalar types that are not validated in bulk."""
+
+        from decimal import Decimal
+        from fractions import Fraction
+
+        self.assertEqual(alg.shape((1, 2.5, 3)), (3,))
+        self.assertEqual(alg.shape(((1, 2), (3, 4), (5, 6))), (3, 2))
+        self.assertEqual(alg.shape([(1, 2), [3, 4]]), (2, 2))
+        self.assertEqual(alg.shape([True, False, 1]), (3,))
+        self.assertEqual(alg.shape([[Decimal(1), Fraction(1, 2)], [1, 2.0]]), (2, 2))
+
+    def test_shape_ragged_scalar_first(self):
+        """Test ragged detection when the first entry is a scalar, regardless of scalar type or position."""
+
+        from decimal import Decimal
+
+        for array in (
+            [1, [2], 3],
+            [1, 2, [3]],
+            [1, 2, (3, 4)],
+            [True, 2, [3]],
+            [Decimal(1), 2, [3]],
+            [[1, 2], [3, [4]]],
+            [[1, 2], [3, 4], [5, [6]]]
+        ):
+            with self.assertRaises(ValueError):
+                alg.shape(array)
+
     def test_ones(self):
         """Test ones matrix."""
 

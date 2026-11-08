@@ -33,7 +33,8 @@ from .types import (
     Number, StrictNumber, Shape, DimHints, EmptyShape, VectorShape, MatrixShape, TensorShape, ArrayShape,
     VectorT, MatrixT, TensorT, ArrayT, VectorTLike, MatrixTLike, TensorTLike, ArrayTLike
 )
-from typing import Callable, Sequence, Iterator, Any, overload, Generic, Literal, cast
+from collections.abc import Sequence
+from typing import Callable, Iterator, Any, overload, Generic, Literal, cast
 
 EPS = sys.float_info.epsilon
 RTOL = 4 * EPS
@@ -4607,6 +4608,10 @@ def reshape(array: ArrayTLike[Number] | Number, new_shape: int | Shape) -> Numbe
     return m
 
 
+# Scalar types that we can validate in bulk when determining the shape of an array
+_SCALAR_TYPES = frozenset((float, int, bool))
+
+
 @overload
 def shape(a: Number, *, quick: bool = ...) -> EmptyShape:
     ...
@@ -4654,8 +4659,18 @@ def shape(a: ArrayTLike[Number] | Number, *, quick: bool = False) -> Shape:
     if not size:
         return (size,)
 
+    # Innermost arrays (vectors of scalars) are by far the most common case, so avoid recursing into every scalar.
+    # Scalars of the usual types are validated in bulk. Anything unusual falls back to a full check.
+    first_entry = a[0]
+    if not isinstance(first_entry, Sequence):
+        if not _SCALAR_TYPES.issuperset(map(type, a)):
+            for r in range(1, size):
+                if isinstance(a[r], Sequence):
+                    raise ValueError('Ragged lists are not supported')
+        return (size,)
+
     # Recursively get the shape of the first entry and compare against the others
-    first = shape(a[0])
+    first = shape(first_entry)
     for r in range(1, size):
         if shape(a[r]) != first:
             raise ValueError('Ragged lists are not supported')

@@ -6,6 +6,7 @@ icon: lucide/scroll-text
 ## 8.14.2
 
 -   **FIX**: Improve performance of wavelength calculations.
+-   **FIX**: Performance improvements within algebraic functions.
 
 ## 8.14.1
 
