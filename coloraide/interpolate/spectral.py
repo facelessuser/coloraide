@@ -438,7 +438,8 @@ class Spectral(Interpolate):
             wavg = math.nan
         res_avgs[-1] = alpha = math.nan if not res_counts[-1] else res_avgs[-1] / wavg
         factor = 1 if not premultiplied or not alpha or (math.isnan(alpha) and not math.isnan(wavg)) else alpha
-        xyz = [(xyz1[0] + res_avgs[0]) / factor, (xyz1[1] + res_avgs[1]) / factor, (xyz1[2] + res_avgs[2]) / factor]
+        # The residual is a weighted average like everything else, so it must be normalized by the average weight.
+        xyz = [(xyz1[i] + res_avgs[i] / wavg) / factor for i in range(3)]
 
         # Create the color.
         color = obj.update(space, xyz, res_avgs[-1])

@@ -2511,6 +2511,36 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
             Color.weighted_mix([c1, c2], [0.5, 0.5], method='spectral')
         )
 
+    def test_spectral_weighted_out_of_gamut_scale(self):
+        """Test that relative weights give the same result regardless of scale, even with a residual."""
+
+        # Colors outside the sRGB gamut have a residual that is not represented by the spectral curves
+        colors = ['color(display-p3 0 1 0)', 'color(display-p3 1 0 0.3)']
+        expected = Color.weighted_mix(colors, [1, 1], method='spectral')
+        for scale in (0.5, 2, 10):
+            self.assertColorEqual(
+                Color.weighted_mix(colors, [scale, scale], method='spectral'),
+                expected
+            )
+
+        colors.append('color(rec2020 0.2 0.9 0.1)')
+        expected = Color.weighted_mix(colors, [1, 2, 3], method='spectral')
+        for scale in (0.25, 3, 10):
+            self.assertColorEqual(
+                Color.weighted_mix(colors, [scale, scale * 2, scale * 3], method='spectral'),
+                expected
+            )
+
+    def test_spectral_weighted_out_of_gamut_matches_mix(self):
+        """Test that weighted mixing of out of gamut colors matches interpolation."""
+
+        colors = ['color(display-p3 0 1 0)', 'color(display-p3 1 0 0.3)']
+        for t in (0.25, 0.5, 0.75):
+            self.assertColorEqual(
+                Color.weighted_mix(colors, [1 - t, t], method='spectral'),
+                Color.interpolate(colors, method='spectral')(t)
+            )
+
     def test_spectral_no_alpha(self):
         """Test with no alpha."""
 

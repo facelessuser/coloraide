@@ -12,6 +12,8 @@ icon: lucide/scroll-text
 -   **FIX**: Fix issue where hue constraints sometimes left very small values constrained to 360 instead of 0. This also
     applies to the Msh and sUCS color spaces.
 -   **FIX**: HWB did not constrain the hue when normalizing.
+-   **FIX**: Spectral `weighted_mix()` did not normalize the residual of out of gamut colors by the average weight,
+    causing results to change depending on the scale of the weights instead of only their relative values.
 -   **FIX**: `det()` could return the wrong sign for matrices of 4 x 4 or larger when row swaps were required.
 -   **FIX**: Fix `alpha()` ignoring a `precision` of `0`; alpha is now rounded to an integer like the other channels.
 -   **FIX**: `average()` and `weighted_mix()` now respect the `CARRYFORWARD` (and, for `weighted_mix()`, `POWERLESS`)
