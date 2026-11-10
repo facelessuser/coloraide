@@ -6,6 +6,8 @@ icon: lucide/scroll-text
 ## 8.15
 
 -   **NEW**: Drop support for Python 3.10.
+-   **FIX**: For consistency, have `oklch-cubic` gamut mapping handle HDR targets similar to other chroma reduction
+    algorithms (e.g. don't clamp the limits of their channels to SDR ranges).
 -   **FIX**: Improve performance of wavelength calculations.
 -   **FIX**: Performance improvements within algebraic functions.
 -   **FIX**: Small performance improvements in type instance checks.

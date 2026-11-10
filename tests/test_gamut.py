@@ -4,7 +4,7 @@ import math
 from coloraide.everything import ColorAll as Color
 from coloraide import gamut
 from coloraide.gamut.fit_raytrace import raytrace_box
-from coloraide.gamut.fit_oklch_cubic import get_hue_data
+from coloraide.gamut.fit_oklch_cubic import get_hue_data, get_max_chroma, get_max_chroma_cached
 from . import util
 
 
@@ -950,6 +950,60 @@ class TestOkLChCubic(util.ColorAsserts, unittest.TestCase):
         self.assertTrue(get_hue_data.cache_info().currsize != 0)
         Color('rec2020', [1, 0, 0]).fit('display-p3', method='oklch-cubic', clear_cache=True)
         self.assertTrue(get_hue_data.cache_info().currsize == 0)
+
+    def test_hdr_max_lightness(self):
+        """Test that HDR spaces use the HDR lightness limit and not the SDR limit."""
+
+        mx = Color('rec2100-hlg', [1, 1, 1]).convert('rec2100-linear')[0]
+        max_l = mx ** (1 / 3)
+
+        # At or above the maximum lightness, we get the linear maximum, not SDR white
+        for l in (max_l, max_l + 1):
+            c = Color('oklch', [l, 0.2, 120]).fit('rec2100-hlg', method='oklch-cubic')
+            self.assertColorEqual(c.convert('rec2100-linear'), Color('rec2100-linear', [mx, mx, mx]))
+            self.assertColorEqual(c.convert('rec2100-hlg'), Color('rec2100-hlg', [1, 1, 1]))
+
+        # Lightness above SDR is preserved and the result lands on the HDR gamut surface
+        for cache in (False, True):
+            c = Color('oklch', [1.3, 0.4, 250]).fit('rec2100-hlg', method='oklch-cubic', cache=cache)
+            self.assertAlmostEqual(c.convert('oklch')['lightness'], 1.3, places=4)
+            coords = c.convert('rec2100-linear')[:-1]
+            self.assertTrue(all(-1e-6 <= x <= mx + 1e-6 for x in coords))
+            self.assertTrue(any(abs(x) < 1e-6 or abs(x - mx) < 1e-6 for x in coords))
+            self.assertTrue(c.in_gamut('rec2100-hlg', tolerance=1e-6))
+
+    def test_hdr_cache_matches_uncached(self):
+        """Test cached and uncached solvers agree for HDR gamuts."""
+
+        for l in (0.3, 1.0, 1.4):
+            for h in (30, 140, 260, 330):
+                orig = Color('oklch', [l, 1.0, h])
+                self.assertColorEqual(
+                    orig.clone().fit('rec2100-hlg', method='oklch-cubic'),
+                    orig.clone().fit('rec2100-hlg', method='oklch-cubic', cache=True)
+                )
+
+    def test_abstract_minimum(self):
+        """Test that a non-zero minimum (not used by any registered space) is solved on both paths."""
+
+        name = 'rec2020-linear'
+        cs = Color.CS_MAP[name]
+        cat = Color.CHROMATIC_ADAPTATION
+        adapt = Color.CAT_MAP[cat]
+
+        for mn, mx in ((0.05, 1.0), (0.05, 2.5), (-0.1, 1.0)):
+            for l in (0.4, 0.7, 0.95):
+                for h in (30, 140, 200, 300):
+                    c1 = get_max_chroma(name, cs, cat, adapt, l, h, mn, mx)
+                    c2 = get_max_chroma_cached(name, cs, cat, adapt, l, 5.0, h, mn, mx)
+                    self.assertAlmostEqual(c1, c2, places=8)
+
+                    # On the surface: in range, with a channel on a bound, and just past it is out of range
+                    coords = Color('oklch', [l, c1, h]).convert(name, norm=False)[:-1]
+                    self.assertTrue(all(mn - 1e-7 <= x <= mx + 1e-7 for x in coords))
+                    self.assertTrue(any(abs(x - mn) < 1e-7 or abs(x - mx) < 1e-7 for x in coords))
+                    coords = Color('oklch', [l, c1 + 1e-4, h]).convert(name, norm=False)[:-1]
+                    self.assertFalse(all(mn <= x <= mx for x in coords))
 
     def test_bad_space(self):
         """Test unsupported space."""

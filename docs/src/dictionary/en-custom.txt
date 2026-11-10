@@ -421,6 +421,7 @@ tritanopia
 u'v
 u'v'Y
 un
+uncached
 uncomment
 undersaturated
 uniformities

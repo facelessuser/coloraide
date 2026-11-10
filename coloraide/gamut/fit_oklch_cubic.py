@@ -42,8 +42,22 @@ if TYPE_CHECKING:  #pragma: no cover
 WHITE = util.xy_to_xyz(WHITES['2deg']['D65'])
 
 
-def get_max_chroma(name: str, cs: Space, cat: str, adapt: CAT, l: float, h: float) -> float:
-    """Solve for the best chroma using the Cardano's Method, which is a precise, non-iterative Cubic solver."""
+def get_max_chroma(
+    name: str,
+    cs: Space,
+    cat: str,
+    adapt: CAT,
+    l: float,
+    h: float,
+    mn: float = 0.0,
+    mx: float = 1.0
+) -> float:
+    """
+    Solve for the best chroma using the Cardano's Method, which is a precise, non-iterative Cubic solver.
+
+    `mn` and `mx` are the minimum and maximum linear channel values of the gamut (usually `0` and `1`, but
+    `mx` is larger for HDR gamuts).
+    """
 
     gamut = get_conversion_matrices(name, cs, cat, adapt)[0]
     rad = math.radians(h)
@@ -65,6 +79,7 @@ def get_max_chroma(name: str, cs: Space, cat: str, adapt: CAT, l: float, h: floa
     qs2 = qs * qs
     qs3 = qs2 * qs
 
+    pc = 0.5 * max(1.0, l)
     best = math.inf
     for i in range(3):
         w0, w1, w2 = gamut[i]
@@ -73,30 +88,60 @@ def get_max_chroma(name: str, cs: Space, cat: str, adapt: CAT, l: float, h: floa
         c3 = l2x3 * (ql * w0 + qm * w1 + qs * w2)
         c4 = l3 * (w0 + w1 + w2)
 
-        # Are we closer to to one or zero?
-        # Use `c = 0.5` which is far enough outside the visible spectrum
-        # without OkLCh becoming distorted in the blue region.
-        s = c1 * 0.125 + c2 * 0.25 + c3 * 0.5 + c4
-        target = 1 if abs(s - 1) < abs(s) else 0
+        if mn == 0:
+            # Are we closer to to the maximum or zero?
+            # Use `c = 0.5` which is far enough outside the visible spectrum
+            # without OkLCh becoming distorted in the blue region. The gamut grows with L,
+            # so for HDR lightness (L > 1), scale the probe point to stay outside the gamut.
+            s = ((c1 * pc + c2) * pc + c3) * pc + c4
+            targets = (mx,) if abs(s - mx) < abs(s) else (0.0,)
+        else:
+            # The probe above is only tuned for a zero minimum, so solve for both bounds.
+            targets = (mn, mx)
 
-        # Solve for channel maximum (1) or minimum (0)
-        for _x in alg.solve_poly([c1, c2, c3, c4 - target]):
-            if 0 <= _x <= best:
-                best = _x
+        # Solve for channel maximum (`mx`) and/or minimum (`mn`)
+        for target in targets:
+            for _x in alg.solve_poly([c1, c2, c3, c4 - target]):
+                if 0 <= _x <= best:
+                    best = _x
     return best
 
 
-def get_max_chroma_cached(name: str, cs: Space, cat: str, adapt: CAT, l: float, c: float, h: float) -> float:
-    """Solve using Cardano's Method, but cache hue context for overall faster repeat solving on the same hue."""
+def get_max_chroma_cached(
+    name: str,
+    cs: Space,
+    cat: str,
+    adapt: CAT,
+    l: float,
+    c: float,
+    h: float,
+    mn: float = 0.0,
+    mx: float = 1.0
+) -> float:
+    """
+    Solve using Cardano's Method, but cache hue context for overall faster repeat solving on the same hue.
+
+    `mn` and `mx` are the minimum and maximum linear channel values of the gamut (usually `0` and `1`, but
+    `mx` is larger for HDR gamuts). The bounds are applied per color, so the hue cache is unaffected.
+    """
 
     m, t_lower, turn = (
         get_hue_data(name, cs, cat, adapt, h)
     )
-    # Work in `t = c/L`. The cap starts at the input chroma and the (hue-only) lower
-    # exit; the white bound below can only pull it lower.
-    max_t = min(c / l, t_lower)
-    target = 1 / (l ** 3)
+    # Work in `t = c/L`. The cap starts at the input chroma. When the minimum is zero, it also
+    # includes the (hue-only) lower exit; the bounds below can only pull it lower.
+    max_t = min(c / l, t_lower) if mn == 0 else c / l
+    # Lower bound: `channelᵢ = mn ⟺ Pᵢ = mn / L³`. Callers guarantee `L³ > mn`,
+    # so this is always below `Pᵢ(0) = 1`.
+    # Zero is already covered by `t_lower`; any other minimum depends on L and must be solved per color.
+    low_target = mn / (l ** 3)
+    # Upper bound: `channelᵢ = mx ⟺ Pᵢ = mx / L³`. Callers guarantee `L < mx^(1/3)`,
+    # so this is always above `Pᵢ(0) = 1`.
+    target = mx / (l ** 3)
     for i, v in enumerate(m):
+        # Must come before the upper bound shortcuts below, which may skip the channel
+        if mn != 0:
+            max_t = min(max_t, first_root([v[0], 3 * v[1], 3 * v[2], 1 - low_target], 1e-9, max_t))
         if turn[i] > max_t:
             if v[2] < 0:
                 continue
@@ -205,10 +250,19 @@ class OkLChCubic(Fit):
         if clear_cache:
             get_hue_data.cache_clear()
 
+        # Get the channel range, usually `[0, 1]`, but the maximum may be larger in linear light for HDR spaces
+        # (`rec2100-hlg` at `1` is ~`3.7741` in `rec2100-linear`).
+        mn = cs.CHANNELS[0].low
+        mx = cs.CHANNELS[0].high
+
         # If there is a linear version of the RGB space, results will be better if we use that.
         # Recalculate the bounding box relative to the linear version.
         linear = cs.linear()
         if linear and linear in color.CS_MAP:
+            mn = color.new(space, [mn] * 3).convert(linear, in_place=True)[0]
+            mx = color.new(space, [mx] * 3).convert(linear, in_place=True)[0]
+            if mn > mx:
+                mn, mx = mx, mn
             space = linear
             cs = color.CS_MAP[space]
 
@@ -219,20 +273,25 @@ class OkLChCubic(Fit):
         mapcolor = color.convert('oklch', norm=False) if orig != 'oklch' else color.clone().normalize(nans=False)
         l, c, h = mapcolor[:-1]
 
-        if l <= 0:
-            color.update('xyz-d65', [0, 0, 0], mapcolor[-1])
+        # In Oklab, a neutral of linear value `Y` has `L = Y^(1/3)`, so the lightness range of the gamut is
+        # `[mn^(1/3), mx^(1/3)]`. A negative minimum is below the black point, so lightness is limited to zero.
+        min_l = mn ** (1 / 3) if mn > 0 else 0.0
+        max_l = mx ** (1 / 3)
+
+        if l <= min_l:
+            color.update('xyz-d65', [max(mn, 0.0) * w for w in WHITE], mapcolor[-1])
             return
-        elif l >= 1:
-            color.update('xyz-d65', WHITE, mapcolor[-1])
+        elif l >= max_l:
+            color.update('xyz-d65', [mx * w for w in WHITE], mapcolor[-1])
             return
 
         cat = color.CHROMATIC_ADAPTATION
         adapt = color.CAT_MAP[cat]
 
         if cache:
-            mapcolor[1] = get_max_chroma_cached(space, cs, cat, adapt, l, c, h)
+            mapcolor[1] = get_max_chroma_cached(space, cs, cat, adapt, l, c, h, mn, mx)
         else:
-            mapcolor[1] = get_max_chroma(space, cs, cat, adapt, l, h)
+            mapcolor[1] = get_max_chroma(space, cs, cat, adapt, l, h, mn, mx)
 
         clip_channels(mapcolor.convert(orig_space, in_place=True))
         color.update(mapcolor)
