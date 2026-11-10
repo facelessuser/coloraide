@@ -261,7 +261,7 @@ class OkLChCubic(Fit):
         if linear and linear in color.CS_MAP:
             mn = color.new(space, [mn] * 3).convert(linear, in_place=True)[0]
             mx = color.new(space, [mx] * 3).convert(linear, in_place=True)[0]
-            if mn > mx:
+            if mn > mx:  # pragma: no cover
                 mn, mx = mx, mn
             space = linear
             cs = color.CS_MAP[space]
