@@ -94,7 +94,7 @@ def get_max_chroma(
             # without OkLCh becoming distorted in the blue region. The gamut grows with L,
             # so for HDR lightness (L > 1), scale the probe point to stay outside the gamut.
             s = ((c1 * pc + c2) * pc + c3) * pc + c4
-            targets = (mx,) if abs(s - mx) < abs(s) else (0.0,)
+            targets: tuple[float, ...] = (mx,) if abs(s - mx) < abs(s) else (0.0,)
         else:
             # The probe above is only tuned for a zero minimum, so solve for both bounds.
             targets = (mn, mx)
