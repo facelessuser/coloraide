@@ -1,16 +1,17 @@
 (() => {
-  let webspace = ''
-  try {
-    let gamut = 'srgb'
-    if (window.matchMedia("(color-gamut: rec2020)").matches) {
-      gamut = 'rec2020'
-    } else if (window.matchMedia("(color-gamut: p3)").matches) {
-      gamut = 'display-p3'
+  const webspace = (() => {
+    try {
+      let gamut = 'srgb'
+      if (window.matchMedia("(color-gamut: rec2020)").matches) {
+        gamut = 'rec2020'
+      } else if (window.matchMedia("(color-gamut: p3)").matches) {
+        gamut = 'display-p3'
+      }
+      return (CSS.supports('color: color(display-p3 1 0 0)')) ? gamut : 'srgb'
+    } catch {
+      return 'srgb'
     }
-    webspace = (CSS.supports('color: color(display-p3 1 0 0)')) ? gamut : 'srgb'
-  } catch {
-    webspace = 'srgb'
-  }
+  })()
   const sessions = {}
   let pyodide = null
   let busy = false
@@ -109,7 +110,7 @@ ${content}
         pyodide.globals.set("content", value.slice(match.index + match[0].length))
       } catch (err) {
         pyodide.globals.set("content", value)
-      } // eslint-disable-line no-empty
+      }
     } else {
       pyodide.globals.set('content', value)
     }
@@ -164,7 +165,7 @@ ${content}
         pyodide.globals.set("content", text.slice(match.index + match[0].length))
       } catch (err) {
         pyodide.globals.set("content", text)
-      } // eslint-disable-line no-empty
+      }
     } else {
       pyodide.globals.set("content", text)
     }
@@ -381,11 +382,10 @@ ${content}
 
         const el = e.target
         if (el.matches('span.swatch-color')) {
-          let content = ''
           const parent = el.parentNode
           if (!parent.matches('span.swatch-gradient')) {
-            content = parent.getAttribute('title').replace('Copy to clipboard', '')
-            content = content.replace('\n', '')
+            const title = parent.getAttribute('title').replace('Copy to clipboard', '')
+            const content = title.replace('\n', '')
             if (window.clipboardData && window.clipboardData.setData) {
               // Old `IE`` handling, do we really need this?
               return window.clipboardData.setData("Text", content)

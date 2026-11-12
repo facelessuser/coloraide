@@ -333,7 +333,7 @@ extra_javascript:
   - https://cdn.jsdelivr.net/npm/mermaid@12.0.0/dist/mermaid.min.js
   - playground-config-304c2947.js
   - https://cdn.jsdelivr.net/npm/pyodide@314.0.7/pyodide.min.js
-  - assets/coloraide-extras/extra-notebook-BvMOqP0h.js
+  - assets/coloraide-extras/extra-notebook-D9SgWIl-.js
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
 
 extra:
