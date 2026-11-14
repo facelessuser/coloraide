@@ -3,6 +3,11 @@ icon: lucide/scroll-text
 ---
 # Changelog
 
+## 8.15.1
+
+-   **FIX**: Improve HCT --> XYZ conversion by using a more optimized solver that focus on just calculating J <--> Y
+    while solving for the proper J needed instead of doing the entire CAM16 conversion when approximating the proper J.
+
 ## 8.15
 
 -   **NEW**: Drop support for Python 3.10.
