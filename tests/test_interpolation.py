@@ -2760,3 +2760,82 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
             Color('hsl(none 0 50 / 0.5)'),
             none=True
         )
+
+    def test_spectral_weighted_mix_undefined_alpha(self):
+        """Test that spectral weighted mix inherits alpha for undefined alpha, matching interpolation."""
+
+        colors = ['color(srgb 0.2 0.4 0.6 / none)', 'color(srgb 0.8 0.3 0.1 / 0.5)']
+        for method in ('spectral', 'spectral-continuous'):
+            for weights in ([0.5, 0.5], [0.2, 0.8]):
+                for premultiplied in (True, False):
+                    result = Color.weighted_mix(
+                        colors,
+                        weights,
+                        method=method,
+                        premultiplied=premultiplied
+                    )
+                    expected = Color.interpolate(
+                        colors,
+                        space='xyz-d65',
+                        method=method,
+                        premultiplied=premultiplied
+                    )(weights[1] / sum(weights))
+                    self.assertColorEqual(result, expected)
+                    self.assertEqual(result.alpha(), 0.5)
+
+    def test_spectral_weighted_mix_undefined_channel(self):
+        """Test that spectral weighted mix inherits undefined channels, matching interpolation."""
+
+        colors = ['color(xyz-d65 none 0.4 0.3 / 0.5)', 'color(xyz-d65 0.3 0.3 0.2)']
+        for method in ('spectral', 'spectral-continuous'):
+            for premultiplied in (True, False):
+                self.assertColorEqual(
+                    Color.weighted_mix(colors, [0.2, 0.8], method=method, premultiplied=premultiplied),
+                    Color.interpolate(
+                        colors,
+                        space='xyz-d65',
+                        method=method,
+                        premultiplied=premultiplied
+                    )(0.8)
+                )
+
+    def test_spectral_weighted_mix_undefined_multiple_colors(self):
+        """Test undefined values with more than two colors act as if they were filled with what they inherit."""
+
+        colors = [
+            'color(xyz-d65 0.2 0.3 0.4 / 0.5)',
+            'color(xyz-d65 none 0.3 none / none)',
+            'color(xyz-d65 0.6 0.3 0.1 / 0.25)'
+        ]
+
+        # Premultiplied: `x` and `z` are inherited from the colors defining them weighted by weight and alpha
+        # while the alpha is inherited from the resulting alpha: (0.5 + 0.25) / 2 = 0.375.
+        # X: (0.2 * 0.5 + 0.6 * 0.25) / (0.5 + 0.25) = 1/3
+        # Z: (0.4 * 0.5 + 0.1 * 0.25) / (0.5 + 0.25) = 0.3
+        for premultiplied, x, z in ((True, 1 / 3, 0.3), (False, 0.4, 0.25)):
+            result = Color.weighted_mix(colors, method='spectral', premultiplied=premultiplied)
+            expected = Color.weighted_mix(
+                [
+                    'color(xyz-d65 0.2 0.3 0.4 / 0.5)',
+                    f'color(xyz-d65 {x} 0.3 {z} / 0.375)',
+                    'color(xyz-d65 0.6 0.3 0.1 / 0.25)'
+                ],
+                method='spectral',
+                premultiplied=premultiplied
+            )
+            self.assertColorEqual(result, expected)
+            self.assertEqual(result.alpha(), 0.375)
+
+    def test_spectral_weighted_mix_no_alpha_defined(self):
+        """Test spectral weighted mix when no colors define alpha."""
+
+        result = Color.weighted_mix(
+            ['color(xyz-d65 0.2 0.3 0.4 / none)', 'color(xyz-d65 0.6 0.3 0.1 / none)'],
+            method='spectral'
+        )
+        self.assertTrue(math.isnan(result.alpha()))
+        self.assertColorEqual(
+            result.set('alpha', 1),
+            Color.weighted_mix(['color(xyz-d65 0.2 0.3 0.4)', 'color(xyz-d65 0.6 0.3 0.1)'], method='spectral')
+        )
+

@@ -12,6 +12,8 @@ icon: lucide/scroll-text
 -   **FIX**: `weighted_mix()` and `average()` should only normalize an undefined channel using the colors that actually
     define that channel, and colors with an undefined alpha should inherit the resulting alpha when applying
     premultiplication. This brings the results in line with how `interpolate()` and `mix()` handle undefined channels.
+-   **FIX**: Spectral `weighted_mix()` should inherit undefined values and alpha in the same manner as spectral
+    interpolation instead of treating undefined channels as zero and undefined alpha as opaque.
 
 ## 8.15
 

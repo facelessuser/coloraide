@@ -108,7 +108,7 @@ class InterpolatorLinear(Interpolator[AnyColor]):
                     elif nb:
                         c2[j] = c1[j]
 
-            # Premultiply alpha if requied and the color has a valid alpha.
+            # Premultiply alpha if required and the color has a valid alpha.
             if self.premultiplied:
                 if not math.isnan(c1[-1]):
                     self.premultiply(c1)
