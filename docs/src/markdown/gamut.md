@@ -443,6 +443,16 @@ adjustment.
 
 ![Ray Trace Gamut Mapping Example](images/raytrace-gma-improve.png)
 
+The ray trace approach also allows specifying the number of rays to cast if you want to converge even closer. Decreasing
+rays will be faster, but regions with dramatic chroma reduction curves may be less accurate than areas with more gentle
+curves. 4 rays is the default, and the recommended minimum.
+
+```py play
+Steps([c.fit('srgb', method='raytrace') for c in Color.steps(['oklch(90% 0.4 0)', 'oklch(90% 0.4 360)'], steps=100, space='oklch', hue='longer')])
+Steps([c.fit('srgb', method='raytrace', rays=8) for c in Color.steps(['oklch(90% 0.4 0)', 'oklch(90% 0.4 360)'], steps=100, space='oklch', hue='longer')])
+Steps([c.fit('srgb', method='raytrace', rays=2) for c in Color.steps(['oklch(90% 0.4 0)', 'oklch(90% 0.4 360)'], steps=100, space='oklch', hue='longer')])
+```
+
 The results are comparable to MINDE using a low JND, but resolves much faster and within more predictable, consistent
 time.
 

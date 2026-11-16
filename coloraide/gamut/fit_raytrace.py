@@ -180,6 +180,7 @@ def css_fast_path(
     cs: Space,
     pspace: str,
     adaptive: float,
+    rays: int,
     mn: float,
     mx: float,
     **kwargs: Any
@@ -252,7 +253,7 @@ def css_fast_path(
         mapcoords[:] = from_oklch(mapcoords, m)
         last = mapcoords[:]
         if any(mn > x or x > mx for x in last):
-            for i in range(4):
+            for i in range(rays):
                 if i:
                     coords = to_oklch(mapcoords, mi)
 
@@ -294,6 +295,7 @@ def generic_path(
     cs: Space,
     pspace: str,
     adaptive: float,
+    rays: int,
     mn: float,
     mx: float,
     coerced: bool,
@@ -373,7 +375,7 @@ def generic_path(
         # and correcting the intersection onto the LCh chroma reduction path.
         last = mapcolor.convert(rspace, in_place=True)[:-1]
         if any(mn > x or x > mx for x in last):
-            for i in range(4):
+            for i in range(rays):
                 if i:
                     coords = mapcolor.convert(pspace, in_place=True, norm=False)[:-1]
 
@@ -436,6 +438,7 @@ class RayTrace(Fit):
         *,
         pspace: str | None = None,
         adaptive: float = 0.0,
+        rays: int = 4,
         **kwargs: Any
     ) -> None:
         """Use ray tracing with a linear RGB space for a geometric approach to reducing chroma."""
@@ -473,6 +476,6 @@ class RayTrace(Fit):
         # gamut mapping within an linear RGB gamut, use the CSS fast path that
         # reduces overhead and is optimized for OkLCh and linear RGB.
         if pspace in CSS_FAST_PATH and not coerced and hasattr(cs, TO_RGB):
-            css_fast_path(color, cs, pspace, adaptive, mn, mx)
+            css_fast_path(color, cs, pspace, adaptive, rays, mn, mx)
         else:
-            generic_path(color, space, cs, pspace, adaptive, mn, mx, coerced)
+            generic_path(color, space, cs, pspace, adaptive, rays, mn, mx, coerced)

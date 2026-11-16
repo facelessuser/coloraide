@@ -76,6 +76,7 @@ def simulate_raytrace_gamut_mapping(args):
 
     gmap = json.loads(args.gmap)
     gmap['method'] = 'raytrace'
+    rays = gmap.get('rays', 4)
 
     mode = args.gamut_perspective
     pspace = gmap.get('pspace', 'oklch')
@@ -162,7 +163,7 @@ def simulate_raytrace_gamut_mapping(args):
         mapcolor.convert(space, in_place=True)
         last = mapcolor[:-1]
         if any(mn > x or x > mx for x in last):
-            for i in range(4):
+            for i in range(rays):
                 if i:
                     mapcolor.convert(pspace, in_place=True, norm=False)
                     print('Uncorrected:', mapcolor)

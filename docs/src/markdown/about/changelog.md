@@ -3,8 +3,9 @@ icon: lucide/scroll-text
 ---
 # Changelog
 
-## 8.15.1
+## 8.16
 
+-   **NEW**: Ray Trace gamut mapping method allows specifying number of rays to cast (default 4).
 -   **FIX**: Improve HCT --> XYZ conversion by using a more optimized solver that focus on just calculating J <--> Y
     while solving for the proper J needed instead of doing the entire CAM16 conversion when approximating the proper J.
 -   **FIX**: Premultiplication should be applied after an undefined channel inherits another colors channel value during
