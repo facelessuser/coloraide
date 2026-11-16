@@ -145,6 +145,10 @@ def multi_mix(
     chan_count = len(channels)
     avgs = [0.0] * chan_count
     counts = [0] * chan_count
+    # Rolling average of the weights (with alpha weighting if premultiplied) of only the colors that
+    # define a given channel. Undefined channels do not contribute to the sum, so they should not
+    # contribute to the divisor either.
+    wavgs = [0.0] * chan_count
     sin = 0.0
     cos = 0.0
     if hue_index != -1:
@@ -154,6 +158,15 @@ def multi_mix(
     if no_weights:
         weights = ()
     mx = 0.0
+
+    # Colors with an undefined alpha inherit the resulting alpha when applying premultiplication, similar to
+    # interpolation. The resulting alpha isn't known until all colors are processed, so the contributions of these
+    # colors are accumulated separately (without alpha) and the resulting alpha is applied once at the end.
+    ucounts = [0] * chan_count
+    usums = [0.0] * chan_count
+    uwsums = [0.0] * chan_count
+    usin = 0.0
+    ucos = 0.0
 
     # Sum channel values using a rolling average. Apply premultiplication and additional weighting as required.
     count = 0
@@ -193,24 +206,41 @@ def multi_mix(
         count += 1
         wavg += (w - wavg) / count
 
-        # Include alpha in average if it is defined. If not defined, skip, but assume color is opaque.
+        # Include alpha in average if it is defined.
         alpha = coords[-1]
-        if math.isnan(alpha):
-            alpha = 1.0
-        else:
+        undefined = math.isnan(alpha)
+        if not undefined:
             counts[-1] += 1
             avgs[-1] += ((coords[-1] * w) - avgs[-1]) / counts[-1]
+            wavgs[-1] += (w - wavgs[-1]) / counts[-1]
+
+        # Colors with an undefined alpha inherit the resulting alpha, so alpha weighting must be deferred.
+        # If not premultiplying, alpha only matters when averaging.
+        defer = undefined and (premultiplied or average)
 
         # Color channels use the provided weight and alpha weighting if premultiply is enabled
-        wfactor = (alpha * w) if premultiplied else w
+        wfactor = (alpha * w) if premultiplied and not undefined else w
         for i in range(chan_count - 1):
             coord = coords[i]
             is_hue = i == hue_index
+
+            # Defer color components that need the resulting alpha (hues are not alpha weighted when not averaging).
+            if defer and not math.isnan(coord) and (average or not is_hue):
+                ucounts[i] += 1
+                uwsums[i] += w
+                if is_hue:
+                    rad = coord * to_rad
+                    usin += math.sin(rad) * w
+                    ucos += math.cos(rad) * w
+                else:
+                    usums[i] += coord * w
+
             # When averaging, mo need to include a color component alpha is zero and not doing premultiplication.
             # Also, don't include if coordinate is undefined; hues are an exception when not averaging.
-            if (not math.isnan(coord) or (not average and is_hue)) and (premultiplied or not average or alpha):
+            elif (not math.isnan(coord) or (not average and is_hue)) and (premultiplied or not average or alpha):
                 counts[i] += 1
                 n = counts[i]
+                wavgs[i] += (wfactor - wavgs[i]) / n
                 if is_hue:
                     # Circular mean
                     if average:
@@ -231,19 +261,35 @@ def multi_mix(
     # Adjust a channel to be undefined if all values in channel were undefined or if it is an achromatic hue channel.
     if not wavg:
         wavg = math.nan
-    avgs[-1] = alpha = math.nan if not counts[-1] else avgs[-1] / wavg
+    avgs[-1] = alpha = math.nan if not counts[-1] else avgs[-1] / (wavgs[-1] or wavg)
     if math.isnan(alpha):
         alpha = 1.0
-    factor = (alpha * wavg) if premultiplied else wavg
+
+    # Alpha applied to the deferred components of colors with an undefined alpha
+    inherited = alpha if premultiplied else 1.0
 
     for i in range(chan_count - 1):
-        if not counts[i] or (average and not alpha):
+        # Add in the colors that inherit the resulting alpha, converting rolling averages to sums.
+        if ucounts[i]:
+            n = counts[i]
+            avgs[i] = avgs[i] * n + usums[i] * inherited
+            wavgs[i] = wavgs[i] * n + uwsums[i] * inherited
+            if i == hue_index:
+                sin = sin * n + usin * inherited
+                cos = cos * n + ucos * inherited
+
+        # Divide by the weighting of only the colors that defined this channel.
+        # If all weights were zero, the result is undefined.
+        factor = wavgs[i] if wavg == wavg else math.nan
+        if not (counts[i] or ucounts[i]) or (average and not alpha):
             avgs[i] = math.nan
         elif i == hue_index:
             # Circular mean
             if average:
-                sin /= factor
-                cos /= factor
+                # If the hue's weighting is zero, there is no meaningful direction, so it will resolve as undefined
+                if factor:
+                    sin /= factor
+                    cos /= factor
                 # Combine polar parts into a degree
                 if abs(sin) < util.ACHROMATIC_THRESHOLD_SM and abs(cos) < util.ACHROMATIC_THRESHOLD_SM:
                     avgs[i] = math.nan
@@ -532,13 +578,10 @@ class Interpolator(Generic[AnyColor], metaclass=ABCMeta):
 
         return [ri[1] for ri in ret]
 
-    def premultiply(self, coords: Vector, alpha: float | None = None) -> None:
+    def premultiply(self, coords: Vector) -> None:
         """Apply premultiplication to semi-transparent colors."""
 
-        if alpha is not None:
-            coords[-1] = alpha
-        else:
-            alpha = coords[-1]
+        alpha = coords[-1]
 
         if math.isnan(alpha) or alpha == 1.0:
             return

@@ -97,28 +97,23 @@ class InterpolatorLinear(Interpolator[AnyColor]):
                 self.normalize_hue(c1, c2, self.hue)
                 self.coordinates[i:i + 2] = [c1, c2]
 
-            # If we have a NaN for one alpha and the other alpha is not
-            # Use the non-NaN alpha, but if we are premultiplied, we need
-            # to now premultiply that coordinate set.
+            # Handle non-hue undefined values.
+            for j in range(len(c1)):
+                if j != self.hue_index:
+                    na, nb = math.isnan(c1[j]), math.isnan(c2[j])
+                    if na and nb:
+                        continue
+                    if na:
+                        c1[j] = c2[j]
+                    elif nb:
+                        c2[j] = c1[j]
+
+            # Premultiply alpha if required and the color has a valid alpha.
             if self.premultiplied:
-                a, b = c1[-1], c2[-1]
-                a_nan, b_nan = math.isnan(a), math.isnan(b)
-
-                # Premultiply the alpha
-                if not a_nan:
+                if not math.isnan(c1[-1]):
                     self.premultiply(c1)
-
-                    # Mirror the alpha of its sibling as it has no alpha
-                    if b_nan:
-                        self.premultiply(c2, a)
-
-                # Premultiply the alpha
-                if not b_nan:
+                if not math.isnan(c2[-1]):
                     self.premultiply(c2)
-
-                    # Mirror the alpha of its sibling as it has no alpha
-                    if a_nan:
-                        self.premultiply(c1, b)
 
             i += 2
 
@@ -136,17 +131,9 @@ class InterpolatorLinear(Interpolator[AnyColor]):
         for i, values in enumerate(zip(*self.coordinates[i:i + 2])):  # noqa: B020
             a, b = values
 
-            a_nan, b_nan = math.isnan(a), math.isnan(b)
-
             # Both values are undefined, so return undefined
-            if a_nan and b_nan:
+            if math.isnan(a) and math.isnan(b):
                 value = math.nan
-
-            # One channel is undefined, take the one that is not
-            elif a_nan:
-                value = b
-            elif b_nan:
-                value = a
 
             # Using linear interpolation between the two points
             else:

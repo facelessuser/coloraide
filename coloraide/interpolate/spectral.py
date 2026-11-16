@@ -291,10 +291,6 @@ class InterpolatorSpectralLinear(InterpolatorLinear[AnyColor]):
                 if math.isnan(a) and math.isnan(b):
                     if i != aidx:
                         c1[i], c2[i] = 0.0, 0.0
-                elif math.isnan(a):
-                    c1[i] = b
-                elif math.isnan(b):
-                    c2[i] = a
             coords = spectral_mix(c1[:-1], c2[:-1], self.ease(point, 0))
             coords.append(alg.lerp(c1[aidx], c2[aidx], self.ease(point, aidx)))
             return coords
@@ -355,13 +351,63 @@ class Spectral(Interpolate):
         res_counts = [0] * 4
         wavg = 0.0
         cavg = 0.0
+        walpha = 0.0
         no_weights = not weights
         if no_weights:
             weights = ()
         mx = 0.0
 
-        # Sum channel values using a rolling average. Apply premultiplication and additional weighting as required.
+        # Undefined channels inherit the (weighted) value of the colors that do define them, and an undefined alpha
+        # inherits the resulting alpha, similar to interpolation. Spectral mixing needs a complete color, and the
+        # inherited values are not known until all colors are seen, so only colors with undefined values are deferred.
+        # Track the sums required to calculate what will be inherited and the colors that need it.
+        csums = [0.0] * 3
+        cweights = [0.0] * 3
+        usums = [0.0] * 3
+        uweights = [0.0] * 3
+        pending = []  # type: list[tuple[Vector, float, float]]
+
         count = 0
+
+        def mix(coords: Vector, alpha: float, w: float) -> None:
+            """Mix a complete color into the rolling averages."""
+
+            nonlocal count, wavg, cavg
+
+            count += 1
+
+            # Premultiply alpha
+            if premultiplied:
+                coords = [x * alpha for x in coords]
+
+            # Calculate the reflectance and residual XYZ value
+            r, res = single_constant_xyz_to_reflectance(coords)
+
+            # Adjust the weight for the spectral mixing based on the luminance.
+            # Like pairwise mixing, use a very small luminance if luminance is zero or less. Dark colors still have
+            # a meaningful absorption, so their concentration must not drop to zero or they'd be ignored entirely.
+            lfactor = w ** 2 * (coords[1] if coords[1] > 0.0 else EPSILON)
+            # Average of weights
+            wavg += (w - wavg) / count
+            # Average of concentration
+            cavg += (lfactor - cavg) / count
+
+            # Apply mixing
+            for i in range(SIZE):
+                # Mix the scattering and absorption coefficients
+                ks = (1 - r[i]) ** 2 / (2 * r[i])
+                counts[i] += 1
+                n = counts[i]
+                avgs[i] += (ks * lfactor - avgs[i]) / n
+
+                # Mix the residual
+                if i < 3:
+                    coord = res[i]
+                    res_counts[i] += 1
+                    n = res_counts[i]
+                    res_avgs[i] += (coord * w - res_avgs[i]) / n
+
+        # Sum channel values using a rolling average. Apply premultiplication and additional weighting as required.
         sentinel = Sentinel()
         fill = 1 if no_weights else sentinel
         for c, w in it.zip_longest(colors, [] if no_weights else weights, fillvalue=fill):  # type: ignore[arg-type]
@@ -386,50 +432,51 @@ class Spectral(Interpolate):
 
             obj.update(c)  # type: ignore[arg-type]
 
-            coords = obj.coords(nans=False)
-
-            count += 1
-
-            # Include alpha in average if it is defined. If not defined, skip, but assume color is opaque.
+            coords = obj.coords()
             alpha = obj.alpha()
-            if math.isnan(alpha):
-                alpha = 1.0
-            else:
+            undefined = math.isnan(alpha)
+
+            # Include alpha in average if it is defined.
+            if not undefined:
                 res_counts[-1] += 1
-                res_avgs[-1] += ((alpha *  w) - res_avgs[-1]) / res_counts[-1]
+                res_avgs[-1] += ((alpha * w) - res_avgs[-1]) / res_counts[-1]
+                walpha += (w - walpha) / res_counts[-1]
 
-            # Premultiply alpha
-            if premultiplied:
-                coords = [x * alpha for x in coords]
+            # Track what undefined channels may inherit
+            weight = w if undefined or not premultiplied else alpha * w
+            for i, x in enumerate(coords):
+                if not math.isnan(x):
+                    if undefined:
+                        usums[i] += x * w
+                        uweights[i] += w
+                    else:
+                        csums[i] += x * weight
+                        cweights[i] += weight
 
-            # Calculate the reflectance and residual XYZ value
-            r, res = single_constant_xyz_to_reflectance(coords)
+            # Defer anything that is not complete, otherwise mix it now
+            if undefined or any(math.isnan(x) for x in coords):
+                pending.append((coords, alpha, w))
+            else:
+                mix(coords, alpha, w)
 
-            # Adjust the weight for the spectral mixing based on the luminance
-            lfactor = w ** 2 * coords[1]
-            # Average of weights
-            wavg += (w - wavg) / count
-            # Average of concentration
-            cavg += (lfactor - cavg) / count
-
-            # Apply mixing
-            ks = 0.0
-            for i in range(SIZE):
-                # Mix the scattering and absorption coefficients
-                ks = (1 - r[i]) ** 2 / (2 * r[i])
-                counts[i] += 1
-                n = counts[i]
-                avgs[i] += (ks * lfactor - avgs[i]) / n
-
-                # Mix the residual
-                if i < 3:
-                    coord = res[i]
-                    res_counts[i] += 1
-                    n = res_counts[i]
-                    res_avgs[i] += (coord * w - res_avgs[i]) / n
-
-        if not count:
+        if not (count or pending):
             raise ValueError('At least one color must be provided in order to average colors')
+
+        # Mix colors that required inherited values
+        if pending:
+            # The alpha of the colors that define it is what undefined alphas will inherit, or opaque if none do.
+            inherited_alpha = (res_avgs[-1] / walpha if walpha else 0.0) if res_counts[-1] else 1.0
+            factor = inherited_alpha if premultiplied else 1.0
+            inherited = []
+            for i in range(3):
+                total = cweights[i] + uweights[i] * factor
+                inherited.append((csums[i] + usums[i] * factor) / total if total else 0.0)
+            for coords, alpha, w in pending:
+                mix(
+                    [inherited[i] if math.isnan(x) else x for i, x in enumerate(coords)],
+                    inherited_alpha if math.isnan(alpha) else alpha,
+                    w
+                )
 
         # Convert back to reflectance
         xyz1 = reflectance_to_xyz([km_to_r(ks / (cavg or 1)) for ks in avgs])
@@ -437,7 +484,8 @@ class Spectral(Interpolate):
         # Add in residual and undo premultiplication to get the final color.
         if not wavg:
             wavg = math.nan
-        res_avgs[-1] = alpha = math.nan if not res_counts[-1] else res_avgs[-1] / wavg
+        # Resulting alpha is the weighted average of only the colors that define it
+        res_avgs[-1] = alpha = math.nan if not res_counts[-1] else res_avgs[-1] / (walpha or wavg)
         factor = 1 if not premultiplied or not alpha or (math.isnan(alpha) and not math.isnan(wavg)) else alpha
         # The residual is a weighted average like everything else, so it must be normalized by the average weight.
         xyz = [(xyz1[i] + res_avgs[i] / wavg) / factor for i in range(3)]
