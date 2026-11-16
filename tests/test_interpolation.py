@@ -2113,12 +2113,14 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
         for i in range(5):
             colors[1].set('alpha', i / 4)
             results.append(Color.average(colors, space='srgb').to_string(color=True))
+        # The green channel is only influenced by colors that define it, so the alpha
+        # of the color with an undefined green must not affect the green result.
         self.assertEqual(
             results,
-            ['color(srgb 0 0.29412 0.5 / 0.66667)',
-             'color(srgb 0 0.26144 0.44444 / 0.75)',
-             'color(srgb 0 0.23529 0.4 / 0.83333)',
-             'color(srgb 0 0.2139 0.36364 / 0.91667)',
+            ['color(srgb 0 0.19608 0.5 / 0.66667)',
+             'color(srgb 0 0.19608 0.44444 / 0.75)',
+             'color(srgb 0 0.19608 0.4 / 0.83333)',
+             'color(srgb 0 0.19608 0.36364 / 0.91667)',
              'color(srgb 0 0.19608 0.33333)']
         )
 
@@ -2240,10 +2242,10 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
             for i in range(12)
         ]
 
-        self.assertColorEqual(c[0], Color('color(srgb-linear 0 0.09558 0.5 / 0.66667)'))
-        self.assertColorEqual(c[3], Color('color(srgb-linear 0 0.08411 0.44 / 0.75758)'))
-        self.assertColorEqual(c[6], Color('color(srgb-linear 0 0.0751 0.39286 / 0.84848)'))
-        self.assertColorEqual(c[9], Color('color(srgb-linear 0 0.06783 0.35484 / 0.93939)'))
+        self.assertColorEqual(c[0], Color('color(srgb-linear 0 0.06372 0.5 / 0.66667)'))
+        self.assertColorEqual(c[3], Color('color(srgb-linear 0 0.06372 0.44 / 0.75758)'))
+        self.assertColorEqual(c[6], Color('color(srgb-linear 0 0.06372 0.39286 / 0.84848)'))
+        self.assertColorEqual(c[9], Color('color(srgb-linear 0 0.06372 0.35484 / 0.93939)'))
         self.assertColorEqual(c[11], Color('color(srgb-linear 0 0.06372 0.33333)'))
 
     def test_class_defaults_carryforward_powerless(self):
@@ -2635,3 +2637,126 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
             carryforward=True
         )(0.5)
         self.assertColorEqual(result, Color('oklab(0.60514 0.1 -1.5)'))
+
+    def test_interpolation_none_premultiply(self):
+        """Test that premultiplication is applied with the colors own alpha when inheriting another colors value."""
+
+        self.assertColorEqual(
+            Color.interpolate(["rgb(none 0 0 / 0.5)", "rgb(255 0 0)"], space='srgb')(0.5),
+            Color('srgb', [1, 0, 0], 0.75)
+        )
+
+        self.assertColorEqual(
+            Color.interpolate(["lab(10 20 30 / 25%)", "lab(50 none none / 0.5)"], space='lab')(1),
+            Color('lab', [50, 20, 30], 0.5)
+        )
+
+        self.assertColorEqual(
+            Color.interpolate(["oklch(0.1 0.2 30deg / 25%)", "oklch(0.5 none none / 0.5)"], space='oklch')(1),
+            Color('oklch', [0.5, 0.2, 30], 0.5)
+        )
+
+        self.assertColorEqual(
+            Color.interpolate(["hsl(30deg 40% 80% / 25%)", "hsl(90deg none none / 0.5)"], space='hsl')(1),
+            Color('hsl(90 40 80 / 0.5)')
+        )
+
+        self.assertColorEqual(
+            Color.interpolate(["lab(50 none 30 / 0.25)", "lab(60 none 40 / 0.5)"], space='lab')(0.5),
+            Color('lab', [56.6667, NaN, 36.6667], 0.375)
+        )
+
+    def test_weighted_mix_none_premultiply(self):
+        """Test undefined channels only consider the colors that define them and use the color's own alpha."""
+
+        colors = ['color(srgb none 0 0 / 0.5)', 'color(srgb 1 0 0)']
+        for premultiplied in (True, False):
+            self.assertColorEqual(
+                Color.weighted_mix(colors, [0.2, 0.8], space='srgb', premultiplied=premultiplied),
+                Color('srgb', [1, 0, 0], 0.9)
+            )
+            self.assertColorEqual(
+                Color.weighted_mix(colors, [0.8, 0.2], space='srgb', premultiplied=premultiplied),
+                Color('srgb', [1, 0, 0], 0.6)
+            )
+
+            # Should agree with interpolation
+            self.assertColorEqual(
+                Color.weighted_mix(colors, [0.5, 0.5], space='srgb', premultiplied=premultiplied),
+                Color.interpolate(colors, space='srgb', premultiplied=premultiplied)(0.5)
+            )
+
+    def test_weighted_mix_none_multiple_colors(self):
+        """Test undefined channels across more than two colors."""
+
+        colors = ['color(srgb 0.2 0 0 / 0.5)', 'color(srgb none 0 0)', 'color(srgb 0.8 0 0 / 0.25)']
+        self.assertColorEqual(Color.weighted_mix(colors, space='srgb'), Color('srgb', [0.4, 0, 0], 0.58333))
+        self.assertColorEqual(
+            Color.weighted_mix(colors, space='srgb', premultiplied=False),
+            Color('srgb', [0.5, 0, 0], 0.58333)
+        )
+
+    def test_weighted_mix_none_multiple_channels(self):
+        """Test multiple undefined channels each use only the colors that define them."""
+
+        colors = [
+            'color(srgb 0.2 none 0.4)',
+            'color(srgb none 0.6 none / 0.5)',
+            'color(srgb 0.8 1 none)'
+        ]
+        self.assertColorEqual(
+            Color.weighted_mix(colors, [1, 1, 2], space='srgb'),
+            Color('srgb', [0.6, 0.92, 0.4], 0.875)
+        )
+        self.assertColorEqual(
+            Color.weighted_mix(colors, [1, 1, 2], space='srgb', premultiplied=False),
+            Color('srgb', [0.6, 0.86667, 0.4], 0.875)
+        )
+
+    def test_weighted_mix_undefined_alpha(self):
+        """Test colors with an undefined alpha inherit the resulting alpha when premultiplying."""
+
+        self.assertColorEqual(
+            Color.weighted_mix(['color(srgb 0.2 0 0 / none)', 'color(srgb 0.8 0 0 / 0.5)'], [0.2, 0.8], space='srgb'),
+            Color('srgb', [0.68, 0, 0], 0.5)
+        )
+        self.assertColorEqual(
+            Color.weighted_mix(
+                ['color(srgb 0.2 0 0 / 0.5)', 'color(srgb 0.9 0 0 / none)', 'color(srgb 0.8 0 0 / 0.25)'],
+                space='srgb'
+            ),
+            Color('srgb', [0.56667, 0, 0], 0.375)
+        )
+        self.assertColorEqual(
+            Color.weighted_mix(['color(srgb 0.2 0 0 / none)', 'color(srgb 0.8 0 0 / none)'], space='srgb'),
+            Color('srgb', [0.5, 0, 0], NaN)
+        )
+
+    def test_average_undefined_alpha(self):
+        """Test average with colors that have an undefined alpha."""
+
+        # Hues are weighted with the alpha the color inherits
+        self.assertColorEqual(
+            Color.average(['hsl(0 50% 50% / 0.5)', 'hsl(90 50% 50% / none)'], space='hsl'),
+            Color('hsl(45 50% 50% / 0.5)')
+        )
+        self.assertColorEqual(
+            Color.average(['hsl(0 50% 50% / 0.5)', 'hsl(90 50% 50% / none)'], space='hsl', premultiplied=False),
+            Color('hsl(45 50% 50% / 0.5)')
+        )
+
+        # Non-premultiplied averaging ignores fully transparent colors, even those inheriting alpha
+        self.assertColorEqual(
+            Color.average(['color(srgb 1 0 0 / 0)', 'color(srgb 0 1 0 / none)'], space='srgb', premultiplied=False),
+            Color('srgb', [NaN, NaN, NaN], 0),
+            none=True
+        )
+
+    def test_average_hue_zero_weight(self):
+        """Test hue is undefined if only fully transparent colors define it."""
+
+        self.assertColorEqual(
+            Color.average(['hsl(120 50% 50% / 0)', 'hsl(none 50% 50%)'], space='hsl'),
+            Color('hsl(none 0 50 / 0.5)'),
+            none=True
+        )

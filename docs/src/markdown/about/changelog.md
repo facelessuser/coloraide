@@ -7,6 +7,11 @@ icon: lucide/scroll-text
 
 -   **FIX**: Improve HCT --> XYZ conversion by using a more optimized solver that focus on just calculating J <--> Y
     while solving for the proper J needed instead of doing the entire CAM16 conversion when approximating the proper J.
+-   **FIX**: Premultiplication should be applied after an undefined channel inherits another colors channel value during
+    interpolation.
+-   **FIX**: `weighted_mix()` and `average()` should only normalize an undefined channel using the colors that actually
+    define that channel, and colors with an undefined alpha should inherit the resulting alpha when applying
+    premultiplication. This brings the results in line with how `interpolate()` and `mix()` handle undefined channels.
 
 ## 8.15
 
