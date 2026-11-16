@@ -383,8 +383,10 @@ class Spectral(Interpolate):
             # Calculate the reflectance and residual XYZ value
             r, res = single_constant_xyz_to_reflectance(coords)
 
-            # Adjust the weight for the spectral mixing based on the luminance
-            lfactor = w ** 2 * coords[1]
+            # Adjust the weight for the spectral mixing based on the luminance.
+            # Like pairwise mixing, use a very small luminance if luminance is zero or less. Dark colors still have
+            # a meaningful absorption, so their concentration must not drop to zero or they'd be ignored entirely.
+            lfactor = w ** 2 * (coords[1] if coords[1] > 0.0 else EPSILON)
             # Average of weights
             wavg += (w - wavg) / count
             # Average of concentration

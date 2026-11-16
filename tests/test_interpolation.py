@@ -2839,3 +2839,43 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
             Color.weighted_mix(['color(xyz-d65 0.2 0.3 0.4)', 'color(xyz-d65 0.6 0.3 0.1)'], method='spectral')
         )
 
+    def test_spectral_weighted_mix_black(self):
+        """Test that spectral weighted mix does not ignore black or other colors with no luminance."""
+
+        # Matches the results of pairwise mixing
+        self.assertColorEqual(
+            Color.weighted_mix(['black', 'red'], method='spectral'),
+            Color('color(xyz-d65 0.08226 0.04783 0.0175)')
+        )
+        self.assertColorEqual(
+            Color.weighted_mix(['red', 'black'], method='spectral'),
+            Color('color(xyz-d65 0.08226 0.04783 0.0175)')
+        )
+        self.assertColorEqual(
+            Color.weighted_mix(['black', 'red'], [0.2, 0.8], method='spectral'),
+            Color.interpolate(['black', 'red'], space='xyz-d65', method='spectral')(0.8)
+        )
+        self.assertColorEqual(
+            Color.weighted_mix(['black', 'white'], method='spectral'),
+            Color.interpolate(['black', 'white'], space='xyz-d65', method='spectral')(0.5)
+        )
+
+        # Mixing only black stays black
+        self.assertColorEqual(
+            Color.weighted_mix(['black', 'black', 'black'], method='spectral'),
+            Color('color(xyz-d65 0 0 0)')
+        )
+
+    def test_spectral_weighted_mix_no_luminance(self):
+        """Test spectral weighted mix with colors that have a luminance that is zero or less."""
+
+        for colors in (
+            ['color(xyz-d65 0.6412 0 0.0605)', 'color(xyz-d65 0.6412 0 0.0605)'],
+            ['color(xyz-d65 0.6 0 0.1)', 'color(xyz-d65 0.2 0 0.3)'],
+            ['color(xyz-d65 0.1 -0.05 0.1)', 'color(xyz-d65 0.4 0.4 0.4)']
+        ):
+            self.assertColorEqual(
+                Color.weighted_mix(colors, method='spectral'),
+                Color.interpolate(colors, space='xyz-d65', method='spectral')(0.5)
+            )
+

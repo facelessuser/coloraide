@@ -14,6 +14,9 @@ icon: lucide/scroll-text
     premultiplication. This brings the results in line with how `interpolate()` and `mix()` handle undefined channels.
 -   **FIX**: Spectral `weighted_mix()` should inherit undefined values and alpha in the same manner as spectral
     interpolation instead of treating undefined channels as zero and undefined alpha as opaque.
+-   **FIX**: Spectral `weighted_mix()` should not ignore colors with zero (or less) luminance, such as black, and should
+    not return an incorrect color when all colors have no luminance. Handle this in the same way as spectral
+    interpolation.
 
 ## 8.15
 
