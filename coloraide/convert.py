@@ -125,13 +125,17 @@ def convert(color: Color, space: str) -> tuple[Space, Vector]:
     # Grab the convert for the current space to the desired space
     # Result is cached for quicker future conversions.
     chain = color._get_convert_chain(color._space, space)  # type: ignore[attr-defined]
+    last = color._space
 
-    # Get coordinates and convert NaN values to 0
-    coords = color.coords(nans=False)
+    coords = color[:-1]
+    # Determine channels for powerlessness. Usually when hue is undefined, we should treat
+    # the chroma channel as zero.
+    coords = last.powerless(coords)
+    # Get coordinates and convert NaN to real values
+    coords[:] = [last.resolve_channel(i, coords) for i in range(len(coords))]
 
     # Navigate the conversion chain translating the coordinates along the way.
     # Perform chromatic adaption if needed (a conversion to or from XYZ D65).
-    last = color._space
     for a, b, direction, adapt in chain:
         if direction and adapt:
             coords = color.chromatic_adaptation(
