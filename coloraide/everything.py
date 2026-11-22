@@ -35,6 +35,7 @@ from .spaces.zcam import ZCAMJMh
 from .spaces.scam import sCAMJMh
 from .spaces.sucs import sUCS
 from .spaces.hct import HCT
+from .spaces.munsell import Munsell
 from .spaces.ucs import UCS
 from .spaces.rec709 import Rec709
 from .spaces.rec709_oetf import Rec709OETF
@@ -108,6 +109,7 @@ ColorAll.register(
         HellwigJMh(),
         HellwigHKJMh(),
         HCT(),
+        Munsell(),
         UCS(),
         RYB(),
         RYBBiased(),

@@ -17,6 +17,7 @@
 *[MINDE]: minimum delta E
 *[NaN]: not a number
 *[OETF]: opto-electronic transfer function
+*[RIT]: Rochester Institute of Technology
 *[SDR]: Standard Dynamic Range
 *[SVG]: Scalable Vector Graphics
 *[UCS]: Uniform Chromaticity Space

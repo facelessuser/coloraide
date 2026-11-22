@@ -77,6 +77,7 @@ models = {
         'gamut': 'macadam-limits', 'azim': -100
     },
     'msh': {'title': TEMPLATE.format('Msh'), 'filename': 'msh-3d.png'},
+    'munsell': {'title': TEMPLATE.format('Munsell'), 'filename': 'munsell-3d.png'},
     'okhsl': {'title': 'Okhsl Color Space', 'filename': 'okhsl-3d.png'},
     'okhsv': {'title': 'Okhsv Color Space', 'filename': 'okhsv-3d.png'},
     'oklab': {'title': TEMPLATE.format('Oklab'), 'filename': 'oklab-3d.png'},
