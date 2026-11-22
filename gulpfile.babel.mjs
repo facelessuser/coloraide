@@ -93,7 +93,8 @@ childProcess.spawnSync(
   [
     '--remove-literal-statements',
     'docs/src/py/notebook.py',
-    '-o', 'docs/src/py/notebook-min.py'
+    '-o',
+    'docs/src/py/notebook-min.py'
   ]
 )
 

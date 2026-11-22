@@ -102,7 +102,6 @@ export default [
       "unicode-bom": 2,
 
       // Formatting
-      "@stylistic/array-bracket-spacing": 2,
       "@stylistic/arrow-parens": [2, "as-needed"],
       "@stylistic/arrow-spacing": 2,
       "@stylistic/block-spacing": 2,
@@ -136,6 +135,14 @@ export default [
       "@stylistic/key-spacing": 2,
       "@stylistic/keyword-spacing": 2,
       "@stylistic/lines-around-comment": 2,
+      "@stylistic/list-style": [2, {
+        singleLine: {spacing: "never"},
+        overrides: {
+          "()": "off",
+          "<>": "off",
+          "{}": {singleLine: {spacing: "never"}}
+        }
+      }],
       "@stylistic/max-len": [1, {
         code: 120,
         ignorePattern: "// TODO"
@@ -148,7 +155,6 @@ export default [
       "@stylistic/no-tabs": 2,
       "@stylistic/no-trailing-spaces": 2,
       "@stylistic/no-whitespace-before-property": 2,
-      "@stylistic/object-curly-spacing": [2, "never"],
       "@stylistic/one-var-declaration-per-line": 2,
       "@stylistic/rest-spread-spacing": 2,
       "@stylistic/semi": [2, "never"],
