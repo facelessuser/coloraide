@@ -1,0 +1,5 @@
+var colorNotebook = {
+    "playgroundWheels": ['micropip', 'pygments-2.21.0-py3-none-any.whl', 'coloraide-8.17-py3-none-any.whl'],
+    "notebookWheels": ['pyyaml', 'markdown-3.11.3-py3-none-any.whl', 'pymdown_extensions-13.1.2-py3-none-any.whl', 'micropip', 'pygments-2.21.0-py3-none-any.whl', 'coloraide-8.17-py3-none-any.whl'],
+    "defaultPlayground": "import coloraide\ncoloraide.__version__\nColor('red')"
+}

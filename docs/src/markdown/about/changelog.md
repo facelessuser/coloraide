@@ -3,7 +3,7 @@ icon: lucide/scroll-text
 ---
 # Changelog
 
-## Unreleased
+## 8.17
 
 -   **NEW** Add Munsell color space.
 

@@ -196,8 +196,8 @@
   <div>Copyright &copy; 2020 - 2025 <a href="https://github.com/facelessuser">Isaac Muse</a></div>
 </footer>
 </div>
-<script src="https://cdn.plot.ly/plotly-4.1.1.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/pyodide@314.0.7/pyodide.min.js"></script>
+<script src="https://cdn.plot.ly/plotly-4.3.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pyodide@314.0.8/pyodide.min.js"></script>
 <script id="init" type="text/python">
 from coloraide.everything import ColorAll as Color
 from coloraide.spaces import Prism, Luminant
@@ -1281,7 +1281,7 @@ let busyTarget = null
 let colorSpaces = null
 let colorGamuts = null
 let lastModel = null
-let package = 'coloraide-8.16-py3-none-any.whl'
+let package = 'coloraide-8.17-py3-none-any.whl'
 const defaultSpace = 'lab'
 const defaultGamut = 'srgb'
 const exceptions = new Set(['hwb', 'ryb', 'ryb-biased'])
@@ -1426,7 +1426,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   busyTarget = document.getElementsByTagName('body')[0]
   showBusy(busyTarget, 'Setting up Environment...')
   pyodide = await loadPyodide({
-    indexURL: "https://cdn.jsdelivr.net/pyodide/v314.0.7/full/",
+    indexURL: "https://cdn.jsdelivr.net/pyodide/v314.0.8/full/",
     fullStdLib: false
   })
 
