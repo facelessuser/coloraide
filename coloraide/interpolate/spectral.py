@@ -146,10 +146,8 @@ def calculate_mixing_concentration(t: float, l1: float, l2: float) -> tuple[floa
     """Calculate the concentrations of the colors based on the interpolation progress and luminance."""
 
     # Get luminance but use a very small lightness if lightness is zero
-    if l1 <= 0.0:
-        l1 = EPSILON
-    if l2 <= 0.0:
-        l2 = EPSILON
+    l1 = max(l1, EPSILON)
+    l2 = max(l2, EPSILON)
 
     # Calculate the concentration of each reflectance curve.
     # This applies an easing function to the interpolation progress
@@ -386,7 +384,7 @@ class Spectral(Interpolate):
             # Adjust the weight for the spectral mixing based on the luminance.
             # Like pairwise mixing, use a very small luminance if luminance is zero or less. Dark colors still have
             # a meaningful absorption, so their concentration must not drop to zero or they'd be ignored entirely.
-            lfactor = w ** 2 * (coords[1] if coords[1] > 0.0 else EPSILON)
+            lfactor = w ** 2 * max(coords[1], EPSILON)
             # Average of weights
             wavg += (w - wavg) / count
             # Average of concentration
