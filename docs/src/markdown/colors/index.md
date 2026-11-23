@@ -130,6 +130,8 @@ flowchart LR
 
     xyz-d65 --- zcam-jmh
 
+    xyz-d65 --- munsell
+
     a98-rgb(A98 RGB)
     a98-rgb-linear(Linear A98 RGB)
     aces2065-1(ACES2065-1)
@@ -205,6 +207,7 @@ flowchart LR
     xyz-d50(XYZ D50)
     xyz-d65(XYZ D65)
     zcam-jmh(ZCAM JMh)
+    munsell(Munsell)
 
     click a98-rgb "./a98_rgb/" _self
     click a98-rgb-linear "./a98_rgb_linear/" _self
@@ -281,6 +284,7 @@ flowchart LR
     click xyz-d50 "./xyz_d50/" _self
     click xyz-d65 "./xyz_d65/" _self
     click zcam-jmh "./zcam/" _self
+    click munsell "./munsell/" _self
 ```
 ///
 
@@ -340,6 +344,7 @@ Color Space                                     | ID
 [Luv LCh](./lchuv.md)                           | `lchuv`
 [Luv](./luv.md)                                 | `luv`
 [Msh](./msh.md)                                 | `msh`
+[Munsell](./munsell.md)                         | `munsell`
 [Okhsl](./okhsl.md)                             | `okhsl`
 [Okhsv](./okhsv.md)                             | `okhsv`
 [Oklab](./oklab.md)                             | `oklab`

@@ -3,6 +3,10 @@ icon: lucide/scroll-text
 ---
 # Changelog
 
+## Unreleased
+
+-   **NEW** Add Munsell color space.
+
 ## 8.16
 
 -   **NEW**: Ray Trace gamut mapping method allows specifying number of rays to cast (default 4).

@@ -171,6 +171,7 @@ Moreland
 Moroney
 Msh
 Munk
+Munsell
 Mz
 NONINFRINGEMENT
 NaN
@@ -211,12 +212,14 @@ Qz
 QzMzhz
 RGB
 RGBish
+RIT
 RLAB
 ROMM
 RYB
 Raphson
 Rasmus
 Reinsch
+Renotation
 Rösch
 SCD
 SDR
@@ -275,6 +278,7 @@ accessor
 accessors
 achromatomaly
 achromatopsia
+al
 async
 az
 backfill
@@ -317,6 +321,7 @@ dyad
 easings
 electro
 emissive
+et
 falsi
 fixup
 formatter
@@ -388,6 +393,7 @@ recursing
 reflectance
 reflectances
 regula
+renotation
 reparameterization
 repurpose
 rescales
@@ -436,5 +442,6 @@ vectorize
 vectorized
 von
 webcolor
+whitespace
 xy
 xyY
