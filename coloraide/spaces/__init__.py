@@ -113,25 +113,27 @@ alpha_channel = Channel('alpha', 0.0, 1.0, bound=True, limit=(0.0, 1.0))
 class SpaceMeta(ABCMeta):
     """Ensure on subclass that the subclass has new instances of mappings."""
 
+    CHANNEL_ALIASES: dict[str, str]
+
     def __init__(cls, name: str, bases: tuple[object, ...], clsdict: dict[str, Any]) -> None:
         """Copy mappings on subclass."""
 
         if len(cls.mro()) > 2:
-            cls.CHANNEL_ALIASES = cls.CHANNEL_ALIASES.copy()  # type: dict[str, str]
+            cls.CHANNEL_ALIASES = cls.CHANNEL_ALIASES.copy()
 
 
 class Space(Plugin, metaclass=SpaceMeta):
     """Base color space object."""
 
-    BASE = ""  # type: str
+    BASE: str = ""
     # Color space name
     NAME = ""
     # Serialized name
-    SERIALIZE = ()  # type: tuple[str, ...]
+    SERIALIZE: tuple[str, ...] = ()
     # Channel names
-    CHANNELS = ()  # type: tuple[Channel, ...]
+    CHANNELS: tuple[Channel, ...] = ()
     # Channel aliases
-    CHANNEL_ALIASES = {}  # type: dict[str, str]
+    CHANNEL_ALIASES: dict[str, str] = {}
     # Enable or disable default color format parsing and serialization.
     COLOR_FORMAT = True
     # Some color spaces are a transform of a specific RGB color space gamut, e.g. HSL has a gamut of sRGB.
@@ -144,11 +146,11 @@ class Space(Plugin, metaclass=SpaceMeta):
     # that are also close enough to the gamut.
     #
     # When actually gamut mapping, only the gamut space is used, if none is specified, the origin space is used.
-    GAMUT_CHECK = None  # type: str | None
+    GAMUT_CHECK: str | None = None
     # `CLIP_SPACE` forces a different space to be used for clipping than what is specified by `GAMUT_CHECK`.
     # This is used in cases like HSL where the `GAMUT_CHECK` space is sRGB, but we want to clip in HSL as it
     # is still reasonable and faster.
-    CLIP_SPACE = None  # type: str | None
+    CLIP_SPACE: str | None = None
     # White point
     WHITE = (0.0, 0.0)
     # What is the color space's dynamic range
@@ -160,7 +162,7 @@ class Space(Plugin, metaclass=SpaceMeta):
         """Initialize."""
 
         self.channels = (*self.CHANNELS, alpha_channel)
-        self._chan_index = {c: e for e, c in enumerate(self.channels)}  # type: dict[str, int]
+        self._chan_index: dict[str, int] = {c: e for e, c in enumerate(self.channels)}
         self._color_ids = (self.NAME,) if not self.SERIALIZE else self.SERIALIZE
         self._percents = ([True] * (len(self.channels) - 1)) + [False]
         self._polar = isinstance(self, Cylindrical)

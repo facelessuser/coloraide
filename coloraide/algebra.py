@@ -439,7 +439,7 @@ def solve_nth_poly(
     assuming there are no more real roots, even if that is not true.
     """
 
-    roots = []  # type: VectorT[float]
+    roots: VectorT[float] = []
     while len(coef) > 4:
         root, status = solve_newton(
             guess,
@@ -1236,7 +1236,7 @@ class BSplineInterpolator(_CubicInterpolator):
 def _matrix_141(n: int) -> MatrixT[float]:
     """Get matrix '1 4 1'."""
 
-    m = [[0] * n for _ in range(n)]  # type: MatrixT[float]
+    m: MatrixT[float] = [[0] * n for _ in range(n)]
     m[0][0:2] = M141[1:]
     m[-1][-2:] = M141[:-1]
     for x in range(n - 2):
@@ -1274,7 +1274,7 @@ class NaturalBSplineInterpolator(BSplineInterpolator):
             m = _matrix_141(n)
 
             # Create C matrix from the data points
-            c = []  # type: MatrixT[float]
+            c: MatrixT[float] = []
             for r in range(1, n + 1):
                 if r == 1:
                     c.append([a * 6 - b for a, b in zip(points[r], points[r - 1])])
@@ -1371,14 +1371,14 @@ class SpragueInterpolator(Interpolator):
         return coord
 
 
-SPLINES = {
+SPLINES: dict[str, type[Interpolator]] = {
     'sprague': SpragueInterpolator,
     'natural': NaturalBSplineInterpolator,
     'bspline': BSplineInterpolator,
     'catrom': CatmullRomInterpolator,
     'monotone': MonotoneInterpolator,
     'linear': Interpolator
-}  # type: dict[str, type[Interpolator]]
+}
 
 
 def interpolate(
@@ -1564,10 +1564,10 @@ def pretty(
     """Format the print output."""
 
     options = get_printoptions()
-    precision = options['precision']  # type: int
-    suppress = options['suppress']  # type: bool
-    no_leading_zeros = options['no_leading_zeros']  # type: bool
-    padding = options['padding']  # type: bool
+    precision: int = options['precision']
+    suppress: bool = options['suppress']
+    no_leading_zeros: bool = options['no_leading_zeros']
+    padding: bool = options['padding']
 
     if shape is None:
         shape = _shape(value)
@@ -1575,7 +1575,7 @@ def pretty(
     # Turn values into strings and calculate
     # - longest whole number string
     # - longest fractional number string
-    rnd = lambda x, _: str(x)  # type: Callable[[Number, int], str]
+    rnd: Callable[[Number, int], str] = lambda x, _: str(x)
     whole = 0
     dec = 0
     maxlen = 0
@@ -1631,7 +1631,7 @@ def pretty(
 
     # Initial pass to determine if data is suspected to be floats
     # and if we need to convert all to scientific notation.
-    values = []  # type: list['Number']
+    values: list[Number] = []
     dtype: type[Number]
     for i, v in enumerate(ravel(value, shape=shape)):
         if i == 0:
@@ -1886,7 +1886,7 @@ def _cross_pad(a: ArrayTLike[StrictNumber], s: ArrayShape) -> ArrayT[StrictNumbe
     dtype = None
 
     for c in range(total):
-        t = m  # type: Any
+        t: Any = m
         for i in idx:
             t = t[i]
 
@@ -1909,8 +1909,8 @@ def cross(a: ArrayTLike[StrictNumber], b: ArrayTLike[StrictNumber]) -> Any:
     """Vector cross product."""
 
     # Determine shape of arrays
-    shape_a = shape(a)  # type: Shape
-    shape_b = shape(b)  # type: Shape
+    shape_a: Shape = shape(a)
+    shape_b: Shape = shape(b)
     dims_a = len(shape_a)
     dims_b = len(shape_b)
 
@@ -1941,7 +1941,7 @@ def cross(a: ArrayTLike[StrictNumber], b: ArrayTLike[StrictNumber]) -> Any:
 
         if dims_a == 2:
             # Cross a 2-D matrix and a vector
-            result = [vcross(r, b) for r in a]  # type: Any # type: ignore[arg-type, type-var]
+            result: Any = [vcross(r, b) for r in a]  # type: ignore[arg-type, type-var]
 
         elif dims_b == 2:
             # Cross a vector and a 2-D matrix
@@ -1973,7 +1973,7 @@ def cross(a: ArrayTLike[StrictNumber], b: ArrayTLike[StrictNumber]) -> Any:
     mdim = max(dims_a, dims_b)
     if mdim > 1 and new_shape[-1] == 2:
         new_shape.pop(-1)
-        s = tuple(new_shape)  # type: Shape
+        s: Shape = tuple(new_shape)
     else:
         s = tuple(new_shape)[:-1]
 
@@ -1997,7 +1997,7 @@ def _extract_rows(m: ArrayTLike[Number], s: ArrayShape) -> Iterator[VectorT[Numb
 
     # Matrix or tensor
     for idx in ndindex(s[:-1]):
-        t = m  # type: Any
+        t: Any = m
         for i in idx:
             t = t[i]
         yield t
@@ -2013,7 +2013,7 @@ def _extract_cols(m: ArrayTLike[Number], s: ArrayShape) -> Iterator[VectorT[Numb
     # M x N matrix
     else:
         for idx in ndindex(s[:-2]):
-            t = m  # type: Any
+            t: Any = m
             for i in idx:
                 t = t[i]
             yield from [[r[c] for r in t] for c in range(s[-1])]
@@ -2136,14 +2136,14 @@ def dot(
     """
 
     if dims[0] < 0 or dims[1] < 0 or dims[0] > 2 or dims[1] > 2:
-        shape_a = shape(a)  # type: Shape
-        shape_b = shape(b)  # type: Shape
+        shape_a: Shape = shape(a)
+        shape_b: Shape = shape(b)
         dims_a = len(shape_a)
         dims_b = len(shape_b)
 
         # Handle matrices of N-D and M-D size
         if dims_a and dims_b and (dims_a > 2 or dims_b > 2):
-            result = []  # type: MatrixT[StrictNumber] | TensorT[StrictNumber]
+            result: MatrixT[StrictNumber] | TensorT[StrictNumber] = []
             if dims_a == 1:
                 # Dot product of vector and a M-D matrix
                 with ArrayBuilder(result, shape_b[:-2] + shape_b[-1:]) as build:
@@ -2286,14 +2286,14 @@ def matmul(
     """
 
     if dims[0] < 0 or dims[1] < 0 or dims[0] > 2 or dims[1] > 2:
-        shape_a = shape(a)  # type: ArrayShape
-        shape_b = shape(b)  # type: ArrayShape
+        shape_a: ArrayShape = shape(a)
+        shape_b: ArrayShape = shape(b)
         dims_a = len(shape_a)
         dims_b = len(shape_b)
 
         # Handle matrices of N-D and M-D size
         if dims_a and dims_b and (dims_a > 2 or dims_b > 2):
-            result = []  # type: MatrixT[StrictNumber] | TensorT[StrictNumber]
+            result: MatrixT[StrictNumber] | TensorT[StrictNumber] = []
             if dims_a == 1:
                 # Matrix multiply of vector and a M-D matrix
                 with ArrayBuilder(result, shape_b[:-2] + shape_b[-1:]) as build:
@@ -2579,8 +2579,8 @@ def _matrix_chain_order(shapes: Sequence[ArrayShape]) -> MatrixT[int]:
     """
 
     n = len(shapes)
-    m = full((n, n), 0)  # type: Any
-    s = full((n, n), 0)  # type: MatrixT[int]
+    m: Any = full((n, n), 0)
+    s: MatrixT[int] = full((n, n), 0)
     p = [a[0] for a in shapes] + [shapes[-1][1]]
 
     for d in range(1, n):
@@ -2630,7 +2630,7 @@ def multi_dot(arrays: Sequence[ArrayTLike[StrictNumber]]) -> Any:
     shapes = [shape(a) for a in arrays]
 
     # We need the list mutable if we are going to update the entries
-    _arrays = [*arrays] if not isinstance(arrays, list) else arrays  # type: Any
+    _arrays: Any = [*arrays] if not isinstance(arrays, list) else arrays
 
     # Row vector
     if len(shapes[0]) == 1:
@@ -2660,7 +2660,7 @@ def multi_dot(arrays: Sequence[ArrayTLike[StrictNumber]]) -> Any:
         cost1 = pa * shapes[2][0] + pc * shapes[0][0]
         cost2 = pc * shapes[0][1] + pa * shapes[2][1]  # type: ignore[misc]
         if cost1 < cost2:
-            value = dot(dot(_arrays[0], _arrays[1], dims=D2), _arrays[2], dims=D2)  # type: Any
+            value: Any = dot(dot(_arrays[0], _arrays[1], dims=D2), _arrays[2], dims=D2)
         else:
             value = dot(_arrays[0], dot(_arrays[1], _arrays[2], dims=D2), dims=D2)
 
@@ -2695,7 +2695,7 @@ class _BroadcastTo(Generic[Number]):
 
         # Unravel the data as it will be quicker to slice the data in a flattened form
         # than iterating over the dimensions to replicate the data.
-        self.data = ravel(array, shape=old)  # type: VectorT[Number]
+        self.data: VectorT[Number] = ravel(array, shape=old)
         self.shape = new
 
         # Is the new shape actually different than the original?
@@ -2734,7 +2734,7 @@ class _BroadcastTo(Generic[Number]):
         """Reset."""
 
         if not self.different:
-            self._iter = iter(self.data)  # type: Iterator[Number]
+            self._iter: Iterator[Number] = iter(self.data)
         else:
             self._iter = it.chain.from_iterable(
                 (
@@ -2776,8 +2776,8 @@ class _SimpleBroadcast(Generic[Number]):
 
         total = len(arrays)
         if total == 0:
-            self.a = []  # type: ArrayTLike[Number] | Number
-            self.b = []  # type: ArrayTLike[Number] | Number
+            self.a: ArrayTLike[Number] | Number = []
+            self.b: ArrayTLike[Number] | Number = []
         elif total == 1:
             self.a, self.b = arrays[0], []
         else:
@@ -2877,7 +2877,7 @@ class _SimpleBroadcast(Generic[Number]):
     def reset(self) -> None:
         """Reset."""
 
-        self._iter = self.broadcast()  # type: Iterator[tuple[Number, ...]]
+        self._iter: Iterator[tuple[Number, ...]] = self.broadcast()
 
     def __next__(self) -> tuple[Number, ...]:
         """Next."""
@@ -2932,16 +2932,18 @@ class Broadcast(Generic[Number]):
                 max_dims = dims
             shapes.append(s)
 
-        stage1_shapes = []  # type: list[Shape]
+        stage1_shapes: list[Shape] = []
         common = _broadcast_shape(shapes, max_dims, stage1_shapes)
 
         # Create iterators to "broadcast to"
         total = len(arrays)
         self.simple = total < 2 or (total == 2 and len(common) <= 2)
         if self.simple:
-            self.simple_iter = _SimpleBroadcast(arrays, shapes, common)  # type: _SimpleBroadcast[Number]
+            self.simple_iter: _SimpleBroadcast[Number] = _SimpleBroadcast(arrays, shapes, common)
         else:
-            self.iters = [_BroadcastTo(a, s, s1, common) for a, s, s1 in zip(arrays, shapes, stage1_shapes)]  # type: list[_BroadcastTo[Number]]
+            self.iters: list[_BroadcastTo[Number]] = [
+                _BroadcastTo(a, s, s1, common) for a, s, s1 in zip(arrays, shapes, stage1_shapes)
+            ]
 
         # I don't think this is done the same way as `numpy`.
         # But shouldn't matter for what we do.
@@ -2953,7 +2955,7 @@ class Broadcast(Generic[Number]):
     def _init(self) -> None:
         """Setup main iterator."""
 
-        self._iter = self.simple_iter if self.simple else it.zip_longest(*self.iters)  # type: Iterator[tuple[Number, ...]]
+        self._iter: Iterator[tuple[Number, ...]] = self.simple_iter if self.simple else it.zip_longest(*self.iters)
 
     def reset(self) -> None:
         """Reset iterator."""
@@ -3029,7 +3031,7 @@ def broadcast_to(a: ArrayTLike[Number] | Number, s: int | Shape) -> Number | Arr
 
     bcast = _BroadcastTo(a, s_orig, tuple(s1), tuple(_s))
     if len(_s) > 1:
-        result = [] # type: ArrayT[Number]
+        result: ArrayT[Number] = []
         with ArrayBuilder(result, _s) as build:
             for data in bcast:
                 next(build).append(data)
@@ -3094,7 +3096,7 @@ class vectorize:
             bcast = broadcast(*vinputs)
             new_shape = bcast.shape
             # Build up the matrix
-            m = []  # type: ArrayT[float]
+            m: ArrayT[float] = []
             with ArrayBuilder(m, new_shape) as build:
                 for vargs in bcast:
                     # Update arguments with vectorized arguments
@@ -3142,7 +3144,7 @@ class _vectorize1:
         """Call the vectorized function."""
 
         dims_a = dims[0] if dims[0] >= 0 else len(shape(a))
-        func = (lambda p1, kw=kwargs: self.func(p1, **kw)) if kwargs else self.func  # type: Callable[..., Any]
+        func: Callable[..., Any] = (lambda p1, kw=kwargs: self.func(p1, **kw)) if kwargs else self.func
 
         # Fast paths for scalar, vectors, and 2D matrices
         # Scalar
@@ -3156,7 +3158,7 @@ class _vectorize1:
             return [[func(c) for c in r] for r in a]  # type: ignore[union-attr]
 
         # Unknown size or larger than 2D (slow)
-        m = []  # type: ArrayT[float]
+        m: ArrayT[float] = []
         s = shape(a)
         with ArrayBuilder(m, s) as build:
             for f in flatiter(a, shape=s):
@@ -3205,7 +3207,7 @@ class _vectorize2:
     ) -> Any:
         """Call the vectorized function."""
 
-        func = (lambda p1, p2, kw=kwargs: self.func(p1, p2, **kw)) if kwargs else self.func  # type: Callable[..., Any]
+        func: Callable[..., Any] = (lambda p1, p2, kw=kwargs: self.func(p1, p2, **kw)) if kwargs else self.func
 
         if dims[0] < 0 or dims[1] < 0 or dims[0] > 2 or dims[1] > 2:
             shape_a = shape(a)
@@ -3215,7 +3217,7 @@ class _vectorize2:
 
             # Handle matrices of N-D and M-D size
             if dims_a > 2 or dims_b > 2:
-                m = []  # type: ArrayT[float]
+                m: ArrayT[float] = []
                 # Apply math to two N-D matrices
                 if dims_a == dims_b:
                     empty = (not shape_a or 0 in shape_a) and (not shape_b or 0 in shape_b)
@@ -3328,7 +3330,7 @@ class _vectorize1_x3:
         if not (0 <= dims_a <= 2):
             raise ValueError('Inputs cannot exceed 2 dimensions')
 
-        func = (lambda p1, kw=kwargs: self.func(p1, **kw)) if kwargs else self.func  # type: Callable[..., Any]
+        func: Callable[..., Any] = (lambda p1, kw=kwargs: self.func(p1, **kw)) if kwargs else self.func
 
         # Fast paths for scalar, vectors, and 2D matrices
         # Scalar
@@ -3389,7 +3391,7 @@ class _vectorize2_x3:
         dims_a = dims[0] if dims[0] >= 0 else len(shape(a))
         dims_b = dims[1] if dims[1] >= 0 else len(shape(b))
 
-        func = (lambda a, b, kw=kwargs: self.func(a, b, **kw)) if kwargs else self.func  # type: Callable[..., float]
+        func: Callable[..., float] = (lambda a, b, kw=kwargs: self.func(a, b, **kw)) if kwargs else self.func
 
         if dims_a > 2 or dims_b > 2:
             raise ValueError('Inputs cannot exceed 2 dimensions')
@@ -3575,8 +3577,8 @@ def linspace(
     if dim1 <= 1 and dim2 <= 1:
         # Broadcast scalars to match vectors
         if dim1 == 0:
-            begin = [cast('StrictNumber', start)] * s2[0]  # type: VectorT[StrictNumber]  # type: ignore[misc]
-            end = cast('VectorT[StrictNumber]', stop)  # type: VectorT[StrictNumber]
+            begin: VectorT[StrictNumber] = [cast('StrictNumber', start)] * s2[0]  # type: ignore[misc]
+            end: VectorT[StrictNumber] = cast('VectorT[StrictNumber]', stop)
             s1 = s2
         elif dim2 == 0:
             begin = cast('VectorT[StrictNumber]', start)
@@ -3597,7 +3599,7 @@ def linspace(
 
         # Apply linear interpolation steps across the vectors
         values = [*zip(begin, end)]
-        m1 = []  # type: MatrixT[float]
+        m1: MatrixT[float] = []
         for r in range(num):
             m1.append([])
             for a, b in values:
@@ -3605,7 +3607,7 @@ def linspace(
         return m1
 
     # To apply over N x M inputs, apply the steps over the broadcasted results (slower)
-    m = []  # type: TensorT[float]
+    m: TensorT[float] = []
     bcast = broadcast(start, stop)
     new_shape = (num,) + bcast.shape
     with ArrayBuilder(m, new_shape) as build:
@@ -4298,7 +4300,7 @@ def full(array_shape: int | Shape, fill_value: Number | ArrayTLike[Number]) -> A
 
     # Normalize `fill_value` to be an array.
     elif not isinstance(fill_value, Sequence):
-        m = []  # type: ArrayT[Number]
+        m: ArrayT[Number] = []
         with ArrayBuilder(m, s) as build:
             for v in [fill_value] * math.prod(s):
                 next(build).append(v)
@@ -4374,7 +4376,7 @@ def ndenumerate(a: ArrayTLike[Number] | Number) -> Iterator[tuple[Shape, Any]]:
     """Iterate dimensions."""
 
     for idx in ndindex(shape(a)):
-        t = a  # type: Any
+        t: Any = a
         for i in idx:
             t = t[i]
         yield idx, t
@@ -4406,7 +4408,7 @@ class ArrayBuilder(Generic[Number]):
         dims = len(s)
         empty = not s or s[-1] == 0
         for idx in ndindex(s if not empty else (s[:-1] + (1,))):
-            t = a  # type: Any
+            t: Any = a
             for d in range(dims - 1):
                 if not t:
                     for _ in range(s[d]):
@@ -4447,7 +4449,7 @@ def flatiter(array: Number | ArrayTLike[Number], *, shape: Shape | None = None) 
         return iter((array,))  # type: ignore[arg-type]
 
     # Flatten one dimension at a time with `chain`, which is much faster than indexing from the root for every value
-    items = array  # type: Any
+    items: Any = array
     for _ in range(len(s) - 1):
         items = it.chain.from_iterable(items)
     return iter(items)
@@ -4521,7 +4523,7 @@ def transpose(array: ArrayTLike[Number] | Number) -> Number | ArrayT[Number]:
     we don't have a need for that, nor the desire to figure it out :).
     """
 
-    s = shape(array)  # type: Shape
+    s: Shape = shape(array)
     si = s[::-1]
     l = len(s)
 
@@ -4543,7 +4545,7 @@ def transpose(array: ArrayTLike[Number] | Number) -> Number | ArrayT[Number]:
         total = math.prod(si)
 
     # Create the array
-    m = []  # type: ArrayT[Number]
+    m: ArrayT[Number] = []
 
     # Calculate data sizes
     dims = len(si)
@@ -4558,7 +4560,7 @@ def transpose(array: ArrayTLike[Number] | Number) -> Number | ArrayT[Number]:
 
         # Navigate to the proper index to start writing data.
         # If the dimension hasn't been created yet, create it.
-        t = m  # type: Any
+        t: Any = m
         for d in range(dims - 1):
             if not t:
                 for _ in range(si[d]):
@@ -4654,7 +4656,7 @@ def reshape(array: ArrayTLike[Number] | Number, new_shape: int | Shape) -> Numbe
         return _unflatten(list(flatiter(array, shape=current_shape)), new_shape)
 
     # Empty arrays have no data, so the builder only needs to generate the empty dimensions when it drains
-    m = []  # type: ArrayT[Number]
+    m: ArrayT[Number] = []
     with ArrayBuilder(m, new_shape):
         pass
 
@@ -4691,7 +4693,7 @@ def shape(a: ArrayTLike[Number] | Number, *, quick: bool = False) -> Shape:
     # Perform a quick shape calculation that will not validate all indexes.
     # This can allow a ragged shape to slip through, but is much faster.
     if quick:
-        t = a  # type: Any
+        t: Any = a
         s = []
         while isinstance(t, Sequence):
             l = len(t)
@@ -4758,7 +4760,7 @@ def fill_diagonal(
 
     x = [0] * len(s)
     while x[0] < mx:
-        t = matrix  # type: Any
+        t: Any = matrix
         for idx in range(len(s)):
             r = s[idx]
             current = x[idx]
@@ -4786,7 +4788,7 @@ def eye(n: int, m: int | None = None, k: int = 0) -> MatrixT[float]:
     # Length of diagonal
     dlen = m if n > m and k < 0 else (m - abs(k))
 
-    a = []  # type: MatrixT[float]
+    a: MatrixT[float] = []
     for i in range(n):
         pos = i + k
         idx = i if k >= 0 else pos
@@ -4828,14 +4830,14 @@ def diag(
 
     if dims == 1:
 
-        t = array[0].__class__  # type: type[Number]  # type: ignore[assignment]
+        t: type[Number] = array[0].__class__  # type: ignore[assignment]
         # Calculate size of matrix to accommodate the diagonal
         size = s[0] - k if k < 0 else (s[0] + k if k else s[0])
         maximum = size - 1
         minimum = 0
 
         # Create a diagonal matrix with the provided vector
-        m = []  # type: MatrixT[Number]
+        m: MatrixT[Number] = []
         for i in range(size):
             pos = i + k
             idx = i if k >= 0 else pos
@@ -5017,14 +5019,14 @@ def lu(
     if dims < 2:
         raise ValueError('LU decomposition requires an array larger than a vector')
     elif dims > 2:
-        last = s[-2:]  # type: tuple[int, int] # type: ignore[assignment]
-        first = s[:-2]  # type: Shape
+        last: tuple[int, int] = s[-2:]  # type: ignore[assignment]
+        first: Shape = s[:-2]
         rows = cast('MatrixTLike[StrictNumber]', list(_extract_rows(matrix, s)))
         step = last[-2]
-        lt = []  # type: TensorT[float]
-        ut = []  # type: TensorT[float]
+        lt: TensorT[float] = []
+        ut: TensorT[float] = []
         if not permute_l:
-            pt = []  # type: Any
+            pt: Any = []
             builder = MultiArrayBuilder([pt, lt, ut], [first, first, first])
         else:
             builder = MultiArrayBuilder([lt, ut], [first, first])
@@ -5065,7 +5067,7 @@ def lu(
 
     # Initialize the triangle matrices along with the permutation matrix.
     if empty:
-        p = [] # type: Any
+        p: Any = []
         l = fmatrix
         u = []
         size = 0
@@ -5687,15 +5689,15 @@ def svd(
 
     # Handle stacked matrix cases
     elif dims > 2:
-        last = s[-2:]  # type: tuple[int, int] # type: ignore[misc]
-        first = s[:-2]  # type: Shape # type: ignore[misc]
+        last: tuple[int, int] = s[-2:]  # type: ignore[misc]
+        first: Shape = s[:-2]  # type: ignore[misc]
         rows = cast('MatrixTLike[StrictNumber]', list(_extract_rows(a, s)))
         step = last[-2]
         m, n = last
-        sigma = []  # type: ArrayT[float]
+        sigma: ArrayT[float] = []
         if compute_uv:
-            u = []  # type: MatrixT[float] | TensorT[float]
-            v = []  # type: MatrixT[float] | TensorT[float]
+            u: MatrixT[float] | TensorT[float] = []
+            v: MatrixT[float] | TensorT[float] = []
             builder = MultiArrayBuilder([u, sigma, v], [first, first, first])
         else:
             builder = MultiArrayBuilder([sigma], [first])
@@ -6002,14 +6004,14 @@ def qr(
 
     # Handle stacked matrix cases
     elif dims > 2:
-        last = s[-2:]  # type: tuple[int, int] # type: ignore[misc]
-        first = s[:-2]  # type: Shape # type: ignore[misc]
+        last: tuple[int, int] = s[-2:]  # type: ignore[misc]
+        first: Shape = s[:-2]  # type: ignore[misc]
         rows = list(_extract_rows(a, s))
         step = last[-2]
         m, n = last
-        r = []  # type: MatrixT[float]
+        r: MatrixT[float] = []
         if not mode_r:
-            q = []  # type: MatrixT[float]
+            q: MatrixT[float] = []
             builder = MultiArrayBuilder([q, r], [first, first])
         else:
             builder = MultiArrayBuilder([r], [first])
@@ -6034,7 +6036,7 @@ def matrix_rank(a: MatrixTLike[StrictNumber] | TensorTLike[StrictNumber]) -> Any
 
     s = shape(a)
     dims = len(s)
-    last = s[-2:]  # type: tuple[int, int] # type: ignore[misc]
+    last: tuple[int, int] = s[-2:]  # type: ignore[misc]
     rtol = max(last) * EPS
 
     if dims < 2:
@@ -6051,11 +6053,11 @@ def matrix_rank(a: MatrixTLike[StrictNumber] | TensorTLike[StrictNumber]) -> Any
         return rank
 
     # Stack of matrices
-    first = s[:-2]  # type: Shape # type: ignore[misc]
+    first: Shape = s[:-2]  # type: ignore[misc]
     rows = list(_extract_rows(a, s))
     step = last[-2]
     m, n = last
-    ranks = []  # type: ArrayT[float]
+    ranks: ArrayT[float] = []
     with ArrayBuilder(ranks, first) as build:
         for r in range(0, len(rows), step):
             sigma = _svd(rows[r:r + step], m, n, full_matrices=False, compute_uv=False)
@@ -6125,13 +6127,13 @@ def solve(a: MatrixTLike[StrictNumber] | TensorTLike[StrictNumber], b: ArrayTLik
             if size != len(b):
                 raise ValueError('Mismatched dimensions')
 
-            ordered = []  # type: MatrixT[float]
+            ordered: MatrixT[float] = []
             for i in p:
                 r = b[i]
                 if len(r) != size2:
                     raise ValueError('Mismatched dimensions')
                 ordered.append(list(r))
-            s2 = (size, size2)  # type: Shape
+            s2: Shape = (size, size2)
             return _back_sub_matrix(u, _forward_sub_matrix(l, ordered, s2), s2)
 
         # Matrix and one vector
@@ -6143,7 +6145,7 @@ def solve(a: MatrixTLike[StrictNumber] | TensorTLike[StrictNumber], b: ArrayTLik
 
     # More complex, deeply nested cases that require more analyzing
     s2 = shape(b)
-    m = []  # type: ArrayT[float]
+    m: ArrayT[float] = []
 
     # Matrices and vectors
     if dim1:
@@ -6152,7 +6154,7 @@ def solve(a: MatrixTLike[StrictNumber] | TensorTLike[StrictNumber], b: ArrayTLik
 
         with ArrayBuilder(m, base_shape) as build:
             for idx in ndindex(base_shape):
-                ma = a  # type: Any
+                ma: Any = a
                 for i in idx:
                     ma = ma[i]
 
@@ -6174,7 +6176,7 @@ def solve(a: MatrixTLike[StrictNumber] | TensorTLike[StrictNumber], b: ArrayTLik
             ma = a
             for i in idx:
                 ma = ma[i]
-            mb = b  # type: Any
+            mb: Any = b
             for i in idx:
                 mb = mb[i]
 
@@ -6260,13 +6262,13 @@ def inv(matrix: MatrixTLike[StrictNumber] | TensorTLike[StrictNumber]) -> Matrix
     # Ensure we have a square matrix
     s = shape(matrix)
     dims = len(s)
-    last = s[-2:]  # type: tuple[int, int] # type: ignore[misc]
+    last: tuple[int, int] = s[-2:]  # type: ignore[misc]
     if dims < 2 or min(last) != max(last):
         raise ValueError('Matrix must be a N x N matrix')
 
     # Handle dimensions greater than 2 x 2
     elif dims > 2:
-        invert = []  # type: TensorT[float]
+        invert: TensorT[float] = []
         step = last[-2]
         rows = list(_extract_rows(matrix, s))
         with ArrayBuilder(invert, s[:-2]) as build:  # type: ignore[misc]
@@ -6315,8 +6317,8 @@ def pinv(a: MatrixTLike[StrictNumber] | TensorTLike[StrictNumber]) -> MatrixT[fl
         raise ValueError('Array must be at least 2 dimensional')
 
     elif dims > 2:
-        last = s[-2:]  # type: tuple[int, int] # type: ignore[misc]
-        invert = []  # type: TensorT[float]
+        last: tuple[int, int] = s[-2:]  # type: ignore[misc]
+        invert: TensorT[float] = []
         rows = list(_extract_rows(a, s))
         step = last[-2]
         with ArrayBuilder(invert, s[:-2]) as build:  # type: ignore[misc]
@@ -6351,12 +6353,12 @@ def vstack(
 ) -> MatrixT[Number] | TensorT[Number]:
     """Vertical stack."""
 
-    m = []  # type: list[Any]
+    m: list[Any] = []
     dims = 0
 
     # Array tracking for verification
     axis = 0
-    last = ()  # type: Shape
+    last: Shape = ()
     last_dims = 0
 
     for a in arrays:
@@ -6418,9 +6420,9 @@ def hstack(arrays: Sequence[ArrayTLike[Number] | Number]) -> ArrayT[Number]:
 
     # Array tracking for verification
     axis = 1
-    last = ()  # type: Shape
+    last: Shape = ()
     last_dims = 0
-    largest = ()  # type: Shape
+    largest: Shape = ()
     largest_length = 0
 
     arrs = []
@@ -6472,13 +6474,13 @@ def hstack(arrays: Sequence[ArrayTLike[Number] | Number]) -> ArrayT[Number]:
 
     # Handle 1-D vector cases
     if largest_length == 1:
-        m1 = []  # type: VectorT[Number]
+        m1: VectorT[Number] = []
         for a, s in zip(arrays, orig_shapes):
             m1.extend(ravel(a, shape=s))
         return m1
 
     # Iterate the arrays returning the content per second axis
-    m = []  # type: Any
+    m: Any = []
     for data in it.zip_longest(*[_hstack_extract(a, s) for a, s in it.zip_longest(arrs, shapes) if s != (0,)]):
         for d in data:
             m.extend(d)
@@ -6601,21 +6603,21 @@ def inner(
     # Scalars will be broadcasted to properly match the last dimension
     # of the other input.
     if dims_a == 1:
-        first = [a]  # type: Any
+        first: Any = [a]
     elif dims_a > 2:
         first = _extract_rows(a, shape_a)  # type: ignore[arg-type]
     else:
         first = a
 
     if dims_b == 1:
-        second = [b]  # type: Any
+        second: Any = [b]
     elif dims_b > 2:
         second = list(_extract_rows(b, shape_b))  # type: ignore[arg-type]
     else:
         second = b
 
     # Perform the actual inner product
-    m = [[sum([x * y for x, y in it.zip_longest(r1, r2)]) for r2 in second] for r1 in first]  # type: ArrayT[StrictNumber]
+    m: ArrayT[StrictNumber] = [[sum([x * y for x, y in it.zip_longest(r1, r2)]) for r2 in second] for r1 in first]
     new_shape = shape_a[:-1] + shape_b[:-1]  # type: ignore[misc]
 
     # Shape the data.
@@ -6651,7 +6653,7 @@ def fnnls(
 
     x = [0.0] * n
     s = [0.0] * n
-    w = subtract(ATb, dot(ATA, x, dims=D2_D1), dims=D1)  # type: VectorT[float]
+    w: VectorT[float] = subtract(ATb, dot(ATA, x, dims=D2_D1), dims=D1)
 
     # P tracks positive elements in x
     # Does double duty as P and R vector outlined in the paper
@@ -6761,7 +6763,7 @@ def flip(
                 raise ValueError('Repeated axis')
             axes.add(ai)
 
-    m = ascopy(a)  # type: ArrayT[Number]  # type: ignore[arg-type]
+    m: ArrayT[Number] = ascopy(a)  # type: ignore[arg-type]
     indexes = [-1] * l
     end = l - 1
 
@@ -6772,7 +6774,7 @@ def flip(
 
     # Flip the axes
     for idx in ndindex(s[:-1] + (1,)):  # type: ignore[misc]
-        t = m  # type: Any
+        t: Any = m
         count = 0
         for i in idx:
             if indexes[count] == -1:
@@ -6907,8 +6909,8 @@ def roll(
     end = l - 1
 
     # Broadcast the shifts and axes
-    new_shift = []  # type: VectorT[int]
-    new_axes = []  # type: VectorT[int]
+    new_shift: VectorT[int] = []
+    new_axes: VectorT[int] = []
     for i, j in broadcast(shift, axes):
         i, j = i, j
         if j < 0:
@@ -6919,7 +6921,7 @@ def roll(
 
     # Perform the roll across the specified axes
     for idx in ndindex(s[:-1] + (1,)):  # type: ignore[misc]
-        t = m  # type: Any
+        t: Any = m
         count = 0
         for i in idx:
             if indexes[count] == -1:

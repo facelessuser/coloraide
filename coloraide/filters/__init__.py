@@ -13,7 +13,7 @@ class Filter(Plugin, metaclass=ABCMeta):
 
     NAME = ''
     DEFAULT_SPACE = 'srgb-linear'
-    ALLOWED_SPACES = ('srgb-linear',)  # type: tuple[str, ...]
+    ALLOWED_SPACES: tuple[str, ...] = ('srgb-linear',)
 
     @abstractmethod
     def filter(self, color: Color, amount: float | None, **kwargs: Any) -> None:  # noqa: A003

@@ -48,8 +48,8 @@ def coerce_to_rgb(cs: Space) -> Space:
     """
 
     if isinstance(cs, HSLish):
-        to_ = hsl_to_srgb  # type: Callable[[Vector], Vector]
-        from_ = srgb_to_hsl  # type: Callable[[Vector], Vector]
+        to_: Callable[[Vector], Vector] = hsl_to_srgb
+        from_: Callable[[Vector], Vector] = srgb_to_hsl
     elif isinstance(cs, HSVish):
         to_ = hsv_to_srgb
         from_ = srgb_to_hsv

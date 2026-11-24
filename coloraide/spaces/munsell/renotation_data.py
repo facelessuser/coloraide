@@ -5,7 +5,7 @@ Each Value plane contains 40 hue lines in order of hue number `(0R, 2.5R, ... 7.
 tuple of the xy chromaticities at chroma 2, 4, 6, ... as `(x, y, x, y, ...)`. The luminance is omitted as it is
 calculated from Value. An empty line has no data (it is a gap in the source data), and is filled in on load.
 """
-MUNSELL_RENOTATION = {
+MUNSELL_RENOTATION: dict[float, tuple[tuple[float, ...], ...]] = {
     0.2: (
         # Hue number 0
         (0.404, 0.164, 0.424, 0.125, 0.435, 0.103),
@@ -1579,4 +1579,4 @@ MUNSELL_RENOTATION = {
         # Hue number 97.5
         (0.32, 0.314, 0.335, 0.31, 0.351, 0.305, 0.365, 0.301),
     ),
-}  # type: dict[float, tuple[tuple[float, ...], ...]]
+}

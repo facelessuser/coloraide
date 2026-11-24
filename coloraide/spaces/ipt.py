@@ -61,7 +61,7 @@ class IPT(Lab):
 
     BASE = "xyz-d65"
     NAME = "ipt"
-    SERIALIZE = ("--ipt",)  # type: tuple[str, ...]
+    SERIALIZE: tuple[str, ...] = ("--ipt",)
     CHANNELS = (
         Channel("i", 0.0, 1.0),
         Channel("p", -1.0, 1.0, flags=FLG_MIRROR_PERCENT),

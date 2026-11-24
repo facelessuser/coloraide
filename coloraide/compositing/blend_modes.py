@@ -282,7 +282,7 @@ class BlendColor(NonSeperableBlend):
         return set_lum(cs, lum(cb))
 
 
-SUPPORTED = {
+SUPPORTED: dict[str, Blend] = {
     "normal": BlendNormal(),
     "multiply": BlendMultiply(),
     "screen": BlendScreen(),
@@ -299,7 +299,7 @@ SUPPORTED = {
     "saturation": BlendSaturation(),
     "luminosity": BlendLuminosity(),
     "color": BlendColor(),
-}  # type: dict[str, Blend]
+}
 
 
 def get_blender(blend: str) -> Blend:

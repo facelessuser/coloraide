@@ -18,7 +18,7 @@ if TYPE_CHECKING:  #pragma: no cover
 
 # White point C as defined in the Pointer data spreadsheet
 XYZ_W = alg.divide_x3((98.0722647623506, 100.0, 118.225418982695), 100, dims=alg.D1_SC)
-WHITE_POINT_SC = tuple(util.xyz_to_xyY(XYZ_W)[:-1])  # type: VectorLike
+WHITE_POINT_SC: VectorLike = tuple(util.xyz_to_xyY(XYZ_W)[:-1])
 # Rows: hue 0 - 360 at steps of 10
 # Columns: lightness 15 - 90 at steps of 5
 LIGHTNESS = [*range(15, 91, 5)]
@@ -75,7 +75,7 @@ def pointer_gamut_boundary(lightness: float | None = None) -> Matrix:
     # Maximum Pointer gamut boundary
     # For each hue, find the lightness/chroma point that is furthest away from the white point.
     if lightness is None:
-        max_gamut = []  # type: Matrix
+        max_gamut: Matrix = []
         for i, h in enumerate(HUE[:-1]):
             max_dxy = 0.0
             max_xyy = [0.0, 0.0, 0.0]

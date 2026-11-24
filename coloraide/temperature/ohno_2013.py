@@ -154,7 +154,7 @@ class Ohno2013(CCT):
         u, v = color.split_chromaticity(self.CHROMATICITY)[:-1]
         last = samples - 1
         index = 0
-        table = []  # type: list[tuple[float, float, float, float]]
+        table: list[tuple[float, float, float, float]] = []
 
         # Each iteration we narrow the range until we are close enough
         for _ in range(iterations):

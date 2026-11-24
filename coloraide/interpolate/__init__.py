@@ -370,7 +370,7 @@ class Interpolator(Generic[AnyColor], metaclass=ABCMeta):
         self.space = space
         self._out_space = out_space
         self.extrapolate = extrapolate
-        self.current_easing = None  # type: Mapping[str, Callable[..., float]] | Callable[..., float] | None
+        self.current_easing: Mapping[str, Callable[..., float]] | Callable[..., float] | None = None
         self.hue = hue
         self.increasing = True
         cs = self.color_cls.CS_MAP[space]
@@ -385,12 +385,12 @@ class Interpolator(Generic[AnyColor], metaclass=ABCMeta):
         self.premultiplied = premultiplied
 
         # Calculate padded start and end
-        self._padding = None  # type: tuple[float, float] | None
+        self._padding: tuple[float, float] | None = None
         if padding is not None:
             self.padding(padding)
 
         # Set the domain
-        self._domain = []  # type: Vector
+        self._domain: Vector = []
 
         if domain is not None:
             self.domain(domain)
@@ -410,7 +410,7 @@ class Interpolator(Generic[AnyColor], metaclass=ABCMeta):
         from .linear import Linear
 
         # Get the discrete steps for the new discrete interpolation
-        colors = self.steps(steps, max_steps, max_delta_e, delta_e, delta_e_args)  # type: list[AnyColor]
+        colors: list[AnyColor] = self.steps(steps, max_steps, max_delta_e, delta_e, delta_e_args)
 
         if not colors:
             raise ValueError('Discrete interpolation requires at least 1 discrete step.')
@@ -529,7 +529,7 @@ class Interpolator(Generic[AnyColor], metaclass=ABCMeta):
         if max_steps is not None:
             actual_steps = min(actual_steps, max_steps)
 
-        ret = []  # type: list[tuple[float, AnyColor]]
+        ret: list[tuple[float, AnyColor]] = []
         if actual_steps == 1:
             ret = [(0.5, self(0.5))]
         elif actual_steps > 1:
@@ -1020,7 +1020,7 @@ def interpolator(
         raise ValueError(f"'{interpolator}' is not a recognized interpolator")
 
     # Construct piecewise interpolation object
-    stops = {}  # type: Any
+    stops: Any = {}
 
     space = plugin.get_space(space, color_cls)
 
@@ -1050,8 +1050,8 @@ def interpolator(
     elif powerless and is_cyl and current.is_achromatic():
         current[hue_index] = math.nan
 
-    easing = None  # type: Any
-    easings = []  # type: Any
+    easing: Any = None
+    easings: Any = []
     coords = [current[:]]
 
     i = 0

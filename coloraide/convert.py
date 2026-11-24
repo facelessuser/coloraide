@@ -74,7 +74,7 @@ def get_convert_chain(
     # If the color space we are converting to is not between
     # the current space and XYZ D65, nothing will get added.
     current = space
-    chain = []  # type: list[tuple[Space, Space, int, bool]]
+    chain: list[tuple[Space, Space, int, bool]] = []
     if current.NAME != ABSOLUTE_BASE:
         count = 0
         while current.NAME not in from_color_index:

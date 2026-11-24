@@ -19,7 +19,7 @@ class InterpolatorBSpline(InterpolatorContinuous[AnyColor]):
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         """Initialize."""
 
-        self.end_cond = kwargs.get('end_cond', None)  # type: str | None
+        self.end_cond: str | None = kwargs.get('end_cond', None)
         super().__init__(*args, **kwargs)
 
     def setup(self) -> None:
@@ -27,7 +27,7 @@ class InterpolatorBSpline(InterpolatorContinuous[AnyColor]):
 
         # Process undefined values
         self.handle_undefined()
-        self.spline = alg.BSplineInterpolator  # type: type[alg._CubicInterpolator]
+        self.spline: type[alg._CubicInterpolator] = alg.BSplineInterpolator
         self.spline.preprocess(self.coordinates, end_cond=self.end_cond)
 
     def interpolate(

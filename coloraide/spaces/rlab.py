@@ -72,7 +72,7 @@ class Environment:
         """Calculate RAM."""
 
         lms = alg.matmul_x3(M, self.ref_white, dims=alg.D2_D1)
-        a = []  # type: Vector
+        a: Vector = []
         s = sum(lms)
         for c in lms:
             l = (3.0 * c) / s

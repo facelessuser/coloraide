@@ -56,7 +56,7 @@ class ACEScc(RGB):
 
     BASE = "acescg"
     NAME = "acescc"
-    SERIALIZE = ("--acescc",)  # type: tuple[str, ...]
+    SERIALIZE: tuple[str, ...] = ("--acescc",)
     WHITE = WHITES['2deg']['ACES-D60']
     CHANNELS = (
         Channel("r", CC_MIN, CC_MAX, bound=True, nans=CC_MIN),

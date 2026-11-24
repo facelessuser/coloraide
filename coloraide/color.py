@@ -129,15 +129,15 @@ class ColorMeta(abc.ABCMeta):
 
         # Ensure subclassed Color objects do not use the same plugin mappings
         if len(cls.mro()) > 2:
-            cls.CS_MAP = cls.CS_MAP.copy()  # type: dict[str, Space]
-            cls.DE_MAP = cls.DE_MAP.copy()  # type: dict[str, DeltaE]
-            cls.FIT_MAP = cls.FIT_MAP.copy()  # type: dict[str, Fit]
-            cls.CAT_MAP = cls.CAT_MAP.copy()  # type: dict[str, CAT]
-            cls.FILTER_MAP = cls.FILTER_MAP.copy()  # type: dict[str, Filter]
-            cls.CONTRAST_MAP = cls.CONTRAST_MAP.copy()  # type: dict[str, ColorContrast]
-            cls.INTERPOLATE_MAP = cls.INTERPOLATE_MAP.copy()  # type: dict[str, Interpolate]
-            cls.CCT_MAP = cls.CCT_MAP.copy()  # type: dict[str, CCT]
-            cls.GAMUT_MAP = cls.GAMUT_MAP.copy()  # type: dict[str, Gamut]
+            cls.CS_MAP: dict[str, Space] = cls.CS_MAP.copy()
+            cls.DE_MAP: dict[str, DeltaE] = cls.DE_MAP.copy()
+            cls.FIT_MAP: dict[str, Fit] = cls.FIT_MAP.copy()
+            cls.CAT_MAP: dict[str, CAT] = cls.CAT_MAP.copy()
+            cls.FILTER_MAP: dict[str, Filter] = cls.FILTER_MAP.copy()
+            cls.CONTRAST_MAP: dict[str, ColorContrast] = cls.CONTRAST_MAP.copy()
+            cls.INTERPOLATE_MAP: dict[str, Interpolate] = cls.INTERPOLATE_MAP.copy()
+            cls.CCT_MAP: dict[str, CCT] = cls.CCT_MAP.copy()
+            cls.GAMUT_MAP: dict[str, Gamut] = cls.GAMUT_MAP.copy()
 
         # Ensure each derived class tracks its own conversion paths for color spaces
         # relative to the installed color space plugins.
@@ -158,15 +158,15 @@ class ColorMeta(abc.ABCMeta):
 class Color(metaclass=ColorMeta):
     """Color class object which provides access and manipulation of color spaces."""
 
-    CS_MAP = {}  # type: dict[str, Space]
-    DE_MAP = {}  # type: dict[str, DeltaE]
-    FIT_MAP = {}  # type: dict[str, Fit]
-    CAT_MAP = {}  # type: dict[str, CAT]
-    CONTRAST_MAP = {}  # type: dict[str, ColorContrast]
-    FILTER_MAP = {}  # type: dict[str, Filter]
-    INTERPOLATE_MAP = {}  # type: dict[str, Interpolate]
-    CCT_MAP = {}  # type: dict[str, CCT]
-    GAMUT_MAP = {}  # type: dict[str, Gamut]
+    CS_MAP: dict[str, Space] = {}
+    DE_MAP: dict[str, DeltaE] = {}
+    FIT_MAP: dict[str, Fit] = {}
+    CAT_MAP: dict[str, CAT] = {}
+    CONTRAST_MAP: dict[str, ColorContrast] = {}
+    FILTER_MAP: dict[str, Filter] = {}
+    INTERPOLATE_MAP: dict[str, Interpolate] = {}
+    CCT_MAP: dict[str, CCT] = {}
+    GAMUT_MAP: dict[str, Gamut] = {}
     PRECISION = util.DEF_PREC
     ROUNDING = util.DEF_ROUND_MODE
     FIT = util.DEF_FIT
@@ -371,8 +371,8 @@ class Color(metaclass=ColorMeta):
         """Register the hook."""
 
         reset_convert_cache = False
-        mapping = None  # type: Any
-        p = None  # type: Any
+        mapping: Any = None
+        p: Any = None
         for i in [plugin] if not isinstance(plugin, Sequence) else plugin:
             if isinstance(i, Space):
                 mapping = cls.CS_MAP
@@ -438,7 +438,7 @@ class Color(metaclass=ColorMeta):
         if isinstance(plugin, str):
             plugin = [plugin]
 
-        mapping = None  # type: dict[str, Any] | None
+        mapping: dict[str, Any] | None = None
         for p in plugin:
             if p == '*':
                 cls.CS_MAP.clear()
@@ -513,7 +513,7 @@ class Color(metaclass=ColorMeta):
         length = len(limits)
         coords = []
         for i in range(num_chan):
-            chan = limits[i] if i < length else None  # type: Any
+            chan: Any = limits[i] if i < length else None
             if chan is None:
                 chan = cs.channels[i]
                 a, b = chan.low, chan.high
@@ -1145,7 +1145,7 @@ class Color(metaclass=ColorMeta):
         if domain is not None:
             interpolate_args['domain'] = interpolate.normalize_domain(domain)
 
-        mixed = self.interpolate([self, color], **interpolate_args)(percent)  # type: Self
+        mixed: Self = self.interpolate([self, color], **interpolate_args)(percent)
         return self._hotswap(mixed) if in_place else mixed
 
     @classmethod

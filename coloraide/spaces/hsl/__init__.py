@@ -81,8 +81,8 @@ class HSL(HSLish, Space):
         "lightness": "l"
     }
     WHITE = WHITES['2deg']['D65']
-    GAMUT_CHECK = "srgb"  # type: str | None
-    CLIP_SPACE = "hsl"  # type: str | None
+    GAMUT_CHECK: str | None = "srgb"
+    CLIP_SPACE: str | None = "hsl"
 
     def __init__(self, **kwargs: Any):
         """Initialize."""

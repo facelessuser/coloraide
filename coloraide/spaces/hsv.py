@@ -75,8 +75,8 @@ class HSV(HSVish, Space):
         "saturation": "s",
         "value": "v"
     }
-    GAMUT_CHECK = "srgb"  # type: str | None
-    CLIP_SPACE = "hsv"  # type: str | None
+    GAMUT_CHECK: str | None = "srgb"
+    CLIP_SPACE: str | None = "hsv"
     WHITE = WHITES['2deg']['D65']
 
     def __init__(self, **kwargs: Any):

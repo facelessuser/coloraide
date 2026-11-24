@@ -47,7 +47,7 @@ LMS_TO_SRGBL = [
     [-0.004196076138675526, -0.703418617935936   ,  1.7076146940746113  ]
 ]
 
-SRGBL_COEFF = [
+SRGBL_COEFF: list[Matrix] = [
     # Red
     [
         # Limit
@@ -69,7 +69,7 @@ SRGBL_COEFF = [
         # `Kn` coefficients
         [1.35733652, -0.00915799, -1.1513021, -0.50559606, 0.00692167]
     ]
-]  # type: list[Matrix]
+]
 
 FLT_MAX = sys.float_info.max
 

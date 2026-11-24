@@ -14,7 +14,7 @@ class XYZD65(RGBish, Space):
 
     BASE = "xyz-d65"
     NAME = "xyz-d65"
-    SERIALIZE = ("xyz-d65", 'xyz')  # type: tuple[str, ...]
+    SERIALIZE: tuple[str, ...] = ("xyz-d65", 'xyz')
     CHANNELS = (
         Channel("x", 0.0, 1.0),
         Channel("y", 0.0, 1.0),

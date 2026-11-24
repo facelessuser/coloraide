@@ -310,9 +310,9 @@ def validate_lch(tokens: dict[str, Any]) -> bool:
 def tokenize_css(css: str, start: int = 0) -> dict[str, Any]:
     """Tokenize the CSS string."""
 
-    tokens = {}  # type: dict[str, Any]
+    tokens: dict[str, Any] = {}
     # `mypy` will get confused, just set to Any
-    m = RE_HEX.match(css, start)  # type: Any
+    m: Any = RE_HEX.match(css, start)
     if m:
         tokens['hex'] = {
             'start': m.group(1),

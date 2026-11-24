@@ -87,7 +87,7 @@ class Robertson1968(CCT):
         """
 
         xyzw = util.xy_to_xyz(white)
-        table = []  # type: list[CCTEntry]
+        table: list[CCTEntry] = []
         to_uv = util.xy_to_uv_1960 if self.CHROMATICITY == 'uv-1960' else util.xy_to_uv
         for t in mired:
             uv1 = to_uv(planck.temp_to_xy_planckian_locus(1e6 / (t - 0.01), cmfs, xyzw, step=planck_step))

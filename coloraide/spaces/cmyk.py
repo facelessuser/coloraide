@@ -36,7 +36,7 @@ class CMYK(Space):
 
     BASE = "cmy"
     NAME = "cmyk"
-    SERIALIZE = ("--cmyk",)  # type: tuple[str, ...]
+    SERIALIZE: tuple[str, ...] = ("--cmyk",)
     CHANNELS = (
         Channel("c", 0.0, 1.0, bound=True),
         Channel("m", 0.0, 1.0, bound=True),

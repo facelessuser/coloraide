@@ -41,7 +41,7 @@ class MINDEChroma(Fit):
 
     NAME = "minde-chroma"
     JND = 0.02
-    DE_OPTIONS = {"method": "ok"}  # type: dict[str, Any]
+    DE_OPTIONS: dict[str, Any] = {"method": "ok"}
     PSPACE = "oklch"
     MIN_CONVERGENCE = 0.0001
 

@@ -64,7 +64,7 @@ class IgPgTg(IPT):
 
     BASE = "xyz-d65"
     NAME = "igpgtg"
-    SERIALIZE = ("--igpgtg",)  # type: tuple[str, ...]
+    SERIALIZE: tuple[str, ...] = ("--igpgtg",)
     CHANNELS = (
         Channel("ig", 0.0, 1.0),
         Channel("pg", -1.0, 1.0, flags=FLG_MIRROR_PERCENT),

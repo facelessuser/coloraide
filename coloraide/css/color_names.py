@@ -9,7 +9,7 @@ from __future__ import annotations
 from .. import algebra as alg
 from ..types import Vector
 
-name2val_map = {
+name2val_map: dict[str, tuple[float, ...]] = {
     'aliceblue': (240.0, 248.0, 255.0, 255.0),
     'antiquewhite': (250.0, 235.0, 215.0, 255.0),
     'aqua': (0.0, 255.0, 255.0, 255.0),
@@ -161,9 +161,9 @@ name2val_map = {
 
     # Transparent
     'transparent': (0.0, 0.0, 0.0, 0.0)
-}  # type: dict[str, tuple[float, ...]]
+}
 
-val2name_map = {v: k for k, v in name2val_map.items()}  # type: dict[tuple[float, ...], str]
+val2name_map: dict[tuple[float, ...], str] = {v: k for k, v in name2val_map.items()}
 
 
 def to_name(value: Vector) -> str | None:

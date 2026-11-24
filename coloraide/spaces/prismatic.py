@@ -38,7 +38,7 @@ class Prismatic(Luminant, Space):
 
     BASE = "srgb"
     NAME = "prismatic"
-    SERIALIZE = ("--prismatic",)  # type: tuple[str, ...]
+    SERIALIZE: tuple[str, ...] = ("--prismatic",)
     CHANNELS = (
         Channel("l", 0.0, 1.0, bound=True),
         Channel("r", 0.0, 1.0, bound=True),

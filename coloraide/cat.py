@@ -13,7 +13,7 @@ from typing import cast
 # `ASTM-E308-D65` provided by the associated paper.
 # Many systems use 4 decimals instead of 5, particularly for D65 and D50 (most commonly used);
 # we use 4 for D50 and D65 to match CSS, etc.
-WHITES = {
+WHITES: dict[str, dict[str, tuple[float, float]]] = {
     "2deg": {
         "A": (0.44758, 0.40745),
         "B": (0.34842, 0.35161),
@@ -43,7 +43,7 @@ WHITES = {
         "F3": (0.41761, 0.38324),
         "F11": (0.38541, 0.37123)
     }
-}  # type: dict[str, dict[str, tuple[float, float]]]
+}
 
 
 @functools.lru_cache(maxsize=20)

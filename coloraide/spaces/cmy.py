@@ -27,7 +27,7 @@ class CMY(Prism, Space):
 
     BASE = "srgb"
     NAME = "cmy"
-    SERIALIZE = ("--cmy",)  # type: tuple[str, ...]
+    SERIALIZE: tuple[str, ...] = ("--cmy",)
     CHANNELS = (
         Channel("c", 0.0, 1.0, bound=True),
         Channel("m", 0.0, 1.0, bound=True),

@@ -32,7 +32,7 @@ def get_cylinder(color: Color) -> tuple[Vector, int, float]:
         h_idx = color._space.hue_index()  # type: ignore[attr-defined]
         return color[:-1], h_idx, color._space.channels[h_idx].high / 360.0
 
-    cs = color.CS_MAP[color.space()]  # type: Space
+    cs: Space = color.CS_MAP[color.space()]
     achromatic = color.is_achromatic()
 
     if isinstance(cs, Labish):
@@ -71,7 +71,7 @@ def from_cylinder(color: AnyColor, coords: Vector) -> AnyColor:
     if color._space.is_polar():
         return color.new(space, coords, color[-1])
 
-    cs = color.CS_MAP[color.space()]  # type: Space
+    cs: Space = color.CS_MAP[color.space()]
 
     if isinstance(cs, Labish):
         a, b = alg.polar_to_rect(coords[1], 0 if math.isnan(coords[2]) else coords[2])
@@ -184,11 +184,11 @@ class Monochromatic(Harmony):
             steps_w = int(alg.round_half_up((dw / (db + dw)) * min_steps))
             steps_b = min_steps - steps_w
 
-        kwargs = {
+        kwargs: dict[str, Any] = {
             'space': space,
             'method': 'linear',
             'out_space': space
-        }  # type: dict[str, Any]
+        }
 
         # Very close to black or is black, no need to interpolate from black to current color
         if steps_b <= 1:
@@ -349,7 +349,7 @@ class TetradicRect(Harmony):
         return colors
 
 
-SUPPORTED = {
+SUPPORTED: dict[str, Harmony] = {
     'complement': Complementary(),
     'split': SplitComplementary(),
     'triad': Triadic(),
@@ -358,7 +358,7 @@ SUPPORTED = {
     'analogous': Analogous(),
     'mono': Monochromatic(),
     'wheel': Wheel()
-}  # type: dict[str, Harmony]
+}
 
 
 def harmonize(color: AnyColor, name: str, space: str, **kwargs: Any) -> list[AnyColor]:

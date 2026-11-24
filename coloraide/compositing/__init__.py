@@ -36,7 +36,7 @@ def apply_compositing(
     # Calculate the new opacity.
     # Browsers auto clamp the alpha channel, as does ColorAide,
     # so result alpha must be clamped to undo premultiplication like the browser.
-    compositor = None  # type: porter_duff.PorterDuff | None
+    compositor: porter_duff.PorterDuff | None = None
     if operator is not None:
         compositor = operator(cba, csa)
         cra = alg.clamp(compositor.ao(), 0.0, 1.0)

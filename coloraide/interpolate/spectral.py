@@ -363,7 +363,7 @@ class Spectral(Interpolate):
         cweights = [0.0] * 3
         usums = [0.0] * 3
         uweights = [0.0] * 3
-        pending = []  # type: list[tuple[Vector, float, float]]
+        pending: list[tuple[Vector, float, float]] = []
 
         count = 0
 
