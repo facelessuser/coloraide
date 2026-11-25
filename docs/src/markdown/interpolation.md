@@ -1163,15 +1163,20 @@ Color.interpolate(
 )
 ```
 
-Lastly, while domains can be specified in either ascending or descending order, it needs to be consistent. If a values
-increase in values, and suddenly decreases in value, you will get discontinuities.
+While domains can be specified in either ascending or descending order, they must be strictly one or the other. Either
+each value is greater than the one before it, or each value is less than the one before it.
+
+> [!warning] Undefined Domains
+> A domain that neither strictly ascends nor strictly descends, such as one that repeats a value or changes direction,
+> is considered undefined. No particular result is guaranteed, so you basically get what you get.
+
+As an example, the domain below changes direction, which results in discontinuities.
 
 ```py play
 i = Color.interpolate(
     ['blue', 'green', 'yellow', 'orange', 'red'],
     domain=[-32, 32, 60, 20, 95]
 )
-i.domain
 i
 ```
 
@@ -1196,7 +1201,7 @@ Color.steps(
 )
 ```
 
-Wile you can technically feed `domain` into [`mix`](#mixing), it is probably not as useful. It will respect the domain
+While you can technically feed `domain` into [`mix`](#mixing), it is probably not as useful. It will respect the domain
 alignment, but mix always accepts a percentage of [0, 1], regardless of the underlying domain.
 
 ## Extrapolation
