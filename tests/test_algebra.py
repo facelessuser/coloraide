@@ -2261,6 +2261,16 @@ class TestAlgebra(unittest.TestCase):
         with self.assertRaises(ValueError):
             alg.subtract_x3([[1, 1, 1], [2, 2, 2], [3, 3, 3]], [[1, 1], [2, 2], [3, 3]])
 
+    def test_interpolate_repeated_domain_start(self):
+        """Repeated initial domain values preserve piecewise interpolation."""
+
+        scale = alg.interpolate([0, 10, 20], domain=[0, 0, 1])
+        reverse = alg.interpolate([20, 10, 0], domain=[1, 0, 0])
+        self.assertEqual(scale(0.5), [15.0])
+        self.assertEqual(scale(0.5), reverse(0.5))
+        self.assertEqual(scale(0), [0.0])
+        self.assertEqual(scale(1), [20.0])
+
     def test_interpolate(self):
         """Test interpolation."""
 

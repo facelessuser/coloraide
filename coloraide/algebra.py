@@ -993,7 +993,7 @@ class Interpolator:
         self.preprocess(points, **kwargs)
         self.points = [*zip(*points)]
         self.domain = list(domain) if domain is not None else domain
-        self.increasing = not self.domain or len(self.domain) == 1 or self.domain[1] > self.domain[0]
+        self.increasing = not self.domain or len(self.domain) == 1 or self.domain[-1] > self.domain[0]
 
     @classmethod
     def preprocess(cls, points: list[VectorT[float]], **kwargs: Any) -> None:

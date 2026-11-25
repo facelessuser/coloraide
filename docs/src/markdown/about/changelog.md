@@ -5,6 +5,9 @@ icon: lucide/scroll-text
 
 ## 8.17
 
+-   **FIX**: Interpolation: Detect ascending domains correctly when initial values repeat instead of clamping the
+    entire scale to the first color.
+
 -   **NEW** Add Munsell color space.
 
 ## 8.16

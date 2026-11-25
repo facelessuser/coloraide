@@ -463,7 +463,7 @@ class Interpolator(Generic[AnyColor], metaclass=ABCMeta):
         """Set the domain."""
 
         self._domain = list(domain)
-        self.increasing = not domain or len(domain) == 1 or domain[1] > domain[0]
+        self.increasing = not domain or len(domain) == 1 or domain[-1] > domain[0]
 
     def padding(self, padding: float | Sequence[float]) -> None:
         """Add/adjust padding."""

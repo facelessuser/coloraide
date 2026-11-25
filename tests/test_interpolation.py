@@ -171,6 +171,26 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
         self.assertColorEqual(i(79), Color('oklab(0.62733 -0.12376 0.12949)'))
         self.assertColorEqual(i(95), Color('oklab(0.45201 -0.03246 -0.31153)'))
 
+    def test_domain_repeated_start(self):
+        """Repeated initial values must not reverse an ascending domain."""
+
+        cases = [
+            (['black', 'red', 'white'], [0, 0, 1]),
+            (['black', 'red', 'white'], [-10, -10, 20]),
+            (['black', 'blue', 'red', 'white'], [0, 0, 0, 1]),
+            (['black', 'red', 'white'], [1, 1, 0]),
+            (['black', 'red', 'white'], [20, 20, -10])
+        ]
+        for colors, domain in cases:
+            with self.subTest(domain=domain):
+                scale = Color.interpolate(colors, space='srgb', domain=domain)
+                reverse = Color.interpolate(colors[::-1], space='srgb', domain=domain[::-1])
+                self.assertColorEqual(scale(domain[0]), Color('black'))
+                self.assertColorEqual(scale(domain[-1]), Color('white'))
+                midpoint = (domain[0] + domain[-1]) / 2
+                self.assertColorEqual(scale(midpoint), Color('srgb', [1, 0.5, 0.5]))
+                self.assertColorEqual(scale(midpoint), reverse(midpoint))
+
     def test_domain_extrapolation(self):
         """Test extrapolation with custom domain."""
 
