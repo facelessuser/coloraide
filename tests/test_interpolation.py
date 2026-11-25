@@ -195,6 +195,26 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
         self.assertColorEqual(i(1), Color('oklab(0.45201 -0.03246 -0.31153)'))
         self.assertColorEqual(i(2), Color('oklab(0.62796 0.22486 0.12585)'))
 
+    def test_domain_no_span_extrapolation(self):
+        """Test that a domain with no span is clamped when extrapolation is enabled."""
+
+        colors = ['red', 'blue']
+        for domain in ([1], [1, 1], [0, 1, 0]):
+            with self.subTest(domain=domain):
+                i = Color.interpolate(colors, domain=domain, extrapolate=True)
+                clamped = Color.interpolate(colors, domain=domain)
+                for point in (-1, 0, 0.5, 1, 2):
+                    self.assertColorEqual(i(point), clamped(point))
+
+                steps = Color.steps(colors, steps=3, domain=domain, extrapolate=True)
+                for step, expected in zip(steps, Color.steps(colors, steps=3, domain=domain)):
+                    self.assertColorEqual(step, expected)
+
+                self.assertColorEqual(
+                    Color('red').mix('blue', 0.5, domain=domain, extrapolate=True),
+                    Color('red').mix('blue', 0.5, domain=domain)
+                )
+
     def test_domain_in_step(self):
         """Test domains work in steps."""
 

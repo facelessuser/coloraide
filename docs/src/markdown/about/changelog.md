@@ -3,6 +3,11 @@ icon: lucide/scroll-text
 ---
 # Changelog
 
+## 8.17.1
+
+-   **FIX**: Interpolation: A domain whose first and last values are equal no longer raises a `ZeroDivisionError`.
+    As such a domain provides no scale to extrapolate with, inputs are clamped to the ends of the domain.
+
 ## 8.17
 
 -   **NEW** Add Munsell color space.

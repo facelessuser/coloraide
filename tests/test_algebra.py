@@ -2308,6 +2308,16 @@ class TestAlgebra(unittest.TestCase):
             [3, 4]
         )
 
+    def test_interpolate_domain_no_span(self):
+        """Test that a domain with no span is clamped to one of the ends."""
+
+        for domain in ([1], [1, 1], [0, 1, 0]):
+            for extrapolate in (False, True):
+                with self.subTest(domain=domain, extrapolate=extrapolate):
+                    i = alg.interpolate([0, 10], domain=domain, extrapolate=extrapolate)
+                    for point in (-1, 0, 0.5, 1, 2):
+                        self.assertIn(i(point), ([0.0], [10.0]))
+
     def test_interpolation_end_conditions(self):
         """Test interpolation end conditions."""
 

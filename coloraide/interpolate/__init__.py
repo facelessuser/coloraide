@@ -672,10 +672,13 @@ class Interpolator(Generic[AnyColor], metaclass=ABCMeta):
         le, ge = (op.le, op.ge) if self.increasing else (op.ge, op.le)
         bisect_left = bisect.bisect_left if self.increasing else alg.reversed_bisect_left
 
+        # A domain with no span provides no scale to extrapolate with, so clamp in that case
+        span = self._domain[-1] - self._domain[0]
+
         if le(p, self._domain[0]):
-            p = (p - self._domain[0]) / (self._domain[-1] - self._domain[0]) if self.extrapolate else 0.0
+            p = (p - self._domain[0]) / span if self.extrapolate and span else 0.0
         elif ge(p, self._domain[-1]):
-            p = 1.0 + (p - self._domain[-1]) / (self._domain[-1] - self._domain[0]) if self.extrapolate else 1.0
+            p = 1.0 + (p - self._domain[-1]) / span if self.extrapolate and span else 1.0
         else:
             regions = len(self._domain) - 1
             size = (1 / regions)

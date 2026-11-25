@@ -1025,11 +1025,14 @@ class Interpolator:
         import operator as op
         le, ge = (op.le, op.ge) if self.increasing else (op.ge, op.le)
 
+        # A domain with no span provides no scale to extrapolate with, so clamp in that case
+        span = self.domain[-1] - self.domain[0]
+
         # Extrapolation
         if le(t, self.domain[0]):
-            t = (t - self.domain[0]) / (self.domain[-1] - self.domain[0])
+            t = (t - self.domain[0]) / span if span else 0.0
         elif ge(t, self.domain[-1]):
-            t = 1.0 + (t - self.domain[-1]) / (self.domain[-1] - self.domain[0])
+            t = 1.0 + (t - self.domain[-1]) / span if span else 1.0
 
         # Interpolation
         else:
