@@ -50,94 +50,92 @@ nav:
       - colors/index.md
 
       - RGB Color Spaces:
-        - sRGB: colors/srgb.md
-        - Display P3: colors/display_p3.md
         - A98 RGB: colors/a98_rgb.md
-        - Rec. 2020: colors/rec2020.md
-        - Rec. 2020 (OETF): colors/rec2020_oetf.md
-        - ProPhoto RGB: colors/prophoto_rgb.md
-        - Rec. 709: colors/rec709.md
-        - Rec. 709 (OETF): colors/rec709_oetf.md
-        - Rec. 2100 PQ: colors/rec2100_pq.md
-        - Rec. 2100 HLG: colors/rec2100_hlg.md
-        - Linear sRGB: colors/srgb_linear.md
-        - Linear Display P3: colors/display_p3_linear.md
-        - Linear A98 RGB: colors/a98_rgb_linear.md
-        - Linear Rec. 2020: colors/rec2020_linear.md
-        - Linear Rec. 2100: colors/rec2100_linear.md
-        - Linear ProPhoto RGB: colors/prophoto_rgb_linear.md
-
-      - Cylindrical sRGB Spaces:
-        - HSV: colors/hsv.md
-        - HSL: colors/hsl.md
-        - HWB: colors/hwb.md
-        - HSI: colors/hsi.md
-        - Okhsv: colors/okhsv.md
-        - Okhsl: colors/okhsl.md
-        - HSLuv: colors/hsluv.md
-        - HPLuv: colors/hpluv.md
-        - Cubehelix: colors/cubehelix.md
-
-      - XYZ Spaces:
-        - XYZ D65: colors/xyz_d65.md
-        - XYZ D50: colors/xyz_d50.md
-
-      - Lab Like Spaces:
-        - Lab D50: colors/lab.md
-        - Lab D65: colors/lab_d65.md
-        - Oklab: colors/oklab.md
-        - Oklrab: colors/oklrab.md
-        - Luv: colors/luv.md
-        - DIN99o: colors/din99o.md
-        - Jzazbz: colors/jzazbz.md
-        - Hunter Lab: colors/hunter_lab.md
-        - RLAB: colors/rlab.md
-        - IPT: colors/ipt.md
-        - ICtCp: colors/ictcp.md
-        - IgPgTg: colors/igpgtg.md
-        - CAM02 UCS: colors/cam02_ucs.md
-        - CAM02 SCD: colors/cam02_scd.md
-        - CAM02 LCD: colors/cam02_lcd.md
-        - CAM16 UCS: colors/cam16_ucs.md
-        - CAM16 SCD: colors/cam16_scd.md
-        - CAM16 LCD: colors/cam16_lcd.md
-        - XYB: colors/xyb.md
-        - Helmgen: colors/helmgen.md
-        - Helmlab Metric: colors/helmlab-metric.md
-
-      - LCh Like Spaces:
-        - LCh D50: colors/lch.md
-        - LCh D65: colors/lch_d65.md
-        - OkLCh: colors/oklch.md
-        - OkLrCh: colors/oklrch.md
-        - LCh(uv): colors/lchuv.md
-        - DIN99 LCh: colors/lch99o.md
-        - JzCzhz: colors/jzczhz.md
-        - CAM02 JMh: colors/cam02.md
-        - CAM16 JMh: colors/cam16.md
-        - Hellwig JMh: colors/hellwig.md
-        - HCT: colors/hct.md
-        - ZCAM JMh: colors/zcam.md
-        - Msh: colors/msh.md
-        - sUCS: colors/sucs.md
-        - sCAM: colors/scam.md
-        - Helmgenlch: colors/helmgenlch.md
-        - Munsell: colors/munsell.md
-
-      - ACES Spaces:
         - ACES 2065-1: colors/aces2065_1.md
-        - ACEScg: colors/acescg.md
         - ACEScc: colors/acescc.md
         - ACEScct: colors/acescct.md
+        - ACEScg: colors/acescg.md
+        - Display P3: colors/display_p3.md
+        - Linear A98 RGB: colors/a98_rgb_linear.md
+        - Linear Display P3: colors/display_p3_linear.md
+        - Linear ProPhoto RGB: colors/prophoto_rgb_linear.md
+        - Linear Rec. 2020: colors/rec2020_linear.md
+        - Linear Rec. 2100: colors/rec2100_linear.md
+        - Linear sRGB: colors/srgb_linear.md
+        - ProPhoto RGB: colors/prophoto_rgb.md
+        - Rec. 2020 (OETF): colors/rec2020_oetf.md
+        - Rec. 2020: colors/rec2020.md
+        - Rec. 2100 HLG: colors/rec2100_hlg.md
+        - Rec. 2100 PQ: colors/rec2100_pq.md
+        - Rec. 709 (OETF): colors/rec709_oetf.md
+        - Rec. 709: colors/rec709.md
+        - sRGB: colors/srgb.md
+
+      - Cylindrical sRGB Spaces:
+        - Cubehelix: colors/cubehelix.md
+        - HPLuv: colors/hpluv.md
+        - HSI: colors/hsi.md
+        - HSL: colors/hsl.md
+        - HSLuv: colors/hsluv.md
+        - HSV: colors/hsv.md
+        - HWB: colors/hwb.md
+        - Okhsl: colors/okhsl.md
+        - Okhsv: colors/okhsv.md
+
+      - XYZ Spaces:
+        - XYZ D50: colors/xyz_d50.md
+        - XYZ D65: colors/xyz_d65.md
+
+      - Lab Like Spaces:
+        - CAM02 LCD: colors/cam02_lcd.md
+        - CAM02 SCD: colors/cam02_scd.md
+        - CAM02 UCS: colors/cam02_ucs.md
+        - CAM16 LCD: colors/cam16_lcd.md
+        - CAM16 SCD: colors/cam16_scd.md
+        - CAM16 UCS: colors/cam16_ucs.md
+        - DIN99o: colors/din99o.md
+        - Helmgen: colors/helmgen.md
+        - Helmlab Metric: colors/helmlab-metric.md
+        - Hunter Lab: colors/hunter_lab.md
+        - ICtCp: colors/ictcp.md
+        - IgPgTg: colors/igpgtg.md
+        - IPT: colors/ipt.md
+        - Jzazbz: colors/jzazbz.md
+        - Lab D50: colors/lab.md
+        - Lab D65: colors/lab_d65.md
+        - Luv: colors/luv.md
+        - Oklab: colors/oklab.md
+        - Oklrab: colors/oklrab.md
+        - RLAB: colors/rlab.md
+        - XYB: colors/xyb.md
+
+      - LCh Like Spaces:
+        - CAM02 JMh: colors/cam02.md
+        - CAM16 JMh: colors/cam16.md
+        - DIN99 LCh: colors/lch99o.md
+        - HCT: colors/hct.md
+        - Hellwig JMh: colors/hellwig.md
+        - Helmgenlch: colors/helmgenlch.md
+        - JzCzhz: colors/jzczhz.md
+        - LCh D50: colors/lch.md
+        - LCh D65: colors/lch_d65.md
+        - LCh(uv): colors/lchuv.md
+        - Msh: colors/msh.md
+        - Munsell: colors/munsell.md
+        - OkLCh: colors/oklch.md
+        - OkLrCh: colors/oklrch.md
+        - sCAM: colors/scam.md
+        - sUCS: colors/sucs.md
+        - ZCAM JMh: colors/zcam.md
 
       - Miscellaneous Spaces:
-        - xyY: colors/xyy.md
         - CIE 1960 UCS: colors/ucs.md
-        - RYB: colors/ryb.md
         - CMY: colors/cmy.md
         - CMYK: colors/cmyk.md
         - oRGB: colors/orgb.md
         - Prismatic: colors/prismatic.md
+        - RYB: colors/ryb.md
+        - xyY: colors/xyy.md
 
   - Plugins:
       - plugins/index.md
